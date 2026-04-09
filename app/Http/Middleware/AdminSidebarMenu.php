@@ -581,6 +581,16 @@ class AdminSidebarMenu
                         ]
                     );
 
+                    if (auth()->user()->can('send_notifications')) {
+                        $sub->url(
+                            action([\App\Http\Controllers\NotificationTemplateController::class, 'index']),
+                            __('lang_v1.notification_templates'),
+                            [
+                                'icon' => '',
+                                'active' => request()->segment(1) == 'notification-templates'
+                            ]
+                        )->order(80);
+                    }
                 },
                 [
                     'icon' => '<svg aria-hidden="true" class="tw-size-5 tw-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -957,7 +967,7 @@ class AdminSidebarMenu
             }
 
             //Notification template menu
-            if (auth()->user()->can('send_notifications')) {
+            /* if (auth()->user()->can('send_notifications')) {
                 $menu->url(action([\App\Http\Controllers\NotificationTemplateController::class, 'index']), __('lang_v1.notification_templates'), [
                     'icon' => '<svg aria-hidden="true" class="tw-size-5 tw-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                     <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
@@ -967,7 +977,7 @@ class AdminSidebarMenu
                   </svg>',
                     'active' => request()->segment(1) == 'notification-templates'
                 ])->order(80);
-            }
+            } */
 
             //Settings Dropdown
             if (
