@@ -1,0 +1,114 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Contact;
+use App\Utils\ModuleUtil;
+use App\Utils\ContactUtil;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Http\Request;
+
+class MessagingController extends Controller
+{
+    protected $moduleUtil;
+    protected $contactUtil;
+    protected $enabled_modules;
+
+    /**
+     * Constructor
+     */
+    public function __construct(ModuleUtil $moduleUtil, ContactUtil $contactUtil)
+    {
+        $this->contactUtil = $contactUtil;
+        $this->middleware(function ($request, $next) use ($moduleUtil) {
+            $this->moduleUtil = $moduleUtil;
+            $this->enabled_modules = session('business.enabled_modules') ?? [];
+            return $next($request);
+        });
+    }
+
+    /**
+     * Show Bulk SMS Page
+     */
+    public function create()
+    {
+        $business_id = request()->session()->get('user.business_id');
+
+        $url = "http://bulksmsbd.net/api/getBalanceApi";
+
+        $sms_balance_data = Http::asForm()->post($url, [
+            'api_key' => 'TFHRkrCuNgL0JuqotRzy',
+        ]);
+
+        $sms_balance = $sms_balance_data->json();
+
+        // Subscription check (same as your pattern)
+        if (!$this->moduleUtil->isSubscribed($business_id)) {
+            return $this->moduleUtil->expiredResponse();
+        }
+
+        if (! auth()->user()->can('supplier.view') && ! auth()->user()->can('supplier.view_own')) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $customers = Contact::customersForMessaging($business_id);
+
+        $suppliers = Contact::customersForMessaging($business_id, 'supplier');
+
+        return view('messaging.create')->with(compact('customers', 'suppliers', 'sms_balance'));
+    }
+
+    public function sendSms(Request $request)
+    {
+        $request->validate([
+            'sender_id' => 'required',
+            'recipients' => 'required',
+            'message' => 'required',
+            'schedule_type' => 'required'
+        ]);
+
+        $api_key = "TFHRkrCuNgL0JuqotRzy";
+
+        $recipients = (array) $request->recipients;
+
+        if (in_array('all_customers', $recipients)) {
+            $numbers = Contact::where('type', 'customer')
+                ->pluck('mobile')
+                ->filter()
+                ->implode(',');
+        } elseif (in_array('all_suppliers', $recipients)) {
+            $numbers = Contact::where('type', 'supplier')
+                ->pluck('mobile')
+                ->filter()
+                ->implode(',');
+        } else {
+            $numbers = implode(',', array_unique($recipients));
+        }
+
+        $response = Http::post('http://bulksmsbd.net/api/smsapi', [
+            'api_key'   => $api_key,
+            'type'      => 'text',
+            'number'    => $numbers,
+            'senderid'  => $request->sender_id,
+            'message'   => $request->message,
+        ]);
+
+        $api_res = $response->json();
+
+        if (empty($api_res['success_message'])) {
+            return response()->json([
+                'success' => false,
+                'msg' => $api_res['error_message'] ?? __('messages.something_went_wrong'),
+                'data' => $request->all(),
+                'numbers' => $numbers
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'api_response' => $api_res,
+            'data' => $request->all(),
+            'numbers' => $numbers
+        ]);
+    }
+}

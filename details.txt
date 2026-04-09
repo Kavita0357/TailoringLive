@@ -1,0 +1,17 @@
+FTP:
+host : ftp.maaaminternational.com
+username : tailoring@tailoring.maaaminternational.com
+pwd : F0e&ItkzB9yx0
+
+cPanel:
+URL : maaaminternational.com/cpanel
+username : maaaminternation
+pwd : @4=g}F3qTplwA@KF
+
+SSH
+host :103.187.22.6
+port : 1157
+key pharase : private
+
+sellpos controller
+tailoring.php
