@@ -118,10 +118,10 @@
                 </div>
                 <div class="col-md-6">
                     <div class="form-group">
-                        {!! Form::label('address_line_1', __('lang_v1.address_line_1') . ':') !!}
+                        {!! Form::label('address_line_1', __('tailoring.address') . ':') !!}
                         {!! Form::text('address_line_1', null, [
                             'class' => 'form-control',
-                            'placeholder' => __('lang_v1.address_line_1'),
+                            'placeholder' => __('tailoring.address'),
                             'rows' => 3,
                         ]) !!}
                     </div>

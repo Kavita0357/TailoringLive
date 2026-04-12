@@ -159,4 +159,5 @@ return [
     'delete' => 'Delete',
     'preview' => 'Preview',
     'cancel' => 'Cancel',
+    'address'=> 'Address'
 ];
