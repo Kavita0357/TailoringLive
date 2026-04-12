@@ -179,9 +179,10 @@ class SellPosController extends Controller
             return $this->moduleUtil->expiredResponse(action([\App\Http\Controllers\HomeController::class, 'index']));
         } elseif (!$this->moduleUtil->isQuotaAvailable('invoices', $business_id)) {
             return $this->moduleUtil->quotaExpiredResponse('invoices', $business_id, action([\App\Http\Controllers\SellPosController::class, 'index']));
-        } elseif (!$this->moduleUtil->isQuotaAvailable('orders', $business_id)) {
+        } 
+       /*  elseif (!$this->moduleUtil->isQuotaAvailable('orders', $business_id)) {
             return $this->moduleUtil->quotaExpiredResponse('orders', $business_id, route('cloth_orders.index'));
-        }
+        } */
 
         //like:repair
         $sub_type = request()->get('sub_type');
