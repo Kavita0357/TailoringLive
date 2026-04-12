@@ -95,15 +95,6 @@
                         </div>
                     </div>
                 </div>
-
-                <div class="clearfix"></div>
-
-                <div class="col-md-6 individual" style="display: none;">
-                    <div class="form-group">
-                        {!! Form::label('prefix', __('business.prefix') . ':') !!}
-                        {!! Form::text('prefix', null, ['class' => 'form-control', 'placeholder' => __('business.prefix_placeholder')]) !!}
-                    </div>
-                </div>
                 <div class="col-md-6 individual" style="display: none;">
                     <div class="form-group">
                         {!! Form::label('first_name', __('business.first_name') . ':*') !!}
@@ -114,19 +105,6 @@
                         ]) !!}
                     </div>
                 </div>
-                <div class="col-md-6 individual" style="display: none;">
-                    <div class="form-group">
-                        {!! Form::label('middle_name', __('lang_v1.middle_name') . ':') !!}
-                        {!! Form::text('middle_name', null, ['class' => 'form-control', 'placeholder' => __('lang_v1.middle_name')]) !!}
-                    </div>
-                </div>
-                <div class="col-md-6 individual" style="display: none;">
-                    <div class="form-group">
-                        {!! Form::label('last_name', __('business.last_name') . ':') !!}
-                        {!! Form::text('last_name', null, ['class' => 'form-control', 'placeholder' => __('business.last_name')]) !!}
-                    </div>
-                </div>
-                
                 <div class="col-md-6">
                     <div class="form-group">
                         {!! Form::label('mobile', __('contact.mobile') . ':*') !!}
@@ -138,95 +116,16 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="col-md-6">
                     <div class="form-group">
-                        {!! Form::label('alternate_number', __('contact.alternate_contact_number') . ':') !!}
-                        <div class="input-group">
-                            <span class="input-group-addon">
-                                <i class="fa fa-phone"></i>
-                            </span>
-                            {!! Form::text('alternate_number', null, [
-                                'class' => 'form-control',
-                                'placeholder' => __('contact.alternate_contact_number'),
-                            ]) !!}
-                        </div>
+                        {!! Form::label('address_line_1', __('lang_v1.address_line_1') . ':') !!}
+                        {!! Form::text('address_line_1', null, [
+                            'class' => 'form-control',
+                            'placeholder' => __('lang_v1.address_line_1'),
+                            'rows' => 3,
+                        ]) !!}
                     </div>
                 </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        {!! Form::label('landline', __('contact.landline') . ':') !!}
-                        <div class="input-group">
-                            <span class="input-group-addon">
-                                <i class="fa fa-phone"></i>
-                            </span>
-                            {!! Form::text('landline', null, ['class' => 'form-control', 'placeholder' => __('contact.landline')]) !!}
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        {!! Form::label('email', __('business.email') . ':') !!}
-                        <div class="input-group">
-                            <span class="input-group-addon">
-                                <i class="fa fa-envelope"></i>
-                            </span>
-                            {!! Form::email('email', null, ['class' => 'form-control', 'placeholder' => __('business.email')]) !!}
-                        </div>
-                    </div>
-                </div>
-                <div class="clearfix"></div>
-                <div class="col-sm-6 individual" style="display: none;">
-                    <div class="form-group">
-                        {!! Form::label('dob', __('lang_v1.dob') . ':') !!}
-                        <div class="input-group">
-                            <span class="input-group-addon">
-                                <i class="fa fa-calendar"></i>
-                            </span>
-
-                            {!! Form::text('dob', null, [
-                                'class' => 'form-control dob-date-picker',
-                                'placeholder' => __('lang_v1.dob'),
-                                'readonly',
-                            ]) !!}
-                        </div>
-                    </div>
-                </div>
-
-                <!-- lead additional field -->
-                <div class="col-md-6 lead_additional_div">
-                    <div class="form-group">
-                        {!! Form::label('crm_source', __('lang_v1.source') . ':') !!}
-                        <div class="input-group">
-                            <span class="input-group-addon">
-                                <i class="fas fa fa-search"></i>
-                            </span>
-                            {!! Form::select('crm_source', $sources, null, [
-                                'class' => 'form-control',
-                                'id' => 'crm_source',
-                                'placeholder' => __('messages.please_select'),
-                            ]) !!}
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-6 lead_additional_div">
-                    <div class="form-group">
-                        {!! Form::label('crm_life_stage', __('lang_v1.life_stage') . ':') !!}
-                        <div class="input-group">
-                            <span class="input-group-addon">
-                                <i class="fas fa fa-life-ring"></i>
-                            </span>
-                            {!! Form::select('crm_life_stage', $life_stages, null, [
-                                'class' => 'form-control',
-                                'id' => 'crm_life_stage',
-                                'placeholder' => __('messages.please_select'),
-                            ]) !!}
-                        </div>
-                    </div>
-                </div>
-
-                <!-- User in create leads -->
                 <div class="col-md-6 lead_additional_div">
                     <div class="form-group">
                         {!! Form::label('user_id', __('lang_v1.assigned_to') . ':*') !!}
@@ -264,6 +163,121 @@
                         </div>
                     </div>
                 @endif
+
+
+                <div class="clearfix"></div>
+
+                {{-- <div class="col-md-6 individual" style="display: none;">
+                    <div class="form-group">
+                        {!! Form::label('prefix', __('business.prefix') . ':') !!}
+                        {!! Form::text('prefix', null, ['class' => 'form-control', 'placeholder' => __('business.prefix_placeholder')]) !!}
+                    </div>
+                </div> --}}
+
+                {{-- <div class="col-md-6 individual" style="display: none;">
+                    <div class="form-group">
+                        {!! Form::label('middle_name', __('lang_v1.middle_name') . ':') !!}
+                        {!! Form::text('middle_name', null, ['class' => 'form-control', 'placeholder' => __('lang_v1.middle_name')]) !!}
+                    </div>
+                </div>
+                <div class="col-md-6 individual" style="display: none;">
+                    <div class="form-group">
+                        {!! Form::label('last_name', __('business.last_name') . ':') !!}
+                        {!! Form::text('last_name', null, ['class' => 'form-control', 'placeholder' => __('business.last_name')]) !!}
+                    </div>
+                </div> --}}
+
+
+
+                {{-- <div class="col-md-6">
+                    <div class="form-group">
+                        {!! Form::label('alternate_number', __('contact.alternate_contact_number') . ':') !!}
+                        <div class="input-group">
+                            <span class="input-group-addon">
+                                <i class="fa fa-phone"></i>
+                            </span>
+                            {!! Form::text('alternate_number', null, [
+                                'class' => 'form-control',
+                                'placeholder' => __('contact.alternate_contact_number'),
+                            ]) !!}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        {!! Form::label('landline', __('contact.landline') . ':') !!}
+                        <div class="input-group">
+                            <span class="input-group-addon">
+                                <i class="fa fa-phone"></i>
+                            </span>
+                            {!! Form::text('landline', null, ['class' => 'form-control', 'placeholder' => __('contact.landline')]) !!}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        {!! Form::label('email', __('business.email') . ':') !!}
+                        <div class="input-group">
+                            <span class="input-group-addon">
+                                <i class="fa fa-envelope"></i>
+                            </span>
+                            {!! Form::email('email', null, ['class' => 'form-control', 'placeholder' => __('business.email')]) !!}
+                        </div>
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+                 --}}
+                {{--  <div class="col-sm-6 individual" style="display: none;">
+                    <div class="form-group">
+                        {!! Form::label('dob', __('lang_v1.dob') . ':') !!}
+                        <div class="input-group">
+                            <span class="input-group-addon">
+                                <i class="fa fa-calendar"></i>
+                            </span>
+
+                            {!! Form::text('dob', null, [
+                                'class' => 'form-control dob-date-picker',
+                                'placeholder' => __('lang_v1.dob'),
+                                'readonly',
+                            ]) !!}
+                        </div>
+                    </div>
+                </div> --}}
+
+                <!-- lead additional field -->
+                {{-- <div class="col-md-6 lead_additional_div">
+                    <div class="form-group">
+                        {!! Form::label('crm_source', __('lang_v1.source') . ':') !!}
+                        <div class="input-group">
+                            <span class="input-group-addon">
+                                <i class="fas fa fa-search"></i>
+                            </span>
+                            {!! Form::select('crm_source', $sources, null, [
+                                'class' => 'form-control',
+                                'id' => 'crm_source',
+                                'placeholder' => __('messages.please_select'),
+                            ]) !!}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 lead_additional_div">
+                    <div class="form-group">
+                        {!! Form::label('crm_life_stage', __('lang_v1.life_stage') . ':') !!}
+                        <div class="input-group">
+                            <span class="input-group-addon">
+                                <i class="fas fa fa-life-ring"></i>
+                            </span>
+                            {!! Form::select('crm_life_stage', $life_stages, null, [
+                                'class' => 'form-control',
+                                'id' => 'crm_life_stage',
+                                'placeholder' => __('messages.please_select'),
+                            ]) !!}
+                        </div>
+                    </div>
+                </div> --}}
+
+                <!-- User in create leads -->
 
                 <div class="clearfix"></div>
             </div>
@@ -345,12 +359,7 @@
                     {{-- <div class="col-md-12"><hr/></div>
                 <div class="clearfix"></div>
                 
-                <div class="col-md-6">
-                    <div class="form-group">
-                        {!! Form::label('address_line_1', __('lang_v1.address_line_1') . ':') !!}
-                        {!! Form::text('address_line_1', null, ['class' => 'form-control', 'placeholder' => __('lang_v1.address_line_1'), 'rows' => 3]); !!}
-                    </div>
-                </div>
+                
                 <div class="col-md-6">
                     <div class="form-group">
                         {!! Form::label('address_line_2', __('lang_v1.address_line_2') . ':') !!}
