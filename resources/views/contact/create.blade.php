@@ -27,7 +27,32 @@
 
         <div class="modal-body">
             <div class="row">
-                <div class="col-md-4 contact_type_div">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        {!! Form::label('contact_id', __('lang_v1.contact_id') . ':') !!}
+                        <div class="input-group">
+                            <span class="input-group-addon">
+                                <i class="fa fa-id-badge"></i>
+                            </span>
+                            {!! Form::text('contact_id', null, ['class' => 'form-control', 'placeholder' => __('lang_v1.contact_id')]) !!}
+                        </div>
+                        <p class="help-block">
+                            @lang('lang_v1.leave_empty_to_autogenerate')
+                        </p>
+                    </div>
+                </div>
+                <div class="col-md-6 customer_fields">
+                    <div class="form-group">
+                        {!! Form::label('customer_group_id', __('lang_v1.customer_group') . ':') !!}
+                        <div class="input-group">
+                            <span class="input-group-addon">
+                                <i class="fa fa-users"></i>
+                            </span>
+                            {!! Form::select('customer_group_id', $customer_groups, '', ['class' => 'form-control']) !!}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 contact_type_div" style="display: none;">
                     <div class="form-group">
                         {!! Form::label('type', __('contact.contact_type') . ':*') !!}
                         <div class="input-group">
@@ -43,7 +68,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-4 mt-15">
+                <div class="col-md-6 mt-15" style="float:none; margin:30px 0">
                     <label class="radio-inline">
                         <input type="radio" name="contact_type_radio" id="inlineRadio1" value="individual">
                         @lang('lang_v1.individual')
@@ -53,33 +78,10 @@
                         @lang('business.business')
                     </label>
                 </div>
-                <div class="col-md-4">
-                    <div class="form-group">
-                        {!! Form::label('contact_id', __('lang_v1.contact_id') . ':') !!}
-                        <div class="input-group">
-                            <span class="input-group-addon">
-                                <i class="fa fa-id-badge"></i>
-                            </span>
-                            {!! Form::text('contact_id', null, ['class' => 'form-control', 'placeholder' => __('lang_v1.contact_id')]) !!}
-                        </div>
-                        <p class="help-block">
-                            @lang('lang_v1.leave_empty_to_autogenerate')
-                        </p>
-                    </div>
-                </div>
-                <div class="col-md-4 customer_fields">
-                    <div class="form-group">
-                        {!! Form::label('customer_group_id', __('lang_v1.customer_group') . ':') !!}
-                        <div class="input-group">
-                            <span class="input-group-addon">
-                                <i class="fa fa-users"></i>
-                            </span>
-                            {!! Form::select('customer_group_id', $customer_groups, '', ['class' => 'form-control']) !!}
-                        </div>
-                    </div>
-                </div>
+
+
                 <div class="clearfix customer_fields"></div>
-                <div class="col-md-4 business" style="display: none;">
+                <div class="col-md-6 business" style="display: none;">
                     <div class="form-group">
                         {!! Form::label('supplier_business_name', __('business.business_name') . ':') !!}
                         <div class="input-group">
@@ -96,13 +98,13 @@
 
                 <div class="clearfix"></div>
 
-                <div class="col-md-3 individual" style="display: none;">
+                <div class="col-md-6 individual" style="display: none;">
                     <div class="form-group">
                         {!! Form::label('prefix', __('business.prefix') . ':') !!}
                         {!! Form::text('prefix', null, ['class' => 'form-control', 'placeholder' => __('business.prefix_placeholder')]) !!}
                     </div>
                 </div>
-                <div class="col-md-3 individual" style="display: none;">
+                <div class="col-md-6 individual" style="display: none;">
                     <div class="form-group">
                         {!! Form::label('first_name', __('business.first_name') . ':*') !!}
                         {!! Form::text('first_name', null, [
@@ -112,21 +114,20 @@
                         ]) !!}
                     </div>
                 </div>
-                <div class="col-md-3 individual" style="display: none;">
+                <div class="col-md-6 individual" style="display: none;">
                     <div class="form-group">
                         {!! Form::label('middle_name', __('lang_v1.middle_name') . ':') !!}
                         {!! Form::text('middle_name', null, ['class' => 'form-control', 'placeholder' => __('lang_v1.middle_name')]) !!}
                     </div>
                 </div>
-                <div class="col-md-3 individual" style="display: none;">
+                <div class="col-md-6 individual" style="display: none;">
                     <div class="form-group">
                         {!! Form::label('last_name', __('business.last_name') . ':') !!}
                         {!! Form::text('last_name', null, ['class' => 'form-control', 'placeholder' => __('business.last_name')]) !!}
                     </div>
                 </div>
-                <div class="clearfix"></div>
-
-                <div class="col-md-3">
+                
+                <div class="col-md-6">
                     <div class="form-group">
                         {!! Form::label('mobile', __('contact.mobile') . ':*') !!}
                         <div class="input-group">
@@ -138,7 +139,7 @@
                     </div>
                 </div>
 
-                <div class="col-md-3">
+                <div class="col-md-6">
                     <div class="form-group">
                         {!! Form::label('alternate_number', __('contact.alternate_contact_number') . ':') !!}
                         <div class="input-group">
@@ -152,7 +153,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-6">
                     <div class="form-group">
                         {!! Form::label('landline', __('contact.landline') . ':') !!}
                         <div class="input-group">
@@ -163,7 +164,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-6">
                     <div class="form-group">
                         {!! Form::label('email', __('business.email') . ':') !!}
                         <div class="input-group">
@@ -175,7 +176,7 @@
                     </div>
                 </div>
                 <div class="clearfix"></div>
-                <div class="col-sm-4 individual" style="display: none;">
+                <div class="col-sm-6 individual" style="display: none;">
                     <div class="form-group">
                         {!! Form::label('dob', __('lang_v1.dob') . ':') !!}
                         <div class="input-group">
@@ -193,7 +194,7 @@
                 </div>
 
                 <!-- lead additional field -->
-                <div class="col-md-4 lead_additional_div">
+                <div class="col-md-6 lead_additional_div">
                     <div class="form-group">
                         {!! Form::label('crm_source', __('lang_v1.source') . ':') !!}
                         <div class="input-group">
@@ -209,7 +210,7 @@
                     </div>
                 </div>
 
-                <div class="col-md-4 lead_additional_div">
+                <div class="col-md-6 lead_additional_div">
                     <div class="form-group">
                         {!! Form::label('crm_life_stage', __('lang_v1.life_stage') . ':') !!}
                         <div class="input-group">
@@ -279,7 +280,7 @@
                         <hr />
                     </div>
 
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         <div class="form-group">
                             {!! Form::label('tax_number', __('contact.tax_no') . ':') !!}
                             <div class="input-group">
@@ -291,7 +292,7 @@
                         </div>
                     </div>
 
-                    <div class="col-md-4 opening_balance">
+                    <div class="col-md-6 opening_balance">
                         <div class="form-group">
                             {!! Form::label('opening_balance', __('lang_v1.opening_balance') . ':') !!}
                             <div class="input-group">
@@ -303,7 +304,7 @@
                         </div>
                     </div>
 
-                    <div class="col-md-4 pay_term">
+                    <div class="col-md-6 pay_term">
                         <div class="form-group">
                             <div class="multi-input">
                                 {!! Form::label('pay_term_number', __('contact.pay_term') . ':') !!} @show_tooltip(__('tooltip.pay_term'))
@@ -320,14 +321,13 @@
                             </div>
                         </div>
                     </div>
-                    <div class="clearfix"></div>
                     @php
                         $common_settings = session()->get('business.common_settings');
                         $default_credit_limit = !empty($common_settings['default_credit_limit'])
                             ? $common_settings['default_credit_limit']
                             : null;
                     @endphp
-                    <div class="col-md-4 customer_fields">
+                    <div class="col-md-6 customer_fields">
                         <div class="form-group">
                             {!! Form::label('credit_limit', __('lang_v1.credit_limit') . ':') !!}
                             <div class="input-group">
@@ -339,6 +339,7 @@
                             <p class="help-block">@lang('lang_v1.credit_limit_help')</p>
                         </div>
                     </div>
+                    <div class="clearfix"></div>
 
 
                     {{-- <div class="col-md-12"><hr/></div>
