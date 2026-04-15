@@ -27,6 +27,7 @@ return [
     'tailor_copy' => 'Tailor Copy',
     'shop_copy' => 'Shop Copy',
     'note' => 'Note',
+    'products'=>'Products',
 
     'measurement' => 'Measurement',
     'measurements' => 'Measurements',

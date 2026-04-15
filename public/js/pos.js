@@ -304,12 +304,12 @@ $(document).ready(function () {
 
     //Update line total and check for quantity not greater than max quantity
     $('table#pos_table tbody').on('change', 'input.pos_quantity', function () {
-       /*  if (sell_form_validator) {
-            sell_form.valid();
-        }
-        if (pos_form_validator) {
-            pos_form_validator.element($(this));
-        } */
+        /*  if (sell_form_validator) {
+             sell_form.valid();
+         }
+         if (pos_form_validator) {
+             pos_form_validator.element($(this));
+         } */
         // var max_qty = parseFloat($(this).data('rule-max'));
         var entered_qty = __read_number($(this));
 
@@ -1162,6 +1162,9 @@ $(document).ready(function () {
         device_model_id
     );
 
+    //Show cloth list.
+    get_cloth_suggestion_list();
+
     $('select#select_location_id').on('change', function (e) {
         $('input#suggestion_page').val(1);
         var location_id = $('input#location_id').val();
@@ -1589,6 +1592,36 @@ function get_product_suggestion_list(category_id, brand_id, location_id, url = n
         dataType: 'html',
         success: function (result) {
             $('div#product_list_body').append(result);
+            $('#suggestion_page_loader').fadeOut(700);
+        },
+    });
+}
+
+function get_cloth_suggestion_list() {
+    if ($('div#cloth_list_body').length == 0) {
+        return false;
+    }
+
+    let url = '/sells/pos/get-cloth-suggestion';
+
+    $('#suggestion_page_loader').fadeIn(700);
+    var page = $('input#suggestion_page').val();
+    if (page == 1) {
+        $('div#cloth_list_body').html('');
+    }
+    if ($('div#cloth_list_body').find('input#no_cloths_found').length > 0) {
+        $('#suggestion_page_loader').fadeOut(700);
+        return false;
+    }
+    $.ajax({
+        method: 'GET',
+        url: url,
+        data: {
+            page: page,
+        },
+        dataType: 'html',
+        success: function (result) {
+            $('div#cloth_list_body').append(result);
             $('#suggestion_page_loader').fadeOut(700);
         },
     });
@@ -2305,6 +2338,21 @@ function get_unit_price_from_discounted_unit_price(row, discounted_unit_price) {
 
     return this_unit_price;
 }
+
+$('#cloth-list-btn').on('change', function () {
+    if ($(this).is(':checked')) {
+        $('#cloth_list_body').show();
+        $('#product_list_body').hide();
+        $('#product-list-btn').prop('checked', false);
+    }
+});
+$('#product-list-btn').on('change', function () {
+    if ($(this).is(':checked')) {
+        $('#product_list_body').show();
+        $('#cloth_list_body').hide();
+        $('#cloth-list-btn').prop('checked', false);
+    }
+});
 
 //Update quantity if line subtotal changes
 $('table#pos_table tbody, table#pos_cloth_table tbody').on('change', 'input.pos_line_total', function () {

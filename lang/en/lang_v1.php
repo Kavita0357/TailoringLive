@@ -70,6 +70,7 @@ return [
     'full_screen' => 'Press F11 to go Full Screen',
     'Uncategorised' => 'Uncategorised',
     'no_products_to_display' => 'No Products to display',
+    'no_cloths_to_display' => 'No Cloths to display',
     'item_out_of_stock' => 'Product out of stock',
     'go_back' => 'Go Back',
     'disable_pay_checkout' => 'Disable Multiple Pay',

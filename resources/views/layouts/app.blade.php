@@ -1,7 +1,7 @@
 @inject('request', 'Illuminate\Http\Request')
 
 @if (
-    $request->segment(1) == 'pos' &&
+    ($request->segment(1) == 'pos' || $request->segment(1) == 'cloth-pos') &&
         ($request->segment(2) == 'create' || $request->segment(3) == 'edit' || $request->segment(2) == 'payment'))
     @php
         $pos_layout = true;

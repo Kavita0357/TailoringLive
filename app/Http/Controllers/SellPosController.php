@@ -32,6 +32,7 @@ use App\Brands;
 use App\Business;
 use App\BusinessLocation;
 use App\Category;
+use App\Cloth;
 use App\Contact;
 use App\CustomerGroup;
 use App\InvoiceLayout;
@@ -179,8 +180,8 @@ class SellPosController extends Controller
             return $this->moduleUtil->expiredResponse(action([\App\Http\Controllers\HomeController::class, 'index']));
         } elseif (!$this->moduleUtil->isQuotaAvailable('invoices', $business_id)) {
             return $this->moduleUtil->quotaExpiredResponse('invoices', $business_id, action([\App\Http\Controllers\SellPosController::class, 'index']));
-        } 
-       /*  elseif (!$this->moduleUtil->isQuotaAvailable('orders', $business_id)) {
+        }
+        /*  elseif (!$this->moduleUtil->isQuotaAvailable('orders', $business_id)) {
             return $this->moduleUtil->quotaExpiredResponse('orders', $business_id, route('cloth_orders.index'));
         } */
 
@@ -2000,6 +2001,24 @@ class SellPosController extends Controller
             $show_prices = !empty($pos_settings['show_pricing_on_product_sugesstion']);
 
             return view('sale_pos.partials.product_list')->with(compact('products', 'allowed_group_prices', 'show_prices'));
+        }
+    }
+
+    /**
+     * Gives suggetion for cloths based on location
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function getClothSuggestion(Request $request)
+    {
+        if ($request->ajax()) {
+            $business_id = request()->session()->get('user.business_id');
+            $cloths = Cloth::with(['styles', 'measurements'])
+                ->where('business_id', $business_id)
+                ->select(['id', 'cloth_name', 'serial_no', 'cloth_image', 'wages'])
+                ->get();
+            return view('sale_pos.partials.cloth_list')->with(compact('cloths'));
         }
     }
 
