@@ -20,7 +20,7 @@ class Kernel extends ConsoleKernel
 
         if ($env === 'live') {
             //Scheduling backup, specify the time when the backup will get cleaned & time when it will run.
-            
+
             $schedule->command('backup:clean')->daily()->at('01:00');
             $schedule->command('backup:run')->daily()->at('01:30');
 
@@ -36,10 +36,14 @@ class Kernel extends ConsoleKernel
         if ($env === 'demo') {
             //IMPORTANT NOTE: This command will delete all business details and create dummy business, run only in demo server.
             $schedule->command('pos:dummyBusiness')
-                    ->cron('0 */3 * * *')
-                    //->everyThirtyMinutes()
-                    ->emailOutputTo($email);
+                ->cron('0 */3 * * *')
+                //->everyThirtyMinutes()
+                ->emailOutputTo($email);
         }
+
+        $schedule->command('pos:sendScheduledSms')
+            ->everyMinute()
+            ->withoutOverlapping();
     }
 
     /**
@@ -49,7 +53,7 @@ class Kernel extends ConsoleKernel
      */
     protected function commands()
     {
-        $this->load(__DIR__.'/Commands');
+        $this->load(__DIR__ . '/Commands');
         require base_path('routes/console.php');
     }
 }

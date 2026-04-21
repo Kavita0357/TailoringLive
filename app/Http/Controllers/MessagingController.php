@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Contact;
+use App\SmsSchedule;
 use App\Utils\ModuleUtil;
 use App\Utils\ContactUtil;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Request;
 
@@ -47,7 +49,7 @@ class MessagingController extends Controller
             return $this->moduleUtil->expiredResponse();
         }
 
-        if (! auth()->user()->can('supplier.view') && ! auth()->user()->can('supplier.view_own')) {
+        if (!auth()->user()->can('supplier.view') && !auth()->user()->can('supplier.view_own')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -64,7 +66,8 @@ class MessagingController extends Controller
             'sender_id' => 'required',
             'recipients' => 'required',
             'message' => 'required',
-            'schedule_type' => 'required'
+            'schedule_type' => 'required',
+            'schedule_time' => 'required_if:schedule_type,later|date',
         ]);
 
         $api_key = "TFHRkrCuNgL0JuqotRzy";
@@ -85,12 +88,47 @@ class MessagingController extends Controller
             $numbers = implode(',', array_unique($recipients));
         }
 
+        if (empty($numbers)) {
+            return response()->json([
+                'success' => false,
+                'msg' => 'No recipient numbers found.',
+            ], 422);
+        }
+
+        if ($request->schedule_type === 'later') {
+            $sendAt = Carbon::parse($request->schedule_time);
+
+            if ($sendAt->lte(now())) {
+                return response()->json([
+                    'success' => false,
+                    'msg' => 'Schedule time must be in the future.',
+                ], 422);
+            }
+
+            SmsSchedule::create([
+                'business_id' => $request->session()->get('user.business_id'),
+                'created_by' => auth()->id(),
+                'sender_id' => $request->sender_id,
+                'recipients' => $recipients,
+                'numbers' => $numbers,
+                'message' => $request->message,
+                'schedule_type' => 'later',
+                'send_at' => $sendAt,
+                'status' => 'pending',
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'msg' => 'SMS has been scheduled successfully.',
+            ]);
+        }
+
         $response = Http::post('http://bulksmsbd.net/api/smsapi', [
-            'api_key'   => $api_key,
-            'type'      => 'text',
-            'number'    => $numbers,
-            'senderid'  => $request->sender_id,
-            'message'   => $request->message,
+            'api_key' => $api_key,
+            'type' => 'text',
+            'number' => $numbers,
+            'senderid' => $request->sender_id,
+            'message' => $request->message,
         ]);
 
         $api_res = $response->json();

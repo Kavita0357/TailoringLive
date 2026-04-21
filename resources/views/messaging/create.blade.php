@@ -41,21 +41,21 @@
                             <div class="form-group">
                                 <label>@lang('tailoring.recipients')</label>
                                 {!! Form::select(
-                                    'recipients[]',
-                                    [
-                                        'all_customers' => 'All Customers',
-                                        'all_suppliers' => 'All Suppliers',
-                                    ] +
-                                        $customers->toArray() +
-                                        $suppliers->toArray(),
-                                    null,
-                                    [
-                                        'class' => 'form-control mousetrap select2',
-                                        'id' => 'recipients',
-                                        'required',
-                                        'multiple',
-                                    ],
-                                ) !!}
+        'recipients[]',
+        [
+            'all_customers' => 'All Customers',
+            'all_suppliers' => 'All Suppliers',
+        ] +
+        $customers->toArray() +
+        $suppliers->toArray(),
+        null,
+        [
+            'class' => 'form-control mousetrap select2',
+            'id' => 'recipients',
+            'required',
+            'multiple',
+        ],
+    ) !!}
                             </div>
 
                             <!-- Message + Stats -->
@@ -103,9 +103,9 @@
                                 </label>
                             </div>
 
-                            <div class="form-group">
+                            <div class="form-group" id="schedule_time_row" style="display: none;">
                                 <label>@lang('tailoring.schedule_time')</label>
-                                <input type="datetime-local" name="schedule_time" class="form-control">
+                                <input type="datetime-local" name="schedule_time" id="schedule_time" class="form-control">
                             </div>
 
                             <!-- Footer Buttons -->
@@ -133,8 +133,8 @@
                                 <strong>@lang('tailoring.acc_balance'):</strong> {{ $sms_balance['balance'] }}
                             </p>
                             {{-- <p>
-                            <strong>@lang('tailoring.balance_validity'):</strong> 18-Oct-2026
-                        </p> --}}
+                                <strong>@lang('tailoring.balance_validity'):</strong> 18-Oct-2026
+                            </p> --}}
                         </div>
                     </div>
                 @endif
@@ -150,13 +150,23 @@
 @section('javascript')
 
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             $.ajaxSetup({
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 }
             });
-            $('#smsForm').on('submit', function(e) {
+
+            function toggleScheduleTime() {
+                const later = $('input[name="schedule_type"]:checked').val() === 'later';
+                $('#schedule_time_row').toggle(later);
+                $('#schedule_time').prop('required', later);
+            }
+
+            $('input[name="schedule_type"]').change(toggleScheduleTime);
+            toggleScheduleTime();
+
+            $('#smsForm').on('submit', function (e) {
                 e.preventDefault();
 
                 let form = $(this);
@@ -169,7 +179,7 @@
                     type: "POST",
                     data: form.serialize(),
 
-                    success: function(response) {
+                    success: function (response) {
                         if (response.success) {
                             form[0].reset();
                             $('#recipients').val(null).trigger('change');
@@ -180,13 +190,13 @@
                         }
                     },
 
-                    error: function(xhr) {
+                    error: function (xhr) {
 
                         if (xhr.status === 422) {
                             let errors = xhr.responseJSON.errors;
                             let msg = '';
 
-                            $.each(errors, function(key, value) {
+                            $.each(errors, function (key, value) {
                                 msg += value[0] + "\n";
                             });
 
@@ -196,14 +206,14 @@
                         }
                     },
 
-                    complete: function() {
+                    complete: function () {
                         btn.prop('disabled', false).text('Send SMS');
                     }
                 });
             });
 
         });
-        document.getElementById('message').addEventListener('input', function() {
+        document.getElementById('message').addEventListener('input', function () {
             let text = this.value.length;
 
             document.getElementById('char_count').innerText = text;
