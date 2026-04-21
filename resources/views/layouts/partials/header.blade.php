@@ -38,7 +38,7 @@
 
                 @if (in_array('tailoring', $enabled_modules))
                     @can('sell.create')
-                        <a href="{{ action([\App\Http\Controllers\SellController::class, 'create']) }}"
+                        <a href="{{ route('cloth_pos.create') }}"
                             class="sm:tw-inline-flex tw-transition-all tw-duration-200 tw-gap-2 tw-bg-@if (!empty(session('business.theme_color'))){{ session('business.theme_color') }}@else{{ 'primary' }}@endif-800 hover:tw-bg-@if (!empty(session('business.theme_color'))){{ session('business.theme_color') }}@else{{ 'primary' }}@endif-700 tw-py-1.5 tw-px-3 tw-rounded-lg tw-items-center tw-justify-center tw-text-sm tw-font-medium tw-ring-1 tw-ring-white/10 hover:tw-text-white tw-text-white">
                             <svg aria-hidden="true" class="tw-size-5 tw-hidden md:tw-block"
                                 xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5"
@@ -56,7 +56,7 @@
 
                 @if (in_array('pos_sale', $enabled_modules))
                     @can('sell.create')
-                        <a href="{{ action([\App\Http\Controllers\SellPosController::class, 'create']) }}"
+                        <a href="{{ route('pos.create') }}"
                             class="sm:tw-inline-flex tw-transition-all tw-duration-200 tw-gap-2 tw-bg-@if (!empty(session('business.theme_color'))){{ session('business.theme_color') }}@else{{ 'primary' }}@endif-800 hover:tw-bg-@if (!empty(session('business.theme_color'))){{ session('business.theme_color') }}@else{{ 'primary' }}@endif-700 tw-py-1.5 tw-px-3 tw-rounded-lg tw-items-center tw-justify-center tw-text-sm tw-font-medium tw-ring-1 tw-ring-white/10 hover:tw-text-white tw-text-white">
                             <svg aria-hidden="true" class="tw-size-5 tw-hidden md:tw-block"
                                 xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5"

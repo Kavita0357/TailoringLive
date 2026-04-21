@@ -67,6 +67,7 @@ return [
     'style_update' => 'Style updated successfully',
     'style_delete' => 'Style deleted successfully',
     'style_cannot_delete' => 'This style is connected to cloths and cannot be deleted',
+    'cloth_product'=>'Cloths/Fabrics',
 
     'cloth' => 'Cloth',
     'cloths' => 'Cloths',

@@ -1,6 +1,6 @@
 @forelse($cloths as $cloth)
     <div class="col-md-3 col-xs-4 product_list no-print">
-        <div class="product_box hover:tw-shadow-lg hover:tw-animate-pulse" data-variation_id="{{ $cloth->id }}"
+        <div class="product_box hover:tw-shadow-lg hover:tw-animate-pulse" data-cloth_id="{{ $cloth->id }}" data-is_cloth="yes"
             title="{{ $cloth->cloth_name }}@lang('lang_v1.default') - @format_currency($cloth->wages)">
             <div class="image-container"
                 style="background-image: url('{{ !empty($cloth->cloth_image) ? asset('storage/' . $cloth->cloth_image) : asset('/img/default.png') }}');">

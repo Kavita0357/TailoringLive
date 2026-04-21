@@ -439,14 +439,14 @@ class AdminSidebarMenu
                             if (in_array('pos_sale', $enabled_modules)) {
                                 if (auth()->user()->can('sell.view')) {
                                     $sub->url(
-                                        action([\App\Http\Controllers\SellPosController::class, 'index']),
+                                        route('pos.index'),
                                         __('sale.list_pos'),
                                         ['icon' => '', 'active' => request()->segment(1) == 'pos' && request()->segment(2) == null]
                                     );
                                 }
 
                                 $sub->url(
-                                    action([\App\Http\Controllers\SellPosController::class, 'create']),
+                                    route('pos.create'),
                                     __('sale.pos_sale'),
                                     ['icon' => '', 'active' => request()->segment(1) == 'pos' && request()->segment(2) == 'create']
                                 );
