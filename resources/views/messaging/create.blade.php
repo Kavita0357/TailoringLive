@@ -41,9 +41,9 @@
                             <div class="form-group">
                                 <label>@lang('tailoring.recipients')</label>
                                 @php
-                                    if (isset($is_superadmin) && $is_superadmin) {
+                                    if ($is_superadmin) {
                                         $recipient_options = [
-                                            'all_businesses' => 'All Businesses'
+                                            'all_businesses' => 'All Businesses',
                                         ];
 
                                         if (isset($businesses)) {
@@ -59,17 +59,12 @@
                                         $recipient_options += $customers->toArray() + $suppliers->toArray();
                                     }
                                 @endphp
-                                {!! Form::select(
-        'recipients[]',
-        $recipient_options,
-        null,
-        [
-            'class' => 'form-control mousetrap select2',
-            'id' => 'recipients',
-            'required',
-            'multiple',
-        ],
-    ) !!}
+                                {!! Form::select('recipients[]', $recipient_options, null, [
+                                    'class' => 'form-control mousetrap select2',
+                                    'id' => 'recipients',
+                                    'required',
+                                    'multiple',
+                                ]) !!}
                             </div>
 
                             <!-- Message + Stats -->
@@ -164,7 +159,7 @@
 @section('javascript')
 
     <script>
-        $(document).ready(function () {
+        $(document).ready(function() {
             $.ajaxSetup({
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -180,7 +175,7 @@
             $('input[name="schedule_type"]').change(toggleScheduleTime);
             toggleScheduleTime();
 
-            $('#smsForm').on('submit', function (e) {
+            $('#smsForm').on('submit', function(e) {
                 e.preventDefault();
 
                 let form = $(this);
@@ -199,7 +194,7 @@
                     type: "POST",
                     data: $.param(formData),
 
-                    success: function (response) {
+                    success: function(response) {
                         if (response.success) {
                             form[0].reset();
                             $('#recipients').val(null).trigger('change');
@@ -210,13 +205,13 @@
                         }
                     },
 
-                    error: function (xhr) {
+                    error: function(xhr) {
 
                         if (xhr.status === 422) {
                             let errors = xhr.responseJSON.errors;
                             let msg = '';
 
-                            $.each(errors, function (key, value) {
+                            $.each(errors, function(key, value) {
                                 msg += value[0] + "\n";
                             });
 
@@ -226,14 +221,14 @@
                         }
                     },
 
-                    complete: function () {
+                    complete: function() {
                         btn.prop('disabled', false).text('Send SMS');
                     }
                 });
             });
 
         });
-        document.getElementById('message').addEventListener('input', function () {
+        document.getElementById('message').addEventListener('input', function() {
             let text = this.value.length;
 
             document.getElementById('char_count').innerText = text;
