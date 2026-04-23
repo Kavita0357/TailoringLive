@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Contact;
 use App\SmsSchedule;
+use App\Business;
 use App\Utils\ModuleUtil;
 use App\Utils\ContactUtil;
 use Carbon\Carbon;
@@ -19,6 +20,7 @@ class MessagingController extends Controller
     /**
      * Constructor
      */
+
     public function __construct(ModuleUtil $moduleUtil, ContactUtil $contactUtil)
     {
         $this->contactUtil = $contactUtil;
@@ -53,11 +55,18 @@ class MessagingController extends Controller
             abort(403, 'Unauthorized action.');
         }
 
-        $customers = Contact::customersForMessaging($business_id);
+        $is_superadmin = auth()->user()->can('superadmin');
 
-        $suppliers = Contact::customersForMessaging($business_id, 'supplier');
+        if ($is_superadmin) {
+            $businesses = Business::where('id', '!=', $business_id)->pluck('name', 'id');
 
-        return view('messaging.create')->with(compact('customers', 'suppliers', 'sms_balance'));
+            return view('messaging.create')->with(compact('sms_balance', 'is_superadmin', 'businesses'));
+        } else {
+            $customers = Contact::customersForMessaging($business_id);
+            $suppliers = Contact::customersForMessaging($business_id, 'supplier');
+
+            return view('messaging.create')->with(compact('customers', 'suppliers', 'sms_balance', 'is_superadmin'));
+        }
     }
 
     public function sendSms(Request $request)
@@ -73,20 +82,64 @@ class MessagingController extends Controller
         $api_key = "TFHRkrCuNgL0JuqotRzy";
 
         $recipients = (array) $request->recipients;
+        $numbers = [];
 
-        if (in_array('all_customers', $recipients)) {
-            $numbers = Contact::where('type', 'customer')
-                ->pluck('mobile')
-                ->filter()
-                ->implode(',');
-        } elseif (in_array('all_suppliers', $recipients)) {
-            $numbers = Contact::where('type', 'supplier')
-                ->pluck('mobile')
-                ->filter()
-                ->implode(',');
-        } else {
-            $numbers = implode(',', array_unique($recipients));
+        $is_superadmin = auth()->user()->can('superadmin');
+
+        foreach ($recipients as $recipient) {
+
+            // ✅ Superadmin: All businesses
+            if ($is_superadmin && $recipient === 'all_businesses') {
+                $nums = Contact::whereIn('type', ['customer', 'supplier'])
+                    ->pluck('mobile')
+                    ->filter()
+                    ->toArray();
+
+                $numbers = array_merge($numbers, $nums);
+            }
+
+            // ✅ Superadmin: Single business
+            elseif ($is_superadmin && preg_match('/^business_(\d+)$/', $recipient, $matches)) {
+                $biz_id = $matches[1];
+
+                $nums = Contact::where('business_id', $biz_id)
+                    ->whereIn('type', ['customer', 'supplier'])
+                    ->pluck('mobile')
+                    ->filter()
+                    ->toArray();
+
+                $numbers = array_merge($numbers, $nums);
+            }
+
+            // ✅ Normal user: all customers
+            elseif ($recipient === 'all_customers') {
+                $nums = Contact::where('type', 'customer')
+                    ->pluck('mobile')
+                    ->filter()
+                    ->toArray();
+
+                $numbers = array_merge($numbers, $nums);
+            }
+
+            // ✅ Normal user: all suppliers
+            elseif ($recipient === 'all_suppliers') {
+                $nums = Contact::where('type', 'supplier')
+                    ->pluck('mobile')
+                    ->filter()
+                    ->toArray();
+
+                $numbers = array_merge($numbers, $nums);
+            }
+
+            // ✅ Individual numbers
+            else {
+                if (!empty($recipient)) {
+                    $numbers[] = $recipient;
+                }
+            }
         }
+
+        $numbers = implode(',', array_unique($numbers));
 
         if (empty($numbers)) {
             return response()->json([

@@ -40,14 +40,28 @@
                             <!-- Recipients -->
                             <div class="form-group">
                                 <label>@lang('tailoring.recipients')</label>
+                                @php
+                                    if (isset($is_superadmin) && $is_superadmin) {
+                                        $recipient_options = [
+                                            'all_businesses' => 'All Businesses'
+                                        ];
+
+                                        if (isset($businesses)) {
+                                            foreach ($businesses as $id => $name) {
+                                                $recipient_options['business_' . $id] = $name;
+                                            }
+                                        }
+                                    } else {
+                                        $recipient_options = [
+                                            'all_customers' => 'All Customers',
+                                            'all_suppliers' => 'All Suppliers',
+                                        ];
+                                        $recipient_options += $customers->toArray() + $suppliers->toArray();
+                                    }
+                                @endphp
                                 {!! Form::select(
         'recipients[]',
-        [
-            'all_customers' => 'All Customers',
-            'all_suppliers' => 'All Suppliers',
-        ] +
-        $customers->toArray() +
-        $suppliers->toArray(),
+        $recipient_options,
         null,
         [
             'class' => 'form-control mousetrap select2',
@@ -174,10 +188,16 @@
                 let btn = form.find('button[type="submit"]');
                 btn.prop('disabled', true).text('Sending...');
 
+                let formData = form.serializeArray();
+
+                if ($('input[name="schedule_type"]:checked').val() === 'now') {
+                    formData = formData.filter(field => field.name !== 'schedule_time');
+                }
+
                 $.ajax({
                     url: url,
                     type: "POST",
-                    data: form.serialize(),
+                    data: $.param(formData),
 
                     success: function (response) {
                         if (response.success) {
