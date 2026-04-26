@@ -21,6 +21,8 @@ Route::middleware('web', 'auth', 'language', 'AdminSidebarMenu', 'superadmin')->
 
     Route::resource('/business', Modules\Superadmin\Http\Controllers\BusinessController::class);
     Route::get('/business/{id}/destroy', [Modules\Superadmin\Http\Controllers\BusinessController::class, 'destroy']);
+    Route::get('/business/{id}/view-sms-blalance', [Modules\Superadmin\Http\Controllers\BusinessController::class, 'viewSMSBalance']);
+    Route::post('/business/{id}/gtransfer-sms-blalance', [Modules\Superadmin\Http\Controllers\BusinessController::class, 'transferSMSBalance']);
 
     Route::resource('/packages', 'Modules\Superadmin\Http\Controllers\PackagesController');
     Route::get('/packages/{id}/destroy', [Modules\Superadmin\Http\Controllers\PackagesController::class, 'destroy']);

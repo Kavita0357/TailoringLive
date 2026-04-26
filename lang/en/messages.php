@@ -19,6 +19,7 @@ return [
     'actions' => 'Actions',
     'view' => 'View',
     'delete' => 'Delete',
+    'transfer_sms_blalance' => 'Transfer SMS Balance',
     'close' => 'Close',
     'something_went_wrong' => 'Something went wrong, please try again later',
     'required' => 'This field is required',
