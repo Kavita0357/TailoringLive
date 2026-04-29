@@ -134,7 +134,18 @@ class MessagingController extends Controller
             // ✅ Individual numbers
             else {
                 if (!empty($recipient)) {
-                    $numbers[] = $recipient;
+                    $cleanNumber = preg_replace('/[\s\+\-]/', '', $recipient);
+
+                    if (!preg_match('/^\+88/', $recipient) && !preg_match('/^88/', $cleanNumber)) {
+                        if (preg_match('/^01[3-9]/', $cleanNumber)) {
+                            $cleanNumber = '88' . $cleanNumber;
+                        }
+                    }
+
+                    if (preg_match('/^(\+88|88)?01[3-9]\d{8}$/', $cleanNumber)) {
+                        $finalNumber = preg_replace('/^(\+88|88)/', '', $cleanNumber);
+                        $numbers[] = $finalNumber;
+                    }
                 }
             }
         }
