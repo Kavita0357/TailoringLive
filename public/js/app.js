@@ -526,6 +526,15 @@ $(document).ready(function () {
 
     //On display of add contact modal
     $('.contact_modal').on('shown.bs.modal', function (e) {
+        var selectedType = $('input[type=radio][name="contact_type_radio"]:checked').val();
+        if (selectedType == 'individual' || !selectedType) {
+            $('div.individual').show();
+            $('div.business').hide();
+        } else if (selectedType == 'business') {
+            $('div.individual').hide();
+            $('div.business').show();
+        }
+
         $('input[type=radio][name="contact_type_radio"]').on('change', function () {
             if (this.value == 'individual') {
                 $('div.individual').show();
