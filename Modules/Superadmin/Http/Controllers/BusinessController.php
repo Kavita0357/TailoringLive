@@ -14,6 +14,7 @@ use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
 use Modules\Superadmin\Entities\Package;
 use Modules\Superadmin\Notifications\PasswordUpdateNotification;
 use Spatie\Permission\Models\Permission;
@@ -141,10 +142,9 @@ class BusinessController extends BaseController
                                     class="btn btn-danger btn-xs delete_business_confirmation">' . __('messages.delete') . '</a>';
                     }
 
-
                     if (request()->session()->get('user.business_id') != $row->id) {
-                        $html .= ' <a href="' . action([\Modules\Superadmin\Http\Controllers\BusinessController::class, 'viewSMSBalance'], [$row->id]) . '"
-                                    class="btn btn-warning btn-xs transfer_sms_blalance">' . __('messages.transfer_sms_blalance') . '</a>';
+                        $html .= ' <button type="button" data-href="' . action([\Modules\Superadmin\Http\Controllers\BusinessController::class, 'viewSMSBalance'], [$row->id]) . '" data-container=".view_modal"
+                                    class="btn btn-warning btn-xs btn-modal transfer_sms_blalance">' . __('messages.transfer_sms_blalance') . '</a>';
                     }
 
                     return $html;
@@ -568,7 +568,78 @@ class BusinessController extends BaseController
         return $output;
     }
 
-    public function viewSMSBalance(Request $request) {}
+    public function viewSMSBalance($id)
+    {
+        $url = "http://bulksmsbd.net/api/getBalanceApi";
 
-    public function transferSMSBalance(Request $request) {}
+        $sms_balance_data = Http::asForm()->post($url, [
+            'api_key' => 'TFHRkrCuNgL0JuqotRzy',
+        ]);
+
+        $sms_balance = $sms_balance_data->json();
+
+        $superadmin_business_id = request()->session()->get('user.business_id');
+        $superadmin_business = Business::findOrFail($superadmin_business_id);
+
+        $superadmin_remaining_balance = $superadmin_business->remaining_sms_balance ?? $sms_balance['balance'];
+
+        return view('superadmin::business.transfer_sms_balance')
+            ->with(compact('sms_balance', 'id', 'superadmin_remaining_balance'));
+    }
+
+    public function transferSMSBalance(Request $request)
+    {
+        $request->validate([
+            'business_id' => 'required|exists:business,id',
+            'transfer_balance_amount' => 'required|numeric|min:0.0001',
+        ]);
+
+        $amount = (float) $request->transfer_balance_amount;
+        $total_api_amount = (float) $request->total_api_balance;
+
+        // 👉 Superadmin business (NOT user)
+        $superadmin_business_id = request()->session()->get('user.business_id');
+        $superadmin_business = Business::findOrFail($superadmin_business_id);
+
+        // 👉 Target business
+        $business = Business::findOrFail($request->business_id);
+
+        // 👉 Fallback balance
+        $superadmin_remaining_balance = $superadmin_business->remaining_sms_balance ?? $total_api_amount;
+
+        // 👉 Check balance
+        if ($superadmin_remaining_balance < $amount) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Insufficient balance'
+            ], 422);
+        }
+
+        DB::beginTransaction();
+
+        try {
+            $superadmin_business->remaining_sms_balance =
+                ($superadmin_business->remaining_sms_balance ?? $total_api_amount) - $amount;
+            $superadmin_business->save();
+
+            $business->remaining_sms_balance =
+                ($business->remaining_sms_balance ?? 0) + $amount;
+            $business->save();
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'SMS balance transferred successfully',
+                'amount' => $amount
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
 }

@@ -20,6 +20,10 @@ class Business extends Model
      */
     protected $guarded = ['id', 'woocommerce_api_settings'];
 
+    protected $fillable = [
+        'remaining_sms_balance',
+    ];
+
     /**
      * The attributes that should be hidden for arrays.
      *
@@ -124,8 +128,8 @@ class Business extends Model
     public function getBusinessAddressAttribute()
     {
         $location = $this->locations->first();
-        $address = $location->landmark.', '.$location->city.
-        ', '.$location->state.'<br>'.$location->country.', '.$location->zip_code;
+        $address = $location->landmark . ', ' . $location->city .
+            ', ' . $location->state . '<br>' . $location->country . ', ' . $location->zip_code;
 
         return $address;
     }
