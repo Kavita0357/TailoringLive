@@ -13,6 +13,12 @@ use Illuminate\Http\Request;
 |
 */
 
+
+use App\Http\Controllers\TransactionHistoryController;
+
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+// Transaction History Store API
+Route::middleware('auth:api')->post('/transaction-history', [TransactionHistoryController::class, 'store']);
