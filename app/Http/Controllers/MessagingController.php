@@ -232,8 +232,7 @@ class MessagingController extends Controller
         $recipients = (array) $request->recipients;
         $numbers = [];
 
-        $business_id = request()->session()->get('user.business_id');
-
+        $business_id = $request->session()->get('user.business_id');
         $is_superadmin = auth()->user()->can('superadmin');
 
         foreach ($recipients as $recipient) {
@@ -257,7 +256,7 @@ class MessagingController extends Controller
                 $numbers = array_merge($numbers, $nums);
             } elseif ($recipient === 'all_customers') {
                 $nums = Contact::where('business_id', $business_id)
-                    ->whereIn('type', ['customer'])
+                    ->where('type', 'customer')
                     ->pluck('mobile')
                     ->filter()
                     ->toArray();
@@ -265,7 +264,7 @@ class MessagingController extends Controller
                 $numbers = array_merge($numbers, $nums);
             } elseif ($recipient === 'all_suppliers') {
                 $nums = Contact::where('business_id', $business_id)
-                    ->whereIn('type', ['supplier'])
+                    ->where('type', 'supplier')
                     ->pluck('mobile')
                     ->filter()
                     ->toArray();
@@ -303,20 +302,15 @@ class MessagingController extends Controller
         }
 
         $sms_count = count($numbersArray);
-
         $cost_per_sms = 0.3;
-        $total_cost = $sms_count * $cost_per_sms;
+        $estimated_cost = $sms_count * $cost_per_sms;
 
-        $business_id = $request->session()->get('user.business_id');
         $current_business = Business::find($business_id);
 
-        if ($current_business->remaining_sms_balance < $total_cost) {
+        if ($current_business->remaining_sms_balance < $cost_per_sms) {
             return response()->json([
                 'success' => false,
                 'msg' => 'Insufficient SMS balance.',
-                'total_cost' => $total_cost,
-                'numbers' => $numbersArray,
-
             ], 422);
         }
 
@@ -343,7 +337,7 @@ class MessagingController extends Controller
                 'schedule_type' => 'later',
                 'send_at' => $sendAt,
                 'status' => 'pending',
-                'cost' => $total_cost
+                'cost' => $estimated_cost
             ]);
 
             return response()->json([
@@ -352,22 +346,7 @@ class MessagingController extends Controller
             ]);
         }
 
-        DB::beginTransaction();
-
         try {
-
-            $updated = Business::where('id', $business_id)
-                ->where('remaining_sms_balance', '>=', $total_cost)
-                ->decrement('remaining_sms_balance', $total_cost);
-
-            if (!$updated) {
-                DB::rollBack();
-                return response()->json([
-                    'success' => false,
-                    'msg' => 'Insufficient SMS balance.',
-                    'total_cost' => $total_cost
-                ], 422);
-            }
 
             $response = Http::post('http://bulksmsbd.net/api/smsapi', [
                 'api_key' => $api_key,
@@ -380,26 +359,35 @@ class MessagingController extends Controller
             $api_res = $response->json();
 
             if (empty($api_res['success_message'])) {
-                DB::rollBack();
-
                 return response()->json([
                     'success' => false,
                     'msg' => $api_res['error_message'] ?? 'SMS sending failed',
                 ]);
             }
 
-            DB::commit();
+            preg_match('/(\d+)$/', $api_res['success_message'], $matches);
+            $sent_count = isset($matches[1]) ? (int) $matches[1] : 0;
+
+            if ($sent_count <= 0) {
+                return response()->json([
+                    'success' => false,
+                    'msg' => 'No SMS sent.',
+                ]);
+            }
+
+            $total_cost = $sent_count * $cost_per_sms;
+
+            Business::where('id', $business_id)
+                ->decrement('remaining_sms_balance', $total_cost);
 
             return response()->json([
                 'success' => true,
                 'msg' => 'SMS sent successfully',
+                'sent_count' => $sent_count,
                 'total_cost' => $total_cost,
-                'remaining_balance' => Business::find($business_id)->remaining_sms_balance,
-                'api_response' => $api_res,
+                'remaining_balance' => Business::find($business_id)->remaining_sms_balance
             ]);
         } catch (\Exception $e) {
-            DB::rollBack();
-
             return response()->json([
                 'success' => false,
                 'msg' => $e->getMessage(),

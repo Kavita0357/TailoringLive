@@ -202,7 +202,7 @@
                             $('#recipients').val(null).trigger('change');
                             toastr.success(response?.msg);
                             setTimeout(function() {
-                                // location.reload();
+                                location.reload();
                             }, 1000);
                         } else {
                             toastr.error(response?.msg);
