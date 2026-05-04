@@ -60,13 +60,13 @@
                                     }
                                 @endphp
                                 {!! Form::select('recipients[]', $recipient_options, null, [
-        'class' => 'form-control mousetrap select2',
-        'id' => 'recipients',
-        'required',
-        'multiple',
-        'data-tags' => 'true',
-        'data-tokenSeparators' => '[",", " "]',
-    ]) !!}
+                                    'class' => 'form-control mousetrap select2',
+                                    'id' => 'recipients',
+                                    'required',
+                                    'multiple',
+                                    'data-tags' => 'true',
+                                    'data-tokenSeparators' => '[",", " "]',
+                                ]) !!}
                             </div>
 
                             <!-- Message + Stats -->
@@ -89,7 +89,7 @@
                             </div>
 
                             <!-- Buttons -->
-                            <div class="form-group">
+                            {{-- <div class="form-group">
                                 <button type="button" class="btn btn-info">
                                     <i class="fa fa-save"></i> @lang('tailoring.save_draft')
                                 </button>
@@ -97,7 +97,7 @@
                                 <button type="button" class="btn btn-warning">
                                     <i class="fa fa-trash"></i> @lang('tailoring.delete')
                                 </button>
-                            </div>
+                            </div> --}}
 
                             <!-- Schedule -->
                             <div class="form-group">
@@ -118,10 +118,10 @@
                                 <label>@lang('tailoring.schedule_time')</label>
                                 <input type="datetime-local" name="schedule_time" id="schedule_time" class="form-control">
                             </div>
-
                             <!-- Footer Buttons -->
                             <div class="form-group">
-                                <button type="submit" class="btn btn-primary">@lang('tailoring.send_sms')</button>
+                                <button type="submit" class="btn btn-primary"
+                                    @disabled(!isset($sms_balance['balance']) || $sms_balance['balance'] == 0)>@lang('tailoring.send_sms')</button>
                                 <button type="reset" class="btn btn-danger">@lang('tailoring.cancel')</button>
                             </div>
 
@@ -161,7 +161,7 @@
 @section('javascript')
 
     <script>
-        $(document).ready(function () {
+        $(document).ready(function() {
             $.ajaxSetup({
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -177,7 +177,7 @@
             $('input[name="schedule_type"]').change(toggleScheduleTime);
             toggleScheduleTime();
 
-            $('#smsForm').on('submit', function (e) {
+            $('#smsForm').on('submit', function(e) {
                 e.preventDefault();
 
                 let form = $(this);
@@ -196,24 +196,26 @@
                     type: "POST",
                     data: $.param(formData),
 
-                    success: function (response) {
+                    success: function(response) {
                         if (response.success) {
                             form[0].reset();
                             $('#recipients').val(null).trigger('change');
                             toastr.success(response?.msg);
+                            setTimeout(function() {
+                                // location.reload();
+                            }, 1000);
                         } else {
                             toastr.error(response?.msg);
-                            // alert('Something went wrong ❌');
                         }
                     },
 
-                    error: function (xhr) {
+                    error: function(xhr) {
 
                         if (xhr.status === 422) {
                             let errors = xhr.responseJSON.errors;
                             let msg = '';
 
-                            $.each(errors, function (key, value) {
+                            $.each(errors, function(key, value) {
                                 msg += value[0] + "\n";
                             });
 
@@ -223,14 +225,14 @@
                         }
                     },
 
-                    complete: function () {
+                    complete: function() {
                         btn.prop('disabled', false).text('Send SMS');
                     }
                 });
             });
 
         });
-        document.getElementById('message').addEventListener('input', function () {
+        document.getElementById('message').addEventListener('input', function() {
             let text = this.value.length;
 
             document.getElementById('char_count').innerText = text;

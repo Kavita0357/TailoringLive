@@ -10,6 +10,7 @@ use App\Utils\ContactUtil;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class MessagingController extends Controller
 {
@@ -64,12 +65,13 @@ class MessagingController extends Controller
         } else {
             $customers = Contact::customersForMessaging($business_id);
             $suppliers = Contact::customersForMessaging($business_id, 'supplier');
-
+            $current_business = Business::findOrFail($business_id);
+            $sms_balance['balance'] = $current_business->remaining_sms_balance ?? 0;
             return view('messaging.create')->with(compact('customers', 'suppliers', 'sms_balance', 'is_superadmin'));
         }
     }
 
-    public function sendSms(Request $request)
+    /* public function sendSms(Request $request)
     {
         $request->validate([
             'sender_id' => 'required',
@@ -156,6 +158,7 @@ class MessagingController extends Controller
             return response()->json([
                 'success' => false,
                 'msg' => 'No recipient numbers found.',
+                'data' => $numbers
             ], 422);
         }
 
@@ -212,5 +215,195 @@ class MessagingController extends Controller
             'data' => $request->all(),
             'numbers' => $numbers
         ]);
+    } */
+
+    public function sendSms(Request $request)
+    {
+        $request->validate([
+            'sender_id' => 'required',
+            'recipients' => 'required',
+            'message' => 'required',
+            'schedule_type' => 'required',
+            'schedule_time' => 'required_if:schedule_type,later|date',
+        ]);
+
+        $api_key = "TFHRkrCuNgL0JuqotRzy";
+
+        $recipients = (array) $request->recipients;
+        $numbers = [];
+
+        $business_id = request()->session()->get('user.business_id');
+
+        $is_superadmin = auth()->user()->can('superadmin');
+
+        foreach ($recipients as $recipient) {
+
+            if ($is_superadmin && $recipient === 'all_businesses') {
+                $nums = Contact::whereIn('type', ['customer', 'supplier'])
+                    ->pluck('mobile')
+                    ->filter()
+                    ->toArray();
+
+                $numbers = array_merge($numbers, $nums);
+            } elseif ($is_superadmin && preg_match('/^business_(\d+)$/', $recipient, $matches)) {
+                $biz_id = $matches[1];
+
+                $nums = Contact::where('business_id', $biz_id)
+                    ->whereIn('type', ['customer', 'supplier'])
+                    ->pluck('mobile')
+                    ->filter()
+                    ->toArray();
+
+                $numbers = array_merge($numbers, $nums);
+            } elseif ($recipient === 'all_customers') {
+                $nums = Contact::where('business_id', $business_id)
+                    ->whereIn('type', ['customer'])
+                    ->pluck('mobile')
+                    ->filter()
+                    ->toArray();
+
+                $numbers = array_merge($numbers, $nums);
+            } elseif ($recipient === 'all_suppliers') {
+                $nums = Contact::where('business_id', $business_id)
+                    ->whereIn('type', ['supplier'])
+                    ->pluck('mobile')
+                    ->filter()
+                    ->toArray();
+
+                $numbers = array_merge($numbers, $nums);
+            } else {
+                if (!empty($recipient)) {
+                    $cleanNumber = preg_replace('/[\s\+\-]/', '', $recipient);
+
+                    if (preg_match('/^1[3-9]\d{8}$/', $cleanNumber)) {
+                        $cleanNumber = '0' . $cleanNumber;
+                    }
+
+                    if (!preg_match('/^(\+88|88)/', $cleanNumber)) {
+                        if (preg_match('/^01[3-9]/', $cleanNumber)) {
+                            $cleanNumber = '88' . $cleanNumber;
+                        }
+                    }
+
+                    if (preg_match('/^(\+88|88)?01[3-9]\d{8}$/', $cleanNumber)) {
+                        $finalNumber = preg_replace('/^(\+88|88)/', '', $cleanNumber);
+                        $numbers[] = $finalNumber;
+                    }
+                }
+            }
+        }
+
+        $numbersArray = array_unique($numbers);
+
+        if (empty($numbersArray)) {
+            return response()->json([
+                'success' => false,
+                'msg' => 'No recipient numbers found.',
+            ], 422);
+        }
+
+        $sms_count = count($numbersArray);
+
+        $cost_per_sms = 0.3;
+        $total_cost = $sms_count * $cost_per_sms;
+
+        $business_id = $request->session()->get('user.business_id');
+        $current_business = Business::find($business_id);
+
+        if ($current_business->remaining_sms_balance < $total_cost) {
+            return response()->json([
+                'success' => false,
+                'msg' => 'Insufficient SMS balance.',
+                'total_cost' => $total_cost,
+                'numbers' => $numbersArray,
+
+            ], 422);
+        }
+
+        $numbersString = implode(',', $numbersArray);
+
+        if ($request->schedule_type === 'later') {
+
+            $sendAt = Carbon::parse($request->schedule_time);
+
+            if ($sendAt->lte(now())) {
+                return response()->json([
+                    'success' => false,
+                    'msg' => 'Schedule time must be in the future.',
+                ], 422);
+            }
+
+            SmsSchedule::create([
+                'business_id' => $business_id,
+                'created_by' => auth()->id(),
+                'sender_id' => $request->sender_id,
+                'recipients' => $recipients,
+                'numbers' => $numbersString,
+                'message' => $request->message,
+                'schedule_type' => 'later',
+                'send_at' => $sendAt,
+                'status' => 'pending',
+                'cost' => $total_cost
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'msg' => 'SMS has been scheduled successfully.',
+            ]);
+        }
+
+        DB::beginTransaction();
+
+        try {
+
+            $updated = Business::where('id', $business_id)
+                ->where('remaining_sms_balance', '>=', $total_cost)
+                ->decrement('remaining_sms_balance', $total_cost);
+
+            if (!$updated) {
+                DB::rollBack();
+                return response()->json([
+                    'success' => false,
+                    'msg' => 'Insufficient SMS balance.',
+                    'total_cost' => $total_cost
+                ], 422);
+            }
+
+            $response = Http::post('http://bulksmsbd.net/api/smsapi', [
+                'api_key' => $api_key,
+                'type' => 'text',
+                'number' => $numbersString,
+                'senderid' => $request->sender_id,
+                'message' => $request->message,
+            ]);
+
+            $api_res = $response->json();
+
+            if (empty($api_res['success_message'])) {
+                DB::rollBack();
+
+                return response()->json([
+                    'success' => false,
+                    'msg' => $api_res['error_message'] ?? 'SMS sending failed',
+                ]);
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'msg' => 'SMS sent successfully',
+                'total_cost' => $total_cost,
+                'remaining_balance' => Business::find($business_id)->remaining_sms_balance,
+                'api_response' => $api_res,
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'success' => false,
+                'msg' => $e->getMessage(),
+            ]);
+        }
     }
 }
