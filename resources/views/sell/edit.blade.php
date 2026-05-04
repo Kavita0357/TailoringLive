@@ -56,7 +56,7 @@
         @endphp
         <input type="hidden" id="item_addition_method" value="{{ $business_details->item_addition_method }}">
         {!! Form::open([
-            'url' => action([\App\Http\Controllers\SellPosController::class, 'update'], ['po' => $transaction->id]),
+            'url' => action([\App\Http\Controllers\SellPosController::class, 'update'], ['cloth_po' => $transaction->id]),
             'method' => 'put',
             'id' => 'edit_sell_form',
             'files' => true,
