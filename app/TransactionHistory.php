@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\User;
 
 class TransactionHistory extends Model
 {
@@ -16,4 +17,14 @@ class TransactionHistory extends Model
         'transferred_to',
         'amount',
     ];
+
+    public function transferredByUser()
+    {
+        return $this->belongsTo(User::class, 'transferred_by');
+    }
+
+    public function transferredToUser()
+    {
+        return $this->belongsTo(User::class, 'transferred_to');
+    }
 }

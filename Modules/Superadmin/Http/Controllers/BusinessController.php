@@ -5,6 +5,7 @@ namespace Modules\Superadmin\Http\Controllers;
 use App\Business;
 use App\Product;
 use App\Transaction;
+use App\TransactionHistory;
 use App\User;
 use App\Utils\BusinessUtil;
 use App\Utils\ModuleUtil;
@@ -45,7 +46,7 @@ class BusinessController extends BaseController
      */
     public function index()
     {
-        if (! auth()->user()->can('superadmin')) {
+        if (!auth()->user()->can('superadmin')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -64,6 +65,7 @@ class BusinessController extends BaseController
                 ->select(
                     'business.id',
                     'business.name',
+                    'business.owner_id',
                     DB::raw("CONCAT(COALESCE(u.surname, ''), ' ', COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as owner_name"),
                     'u.email as owner_email',
                     'u.contact_number',
@@ -82,7 +84,7 @@ class BusinessController extends BaseController
                     DB::raw("CONCAT(COALESCE(creator.surname, ''), ' ', COALESCE(creator.first_name, ''), ' ', COALESCE(creator.last_name, '')) as biz_creator")
                 )->groupBy('business.id');
 
-            if (! empty(request()->package_id)) {
+            if (!empty(request()->package_id)) {
                 $businesses->where('p.id', request()->package_id);
             }
 
@@ -121,30 +123,35 @@ class BusinessController extends BaseController
                 ->addColumn('business_contact_number', '{{$mobile}} @if(!empty($alternate_number)), {{$alternate_number}}@endif')
                 ->editColumn('is_active', '@if($is_active == 1) <span class="label bg-green">@lang("business.is_active")</span> @else <span class="label bg-gray">@lang("lang_v1.inactive")</span> @endif')
                 ->addColumn('action', function ($row) {
-                    $html = '<a href="' .
-                        action([\Modules\Superadmin\Http\Controllers\BusinessController::class, 'show'], [$row->id]) . '"
-                                class="btn btn-info btn-xs">' . __('superadmin::lang.manage') . '</a>
-                            <button type="button" class="btn btn-primary btn-xs btn-modal" data-href="' . action([\Modules\Superadmin\Http\Controllers\SuperadminSubscriptionsController::class, 'create'], ['business_id' => $row->id]) . '" data-container=".view_modal">'
-                        . __('superadmin::lang.add_subscription') . '</button>';
-
-                    if ($row->is_active == 1) {
-                        $html .= ' <a href="' . action([\Modules\Superadmin\Http\Controllers\BusinessController::class, 'toggleActive'], [$row->id, 0]) . '"
-                                    class="btn btn-danger btn-xs link_confirmation">' . __('lang_v1.deactivate') . '
-                                </a>';
+                    if (!empty(request()->get('bulk_sms_page'))) {
+                        $html = ' <button type="button" class="btn btn-info btn-xs btn-modal" data-href="' . action([\Modules\Superadmin\Http\Controllers\BusinessController::class, 'smsBalanceHistory'], [$row->id]) . '" data-container=".view_modal">' . __('superadmin::lang.balance_history') . '</button>';
+                        $html .= ' <button type="button" class="btn btn-warning btn-xs btn-modal" data-href="' . action([\Modules\Superadmin\Http\Controllers\BusinessController::class, 'viewSMSBalance'], [$row->id]) . '" data-container=".view_modal">' . __('superadmin::lang.add_sms_balance') . '</button>';
                     } else {
-                        $html .= ' <a href="' . action([\Modules\Superadmin\Http\Controllers\BusinessController::class, 'toggleActive'], [$row->id, 1]) . '"
-                                    class="btn btn-success btn-xs link_confirmation">' . __('lang_v1.activate') . '
-                                </a>';
-                    }
+                        $html = '<a href="' .
+                            action([\Modules\Superadmin\Http\Controllers\BusinessController::class, 'show'], [$row->id]) . '"
+                                    class="btn btn-info btn-xs">' . __('superadmin::lang.manage') . '</a>
+                                <button type="button" class="btn btn-primary btn-xs btn-modal" data-href="' . action([\Modules\Superadmin\Http\Controllers\SuperadminSubscriptionsController::class, 'create'], ['business_id' => $row->id]) . '" data-container=".view_modal">'
+                            . __('superadmin::lang.add_subscription') . '</button>';
 
-                    if (request()->session()->get('user.business_id') != $row->id) {
-                        $html .= ' <a href="' . action([\Modules\Superadmin\Http\Controllers\BusinessController::class, 'destroy'], [$row->id]) . '"
-                                    class="btn btn-danger btn-xs delete_business_confirmation">' . __('messages.delete') . '</a>';
-                    }
+                        if ($row->is_active == 1) {
+                            $html .= ' <a href="' . action([\Modules\Superadmin\Http\Controllers\BusinessController::class, 'toggleActive'], [$row->id, 0]) . '"
+                                        class="btn btn-danger btn-xs link_confirmation">' . __('lang_v1.deactivate') . '
+                                    </a>';
+                        } else {
+                            $html .= ' <a href="' . action([\Modules\Superadmin\Http\Controllers\BusinessController::class, 'toggleActive'], [$row->id, 1]) . '"
+                                        class="btn btn-success btn-xs link_confirmation">' . __('lang_v1.activate') . '
+                                    </a>';
+                        }
 
-                    if (request()->session()->get('user.business_id') != $row->id) {
-                        $html .= ' <button type="button" data-href="' . action([\Modules\Superadmin\Http\Controllers\BusinessController::class, 'viewSMSBalance'], [$row->id]) . '" data-container=".view_modal"
-                                    class="btn btn-warning btn-xs btn-modal transfer_sms_blalance">' . __('messages.transfer_sms_blalance') . '</a>';
+                        if (request()->session()->get('user.business_id') != $row->id) {
+                            $html .= ' <a href="' . action([\Modules\Superadmin\Http\Controllers\BusinessController::class, 'destroy'], [$row->id]) . '"
+                                        class="btn btn-danger btn-xs delete_business_confirmation">' . __('messages.delete') . '</a>';
+                        }
+
+                        if (request()->session()->get('user.business_id') != $row->id) {
+                            $html .= ' <button type="button" data-href="' . action([\Modules\Superadmin\Http\Controllers\BusinessController::class, 'viewSMSBalance'], [$row->id]) . '" data-container=".view_modal"
+                                        class="btn btn-warning btn-xs btn-modal transfer_sms_blalance">' . __('messages.transfer_sms_blalance') . '</button>';
+                        }
                     }
 
                     return $html;
@@ -193,6 +200,29 @@ class BusinessController extends BaseController
             ->with(compact('business_id', 'packages', 'subscription_statuses', 'last_transaction_date'));
     }
 
+    public function bulkSMSManagement()
+    {
+        if (!auth()->user()->can('superadmin')) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $url = "http://bulksmsbd.net/api/getBalanceApi";
+
+        $sms_balance_data = Http::asForm()->post($url, [
+            'api_key' => 'TFHRkrCuNgL0JuqotRzy',
+        ]);
+
+        $sms_balance = $sms_balance_data->json();
+
+        $superadmin_business_id = request()->session()->get('user.business_id');
+        $superadmin_business = Business::findOrFail($superadmin_business_id);
+
+        $superadmin_remaining_balance = $superadmin_business->remaining_sms_balance ?? $sms_balance['balance'];
+
+        return view('superadmin::business.bulk_sms_management')
+            ->with(compact('sms_balance', 'superadmin_remaining_balance'));
+    }
+
     private function filterTransactionDate($query, $filter, $operator)
     {
         if ($filter == 'today') {
@@ -228,7 +258,7 @@ class BusinessController extends BaseController
      */
     public function create()
     {
-        if (! auth()->user()->can('superadmin')) {
+        if (!auth()->user()->can('superadmin')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -267,7 +297,7 @@ class BusinessController extends BaseController
      */
     public function store(Request $request)
     {
-        if (! auth()->user()->can('superadmin')) {
+        if (!auth()->user()->can('superadmin')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -286,13 +316,13 @@ class BusinessController extends BaseController
 
             //Create the business
             $business_details['owner_id'] = $user->id;
-            if (! empty($business_details['start_date'])) {
+            if (!empty($business_details['start_date'])) {
                 $business_details['start_date'] = $this->businessUtil->uf_date($business_details['start_date']);
             }
 
             //upload logo
             $logo_name = $this->businessUtil->uploadFile($request, 'business_logo', 'business_logos', 'image');
-            if (! empty($logo_name)) {
+            if (!empty($logo_name)) {
                 $business_details['logo'] = $logo_name;
             }
 
@@ -317,7 +347,7 @@ class BusinessController extends BaseController
             $subscription_details = $request->only(['package_id', 'paid_via', 'payment_transaction_id']);
 
             //Add subscription if present
-            if (! empty($subscription_details['package_id']) && ! empty($subscription_details['paid_via'])) {
+            if (!empty($subscription_details['package_id']) && !empty($subscription_details['paid_via'])) {
                 $package = Package::find($subscription_details['package_id']);
 
                 $subscription = $this->_add_subscription(null, $package->price, $business->id, $subscription_details['package_id'], $subscription_details['paid_via'], $subscription_details['payment_transaction_id'], $request->session()->get('user.id'), true);
@@ -358,7 +388,7 @@ class BusinessController extends BaseController
      */
     public function show($business_id)
     {
-        if (! auth()->user()->can('superadmin')) {
+        if (!auth()->user()->can('superadmin')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -366,7 +396,7 @@ class BusinessController extends BaseController
 
         $created_id = $business->created_by;
 
-        $created_by = ! empty($created_id) ? User::find($created_id) : null;
+        $created_by = !empty($created_id) ? User::find($created_id) : null;
 
         return view('superadmin::business.show')
             ->with(compact('business', 'created_by'));
@@ -388,7 +418,9 @@ class BusinessController extends BaseController
      * @param  Request  $request
      * @return Response
      */
-    public function update(Request $request) {}
+    public function update(Request $request)
+    {
+    }
 
     /**
      * Remove the specified resource from storage.
@@ -397,13 +429,13 @@ class BusinessController extends BaseController
      */
     public function destroy($id)
     {
-        if (! auth()->user()->can('superadmin')) {
+        if (!auth()->user()->can('superadmin')) {
             abort(403, 'Unauthorized action.');
         }
 
         try {
             $notAllowed = $this->businessUtil->notAllowedInDemo();
-            if (! empty($notAllowed)) {
+            if (!empty($notAllowed)) {
                 return $notAllowed;
             }
 
@@ -419,7 +451,7 @@ class BusinessController extends BaseController
 
             //Delete related products & transactions.
             $products_id = Product::where('business_id', $id)->pluck('id')->toArray();
-            if (! empty($products_id)) {
+            if (!empty($products_id)) {
                 VariationLocationDetails::whereIn('product_id', $products_id)->delete();
             }
             Transaction::where('business_id', $id)->delete();
@@ -454,12 +486,12 @@ class BusinessController extends BaseController
      */
     public function toggleActive(Request $request, $business_id, $is_active)
     {
-        if (! auth()->user()->can('superadmin')) {
+        if (!auth()->user()->can('superadmin')) {
             abort(403, 'Unauthorized action.');
         }
 
         $notAllowed = $this->businessUtil->notAllowedInDemo();
-        if (! empty($notAllowed)) {
+        if (!empty($notAllowed)) {
             return $notAllowed;
         }
 
@@ -481,7 +513,7 @@ class BusinessController extends BaseController
      */
     public function usersList($business_id)
     {
-        if (! auth()->user()->can('superadmin')) {
+        if (!auth()->user()->can('superadmin')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -533,13 +565,13 @@ class BusinessController extends BaseController
      */
     public function updatePassword(Request $request)
     {
-        if (! auth()->user()->can('superadmin')) {
+        if (!auth()->user()->can('superadmin')) {
             abort(403, 'Unauthorized action.');
         }
 
         try {
             $notAllowed = $this->businessUtil->notAllowedInDemo();
-            if (! empty($notAllowed)) {
+            if (!empty($notAllowed)) {
                 return $notAllowed;
             }
 
@@ -587,6 +619,21 @@ class BusinessController extends BaseController
             ->with(compact('sms_balance', 'id', 'superadmin_remaining_balance'));
     }
 
+    public function smsBalanceHistory($id)
+    {
+        $business = Business::findOrFail($id);
+        $owner_id = $business->owner_id;
+
+        $history = TransactionHistory::with(['transferredByUser', 'transferredToUser'])
+            ->where('transferred_to', $owner_id)
+            ->orWhere('transferred_by', $owner_id)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('superadmin::business.sms_balance_history')
+            ->with(compact('business', 'history'));
+    }
+
     public function transferSMSBalance(Request $request)
     {
         $request->validate([
@@ -625,6 +672,12 @@ class BusinessController extends BaseController
             $business->remaining_sms_balance =
                 ($business->remaining_sms_balance ?? 0) + $amount;
             $business->save();
+
+            TransactionHistory::create([
+                'transferred_by' => auth()->user()->id,
+                'transferred_to' => $business->owner_id,
+                'amount' => $amount,
+            ]);
 
             DB::commit();
 

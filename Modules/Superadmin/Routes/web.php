@@ -22,14 +22,16 @@ Route::middleware('web', 'auth', 'language', 'AdminSidebarMenu', 'superadmin')->
     Route::resource('/business', Modules\Superadmin\Http\Controllers\BusinessController::class);
     Route::get('/business/{id}/destroy', [Modules\Superadmin\Http\Controllers\BusinessController::class, 'destroy']);
     Route::get('/business/{id}/view-sms-blalance', [Modules\Superadmin\Http\Controllers\BusinessController::class, 'viewSMSBalance']);
+    Route::get('/business/{id}/sms-balance-history', [Modules\Superadmin\Http\Controllers\BusinessController::class, 'smsBalanceHistory']);
     Route::post('/business/transfer-sms-balance', [Modules\Superadmin\Http\Controllers\BusinessController::class, 'transferSMSBalance']);
+    Route::get('/bulk-sms-management', [Modules\Superadmin\Http\Controllers\BusinessController::class, 'bulkSMSManagement']);
 
     Route::resource('/packages', 'Modules\Superadmin\Http\Controllers\PackagesController');
     Route::get('/packages/{id}/destroy', [Modules\Superadmin\Http\Controllers\PackagesController::class, 'destroy']);
 
     Route::resource('/coupons', 'Modules\Superadmin\Http\Controllers\CouponController');
     Route::get('/coupons/{id}/destroy', [Modules\Superadmin\Http\Controllers\CouponController::class, 'destroy']);
-    
+
     Route::get('/settings', [Modules\Superadmin\Http\Controllers\SuperadminSettingsController::class, 'edit']);
     Route::put('/settings', [Modules\Superadmin\Http\Controllers\SuperadminSettingsController::class, 'update']);
     Route::get('/edit-subscription/{id}', [Modules\Superadmin\Http\Controllers\SuperadminSubscriptionsController::class, 'editSubscription']);
