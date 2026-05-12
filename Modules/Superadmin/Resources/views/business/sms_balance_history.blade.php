@@ -21,8 +21,7 @@
                         @forelse($history as $record)
                             <tr>
                                 <td>{{ @format_datetime($record->created_at) }}</td>
-                                <td>{{ trim(optional($record->transferredByUser)->surname . ' ' . optional($record->transferredByUser)->first_name . ' ' . optional($record->transferredByUser)->last_name) ?: '-' }}
-                                </td>
+                                <td>TailorDesk SMS</td>
                                 <td>{{ trim(optional($record->transferredToUser)->surname . ' ' . optional($record->transferredToUser)->first_name . ' ' . optional($record->transferredToUser)->last_name) ?: '-' }}
                                 </td>
                                 <td>{{ $record->amount }}</td>

@@ -50,7 +50,8 @@ class SendScheduledSms extends Command
                     continue;
                 }
 
-                $response = Http::post('http://bulksmsbd.net/api/smsapi', [
+                // $response = Http::post('http://139.99.39.237/api/smsapi', [
+                $response = Http::post('http://139.99.39.237/api/smsapi', [
                     'api_key' => 'TFHRkrCuNgL0JuqotRzy',
                     'type' => 'text',
                     'number' => $schedule->numbers,

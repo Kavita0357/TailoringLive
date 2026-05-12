@@ -39,7 +39,7 @@ class MessagingController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        $url = "http://bulksmsbd.net/api/getBalanceApi";
+        $url = "http://139.99.39.237/api/getBalanceApi";
 
         $sms_balance_data = Http::asForm()->post($url, [
             'api_key' => 'TFHRkrCuNgL0JuqotRzy',
@@ -190,7 +190,7 @@ class MessagingController extends Controller
             ]);
         }
 
-        $response = Http::post('http://bulksmsbd.net/api/smsapi', [
+        $response = Http::post('http://139.99.39.237/api/smsapi', [
             'api_key' => $api_key,
             'type' => 'text',
             'number' => $numbers,
@@ -348,7 +348,7 @@ class MessagingController extends Controller
 
         try {
 
-            $response = Http::post('http://bulksmsbd.net/api/smsapi', [
+            $response = Http::post('http://139.99.39.237/api/smsapi', [
                 'api_key' => $api_key,
                 'type' => 'text',
                 'number' => $numbersString,
