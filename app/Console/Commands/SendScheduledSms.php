@@ -51,7 +51,7 @@ class SendScheduledSms extends Command
                 }
 
                 // $response = Http::post('http://139.99.39.237/api/smsapi', [
-                $response = Http::post('http://139.99.39.237/api/smsapi', [
+                $response = Http::post('http://bulksmsbd.net/api/smsapi', [
                     'api_key' => 'TFHRkrCuNgL0JuqotRzy',
                     'type' => 'text',
                     'number' => $schedule->numbers,
@@ -63,7 +63,7 @@ class SendScheduledSms extends Command
 
                 $schedule->api_response = json_encode($api_res);
                 $schedule->processed_at = now();
-                $schedule->status = ! empty($api_res['success_message']) ? 'sent' : 'failed';
+                $schedule->status = !empty($api_res['success_message']) ? 'sent' : 'failed';
                 $schedule->save();
             } catch (\Exception $e) {
                 $schedule->status = 'failed';
@@ -72,7 +72,7 @@ class SendScheduledSms extends Command
                 ]);
                 $schedule->processed_at = now();
                 $schedule->save();
-                \Log::emergency('Scheduled SMS send failed: '.$e->getMessage());
+                \Log::emergency('Scheduled SMS send failed: ' . $e->getMessage());
             }
         }
 

@@ -206,7 +206,7 @@ class BusinessController extends BaseController
             abort(403, 'Unauthorized action.');
         }
 
-        $url = "http://139.99.39.237/api/getBalanceApi";
+        $url = "http://bulksmsbd.net/api/getBalanceApi";
 
         $sms_balance_data = Http::asForm()->post($url, [
             'api_key' => 'TFHRkrCuNgL0JuqotRzy',
@@ -602,7 +602,7 @@ class BusinessController extends BaseController
 
     public function viewSMSBalance($id)
     {
-        $url = "http://139.99.39.237/api/getBalanceApi";
+        $url = "http://bulksmsbd.net/api/getBalanceApi";
 
         $sms_balance_data = Http::asForm()->post($url, [
             'api_key' => 'TFHRkrCuNgL0JuqotRzy',
@@ -666,7 +666,7 @@ class BusinessController extends BaseController
 
         try {
             // $superadmin_business->remaining_sms_balance =
-                // ($superadmin_business->remaining_sms_balance ?? $total_api_amount) - $amount;
+            // ($superadmin_business->remaining_sms_balance ?? $total_api_amount) - $amount;
             // $superadmin_business->save();
 
             $business->remaining_sms_balance =
