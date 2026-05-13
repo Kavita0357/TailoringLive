@@ -11,28 +11,53 @@
     </section>
 
     <section class="content">
-        <div class="row">
-            <div class="col-md-3">
-                <div class="info-box bg-white">
-                    <div class="info-box-content">
-                        <span class="info-box-text">@lang('superadmin::lang.sms_provider')</span>
-                        <span class="info-box-number">BulkSMSBD</span>
+        <div
+            class="tw-grid tw-grid-cols-1 tw-gap-4 tw-mt-6 sm:tw-grid-cols-2 xl:tw-grid-cols-4 tw-pb-6 sm:tw-gap-5 order-summary">
+            <div
+                class="tw-transition-all tw-duration-200 tw-bg-white tw-shadow-sm hover:tw-shadow-md tw-rounded-xl hover:tw-translate-y-0.5 tw-ring-1 tw-ring-gray-200">
+                <div class="tw-p-4 sm:tw-p-5">
+                    <div class="tw-flex tw-items-center tw-gap-4">
+                        <div class="tw-flex-1 tw-min-w-0">
+                            <p class="tw-text-sm tw-font-medium tw-text-gray-500 tw-truncate tw-whitespace-nowrap">
+                                @lang('superadmin::lang.sms_provider')
+                            </p>
+                            <p
+                                class="total_order tw-mt-0.5 tw-text-gray-900 tw-text-xl tw-truncate tw-font-semibold tw-tracking-tight tw-font-mono">
+                                BulkSMSBD
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="info-box bg-white">
-                    <div class="info-box-content">
-                        <span class="info-box-text">@lang('superadmin::lang.total_balance')</span>
-                        <span class="info-box-number">{{ $sms_balance['balance'] ?? 0 }}</span>
+            <div
+                class="tw-transition-all tw-duration-200 tw-bg-white tw-shadow-sm hover:tw-shadow-md tw-rounded-xl hover:tw-translate-y-0.5 tw-ring-1 tw-ring-gray-200">
+                <div class="tw-p-4 sm:tw-p-5">
+                    <div class="tw-flex tw-items-center tw-gap-4">
+                        <div class="tw-flex-1 tw-min-w-0">
+                            <p class="tw-text-sm tw-font-medium tw-text-gray-500 tw-truncate tw-whitespace-nowrap">
+                                @lang('superadmin::lang.total_balance')
+                            </p>
+                            <p
+                                class="total_order tw-mt-0.5 tw-text-gray-900 tw-text-xl tw-truncate tw-font-semibold tw-tracking-tight tw-font-mono">
+                                {{ $sms_balance['balance'] ?? 0 }}
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="info-box bg-white">
-                    <div class="info-box-content">
-                        <span class="info-box-text">@lang('superadmin::lang.remaining_transferable_balance')</span>
-                        <span class="info-box-number">{{ $superadmin_remaining_balance ?? 0 }}</span>
+            <div
+                class="tw-transition-all tw-duration-200 tw-bg-white tw-shadow-sm hover:tw-shadow-md tw-rounded-xl hover:tw-translate-y-0.5 tw-ring-1 tw-ring-gray-200">
+                <div class="tw-p-4 sm:tw-p-5">
+                    <div class="tw-flex tw-items-center tw-gap-4">
+                        <div class="tw-flex-1 tw-min-w-0">
+                            <p class="tw-text-sm tw-font-medium tw-text-gray-500 tw-truncate tw-whitespace-nowrap">
+                                @lang('superadmin::lang.remaining_transferable_balance')
+                            </p>
+                            <p
+                                class="total_order tw-mt-0.5 tw-text-gray-900 tw-text-xl tw-truncate tw-font-semibold tw-tracking-tight tw-font-mono">
+                                {{ $superadmin_remaining_balance ?? 0 }}
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
