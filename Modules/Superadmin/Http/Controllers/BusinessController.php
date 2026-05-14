@@ -214,13 +214,20 @@ class BusinessController extends BaseController
 
         $sms_balance = $sms_balance_data->json();
 
-        $superadmin_business_id = request()->session()->get('user.business_id');
-        $superadmin_business = Business::findOrFail($superadmin_business_id);
-
-        $superadmin_remaining_balance = $superadmin_business->remaining_sms_balance ?? $sms_balance['balance'];
+        $superadmin_remaining_balance = $this->getSuperadminRemainingBalance($sms_balance);
 
         return view('superadmin::business.bulk_sms_management')
             ->with(compact('sms_balance', 'superadmin_remaining_balance'));
+    }
+
+    private function getSuperadminRemainingBalance($sms_balance)
+    {
+        $total_api_balance = isset($sms_balance['balance']) ? (float) $sms_balance['balance'] : 0;
+        $total_transferred_amount = TransactionHistory::sum('amount') ?? 0;
+
+        $remaining = $total_api_balance - $total_transferred_amount;
+
+        return $remaining < 0 ? 0 : $remaining;
     }
 
     private function filterTransactionDate($query, $filter, $operator)
@@ -610,10 +617,7 @@ class BusinessController extends BaseController
 
         $sms_balance = $sms_balance_data->json();
 
-        $superadmin_business_id = request()->session()->get('user.business_id');
-        $superadmin_business = Business::findOrFail($superadmin_business_id);
-
-        $superadmin_remaining_balance = $superadmin_business->remaining_sms_balance ?? $sms_balance['balance'];
+        $superadmin_remaining_balance = $this->getSuperadminRemainingBalance($sms_balance);
 
         return view('superadmin::business.transfer_sms_balance')
             ->with(compact('sms_balance', 'id', 'superadmin_remaining_balance'));
@@ -651,8 +655,8 @@ class BusinessController extends BaseController
         // 👉 Target business
         $business = Business::findOrFail($request->business_id);
 
-        // 👉 Fallback balance
-        $superadmin_remaining_balance = $superadmin_business->remaining_sms_balance ?? $total_api_amount;
+        // 👉 Remaining balance based on API total minus all transferred amounts
+        $superadmin_remaining_balance = $this->getSuperadminRemainingBalance(['balance' => $total_api_amount]);
 
         // 👉 Check balance
         if ($superadmin_remaining_balance < $amount) {
@@ -665,10 +669,6 @@ class BusinessController extends BaseController
         DB::beginTransaction();
 
         try {
-            // $superadmin_business->remaining_sms_balance =
-            // ($superadmin_business->remaining_sms_balance ?? $total_api_amount) - $amount;
-            // $superadmin_business->save();
-
             $business->remaining_sms_balance =
                 ($business->remaining_sms_balance ?? 0) + $amount;
             $business->save();
