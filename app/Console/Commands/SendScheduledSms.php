@@ -2,6 +2,8 @@
 
 namespace App\Console\Commands;
 
+use App\Business;
+use App\SmsLog;
 use App\SmsSchedule;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Http;
@@ -50,9 +52,23 @@ class SendScheduledSms extends Command
                     continue;
                 }
 
-                // $response = Http::post('http://139.99.39.237/api/smsapi', [
+                $sms_count = count($schedule->numbers);
+                $cost_per_sms = 0.3;
+                $estimated_cost = $sms_count * $cost_per_sms;
+
+                $current_business = Business::find($schedule->business_id);
+
+                if ($current_business->remaining_sms_balance < $estimated_cost) {
+                    $schedule->api_response = json_encode(['error_message' => 'Insufficient SMS balance.']);
+                    $schedule->processed_at = now();
+                    $schedule->save();
+                    continue;
+                }
+
+                $api_key = "TFHRkrCuNgL0JuqotRzy";
+
                 $response = Http::post('http://bulksmsbd.net/api/smsapi', [
-                    'api_key' => 'TFHRkrCuNgL0JuqotRzy',
+                    'api_key' => $api_key,
                     'type' => 'text',
                     'number' => $schedule->numbers,
                     'senderid' => $schedule->sender_id,
@@ -61,10 +77,47 @@ class SendScheduledSms extends Command
 
                 $api_res = $response->json();
 
-                $schedule->api_response = json_encode($api_res);
-                $schedule->processed_at = now();
-                $schedule->status = !empty($api_res['success_message']) ? 'sent' : 'failed';
-                $schedule->save();
+                if (empty($api_res['success_message'])) {
+                    SmsLog::create([
+                        'business_id' => $schedule->business_id,
+                        'created_by' => auth()->id(),
+                        'sender_id' => $schedule->sender_id,
+                        'recipient_number' => $schedule->numbers,
+                        'message' => $schedule->message,
+                        'status' => 'failed',
+                        'api_response' => $api_res,
+                        'cost' => $cost_per_sms,
+                        'sent_at' => now(),
+                    ]);
+                    $schedule->api_response = json_encode(['error_message' => 'SMS sending failed']);
+                    $schedule->processed_at = now();
+                    $schedule->save();
+                    continue;
+                }
+
+                preg_match('/(\d+)$/', $api_res['success_message'], $matches);
+                $sent_count = isset($matches[1]) ? (int) $matches[1] : 0;
+
+                $total_cost = $sent_count * $cost_per_sms;
+
+                Business::where('id', $schedule->business_id)
+                    ->decrement('remaining_sms_balance', $total_cost);
+
+                // Log each SMS sent
+                foreach ($schedule->numbers as $number) {
+                    SmsLog::create([
+                        'business_id' => $schedule->business_id,
+                        'created_by' => auth()->id(),
+                        'sender_id' => $schedule->sender_id,
+                        'recipient_number' => $number,
+                        'message' => $schedule->message,
+                        'status' => 'sent',
+                        'api_response' => $api_res,
+                        'cost' => $cost_per_sms,
+                        'sent_at' => now(),
+                    ]);
+                }
+
             } catch (\Exception $e) {
                 $schedule->status = 'failed';
                 $schedule->api_response = json_encode([
@@ -75,7 +128,6 @@ class SendScheduledSms extends Command
                 \Log::emergency('Scheduled SMS send failed: ' . $e->getMessage());
             }
         }
-
         return 0;
     }
 }

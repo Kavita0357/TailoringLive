@@ -338,7 +338,7 @@ class MessagingController extends Controller
 
         $current_business = Business::find($business_id);
 
-        if ($current_business->remaining_sms_balance < $cost_per_sms) {
+        if ($current_business->remaining_sms_balance < $estimated_cost) {
             return response()->json([
                 'success' => false,
                 'msg' => 'Insufficient SMS balance.',
