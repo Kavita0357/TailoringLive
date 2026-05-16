@@ -108,6 +108,7 @@ return [
     'manage_business_bulk_sms' => 'Manage all Businesses Bulk SMS System',
     'balance_history' => 'Balance History',
     'add_sms_balance' => 'Add SMS Balance',
+    'is_reversed' => 'Is Reversed?',
     'no_history_found' => 'No history found',
     'sms_provider' => 'SMS Provider',
     'remaining_transferable_balance' => 'Remaining Transferable Balance',

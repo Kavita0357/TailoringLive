@@ -15,6 +15,7 @@
                             <th>@lang('account.from')</th>
                             <th>@lang('account.to')</th>
                             <th>@lang('sale.amount')</th>
+                            <th>@lang('superadmin::lang.is_reversed')</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -24,11 +25,12 @@
                                 <td>TailorDesk SMS</td>
                                 <td>{{ trim(optional($record->transferredToUser)->surname . ' ' . optional($record->transferredToUser)->first_name . ' ' . optional($record->transferredToUser)->last_name) ?: '-' }}
                                 </td>
-                                <td>{{ $record->amount }}</td>
+                                <td class="{{ $record->is_reversed ? 'text-danger' : '' }}">{{ $record->amount }}</td>
+                                <td>{{ $record->is_reversed ? 'Yes' : 'No' }}</td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="4" class="text-center">@lang('superadmin::lang.no_history_found')</td>
+                                <td colspan="5" class="text-center">@lang('superadmin::lang.no_history_found')</td>
                             </tr>
                         @endforelse
                     </tbody>
