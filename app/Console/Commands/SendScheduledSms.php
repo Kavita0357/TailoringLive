@@ -33,11 +33,12 @@ class SendScheduledSms extends Command
     {
         ini_set('max_execution_time', 0);
         ini_set('memory_limit', '512M');
-
+        \Log::info('Starting scheduled SMS sending process.');
         $schedules = SmsSchedule::where('status', 'pending')
             ->where('send_at', '<=', now())
             ->get();
 
+        \Log::info('Found ' . $schedules->count() . ' scheduled SMS messages to process.');
         if ($schedules->isEmpty()) {
             return 0;
         }
@@ -52,7 +53,9 @@ class SendScheduledSms extends Command
                     continue;
                 }
 
-                $sms_count = count($schedule->numbers);
+                $numbers = array_filter(array_map('trim', explode(',', $schedule->numbers)));
+
+                $sms_count = count($numbers);
                 $cost_per_sms = 0.3;
                 $estimated_cost = $sms_count * $cost_per_sms;
 
@@ -80,7 +83,7 @@ class SendScheduledSms extends Command
                 if (empty($api_res['success_message'])) {
                     SmsLog::create([
                         'business_id' => $schedule->business_id,
-                        'created_by' => auth()->id(),
+                        'created_by' => $schedule->business_id,
                         'sender_id' => $schedule->sender_id,
                         'recipient_number' => $schedule->numbers,
                         'message' => $schedule->message,
@@ -104,10 +107,10 @@ class SendScheduledSms extends Command
                     ->decrement('remaining_sms_balance', $total_cost);
 
                 // Log each SMS sent
-                foreach ($schedule->numbers as $number) {
+                foreach ($numbers as $number) {
                     SmsLog::create([
                         'business_id' => $schedule->business_id,
-                        'created_by' => auth()->id(),
+                        'created_by' => $schedule->business_id,
                         'sender_id' => $schedule->sender_id,
                         'recipient_number' => $number,
                         'message' => $schedule->message,
@@ -117,6 +120,11 @@ class SendScheduledSms extends Command
                         'sent_at' => now(),
                     ]);
                 }
+
+                $schedule->status = 'sent';
+                $schedule->api_response = null;
+                $schedule->processed_at = now();
+                $schedule->save();
 
             } catch (\Exception $e) {
                 $schedule->status = 'failed';
