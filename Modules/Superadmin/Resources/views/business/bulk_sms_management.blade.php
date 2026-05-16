@@ -132,7 +132,7 @@
                 success: function (response) {
                     alert('SMS balance transferred successfully');
                     $('.modal').modal('hide');
-                    bulk_sms_management_table.ajax.reload();
+                    window.location.reload();
                 },
                 error: function (xhr) {
                     let errors = xhr.responseJSON.errors;

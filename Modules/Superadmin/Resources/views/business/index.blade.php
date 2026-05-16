@@ -9,66 +9,66 @@
             <small>@lang('superadmin::lang.manage_business')</small>
         </h1>
         <!-- <ol class="breadcrumb">
-            <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
-            <li class="active">Here</li>
-        </ol> -->
+                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
+                <li class="active">Here</li>
+            </ol> -->
     </section>
 
     <!-- Main content -->
     <section class="content">
         @component('components.filters', ['title' => __('report.filters')])
-            <div class="col-md-3">
-                <div class="form-group">
-                    {!! Form::label('package_id', __('superadmin::lang.packages') . ':') !!}
-                    {!! Form::select('package_id', $packages, null, [
-                        'class' => 'form-control select2',
-                        'style' => 'width:100%',
-                        'placeholder' => __('lang_v1.all'),
-                    ]) !!}
-                </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                {!! Form::label('package_id', __('superadmin::lang.packages') . ':') !!}
+                {!! Form::select('package_id', $packages, null, [
+        'class' => 'form-control select2',
+        'style' => 'width:100%',
+        'placeholder' => __('lang_v1.all'),
+    ]) !!}
             </div>
-            <div class="col-md-3">
-                <div class="form-group">
-                    {!! Form::label('subscription_status', __('superadmin::lang.subscription_status') . ':') !!}
-                    {!! Form::select('subscription_status', $subscription_statuses, null, [
-                        'class' => 'form-control select2',
-                        'style' => 'width:100%',
-                        'placeholder' => __('lang_v1.all'),
-                    ]) !!}
-                </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                {!! Form::label('subscription_status', __('superadmin::lang.subscription_status') . ':') !!}
+                {!! Form::select('subscription_status', $subscription_statuses, null, [
+        'class' => 'form-control select2',
+        'style' => 'width:100%',
+        'placeholder' => __('lang_v1.all'),
+    ]) !!}
             </div>
-            <div class="col-md-3">
-                <div class="form-group">
-                    {!! Form::label('is_active', __('sale.status') . ':') !!}
-                    {!! Form::select(
-                        'is_active',
-                        ['active' => __('business.is_active'), 'inactive' => __('lang_v1.inactive')],
-                        null,
-                        ['class' => 'form-control select2', 'style' => 'width:100%', 'placeholder' => __('lang_v1.all')],
-                    ) !!}
-                </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                {!! Form::label('is_active', __('sale.status') . ':') !!}
+                {!! Form::select(
+        'is_active',
+        ['active' => __('business.is_active'), 'inactive' => __('lang_v1.inactive')],
+        null,
+        ['class' => 'form-control select2', 'style' => 'width:100%', 'placeholder' => __('lang_v1.all')],
+    ) !!}
             </div>
-            <div class="col-md-3">
-                <div class="form-group">
-                    {!! Form::label('last_transaction_date', __('superadmin::lang.last_transaction_date') . ':') !!}
-                    {!! Form::select('last_transaction_date', $last_transaction_date, null, [
-                        'class' => 'form-control select2',
-                        'style' => 'width:100%',
-                        'placeholder' => __('messages.please_select'),
-                    ]) !!}
-                </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                {!! Form::label('last_transaction_date', __('superadmin::lang.last_transaction_date') . ':') !!}
+                {!! Form::select('last_transaction_date', $last_transaction_date, null, [
+        'class' => 'form-control select2',
+        'style' => 'width:100%',
+        'placeholder' => __('messages.please_select'),
+    ]) !!}
             </div>
+        </div>
 
-            <div class="col-md-3">
-                <div class="form-group">
-                    {!! Form::label('no_transaction_since', __('superadmin::lang.no_transaction_since') . ':') !!}
-                    {!! Form::select('no_transaction_since', $last_transaction_date, null, [
-                        'class' => 'form-control select2',
-                        'style' => 'width:100%',
-                        'placeholder' => __('messages.please_select'),
-                    ]) !!}
-                </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                {!! Form::label('no_transaction_since', __('superadmin::lang.no_transaction_since') . ':') !!}
+                {!! Form::select('no_transaction_since', $last_transaction_date, null, [
+        'class' => 'form-control select2',
+        'style' => 'width:100%',
+        'placeholder' => __('messages.please_select'),
+    ]) !!}
             </div>
+        </div>
         @endcomponent
         <div class="box box-solid">
             <div class="box-header">
@@ -115,13 +115,13 @@
 @section('javascript')
 
     <script type="text/javascript">
-        $(document).ready(function() {
+        $(document).ready(function () {
             superadmin_business_table = $('#superadmin_business_table').DataTable({
                 processing: true,
                 serverSide: true,
                 ajax: {
                     url: "{{ action([\Modules\Superadmin\Http\Controllers\BusinessController::class, 'index']) }}",
-                    data: function(d) {
+                    data: function (d) {
                         d.package_id = $('#package_id').val();
                         d.subscription_status = $('#subscription_status').val();
                         d.is_active = $('#is_active').val();
@@ -133,63 +133,63 @@
                     [0, 'desc']
                 ],
                 columns: [{
-                        data: 'created_at',
-                        name: 'business.created_at'
-                    },
-                    {
-                        data: 'name',
-                        name: 'business.name'
-                    },
-                    {
-                        data: 'owner_name',
-                        name: 'owner_name',
-                        searchable: false
-                    },
-                    {
-                        data: 'owner_email',
-                        name: 'u.email'
-                    },
-                    {
-                        data: 'contact_number',
-                        name: 'u.contact_number'
-                    },
-                    {
-                        data: 'business_contact_number',
-                        name: 'business_contact_number'
-                    },
-                    {
-                        data: 'address',
-                        name: 'address'
-                    },
-                    {
-                        data: 'is_active',
-                        name: 'is_active',
-                        searchable: false
-                    },
-                    {
-                        data: 'current_subscription',
-                        name: 'p.name'
-                    },
-                    {
-                        data: 'biz_creator',
-                        name: 'biz_creator',
-                        searchable: false
-                    },
-                    {
-                        data: 'action',
-                        name: 'action',
-                        orderable: false,
-                        searchable: false
-                    },
+                    data: 'created_at',
+                    name: 'business.created_at'
+                },
+                {
+                    data: 'name',
+                    name: 'business.name'
+                },
+                {
+                    data: 'owner_name',
+                    name: 'owner_name',
+                    searchable: false
+                },
+                {
+                    data: 'owner_email',
+                    name: 'u.email'
+                },
+                {
+                    data: 'contact_number',
+                    name: 'u.contact_number'
+                },
+                {
+                    data: 'business_contact_number',
+                    name: 'business_contact_number'
+                },
+                {
+                    data: 'address',
+                    name: 'address'
+                },
+                {
+                    data: 'is_active',
+                    name: 'is_active',
+                    searchable: false
+                },
+                {
+                    data: 'current_subscription',
+                    name: 'p.name'
+                },
+                {
+                    data: 'biz_creator',
+                    name: 'biz_creator',
+                    searchable: false
+                },
+                {
+                    data: 'action',
+                    name: 'action',
+                    orderable: false,
+                    searchable: false
+                },
                 ]
             });
 
             $('#package_id, #subscription_status, #is_active, #last_transaction_date, #no_transaction_since')
-                .change(function() {
+                .change(function () {
                     superadmin_business_table.ajax.reload();
                 });
         });
-        $(document).on('click', 'a.delete_business_confirmation', function(e) {
+        $(document).on('click', 'a.delete_business_confirmation', function (e) {
             e.preventDefault();
             swal({
                 title: LANG.sure,
@@ -203,7 +203,7 @@
                 }
             });
         });
-        $(document).on('submit', '#superadmin_transfer_sms_balance', function(e) {
+        $(document).on('submit', '#superadmin_transfer_sms_balance', function (e) {
             e.preventDefault();
 
             let form = $(this);
@@ -214,22 +214,22 @@
                 url: url,
                 type: "POST",
                 data: formData,
-                success: function(response) {
+                success: function (response) {
                     // success message
                     alert('SMS balance transferred successfully');
 
                     // close modal (if using bootstrap)
                     $('.modal').modal('hide');
 
-                    // optional: reload page or update UI
-                    // location.reload();
+                    // reload to refresh balances
+                    window.location.reload();
                 },
-                error: function(xhr) {
+                error: function (xhr) {
                     let errors = xhr.responseJSON.errors;
 
                     if (errors) {
                         let msg = '';
-                        $.each(errors, function(key, value) {
+                        $.each(errors, function (key, value) {
                             msg += value[0] + '\n';
                         });
                         alert(msg);

@@ -77,6 +77,7 @@ $(document).ready(function () {
                 if (result.success) {
                     toastr.success(result.message || 'Last transfer reversed successfully.');
                     button.closest('.modal').modal('hide');
+                    window.location.reload();
                 } else {
                     toastr.error(result.message || 'Failed to reverse transfer.');
                 }
