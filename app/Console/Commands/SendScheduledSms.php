@@ -6,6 +6,7 @@ use App\Business;
 use App\SmsLog;
 use App\SmsSchedule;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 
 class SendScheduledSms extends Command
@@ -31,11 +32,19 @@ class SendScheduledSms extends Command
      */
     public function handle()
     {
+        $lock = Cache::lock('pos_send_sms_lock', 300); // 5 min lock
+
+        if (!$lock->get()) {
+            $this->info('Already running...');
+            return 0;
+        }
+
         ini_set('max_execution_time', 0);
         ini_set('memory_limit', '512M');
         \Log::info('Starting scheduled SMS sending process.');
         $schedules = SmsSchedule::where('status', 'pending')
             ->where('send_at', '<=', now())
+            ->limit(100)
             ->get();
 
         \Log::info('Found ' . $schedules->count() . ' scheduled SMS messages to process.');

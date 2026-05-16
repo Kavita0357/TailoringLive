@@ -41,9 +41,9 @@ class Kernel extends ConsoleKernel
                 ->emailOutputTo($email);
         }
 
-        $schedule->command('pos:sendScheduledSms')
+        /* $schedule->command('pos:sendScheduledSms')
             ->everyMinute()
-            ->withoutOverlapping();
+            ->withoutOverlapping(); */
     }
 
     /**
