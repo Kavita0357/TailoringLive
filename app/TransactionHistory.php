@@ -16,6 +16,11 @@ class TransactionHistory extends Model
         'transferred_by',
         'transferred_to',
         'amount',
+        'is_reversed',
+    ];
+
+    protected $casts = [
+        'is_reversed' => 'boolean',
     ];
 
     public function transferredByUser()

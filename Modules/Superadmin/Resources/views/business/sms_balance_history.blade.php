@@ -37,6 +37,8 @@
         </div>
 
         <div class="modal-footer">
+            <button type="button" id="reverse_transfer" class="btn btn-danger" data-business-id="{{ $business->id }}"
+                data-url="{{ action([\Modules\Superadmin\Http\Controllers\BusinessController::class, 'reverseSMSBalanceTransfer']) }}">@lang('messages.reverse_transfer')</button>
             <button type="button" class="btn btn-default" data-dismiss="modal">@lang('messages.close')</button>
         </div>
     </div><!-- /.modal-content -->

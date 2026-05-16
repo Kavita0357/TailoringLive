@@ -49,6 +49,51 @@ $(document).ready(function () {
         });
     });
 
+    $(document).on('click', '#reverse_transfer', function (e) {
+        e.preventDefault();
+
+        var button = $(this);
+        var url = button.data('url');
+        var businessId = button.data('business-id');
+
+        if (!url || !businessId) {
+            toastr.error('Unable to reverse transfer: missing business information.');
+            return;
+        }
+
+        button.prop('disabled', true);
+
+        $.ajax({
+            method: 'POST',
+            url: url,
+            dataType: 'json',
+            data: {
+                business_id: businessId,
+            },
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+            },
+            success: function (result) {
+                if (result.success) {
+                    toastr.success(result.message || 'Last transfer reversed successfully.');
+                    button.closest('.modal').modal('hide');
+                } else {
+                    toastr.error(result.message || 'Failed to reverse transfer.');
+                }
+            },
+            error: function (xhr) {
+                var message = 'Failed to reverse transfer.';
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    message = xhr.responseJSON.message;
+                }
+                toastr.error(message);
+            },
+            complete: function () {
+                button.prop('disabled', false);
+            },
+        });
+    });
+
     $(document).on('submit', 'form#brand_add_form', function (e) {
         e.preventDefault();
         var form = $(this);

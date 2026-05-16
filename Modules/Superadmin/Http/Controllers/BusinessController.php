@@ -221,7 +221,10 @@ class BusinessController extends BaseController
     private function getSuperadminRemainingBalance($sms_balance)
     {
         $total_api_balance = isset($sms_balance['balance']) ? (float) $sms_balance['balance'] : 0;
-        $total_transferred_amount = TransactionHistory::sum('amount') ?? 0;
+        $total_transferred_amount = TransactionHistory::where(function ($query) {
+            $query->whereNull('is_reversed')
+                ->orWhere('is_reversed', false);
+        })->sum('amount') ?? 0;
 
         $remaining = $total_api_balance - $total_transferred_amount;
 
@@ -627,12 +630,79 @@ class BusinessController extends BaseController
         $owner_id = $business->owner_id;
 
         $history = TransactionHistory::with(['transferredByUser', 'transferredToUser'])
-            ->where('transferred_to', $id)
+            ->where('transferred_to', $owner_id)
             ->orderBy('created_at', 'desc')
             ->get();
 
         return view('superadmin::business.sms_balance_history')
             ->with(compact('business', 'history'));
+    }
+
+    public function reverseSMSBalanceTransfer(Request $request)
+    {
+        $request->validate([
+            'business_id' => 'required|exists:business,id',
+        ]);
+
+        DB::beginTransaction();
+
+        try {
+            $business = Business::findOrFail($request->business_id);
+            $owner_id = $business->owner_id;
+
+            $history = TransactionHistory::where('transferred_to', $owner_id)
+                ->where(function ($query) {
+                    $query->whereNull('is_reversed')
+                        ->orWhere('is_reversed', false);
+                })
+                ->orderBy('created_at', 'desc')
+                ->first();
+
+            if (!$history) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No transfer record found to reverse.',
+                ], 404);
+            }
+
+            if ($history->created_at->lt(\Carbon::now()->subMinutes(30))) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'The last transfer is older than 30 minutes and cannot be reversed.',
+                ], 422);
+            }
+
+            $amount = (float) $history->amount;
+            $remainingBalance = (float) ($business->remaining_sms_balance ?? 0);
+
+            if ($remainingBalance < $amount) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Insufficient remaining balance to reverse the last transfer.',
+                ], 422);
+            }
+
+            $business->remaining_sms_balance = $remainingBalance - $amount;
+            $business->save();
+
+            $history->is_reversed = true;
+            $history->save();
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Last transfer reversed successfully.',
+                'amount' => $amount,
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'success' => false,
+                'message' => __('messages.something_went_wrong'),
+            ], 500);
+        }
     }
 
     public function transferSMSBalance(Request $request)

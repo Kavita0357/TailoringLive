@@ -24,6 +24,7 @@ Route::middleware('web', 'auth', 'language', 'AdminSidebarMenu', 'superadmin')->
     Route::get('/business/{id}/view-sms-blalance', [Modules\Superadmin\Http\Controllers\BusinessController::class, 'viewSMSBalance']);
     Route::get('/business/{id}/sms-balance-history', [Modules\Superadmin\Http\Controllers\BusinessController::class, 'smsBalanceHistory']);
     Route::post('/business/transfer-sms-balance', [Modules\Superadmin\Http\Controllers\BusinessController::class, 'transferSMSBalance']);
+    Route::post('/business/reverse-sms-transfer', [Modules\Superadmin\Http\Controllers\BusinessController::class, 'reverseSMSBalanceTransfer']);
     Route::get('/bulk-sms-management', [Modules\Superadmin\Http\Controllers\BusinessController::class, 'bulkSMSManagement']);
 
     Route::resource('/packages', 'Modules\Superadmin\Http\Controllers\PackagesController');
