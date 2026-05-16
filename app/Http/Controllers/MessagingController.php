@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Contact;
 use App\SmsSchedule;
+use App\SmsLog;
 use App\Business;
 use App\Utils\ModuleUtil;
 use App\Utils\ContactUtil;
@@ -47,6 +48,10 @@ class MessagingController extends Controller
 
         $sms_balance = $sms_balance_data->json();
 
+        $current_business = Business::findOrFail($business_id);
+
+        $sms_balance['balance'] = $current_business->remaining_sms_balance ?? 0;
+
         // Subscription check (same as your pattern)
         if (!$this->moduleUtil->isSubscribed($business_id)) {
             return $this->moduleUtil->expiredResponse();
@@ -59,16 +64,42 @@ class MessagingController extends Controller
         $is_superadmin = auth()->user()->can('superadmin');
 
         if ($is_superadmin) {
-            $businesses = Business::where('id', '!=', $business_id)->pluck('name', 'id');
+            $businesses = Business::join('users', 'business.id', '=', 'users.business_id')
+                ->where('business.id', '!=', $business_id)
+                ->pluck('business.name', 'users.contact_number');
 
             return view('messaging.create')->with(compact('sms_balance', 'is_superadmin', 'businesses'));
         } else {
             $customers = Contact::customersForMessaging($business_id);
             $suppliers = Contact::customersForMessaging($business_id, 'supplier');
-            $current_business = Business::findOrFail($business_id);
-            $sms_balance['balance'] = $current_business->remaining_sms_balance ?? 0;
+
+
             return view('messaging.create')->with(compact('customers', 'suppliers', 'sms_balance', 'is_superadmin'));
         }
+    }
+
+    /**
+     * Show SMS Log Page
+     */
+    public function index()
+    {
+        $business_id = request()->session()->get('user.business_id');
+
+        // Subscription check
+        if (!$this->moduleUtil->isSubscribed($business_id)) {
+            return $this->moduleUtil->expiredResponse();
+        }
+
+        if (!auth()->user()->can('supplier.view') && !auth()->user()->can('supplier.view_own')) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $sms_logs = SmsLog::where('business_id', $business_id)
+            ->with('sender')
+            ->orderBy('created_at', 'desc')
+            ->paginate(25);
+
+        return view('messaging.index')->with(compact('sms_logs'));
     }
 
     /* public function sendSms(Request $request)
@@ -359,6 +390,17 @@ class MessagingController extends Controller
             $api_res = $response->json();
 
             if (empty($api_res['success_message'])) {
+                SmsLog::create([
+                    'business_id' => $business_id,
+                    'created_by' => auth()->id(),
+                    'sender_id' => $request->sender_id,
+                    'recipient_number' => $numbersString,
+                    'message' => $request->message,
+                    'status' => 'failed',
+                    'api_response' => $api_res,
+                    'cost' => $cost_per_sms,
+                    'sent_at' => now(),
+                ]);
                 return response()->json([
                     'success' => false,
                     'msg' => $api_res['error_message'] ?? 'SMS sending failed',
@@ -379,6 +421,21 @@ class MessagingController extends Controller
 
             Business::where('id', $business_id)
                 ->decrement('remaining_sms_balance', $total_cost);
+
+            // Log each SMS sent
+            foreach ($numbersArray as $number) {
+                SmsLog::create([
+                    'business_id' => $business_id,
+                    'created_by' => auth()->id(),
+                    'sender_id' => $request->sender_id,
+                    'recipient_number' => $number,
+                    'message' => $request->message,
+                    'status' => 'sent',
+                    'api_response' => $api_res,
+                    'cost' => $cost_per_sms,
+                    'sent_at' => now(),
+                ]);
+            }
 
             return response()->json([
                 'success' => true,

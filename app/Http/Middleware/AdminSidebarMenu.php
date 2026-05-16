@@ -590,6 +590,15 @@ class AdminSidebarMenu
                                 'active' => request()->segment(1) == 'notification-templates'
                             ]
                         )->order(80);
+
+                        $sub->url(
+                            action([\App\Http\Controllers\MessagingController::class, 'index']),
+                            'SMS Log',
+                            [
+                                'icon' => '',
+                                'active' => request()->segment(1) == 'messaging' && !request()->segment(2)
+                            ]
+                        )->order(85);
                     }
                 },
                 [

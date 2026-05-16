@@ -148,10 +148,8 @@ class BusinessController extends BaseController
                                         class="btn btn-danger btn-xs delete_business_confirmation">' . __('messages.delete') . '</a>';
                         }
 
-                        if (request()->session()->get('user.business_id') != $row->id) {
-                            $html .= ' <button type="button" data-href="' . action([\Modules\Superadmin\Http\Controllers\BusinessController::class, 'viewSMSBalance'], [$row->id]) . '" data-container=".view_modal"
-                                        class="btn btn-warning btn-xs btn-modal transfer_sms_blalance">' . __('messages.transfer_sms_blalance') . '</button>';
-                        }
+                        /*  $html .= ' <button type="button" data-href="' . action([\Modules\Superadmin\Http\Controllers\BusinessController::class, 'viewSMSBalance'], [$row->id]) . '" data-container=".view_modal"
+                                     class="btn btn-warning btn-xs btn-modal transfer_sms_blalance">' . __('messages.transfer_sms_blalance') . '</button>'; */
                     }
 
                     return $html;
@@ -629,8 +627,7 @@ class BusinessController extends BaseController
         $owner_id = $business->owner_id;
 
         $history = TransactionHistory::with(['transferredByUser', 'transferredToUser'])
-            ->where('transferred_to', $owner_id)
-            ->orWhere('transferred_by', $owner_id)
+            ->where('transferred_to', $id)
             ->orderBy('created_at', 'desc')
             ->get();
 

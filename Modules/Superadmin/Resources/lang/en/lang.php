@@ -72,7 +72,7 @@ return [
     'paid_via' => 'Paid Via',
     'payment_transaction_id' => 'Transaction Id',
     'total_api_balance' => 'Total API Balance',
-    'superadmin_remaining_balance' => 'Superadmin Remaining Balance',
+    'superadmin_remaining_balance' => 'Remaining Balance',
     'transfer_balance_amount' => 'Transfer Balance Amount',
     'view_subscription' => 'View Subscription',
     'action' => 'Action',

@@ -3,33 +3,33 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
-use App\User;
 
-class SmsSchedule extends Model
+class SmsLog extends Model
 {
-    protected $table = 'sms_schedules';
-
     protected $fillable = [
         'business_id',
         'created_by',
         'sender_id',
-        'recipients',
-        'numbers',
+        'recipient_number',
         'message',
-        'schedule_type',
-        'send_at',
         'status',
         'api_response',
-        'processed_at',
+        'cost',
+        'sent_at',
     ];
 
     protected $casts = [
-        'recipients' => 'array',
-        'send_at' => 'datetime',
-        'processed_at' => 'datetime',
+        'api_response' => 'array',
+        'sent_at' => 'datetime',
+        'cost' => 'decimal:2',
     ];
 
-    public function createdBy()
+    public function business()
+    {
+        return $this->belongsTo(Business::class);
+    }
+
+    public function sender()
     {
         return $this->belongsTo(User::class, 'created_by');
     }
