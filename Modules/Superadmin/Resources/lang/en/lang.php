@@ -219,6 +219,7 @@ return [
     'expiring_in_7_days' => 'Expiring in 7 days',
     'expiring_in_one_month' => 'Expiring in one month',
     'business_contact_number' => 'Business contact numbers',
+    'available_balance' => 'Available Balance',
     'owner_number' => 'Owner number',
     'yesterday' => 'Yesterday',
     'last_month' => 'Last Month',

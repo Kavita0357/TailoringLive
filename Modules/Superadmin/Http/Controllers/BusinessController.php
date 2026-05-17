@@ -65,6 +65,7 @@ class BusinessController extends BaseController
                 ->select(
                     'business.id',
                     'business.name',
+                    'business.remaining_sms_balance',
                     'business.owner_id',
                     DB::raw("CONCAT(COALESCE(u.surname, ''), ' ', COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as owner_name"),
                     'u.email as owner_email',
@@ -120,8 +121,9 @@ class BusinessController extends BaseController
 
             return Datatables::of($query)
                 ->addColumn('address', '{{$city}}, {{$state}}, {{$country}} {{$landmark}}, {{$zip_code}}')
-                ->addColumn('business_contact_number', '{{$mobile}} @if(!empty($alternate_number)), {{$alternate_number}}@endif')
+                ->addColumn('business_contact_number', '{{ !empty($mobile) ? $mobile : "-" }} @if(!empty($alternate_number)), {{$alternate_number}}@endif')    
                 ->editColumn('is_active', '@if($is_active == 1) <span class="label bg-green">@lang("business.is_active")</span> @else <span class="label bg-gray">@lang("lang_v1.inactive")</span> @endif')
+                ->editColumn('remaining_sms_balance', '{{ $remaining_sms_balance ?? 0 }}')
                 ->addColumn('action', function ($row) {
                     if (!empty(request()->get('bulk_sms_page'))) {
                         $html = ' <button type="button" class="btn btn-info btn-xs btn-modal" data-href="' . action([\Modules\Superadmin\Http\Controllers\BusinessController::class, 'smsBalanceHistory'], [$row->id]) . '" data-container=".view_modal">' . __('superadmin::lang.balance_history') . '</button>';

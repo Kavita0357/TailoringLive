@@ -12,13 +12,15 @@ return new class extends Migration {
      */
     public function up()
     {
-        Schema::create('transfer_sms_balance_history', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedBigInteger('transferred_by'); // User ID who transferred
-            $table->unsignedBigInteger('transferred_to'); // User ID who received
-            $table->decimal('amount', 15, 2); // Amount transferred
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('transfer_sms_balance_history')) {
+            Schema::create('transfer_sms_balance_history', function (Blueprint $table) {
+                $table->id();
+                $table->unsignedBigInteger('transferred_by'); // User ID who transferred
+                $table->unsignedBigInteger('transferred_to'); // User ID who received
+                $table->decimal('amount', 15, 2); // Amount transferred
+                $table->timestamps();
+            });
+        }
     }
 
     /**

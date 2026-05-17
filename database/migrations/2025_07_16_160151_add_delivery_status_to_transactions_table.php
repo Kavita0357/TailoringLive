@@ -13,9 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('transactions', function (Blueprint $table) {
-            $table->string('delivery_status')->nullable()->after('status');
-        });
+        if (!Schema::hasColumn('transactions', 'delivery_status')) {
+            Schema::table('transactions', function (Blueprint $table) {
+                $table->string('delivery_status')->nullable()->after('status');
+            });
+        }
     }
 
     /**
@@ -25,8 +27,10 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('transactions', function (Blueprint $table) {
-            $table->dropColumn('delivery_status');
-        });
+        if (Schema::hasColumn('transactions', 'delivery_status')) {
+            Schema::table('transactions', function (Blueprint $table) {
+                $table->dropColumn('delivery_status');
+            });
+        }
     }
 };
