@@ -153,9 +153,6 @@
                     {
                         data: 'remaining_sms_balance',
                         name: 'business.remaining_sms_balance',
-                        render: function(data, type, row) {
-                            return (data === null || data === '') ? 0 : data;
-                        }
                     },
                     {
                         data: 'contact_number',
