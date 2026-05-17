@@ -72,7 +72,8 @@
                                 <th>@lang('superadmin::lang.registered_on')</th>
                                 <th>@lang('superadmin::lang.business_name')</th>
                                 <th>@lang('business.owner')</th>
-                                <th>@lang('business.email')</th>
+                                <!-- <th>@lang('business.email')</th> -->
+                                <th>@lang('superadmin::lang.available_balance')</th>
                                 <!-- <th>@lang('superadmin::lang.owner_number')</th> -->
                                 <th>@lang('superadmin::lang.business_contact_number')</th>
                                 <!-- <th>@lang('business.address')</th> -->
@@ -106,7 +107,8 @@
                     { data: 'created_at', name: 'business.created_at' },
                     { data: 'name', name: 'business.name' },
                     { data: 'owner_name', name: 'owner_name', searchable: false },
-                    { data: 'owner_email', name: 'u.email' },
+                    //{ data: 'owner_email', name: 'u.email' },
+                    { data: 'remaining_sms_balance', name: 'business.remaining_sms_balance' },
                     // { data: 'contact_number', name: 'u.contact_number' },
                     { data: 'business_contact_number', name: 'business_contact_number' },
                     // { data: 'address', name: 'address' },
