@@ -91,7 +91,8 @@
                                     </th>
                                     <th>@lang('superadmin::lang.business_name')</th>
                                     <th>@lang('business.owner')</th>
-                                    <th>@lang('business.email')</th>
+                                    <!-- <th>@lang('business.email')</th> -->
+                                    <th>@lang('superadmin::lang.available_balance')</th>
                                     <th>@lang('superadmin::lang.owner_number')</th>
                                     <th>@lang('superadmin::lang.business_contact_number')</th>
                                     <th>@lang('business.address')</th>
@@ -133,54 +134,61 @@
                     [0, 'desc']
                 ],
                 columns: [{
-                    data: 'created_at',
-                    name: 'business.created_at'
-                },
-                {
-                    data: 'name',
-                    name: 'business.name'
-                },
-                {
-                    data: 'owner_name',
-                    name: 'owner_name',
-                    searchable: false
-                },
-                {
-                    data: 'owner_email',
-                    name: 'u.email'
-                },
-                {
-                    data: 'contact_number',
-                    name: 'u.contact_number'
-                },
-                {
-                    data: 'business_contact_number',
-                    name: 'business_contact_number'
-                },
-                {
-                    data: 'address',
-                    name: 'address'
-                },
-                {
-                    data: 'is_active',
-                    name: 'is_active',
-                    searchable: false
-                },
-                {
-                    data: 'current_subscription',
-                    name: 'p.name'
-                },
-                {
-                    data: 'biz_creator',
-                    name: 'biz_creator',
-                    searchable: false
-                },
-                {
-                    data: 'action',
-                    name: 'action',
-                    orderable: false,
-                    searchable: false
-                },
+                        data: 'created_at',
+                        name: 'business.created_at'
+                    },
+                    {
+                        data: 'name',
+                        name: 'business.name'
+                    },
+                    {
+                        data: 'owner_name',
+                        name: 'owner_name',
+                        searchable: false
+                    },
+                    // {
+                    //     data: 'owner_email',
+                    //     name: 'u.email'
+                    // },
+                    {
+                        data: 'remaining_sms_balance',
+                        name: 'business.remaining_sms_balance',
+                        render: function(data, type, row) {
+                            return (data === null || data === '') ? 0 : data;
+                        }
+                    },
+                    {
+                        data: 'contact_number',
+                        name: 'u.contact_number'
+                    },
+                    {
+                        data: 'business_contact_number',
+                        name: 'business_contact_number'
+                    },
+                    {
+                        data: 'address',
+                        name: 'address'
+                    },
+                    {
+                        data: 'is_active',
+                        name: 'is_active',
+                        searchable: false
+                    },
+                    {
+                        data: 'current_subscription',
+                        name: 'p.name'
+                    },
+                    {
+                        data: 'biz_creator',
+                        name: 'biz_creator',
+                        searchable: false
+                    },
+                    {
+                        data: 'action',
+                        name: 'action',
+                        orderable: false,
+                        searchable: false
+                    },
                 ]
             });
 
