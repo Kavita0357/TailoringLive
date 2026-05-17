@@ -34,10 +34,10 @@ class SendScheduledSms extends Command
     {
         $lock = Cache::lock('pos_send_sms_lock', 300); // 5 min lock
 
-        if (!$lock->get()) {
+        /* if (!$lock->get()) {
             $this->info('Already running...');
             return 0;
-        }
+        } */
 
         ini_set('max_execution_time', 0);
         ini_set('memory_limit', '512M');
