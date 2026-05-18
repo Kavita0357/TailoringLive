@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Business;
 use App\SmsLog;
+use App\BulkSmsLog;
 use App\SmsSchedule;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Cache;
@@ -42,7 +43,7 @@ class SendScheduledSms extends Command
         ini_set('max_execution_time', 0);
         ini_set('memory_limit', '512M');
         \Log::info('Starting scheduled SMS sending process.');
-        $schedules = SmsSchedule::where('status', 'pending')
+        $schedules = SmsSchedule::where('status', 'Scheduled')
             ->where('send_at', '<=', now())
             ->limit(100)
             ->get();
@@ -55,7 +56,7 @@ class SendScheduledSms extends Command
         foreach ($schedules as $schedule) {
             try {
                 if (empty($schedule->numbers)) {
-                    $schedule->status = 'failed';
+                    $schedule->status = 'Failed';
                     $schedule->api_response = json_encode(['error_message' => 'No recipient numbers available']);
                     $schedule->processed_at = now();
                     $schedule->save();
@@ -90,17 +91,36 @@ class SendScheduledSms extends Command
                 $api_res = $response->json();
 
                 if (empty($api_res['success_message'])) {
-                    SmsLog::create([
+                    $smsLog = SmsLog::create([
                         'business_id' => $schedule->business_id,
                         'created_by' => $schedule->business_id,
                         'sender_id' => $schedule->sender_id,
                         'recipient_number' => $schedule->numbers,
                         'message' => $schedule->message,
+                        'sms_type' => $sms_count === 1 ? 'Single' : 'Group',
                         'status' => 'failed',
                         'api_response' => $api_res,
                         'cost' => $cost_per_sms,
                         'sent_at' => now(),
                     ]);
+
+                    if ($sms_count > 1) {
+                        foreach ($numbers as $number) {
+                            BulkSmsLog::create([
+                                'sms_log_id' => $smsLog->id,
+                                'business_id' => $schedule->business_id,
+                                'created_by' => $schedule->business_id,
+                                'sender_id' => $schedule->sender_id,
+                                'recipient_number' => $number,
+                                'message' => $schedule->message,
+                                'status' => 'failed',
+                                'api_response' => $api_res,
+                                'cost' => $cost_per_sms,
+                                'sent_at' => now(),
+                            ]);
+                        }
+                    }
+
                     $schedule->api_response = json_encode(['error_message' => 'SMS sending failed']);
                     $schedule->processed_at = now();
                     $schedule->save();
@@ -115,28 +135,58 @@ class SendScheduledSms extends Command
                 Business::where('id', $schedule->business_id)
                     ->decrement('remaining_sms_balance', $total_cost);
 
-                // Log each SMS sent
-                foreach ($numbers as $number) {
+                // For group sends create a summary and per-recipient bulk logs
+                if ($sms_count > 1) {
+                    $smsLog = SmsLog::create([
+                        'business_id' => $schedule->business_id,
+                        'created_by' => $schedule->business_id,
+                        'sender_id' => $schedule->sender_id,
+                        'recipient_number' => $schedule->numbers,
+                        'message' => $schedule->message,
+                        'sms_type' => 'Group',
+                        'status' => 'Sent',
+                        'api_response' => $api_res,
+                        'cost' => $cost_per_sms * $sms_count,
+                        'sent_at' => now(),
+                    ]);
+
+                    foreach ($numbers as $number) {
+                        BulkSmsLog::create([
+                            'sms_log_id' => $smsLog->id,
+                            'business_id' => $schedule->business_id,
+                            'created_by' => $schedule->business_id,
+                            'sender_id' => $schedule->sender_id,
+                            'recipient_number' => $number,
+                            'message' => $schedule->message,
+                            'status' => 'Sent',
+                            'api_response' => $api_res,
+                            'cost' => $cost_per_sms,
+                            'sent_at' => now(),
+                        ]);
+                    }
+                } else {
+                    // single recipient
                     SmsLog::create([
                         'business_id' => $schedule->business_id,
                         'created_by' => $schedule->business_id,
                         'sender_id' => $schedule->sender_id,
-                        'recipient_number' => $number,
+                        'recipient_number' => $numbers[0] ?? $schedule->numbers,
                         'message' => $schedule->message,
-                        'status' => 'sent',
+                        'sms_type' => 'Single',
+                        'status' => 'Sent',
                         'api_response' => $api_res,
                         'cost' => $cost_per_sms,
                         'sent_at' => now(),
                     ]);
                 }
 
-                $schedule->status = 'sent';
+                $schedule->status = 'Sent';
                 $schedule->api_response = null;
                 $schedule->processed_at = now();
                 $schedule->save();
 
             } catch (\Exception $e) {
-                $schedule->status = 'failed';
+                $schedule->status = 'Failed';
                 $schedule->api_response = json_encode([
                     'error_message' => $e->getMessage(),
                 ]);

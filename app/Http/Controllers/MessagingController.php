@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Contact;
 use App\SmsSchedule;
 use App\SmsLog;
+use App\BulkSmsLog;
 use App\Business;
 use App\Utils\ModuleUtil;
 use App\Utils\ContactUtil;
@@ -367,8 +368,21 @@ class MessagingController extends Controller
                 'message' => $request->message,
                 'schedule_type' => 'later',
                 'send_at' => $sendAt,
-                'status' => 'pending',
+                'status' => 'Scheduled',
                 'cost' => $estimated_cost
+            ]);
+
+            SmsLog::create([
+                'business_id' => $business_id,
+                'created_by' => auth()->id(),
+                'sender_id' => $request->sender_id,
+                'recipient_number' => $numbersString,
+                'message' => $request->message,
+                'sms_type' => count($numbersArray) === 1 ? 'Single' : 'Group',
+                'status' => 'Scheduled',
+                'api_response' => null,
+                'cost' => $cost_per_sms,
+                'sent_at' => now(),
             ]);
 
             return response()->json([
@@ -390,17 +404,38 @@ class MessagingController extends Controller
             $api_res = $response->json();
 
             if (empty($api_res['success_message'])) {
-                SmsLog::create([
+                // Create summary log
+                $smsLog = SmsLog::create([
                     'business_id' => $business_id,
                     'created_by' => auth()->id(),
                     'sender_id' => $request->sender_id,
                     'recipient_number' => $numbersString,
                     'message' => $request->message,
-                    'status' => 'failed',
+                    'sms_type' => count($numbersArray) === 1 ? 'Single' : 'Group',
+                    'status' => 'Failed',
                     'api_response' => $api_res,
                     'cost' => $cost_per_sms,
                     'sent_at' => now(),
                 ]);
+
+                // For group sends, store per-recipient details in bulk_sms_logs
+                if ($sms_count > 1) {
+                    foreach ($numbersArray as $number) {
+                        BulkSmsLog::create([
+                            'sms_log_id' => $smsLog->id,
+                            'business_id' => $business_id,
+                            'created_by' => auth()->id(),
+                            'sender_id' => $request->sender_id,
+                            'recipient_number' => $number,
+                            'message' => $request->message,
+                            'status' => 'failed',
+                            'api_response' => $api_res,
+                            'cost' => $cost_per_sms,
+                            'sent_at' => now(),
+                        ]);
+                    }
+                }
+
                 return response()->json([
                     'success' => false,
                     'msg' => $api_res['error_message'] ?? 'SMS sending failed',
@@ -422,15 +457,45 @@ class MessagingController extends Controller
             Business::where('id', $business_id)
                 ->decrement('remaining_sms_balance', $total_cost);
 
-            // Log each SMS sent
-            foreach ($numbersArray as $number) {
+            // Create summary log and per-recipient bulk logs for group sends
+            if ($sms_count > 1) {
+                $smsLog = SmsLog::create([
+                    'business_id' => $business_id,
+                    'created_by' => auth()->id(),
+                    'sender_id' => $request->sender_id,
+                    'recipient_number' => $numbersString,
+                    'sms_type' => 'Group',
+                    'message' => $request->message,
+                    'status' => 'Sent',
+                    'api_response' => $api_res,
+                    'cost' => $estimated_cost,
+                    'sent_at' => now(),
+                ]);
+
+                foreach ($numbersArray as $number) {
+                    BulkSmsLog::create([
+                        'sms_log_id' => $smsLog->id,
+                        'business_id' => $business_id,
+                        'created_by' => auth()->id(),
+                        'sender_id' => $request->sender_id,
+                        'recipient_number' => $number,
+                        'message' => $request->message,
+                        'status' => 'Sent',
+                        'api_response' => $api_res,
+                        'cost' => $cost_per_sms,
+                        'sent_at' => now(),
+                    ]);
+                }
+            } else {
+                // Single recipient: single SmsLog entry
                 SmsLog::create([
                     'business_id' => $business_id,
                     'created_by' => auth()->id(),
                     'sender_id' => $request->sender_id,
-                    'recipient_number' => $number,
+                    'recipient_number' => $numbersString,
+                    'sms_type' => 'Single',
                     'message' => $request->message,
-                    'status' => 'sent',
+                    'status' => 'Sent',
                     'api_response' => $api_res,
                     'cost' => $cost_per_sms,
                     'sent_at' => now(),

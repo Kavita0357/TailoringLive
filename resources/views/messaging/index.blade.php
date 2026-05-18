@@ -42,7 +42,7 @@
                                     </td>
                                     <td>
                                         <span
-                                            class="label label-{{ $log->status == 'sent' ? 'success' : ($log->status == 'pending' ? 'warning' : 'default') }}">
+                                            class="label label-{{ $log->status == 'Sent' ? 'success' : (($log->status == 'Pending' || $log->status == 'Scheduled') ? 'warning' : 'default') }}">
                                             {{ ucfirst($log->status) }}
                                         </span>
                                     </td>
@@ -56,10 +56,10 @@
                                     </td>
                                     <!-- <td>{{ $log->sender ? $log->sender->name : 'N/A' }}</td> -->
                                     <!-- <td>
-                                                <button type="button" class="btn btn-xs btn-info" onclick="showDetails({{ $log->id }})">
-                                                    <i class="fa fa-eye"></i> @lang('messages.view')
-                                                </button>
-                                            </td> -->
+                                                                                <button type="button" class="btn btn-xs btn-info" onclick="showDetails({{ $log->id }})">
+                                                                                    <i class="fa fa-eye"></i> @lang('messages.view')
+                                                                                </button>
+                                                                            </td> -->
                                 </tr>
                             @endforeach
                         </tbody>
