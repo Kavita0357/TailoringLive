@@ -66,7 +66,7 @@
         <span class="input-group-addon">
             <i class="fa fa-phone"></i>
         </span>
-        {!! Form::text('mobile', null, ['class' => 'form-control','placeholder' => __('lang_v1.business_telephone')]); !!}
+        {!! Form::text('mobile', null, ['class' => 'form-control','placeholder' => __('lang_v1.business_telephone'),'required']); !!}
     </div>
     </div>
 </div>

@@ -210,18 +210,11 @@
                     },
 
                     error: function (xhr) {
-
                         if (xhr.status === 422) {
-                            let errors = xhr.responseJSON.errors;
-                            let msg = '';
-
-                            $.each(errors, function (key, value) {
-                                msg += value[0] + "\n";
-                            });
-
-                            alert(msg);
+                            let error = xhr.responseJSON;
+                            toastr.error(error?.msg);
                         } else {
-                            alert('Server error ❌');
+                            toastr.error('Server error ❌');
                         }
                     },
 
