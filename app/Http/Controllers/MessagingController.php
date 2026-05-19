@@ -12,7 +12,6 @@ use App\Utils\ContactUtil;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class MessagingController extends Controller
 {
@@ -101,6 +100,31 @@ class MessagingController extends Controller
             ->paginate(25);
 
         return view('messaging.index')->with(compact('sms_logs'));
+    }
+
+    /**
+     * Display bulk SMS log details in the popup.
+     */
+    public function show($id)
+    {
+        $business_id = request()->session()->get('user.business_id');
+
+        // Subscription check
+        if (!$this->moduleUtil->isSubscribed($business_id)) {
+            return $this->moduleUtil->expiredResponse();
+        }
+
+        if (!auth()->user()->can('supplier.view') && !auth()->user()->can('supplier.view_own')) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $sms_log = SmsLog::where('business_id', $business_id)
+            ->with('bulkSmsLogs')
+            ->findOrFail($id);
+
+        $html = view('messaging.partials.bulk_sms_details', compact('sms_log'))->render();
+
+        return response()->json(['success' => true, 'html' => $html]);
     }
 
     /* public function sendSms(Request $request)

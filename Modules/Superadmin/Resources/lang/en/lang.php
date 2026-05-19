@@ -274,5 +274,5 @@ return [
     'invalid_coupon' => 'Invalid Coupon',
     'coupon_not_matched_with_package' => 'Code not applicable in this plan',
     'coupon_not_matched_with_business' => 'Code not applicable in this business',
-
+    'view_Details' => 'View Details',
 ];
