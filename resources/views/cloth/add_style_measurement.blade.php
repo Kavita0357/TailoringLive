@@ -5,7 +5,6 @@
 
     .input-col {
         padding: 20px;
-        margin: 10px 0;
     }
 
     .tw-bg-gray-200 {
@@ -32,7 +31,12 @@
     }
 
     .measurement-card {
+        display: inline-block;
         width: 100%;
+        margin-bottom: 15px;
+        break-inside: avoid;
+        -webkit-column-break-inside: avoid;
+        page-break-inside: avoid;
     }
 
     .customer-measuremnt-content {
@@ -50,10 +54,22 @@
         min-width: 0;
     }
 
+    /* Masonry-like layout using CSS columns for measurements */
     .measurement-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 15px;
+        column-count: 3;
+        column-gap: 15px;
+    }
+
+    @media (max-width: 992px) {
+        .measurement-grid {
+            column-count: 2;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .measurement-grid {
+            column-count: 1;
+        }
     }
 
     .style-section {
