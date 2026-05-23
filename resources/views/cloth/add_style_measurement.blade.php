@@ -373,6 +373,11 @@
 
                                                 <span class="toggle-icon">▲</span>
 
+                                                <input type="hidden" name="styles[{{ $index }}][id]"
+                                                    value="{{ $s->id }}">
+                                                <input type="hidden" name="styles[{{ $index }}][name]"
+                                                    value="{{ $s->style_name }}">
+
                                             </div>
 
                                             <div class="style-card-body">
@@ -389,11 +394,15 @@
                                                                     <div class="design-top">
 
                                                                         <input type="checkbox" class="row-select"
-                                                                            @if ($view_only) disabled @endif
+                                                                            id="styles[{{ $index }}][designs][{{ $sub_index }}][value]"
                                                                             name="styles[{{ $index }}][designs][{{ $sub_index }}][id]"
-                                                                            value="{{ $sub->id }}">
+                                                                            value="{{ $sub->id }}"
+                                                                            @if ($view_only) disabled @endif
+                                                                            @if (isset($cloth_customization['styles'][$index]['designs'][$sub_index]['id']) &&
+                                                                                    $cloth_customization['styles'][$index]['designs'][$sub_index]['id'] == $sub->id) checked @endif>
 
-                                                                        <label>
+                                                                        <label
+                                                                            for="styles[{{ $index }}][designs][{{ $sub_index }}][value]">
                                                                             {{ $sub->design_name }}
                                                                         </label>
 
@@ -403,6 +412,7 @@
                                                                         type="text"
                                                                         @if ($view_only) readonly @endif
                                                                         name="styles[{{ $index }}][designs][{{ $sub_index }}][design_value]"
+                                                                        id="styles[{{ $index }}][designs][{{ $sub_index }}][design_value]"
                                                                         value="{{ $cloth_customization['styles'][$index]['designs'][$sub_index]['design_value'] ?? '' }}">
 
                                                                 </div>
@@ -433,24 +443,13 @@
                                 <div class="style-col">
                                     @foreach ($cloth->styles->filter(fn($s) => $s->designs->isEmpty()) as $index => $s)
                                         <div class="style-no-design-item">
-
-                                            <input type="checkbox" class="row-select"
-                                                @if ($view_only) disabled @endif
+                                            <input type="checkbox" class="row-select" {{-- @if ($view_only) disabled @endif --}} disabled
                                                 name="styles[{{ $index }}][id]" value="{{ $s->id }}"
                                                 @if (isset($cloth_customization['styles'][$index]['id']) && $cloth_customization['styles'][$index]['id'] == $s->id) checked @endif>
-
                                             <span class="style-no-design-name">
                                                 {{ $s->style_name }}
                                             </span>
-
                                         </div>
-                                        {{-- <div class="style-card tw-rounded-md">
-                                            <div class="tw-bg-primary-400 style-card-title">
-                                                <p class="tw-text-white tw-text-base tw-font-bold">
-                                                    {{ $s->style_name }}
-                                                </p>
-                                            </div>
-                                        </div> --}}
                                     @endforeach
                                 </div>
                             @endif
