@@ -636,8 +636,13 @@ class BusinessController extends BaseController
             ->orderBy('created_at', 'desc')
             ->get();
 
+        $disable_reverse = false;
+        if ($history->isEmpty() || optional($history->first())->is_reversed) {
+            $disable_reverse = true;
+        }
+
         return view('superadmin::business.sms_balance_history')
-            ->with(compact('business', 'history'));
+            ->with(compact('business', 'history', 'disable_reverse'));
     }
 
     public function reverseSMSBalanceTransfer(Request $request)
@@ -653,10 +658,6 @@ class BusinessController extends BaseController
             $owner_id = $business->owner_id;
 
             $history = TransactionHistory::where('transferred_to', $owner_id)
-                ->where(function ($query) {
-                    $query->whereNull('is_reversed')
-                        ->orWhere('is_reversed', false);
-                })
                 ->orderBy('created_at', 'desc')
                 ->first();
 
@@ -665,6 +666,13 @@ class BusinessController extends BaseController
                     'success' => false,
                     'message' => 'No transfer record found to reverse.',
                 ], 404);
+            }
+
+            if ($history->is_reversed) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'The most recent transfer has already been reversed.',
+                ], 422);
             }
 
             if ($history->created_at->lt(\Carbon::now()->subMinutes(30))) {
