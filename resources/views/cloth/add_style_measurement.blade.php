@@ -363,7 +363,8 @@
                             @if ($cloth->styles->filter(fn($s) => $s->designs->isNotEmpty())->count())
                                 <div class="style-col">
                                     @foreach ($cloth->styles->filter(fn($s) => $s->designs->isNotEmpty()) as $index => $s)
-                                        <div class="style-card tw-rounded-md">
+                                        <div
+                                            class="style-card tw-rounded-md @if (!$loop->first) collapsed @endif">
 
                                             <div class="tw-bg-primary-400 style-card-title style-toggle">
 
