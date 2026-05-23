@@ -193,8 +193,8 @@ class StyleController extends Controller
         $request->validate([
             'style_name' => 'required|string|max:255',
             'serial_no' => 'nullable',
-            'designs.*.name' => 'required|string|max:255',
-            'designs.*.serial_no' => 'required',
+            'designs.*.name' => 'nullable|string|max:255',
+            'designs.*.serial_no' => 'nullable',
             'designs.*.image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ]);
 
@@ -205,16 +205,27 @@ class StyleController extends Controller
             'serial_no' => $request->serial_no,
         ]);
 
-        $style->cloths()->sync($request->input('cloths'));
+        $style->cloths()->sync($request->input('cloths', []));
 
-        if ($request->has('designs')) {
+        if ($request->has('designs') && !empty($request->designs)) {
+
             $submittedIds = [];
 
             foreach ($request->designs as $designData) {
+
+                if (
+                    empty($designData['name']) &&
+                    empty($designData['serial_no']) &&
+                    empty($designData['image'])
+                ) {
+                    continue;
+                }
+
                 $design = Design::findOrNew($designData['id'] ?? null);
+
                 $design->style_id = $style->id;
-                $design->design_name = $designData['name'];
-                $design->serial_no = $designData['serial_no'];
+                $design->design_name = $designData['name'] ?? null;
+                $design->serial_no = $designData['serial_no'] ?? null;
 
                 if (isset($designData['image'])) {
                     $designImage = $designData['image'];
@@ -223,13 +234,15 @@ class StyleController extends Controller
                 }
 
                 $design->save();
-                if ($design->id) {
-                    $submittedIds[] = $design->id;
-                }
+
+                $submittedIds[] = $design->id;
             }
 
-            // Delete designs that are not in submitted IDs
             $style->designs()->whereNotIn('id', $submittedIds)->delete();
+
+        } else {
+
+            $style->designs()->delete();
         }
         return response()->json([
             'success' => true,
