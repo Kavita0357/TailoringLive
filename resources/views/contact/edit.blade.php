@@ -122,6 +122,8 @@
                             {!! Form::text('mobile', $contact->mobile, [
                                 'class' => 'form-control',
                                 'required',
+                                'maxlength' => 11,
+                                'pattern' => '[0-9]{11}',
                                 'placeholder' => __('contact.mobile'),
                             ]) !!}
                         </div>

@@ -112,7 +112,7 @@
                             <span class="input-group-addon">
                                 <i class="fa fa-mobile"></i>
                             </span>
-                            {!! Form::text('mobile', null, ['class' => 'form-control', 'required', 'placeholder' => __('contact.mobile')]) !!}
+                            {!! Form::text('mobile', null, ['class' => 'form-control', 'required', 'maxlength' => 11, 'pattern' => '[0-9]{11}', 'placeholder' => __('contact.mobile')]) !!}
                         </div>
                     </div>
                 </div>

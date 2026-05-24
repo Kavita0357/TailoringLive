@@ -4,15 +4,15 @@
     }
 
     .input-col {
-        padding: 20px;
+        padding: 12px;
     }
 
     .tw-bg-gray-200 {
-        background-color: #f7f7f7;
+        background-color: #f8f9fa;
     }
 
     .tw-bg-primary-400 {
-        background-color: #3b78f0ff;
+        background-color: #4285f4;
     }
 
     .style-card-title {
@@ -37,6 +37,11 @@
         break-inside: avoid;
         -webkit-column-break-inside: avoid;
         page-break-inside: avoid;
+        border: 1px solid oklch(92.8% 0.006 264.531);
+        box-shadow:
+            0 1px 3px 0 rgba(0, 0, 0, 0.1),
+            0 1px 2px -1px rgba(0, 0, 0, 0.1);
+        border-radius: 6px;
     }
 
     .customer-measuremnt-content {
@@ -47,6 +52,15 @@
         display: flex;
         gap: 20px;
         align-items: flex-start;
+    }
+
+    .custom-layout label,
+    .custom-layout .form-control {
+        font-size: 12px;
+    }
+
+    .style-card p {
+        font-size: 14px;
     }
 
     .measurement-section {
@@ -102,10 +116,13 @@
     }
 
     .style-card {
-        border: 1px solid #3b78f0ff;
+        box-shadow:
+            0 1px 3px 0 rgba(0, 0, 0, 0.1),
+            0 1px 2px -1px rgba(0, 0, 0, 0.1);
         border-radius: 6px;
         overflow: hidden;
         margin: 0;
+        border: 1px solid oklch(92.8% 0.006 264.531);
     }
 
     .style-card-title {
@@ -114,6 +131,17 @@
 
     .style-card-body {
         padding: 10px;
+        max-height: 1000px;
+        opacity: 1;
+        overflow: hidden;
+        transition: max-height 0.35s ease, opacity 0.35s ease, padding 0.35s ease;
+    }
+
+    .style-card.collapsed .style-card-body {
+        max-height: 0;
+        opacity: 0;
+        padding-top: 0;
+        padding-bottom: 0;
     }
 
     .style-measurement-modal {
@@ -150,9 +178,9 @@
     }
 
     .style-no-design-name {
-        font-size: 16px;
+        font-size: 14px;
         font-weight: 600;
-        color: #111827;
+        color: oklch(44.6% 0.03 256.802);
     }
 
     .style-checkbox {
@@ -189,7 +217,7 @@
     }
 
     .design-top label {
-        font-size: 14px;
+        font-size: 12px;
         font-weight: 600;
         line-height: 18px;
         margin: 0;
@@ -218,10 +246,10 @@
     .row-select {
         appearance: none;
         -webkit-appearance: none;
-        width: 22px;
-        height: 22px;
-        min-width: 22px;
-        border: 2px solid #cfcfcf;
+        width: 14px;
+        height: 14px;
+        min-width: 14px;
+        border: 1px solid #cfcfcf;
         border-radius: 4px;
         background: #fff;
         cursor: pointer;
@@ -230,22 +258,28 @@
         margin-top: 2px;
     }
 
+    .style-no-design-item .row-select {
+        width: 16px;
+        height: 16px;
+        min-width: 16px;
+    }
+
     .row-select:hover {
-        border-color: #3b78f0ff;
+        border-color: #4285f4;
     }
 
     .row-select:checked {
-        background: #3b78f0ff;
-        border-color: #3b78f0ff;
+        background: #4285f4;
+        border-color: #4285f4;
     }
 
     .row-select:checked::after {
         content: '';
         position: absolute;
-        left: 6px;
-        top: 2px;
+        left: 4px;
+        top: 1px;
         width: 5px;
-        height: 10px;
+        height: 8px;
         border: solid #fff;
         border-width: 0 2px 2px 0;
         transform: rotate(45deg);
@@ -254,11 +288,13 @@
     input[type="text"],
     textarea {
         border-radius: 4px !important;
+        border-color: oklch(92.8% 0.006 264.531);
     }
 
     textarea.form-control {
         overflow-y: auto;
         resize: none;
+        background-color: oklch(98.5% 0.002 247.839);
     }
 
     .empty-assignment-box {
@@ -516,7 +552,18 @@
                 e.preventDefault();
                 e.stopPropagation();
 
-                $(this).closest('.style-card').toggleClass('collapsed');
+                const $card = $(this).closest('.style-card');
+
+                $('.style-card').not($card).addClass('collapsed');
+                $card.toggleClass('collapsed');
+
+                if (!$card.hasClass('collapsed')) {
+                    $card[0].scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start',
+                        inline: 'nearest'
+                    });
+                }
 
             });
 

@@ -68,7 +68,7 @@
                                 {!! Form::text('designs[0][name]', null, [
                                     'class' => 'form-control',
                                     'placeholder' => __('tailoring.design_name'),
-                                    'required',
+                                    // 'required',
                                 ]) !!}
                             </div>
                             <div class="col-md-2">
@@ -76,7 +76,7 @@
                                     {!! Form::number('designs[0][serial_no]', null, [
                                         'class' => 'form-control',
                                         'placeholder' => __('tailoring.serial_no'),
-                                        'required' => true,
+                                        // 'required' => true,
                                     ]) !!}
                                 </div>
                             </div>
@@ -114,10 +114,10 @@
             let newRow = `
                 <div class="row design_row mb-2">
                     <div class="col-md-4">
-                        <input type="text" name="designs[${designIndex}][name]" class="form-control" placeholder="Design Name" required>
+                        <input type="text" name="designs[${designIndex}][name]" class="form-control" placeholder="Design Name">
                     </div>
                     <div class="col-md-2">
-                        <input type="number" name="designs[${designIndex}][serial_no]" class="form-control" placeholder="Serial No" required>
+                        <input type="number" name="designs[${designIndex}][serial_no]" class="form-control" placeholder="Serial No">
                     </div>
                     <div class="col-md-4">
                         <input type="file" name="designs[${designIndex}][image]" class="form-control" accept="image/*">

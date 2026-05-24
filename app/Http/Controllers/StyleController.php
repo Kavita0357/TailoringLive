@@ -130,8 +130,9 @@ class StyleController extends Controller
             $request->validate([
                 'style_name' => 'required|string|max:255',
                 'serial_no' => 'nullable',
-                'designs.*.name' => 'required|string|max:255',
-                'designs.*.serial_no' => 'required',
+                'designs' => 'nullable|array',
+                'designs.*.name' => 'nullable|string|max:255',
+                'designs.*.serial_no' => 'nullable',
                 'designs.*.image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048'
             ]);
 
@@ -147,8 +148,16 @@ class StyleController extends Controller
 
             $style->cloths()->sync($request->input('cloths'));
 
-            if ($request->has('designs')) {
+            if ($request->has('designs') && !empty($request->designs)) {
                 foreach ($request->designs as $index => $designData) {
+                    if (
+                        empty($designData['name']) &&
+                        empty($designData['serial_no']) &&
+                        empty($designData['image'])
+                    ) {
+                        continue;
+                    }
+
                     $designImage = $designData['image'] ?? null;
                     $imagePath = null;
 
@@ -157,8 +166,8 @@ class StyleController extends Controller
                     }
 
                     $style->designs()->create([
-                        'design_name' => $designData['name'],
-                        'serial_no' => $designData['serial_no'],
+                        'design_name' => $designData['name'] ?? null,
+                        'serial_no' => $designData['serial_no'] ?? null,
                         'design_image' => $imagePath,
                     ]);
                 }
