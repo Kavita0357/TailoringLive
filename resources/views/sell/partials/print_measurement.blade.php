@@ -23,7 +23,7 @@
     <!-- Measurements -->
     <div class="measurement-grid">
         @foreach ($measurements as $m)
-            @if (isset($m['value']))
+            @if (isset($m['value']) && isset($m['measurement_name']))
                 <div class="box">
                     <h5>{{ $m['measurement_name'] }}</h5>
                     <p>{{ $m['value'] }}</p>
