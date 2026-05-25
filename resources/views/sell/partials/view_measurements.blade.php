@@ -141,7 +141,7 @@
                                 @if (!empty($measurements))
                                     <div class="row g-3">
                                         @foreach ($measurements as $m)
-                                            @if (isset($m['value']))
+                                            @if (isset($m['value']) && isset($m['measurement_name']))
                                                 <div class="col-md-2">
                                                     <div class="measurement-card text-center border p-3">
                                                         <h5>{{ $m['measurement_name'] }}</h5>
@@ -166,21 +166,23 @@
                                 @if (!empty($styles))
                                     <div class="row g-3">
                                         @foreach ($styles as $s)
-                                            <div class="col-md-2">
-                                                <div class="measurement-card text-center border p-3">
-                                                    <h5>{{ $s['name'] }}</h5>
-                                                    @php
-                                                        $designs = $s['designs'] ?? [];
-                                                        $values = collect($designs)
-                                                            ->pluck('design_value')
-                                                            ->filter()
-                                                            ->toArray();
-                                                    @endphp
-                                                    <p>
-                                                        {{ !empty($values) ? implode(', ', $values) : '' }}
-                                                    </p>
+                                            @if (isset($s['name']))
+                                                <div class="col-md-2">
+                                                    <div class="measurement-card text-center border p-3">
+                                                        <h5>{{ $s['name'] ?? '' }}</h5>
+                                                        @php
+                                                            $designs = $s['designs'] ?? [];
+                                                            $values = collect($designs)
+                                                                ->pluck('design_value')
+                                                                ->filter()
+                                                                ->toArray();
+                                                        @endphp
+                                                        <p>
+                                                            {{ !empty($values) ? implode(', ', $values) : '' }}
+                                                        </p>
+                                                    </div>
                                                 </div>
-                                            </div>
+                                            @endif
                                         @endforeach
                                     </div>
                                 @endif
