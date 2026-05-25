@@ -4,12 +4,16 @@
 @section('content')
 
     <!-- Content Header (Page header) -->
-    <section class="content-header">
+    {{-- <section class="content-header">
         <h1 class="tw-text-xl md:tw-text-3xl tw-font-bold tw-text-black">@lang('business.business_settings')</h1>
         <br>
 
-    </section>
-
+    </section> --}}
+    <style type="text/css">
+        .list-group-item {
+            border: 0;
+        }
+    </style>
     <!-- Main content -->
     <section class="content">
         {!! Form::open([
@@ -23,6 +27,7 @@
                 <!--  <pos-tab-container> -->
                 {{-- <div class="col-xs-12 pos-tab-container"> --}}
                 @component('components.widget', ['class' => 'pos-tab-container'])
+                    @include('layouts.partials.search_settings')
                     <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 pos-tab-menu tw-rounded-lg">
                         <div class="list-group">
                             <a href="#"
@@ -61,7 +66,6 @@
                         </div>
                     </div>
                     <div class="col-lg-10 col-md-10 col-sm-10 col-xs-10 pos-tab">
-                        @include('layouts.partials.search_settings')
                         <!-- tab 1 start -->
                         @include('business.partials.settings_business')
                         <!-- tab 1 end -->
