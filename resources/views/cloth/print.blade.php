@@ -1,6 +1,6 @@
 <style>
     .page {
-        width: 210mm;
+        width: 4.5in;
         min-height: 297mm;
         padding: 12mm;
         background: #fff;
@@ -98,16 +98,16 @@
 
         html,
         body {
-            width: 210mm;
-            height: 297mm;
-            overflow: hidden;
+            width: 100%;
+            margin: 0;
+            padding: 0;
         }
 
         .page {
-            width: 210mm;
+            width: 4.5in;
             min-height: 297mm;
             padding: 10mm;
-            margin: 0;
+            margin: 0 auto;
         }
 
         .measurement-grid,
@@ -136,7 +136,7 @@
     @if ($cloth->measurements->isNotEmpty())
         <div class="measurement-grid">
             @foreach ($cloth->measurements as $index => $m)
-                <div class="box">   
+                <div class="box">
                     <h5>{{ $m->measurement_name }}</h5>
                     <p>{{ $cloth_customization['measurements'][$index]['value'] ?? '-' }}</p>
                 </div>
