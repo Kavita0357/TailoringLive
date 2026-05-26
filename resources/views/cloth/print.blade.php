@@ -1,32 +1,123 @@
 <style>
     .page {
-        width: 210mm;
+        width: 4.5in;
         min-height: 297mm;
-        padding: 20px;
-        font-family: Arial, sans-serif;
+        padding: 12mm;
+        background: #fff;
+        margin: auto;
+        overflow: hidden;
+        page-break-after: avoid;
     }
 
     .header {
         text-align: center;
         border-bottom: 1px solid #ccc;
-        margin-bottom: 10px;
+        padding-bottom: 8px;
+        margin-bottom: 12px;
+    }
+
+    .header h3 {
+        margin: 0;
+        font-size: 22px;
+    }
+
+    .header p {
+        margin: 2px 0;
+        font-size: 13px;
+    }
+
+    .info {
+        margin-bottom: 15px;
+    }
+
+    .info p {
+        margin: 3px 0;
+        font-size: 13px;
     }
 
     .cloth-title {
-        margin: 15px 0;
+        margin: 14px 0 10px;
+        font-size: 17px;
+        font-weight: bold;
     }
 
     .measurement-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+        width: 100%;
+    }
+
+    .style-grid {
         display: flex;
         flex-wrap: wrap;
         gap: 10px;
+        width: 100%;
+    }
+
+    .style-grid .box {
+        flex: 1;
+        min-width: 0;
+        /* To prevent overflow issues */
     }
 
     .box {
-        width: 20%;
         border: 1px solid #000;
+        border-radius: 4px;
         padding: 10px;
         text-align: center;
+        min-height: 85px;
+
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        page-break-inside: avoid;
+        break-inside: avoid;
+    }
+
+    .box h5 {
+        margin: 0 0 6px;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .box p {
+        margin: 0;
+        font-size: 13px;
+        line-height: 1.4;
+        word-break: break-word;
+    }
+
+    .note {
+        margin-top: 12px;
+        font-size: 13px;
+    }
+
+    @media print {
+
+        html,
+        body {
+            width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        .page {
+            width: 4.5in;
+            min-height: 297mm;
+            padding: 10mm;
+            margin: 0 auto;
+        }
+
+        .measurement-grid,
+        .style-grid {
+            gap: 8px;
+        }
+
+        .box {
+            min-height: 75px;
+        }
     }
 </style>
 <div class="page">
@@ -72,7 +163,7 @@
     <h4 class="cloth-title">{{ $cloth->cloth_name }} Style</h4>
 
     @if ($cloth->styles->isNotEmpty())
-        <div class="measurement-grid">
+        <div class="style-grid">
             @foreach ($cloth->styles as $index => $s)
                 <div class="box">
                     <h5>{{ $s->style_name }}</h5>

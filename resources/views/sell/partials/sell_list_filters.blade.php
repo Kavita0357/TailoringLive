@@ -15,24 +15,24 @@
     }
 </style>
 @if (!empty($only) && in_array('cloths', $only))
-    <div class="col-md-3">
-        <div class="form-group tw-flex tw-items-center search-box">
-            {!! Form::label('select_cloth', __('tailoring.select_cloths') . ':') !!}
-            {!! Form::select('select_cloth', $cloths, null, [
-                'class' => 'form-control measurement-select',
-                'style' => 'width:100%',
-                // 'placeholder' => __('lang_v1.all'),
-            ]) !!}
+    <div class="tw-flex tw-justify-between tw-items-center">
+        <div class="col-md-4">
+            <div class="tw-flex tw-items-center search-box">
+                {!! Form::label('select_cloth', __('tailoring.select_cloths') . ':') !!}
+                {!! Form::select('select_cloth', $cloths, null, [
+            'class' => 'form-control measurement-select',
+            'style' => 'width:100%',
+            // 'placeholder' => __('lang_v1.all'),
+        ]) !!}
+            </div>
         </div>
-    </div>
-    @if (in_array('print', $only))
-        <div class="col-md-3">
-            <div class="form-group">
+        @if (in_array('print', $only))
+            <div class="col-md-3 tw-text-right">
                 <button type="button" id="style_measurement_print_btn"
                     class="btn btn-primary style_measurement_print_btn">@lang('tailoring.print')</button>
             </div>
-        </div>
-    @endif
+        @endif
+    </div>
 @endif
 @if (empty($only) || in_array('sell_list_filter_location_id', $only))
     <div class="col-md-3">
@@ -40,10 +40,10 @@
             {!! Form::label('sell_list_filter_location_id', __('purchase.business_location') . ':') !!}
 
             {!! Form::select('sell_list_filter_location_id', $business_locations, null, [
-                'class' => 'form-control select2',
-                'style' => 'width:100%',
-                'placeholder' => __('lang_v1.all'),
-            ]) !!}
+            'class' => 'form-control select2',
+            'style' => 'width:100%',
+            'placeholder' => __('lang_v1.all'),
+        ]) !!}
         </div>
     </div>
 @endif
@@ -52,10 +52,10 @@
         <div class="form-group">
             {!! Form::label('sell_list_filter_customer_id', __('contact.customer') . ':') !!}
             {!! Form::select('sell_list_filter_customer_id', $customers, null, [
-                'class' => 'form-control select2',
-                'style' => 'width:100%',
-                'placeholder' => __('lang_v1.all'),
-            ]) !!}
+            'class' => 'form-control select2',
+            'style' => 'width:100%',
+            'placeholder' => __('lang_v1.all'),
+        ]) !!}
         </div>
     </div>
 @endif
@@ -64,16 +64,16 @@
         <div class="form-group">
             {!! Form::label('sell_list_filter_payment_status', __('purchase.payment_status') . ':') !!}
             {!! Form::select(
-                'sell_list_filter_payment_status',
-                [
-                    'paid' => __('lang_v1.paid'),
-                    'due' => __('lang_v1.due'),
-                    'partial' => __('lang_v1.partial'),
-                    'overdue' => __('lang_v1.overdue'),
-                ],
-                null,
-                ['class' => 'form-control select2', 'style' => 'width:100%', 'placeholder' => __('lang_v1.all')],
-            ) !!}
+            'sell_list_filter_payment_status',
+            [
+                'paid' => __('lang_v1.paid'),
+                'due' => __('lang_v1.due'),
+                'partial' => __('lang_v1.partial'),
+                'overdue' => __('lang_v1.overdue'),
+            ],
+            null,
+            ['class' => 'form-control select2', 'style' => 'width:100%', 'placeholder' => __('lang_v1.all')],
+        ) !!}
         </div>
     </div>
 @endif
@@ -82,10 +82,10 @@
         <div class="form-group">
             {!! Form::label('sell_list_filter_date_range', __('report.date_range') . ':') !!}
             {!! Form::text('sell_list_filter_date_range', null, [
-                'placeholder' => __('lang_v1.select_a_date_range'),
-                'class' => 'form-control',
-                'readonly',
-            ]) !!}
+            'placeholder' => __('lang_v1.select_a_date_range'),
+            'class' => 'form-control',
+            'readonly',
+        ]) !!}
         </div>
     </div>
 @endif
@@ -94,9 +94,9 @@
         <div class="form-group">
             {!! Form::label('created_by', __('report.user') . ':') !!}
             {!! Form::select('created_by', $sales_representative, null, [
-                'class' => 'form-control select2',
-                'style' => 'width:100%',
-            ]) !!}
+            'class' => 'form-control select2',
+            'style' => 'width:100%',
+        ]) !!}
         </div>
     </div>
 @endif
@@ -132,10 +132,10 @@
         <div class="form-group">
             {!! Form::label('shipping_status', __('lang_v1.shipping_status') . ':') !!}
             {!! Form::select('shipping_status', $shipping_statuses, null, [
-                'class' => 'form-control select2',
-                'style' => 'width:100%',
-                'placeholder' => __('lang_v1.all'),
-            ]) !!}
+            'class' => 'form-control select2',
+            'style' => 'width:100%',
+            'placeholder' => __('lang_v1.all'),
+        ]) !!}
         </div>
     </div>
 @endif
@@ -144,10 +144,10 @@
         <div class="form-group">
             {!! Form::label('delivery_status', __('tailoring.delivery_status') . ':') !!}
             {!! Form::select('delivery_status', $delivery_statuses, null, [
-                'class' => 'form-control select2',
-                'style' => 'width:100%',
-                'placeholder' => __('lang_v1.all'),
-            ]) !!}
+            'class' => 'form-control select2',
+            'style' => 'width:100%',
+            'placeholder' => __('lang_v1.all'),
+        ]) !!}
         </div>
     </div>
 @endif
@@ -157,7 +157,8 @@
             <div class="checkbox">
                 <label>
                     <br>
-                    {!! Form::checkbox('only_subscriptions', 1, false, ['class' => 'input-icheck', 'id' => 'only_subscriptions']) !!} {{ __('lang_v1.subscriptions') }}
+                    {!! Form::checkbox('only_subscriptions', 1, false, ['class' => 'input-icheck', 'id' => 'only_subscriptions']) !!}
+                    {{ __('lang_v1.subscriptions') }}
                 </label>
             </div>
         </div>
