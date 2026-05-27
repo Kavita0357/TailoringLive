@@ -643,7 +643,7 @@
                 @if (!empty($receipt_details->total_due) && !empty($receipt_details->total_due_label))
                     <tr>
                         <th>
-                            {!! $receipt_details->total_due_label !!}
+                            {!! $receipt_details->total_due_label !!}:
                         </th>
                         <td class="text-right">
                             {{ $receipt_details->total_due }}
