@@ -7,9 +7,9 @@
         <!-- Logo -->
         @if (empty($receipt_details->letter_head))
             <!-- @if (!empty($receipt_details->logo))
-                            <img style="max-height: 120px; width: auto;" src="{{ url('uploads/business_logos/' . $receipt_details->logo) }}"
-                                class="img img-responsive center-block">
-                        @endif -->
+                                                                                                                                            <img style="max-height: 120px; width: auto;" src="{{ url('uploads/business_logos/' . $receipt_details->logo) }}"
+                                                                                                                                                class="img img-responsive center-block">
+                                                                                                                                        @endif -->
 
             <!-- Header text -->
             @if (!empty($receipt_details->header_text))
@@ -20,7 +20,7 @@
 
             <!-- business information here -->
             <div class="col-xs-12 text-left">
-                <h3 class="text-left" style="margin-top:0;">
+                <h3 class="text-left">
                     <!-- Shop & Location Name  -->
                     @if (!empty($receipt_details->display_name))
                         {{ $receipt_details->display_name }}
@@ -28,7 +28,7 @@
                 </h3>
 
                 <!-- Address -->
-                <p>
+                <p style="padding-bottom: 10px;">
                     @if (!empty($receipt_details->address))
                         <small>
                             {!! $receipt_details->address !!}
@@ -88,9 +88,9 @@
                 <img style="width: 100%;margin-bottom: 10px;" src="{{ $receipt_details->letter_head }}">
             </div>
         @endif
-        <div class="col-xs-12" style="border-top: 1px solid #ddd; padding-top: 10px; margin-top: 10px;">
+        <div class="col-xs-12" style="border-top: 1px solid #ddd;">
             <!-- Invoice  number, Date  -->
-            <p style="width: 100% !important" class="word-wrap">
+            <p style="width: 100% !important; padding-top:10px" class="word-wrap">
                 <span class="pull-left text-left word-wrap">
                     <!-- customer info -->
                     @if (!empty($receipt_details->customer_info))
@@ -291,7 +291,6 @@
 
     <div class="row" style="color: #000000 !important;">
         <div class="col-xs-12">
-            <br />
             @php
                 $p_width = 45;
             @endphp
@@ -307,20 +306,31 @@
             @endif
             @if ($type == 'order')
                 <table class="table table-responsive table-slim"
-                    style="border-top: 1px solid #000; border-bottom: 1px solid #000; margin-top: 10px;">
+                    style="border-top: 1px solid #000; margin-top: 10px; margin-bottom: 10px;">
                     <thead>
                         <tr>
-                            <th width="{{ $p_width }}%">@lang('tailoring.cloth')</th>
-                            <th class="text-right" width="15%">{{ $receipt_details->table_qty_label }}</th>
-                            <th class="text-right" width="15%">@lang('tailoring.wages')</th>
+                            <th width="{{ $p_width }}%" style="padding-top: 10px;">
+                                @lang('tailoring.cloth')
+                            </th>
+                            <th class="text-right" width="15%" style="padding-top: 10px;">
+                                {{ $receipt_details->table_qty_label }}
+                            </th>
+                            <th class="text-right" width="15%" style="padding-top: 10px;">
+                                @lang('tailoring.wages')
+                            </th>
                             @if (!empty($receipt_details->discounted_unit_price_label))
-                                <th class="text-right" width="10%">{{ $receipt_details->discounted_unit_price_label }}
+                                <th class="text-right" width="10%" style="padding-top: 10px;">
+                                    {{ $receipt_details->discounted_unit_price_label }}
                                 </th>
                             @endif
                             @if (!empty($receipt_details->item_discount_label))
-                                <th class="text-right" width="10%">{{ $receipt_details->item_discount_label }}</th>
+                                <th class="text-right" width="10%" style="padding-top: 10px;">
+                                    {{ $receipt_details->item_discount_label }}
+                                </th>
                             @endif
-                            <th class="text-right" width="15%">{{ $receipt_details->table_subtotal_label }}</th>
+                            <th class="text-right" width="15%" style="padding-top: 10px;">
+                                {{ $receipt_details->table_subtotal_label }}
+                            </th>
                         </tr>
                     </thead>
                     <tbody style="border-top: 1px solid #ddd;">
@@ -602,7 +612,7 @@
         </div>
     </div>
 
-    <div class="row" style="color: #000000 !important; margin-top: 15px;">
+    <div class="row" style="color: #000000 !important;">
         <div class="col-xs-6">
 
             <table class="table table-slim">
@@ -660,7 +670,7 @@
                     <tbody>
                         @if (!empty($receipt_details->total_quantity_label))
                             <tr>
-                                <th style="width:70%">
+                                <th>
                                     {!! $receipt_details->total_quantity_label !!}
                                 </th>
                                 <td class="text-right">
@@ -671,7 +681,7 @@
 
                         @if (!empty($receipt_details->total_items_label))
                             <tr>
-                                <th style="width:70%">
+                                <th>
                                     {!! $receipt_details->total_items_label !!}
                                 </th>
                                 <td class="text-right">
@@ -680,7 +690,7 @@
                             </tr>
                         @endif
                         <tr>
-                            <th style="width:70%">
+                            <th>
                                 {!! $receipt_details->subtotal_label !!}
                             </th>
                             <td class="text-right">
@@ -689,7 +699,7 @@
                         </tr>
                         @if (!empty($receipt_details->total_exempt_uf))
                             <tr>
-                                <th style="width:70%">
+                                <th>
                                     @lang('lang_v1.exempt')
                                 </th>
                                 <td class="text-right">
@@ -700,7 +710,7 @@
                         <!-- Shipping Charges -->
                         @if (!empty($receipt_details->shipping_charges))
                             <tr>
-                                <th style="width:70%">
+                                <th>
                                     {!! $receipt_details->shipping_charges_label !!}
                                 </th>
                                 <td class="text-right">
@@ -711,7 +721,7 @@
 
                         @if (!empty($receipt_details->packing_charge))
                             <tr>
-                                <th style="width:70%">
+                                <th>
                                     {!! $receipt_details->packing_charge_label !!}
                                 </th>
                                 <td class="text-right">
@@ -860,5 +870,11 @@
                 @endif
             </div>
         @endif
+    </div>
+
+    <div class="row" style="color: #000000 !important; margin-top: 100px;">
+        <div class="col-xs-12 text-left">
+            <p style="margin-bottom: 0;">Powered by <strong>TailorDesk</strong></p>
+        </div>
     </div>
 </div>
