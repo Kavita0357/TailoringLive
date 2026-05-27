@@ -27,8 +27,16 @@ class AdminlteCustomPresenter extends Presenter
      */
     public function getMenuWithoutDropdownWrapper($item)
     {
-        return '<a href="' . $item->getUrl() . '" title="" class="tw-flex tw-items-center tw-gap-3 tw-px-3 tw-py-2 tw-text-sm tw-font-medium tw-tracking-tight tw-text-gray-600 tw-transition-all tw-duration-200 tw-rounded-lg tw-whitespace-nowrap hover:tw-text-gray-900 hover:tw-bg-gray-100' . $this->getActiveState($item) . '" ' . $item->getAttributes() . '>' .
-        $this->formatIcon($item->icon) . ' <span class="tw-truncate">' . $item->title . '</span>' .
+        $defaultClasses = "tw-flex tw-items-center tw-gap-3 tw-px-3 tw-py-2 tw-text-sm tw-font-medium tw-tracking-tight tw-text-gray-600 tw-transition-all tw-duration-200 tw-rounded-lg tw-whitespace-nowrap hover:tw-text-gray-900 hover:tw-bg-gray-100";
+
+        $customClass = isset($item->attributes['class']) ? $item->attributes['class'] : '';
+
+        return '<a href="' . $item->getUrl() . '" 
+        title="" 
+        class="' . $defaultClasses . ' ' . $customClass . ' ' . $this->getActiveState($item) . '" ' .
+            $item->getAttributes() . '>' .
+            $this->formatIcon($item->icon) .
+            ' <span class="tw-truncate">' . $item->title . '</span>' .
             '</a>' . PHP_EOL;
     }
 
@@ -75,8 +83,8 @@ class AdminlteCustomPresenter extends Presenter
     public function getMenuWithDropDownWrapper($item)
     {
         $dropdownToggle = '<a href="#" title="" class="drop_down tw-flex tw-items-center tw-gap-3 tw-px-3 tw-py-2 tw-text-sm tw-font-medium tw-tracking-tight tw-text-gray-600 tw-transition-all tw-duration-200 tw-rounded-lg tw-whitespace-nowrap hover:tw-text-gray-900 hover:tw-bg-gray-100 focus:tw-text-gray-900 focus:tw-bg-gray-100' . $this->getActiveStateOnChild($item) . '" ' . $item->getAttributes() . '>' .
-        $this->formatIcon($item->icon) . ' <span class="tw-truncate">' . $item->title . '</span>' .
-        '<svg aria-hidden="true" class="svg tw-ml-auto tw-text-gray-500 tw-size-4 tw-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">' . $this->getArray($item) .
+            $this->formatIcon($item->icon) . ' <span class="tw-truncate">' . $item->title . '</span>' .
+            '<svg aria-hidden="true" class="svg tw-ml-auto tw-text-gray-500 tw-size-4 tw-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">' . $this->getArray($item) .
             '</svg>' .
             '</a>';
 
@@ -120,11 +128,11 @@ class AdminlteCustomPresenter extends Presenter
         $children = '';
         $displayStyle = $item->hasActiveOnChild() ? 'block' : 'none';
 
-        
+
 
 
         if (count($item->getChilds()) > 0) {
-            
+
             $children .= '<div class=" chiled tw-relative tw-mt-2 tw-mb-4 tw-pl-11" style="display:' . $displayStyle . '">
             <div class="tw-absolute tw-inset-y-0 tw-w-px tw-h-full tw-bg-gray-200 tw-left-5"></div>
             <div class="tw-space-y-3.5">';
@@ -133,8 +141,8 @@ class AdminlteCustomPresenter extends Presenter
 
                 $isActive = $child->isActive() ? 'tw-text-primary-700' : '';
 
-                $children .= '<a href="' . $child->getUrl() . '" title="" class="tw-flex tw-text-sm tw-font-medium tw-tracking-tight tw-text-gray-600 tw-truncate tw-transition-all tw-duration-200 hover:tw-text-gray-900 tw-whitespace-nowrap ' . $isActive . '"'.$isActive.' "' . $child->getAttributes() . '"' .$child->hasActiveOnChild() .'>' .
-                $child->getIcon() . ' <span>' . $child->title . '</span>' .
+                $children .= '<a href="' . $child->getUrl() . '" title="" class="tw-flex tw-text-sm tw-font-medium tw-tracking-tight tw-text-gray-600 tw-truncate tw-transition-all tw-duration-200 hover:tw-text-gray-900 tw-whitespace-nowrap ' . $isActive . '"' . $isActive . ' "' . $child->getAttributes() . '"' . $child->hasActiveOnChild() . '>' .
+                    $child->getIcon() . ' <span>' . $child->title . '</span>' .
                     '</a>' . PHP_EOL;
             }
 
@@ -171,5 +179,3 @@ class AdminlteCustomPresenter extends Presenter
         }
     }
 }
-
-

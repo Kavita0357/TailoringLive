@@ -124,8 +124,14 @@
         }
 
         .pos-header .tw-bg-primary-800 {
-            background-color: #ed143d;
             border-radius: 50px;
+            background-color: #ed143d;
+        }
+        
+        .new-order-button{
+            border-radius: .5rem;
+            color:#fff;
+            background-color: #ed143d;
         }
 
         .select2-container--default .select2-results__option[aria-selected=true] {

@@ -7,9 +7,9 @@
         class="tw-pb-6 tw-bg-gradient-to-r tw-from-@if (!empty(session('business.theme_color'))) {{ session('business.theme_color') }}@else{{ 'primary' }} @endif-800 tw-to-@if (!empty(session('business.theme_color'))) {{ session('business.theme_color') }}@else{{ 'primary' }} @endif-900 xl:tw-pb-0 ">
         <div class="tw-px-5 tw-pt-3">
             @if (auth()->user()->can('dashboard.data'))
-                <div class="sm:tw-flex sm:tw-items-center sm:tw-gap-12">
+                <div class="sm:tw-flex sm:tw-items-center sm:tw-gap-3">
                     @if ($is_admin)
-                        <div class="tw-mt-2 sm:tw-w-1/3 md:tw-w-1/4 ">
+                        <div class="filter-box">
                             {!! Form::select(
                                 'tailoring_status',
                                 [
@@ -24,7 +24,7 @@
                                 ],
                             ) !!}
                         </div>
-                        <div class="tw-mt-2 sm:tw-w-1/3 md:tw-w-1/4 ">
+                        <div class="filter-box">
                             @if (count($all_locations) > 1)
                                 {!! Form::select('dashboard_location', $all_locations, null, [
                                     'class' => 'form-control select2',
@@ -33,7 +33,7 @@
                                 ]) !!}
                             @endif
                         </div>
-                        <div class="tw-mt-2 sm:tw-w-1/3 md:tw-w-1/4 tw-text-right">
+                        <div class="filter-box">
                             @if ($is_admin)
                                 <button type="button" id="dashboard_date_filter"
                                     class="tw-inline-flex tw-items-center tw-justify-center tw-w-full tw-gap-1 tw-px-3 tw-py-2 tw-text-sm tw-font-medium tw-text-gray-900 tw-transition-all tw-duration-200 tw-bg-white tw-rounded-lg sm:tw-w-auto hover:tw-bg-primary-50">
@@ -506,7 +506,7 @@
                 @if (auth()->user()->can('sell.view') || auth()->user()->can('direct_sell.view'))
                     @if (!empty($all_locations))
                         <div
-                            class="tw-transition-all lg:tw-col-span-2 xl:tw-col-span-2 tw-duration-200 tw-bg-white tw-shadow-sm tw-rounded-xl tw-ring-1 hover:tw-shadow-md hover:tw--translate-y-0.5 tw-ring-gray-200">
+                            class="tw-transition-all tw-duration-200 tw-bg-white tw-shadow-sm tw-rounded-xl tw-ring-1 hover:tw-shadow-md hover:tw--translate-y-0.5 tw-ring-gray-200">
                             <div class="tw-p-4 sm:tw-p-5">
                                 <div class="tw-flex tw-items-center tw-gap-2.5">
                                     <div
@@ -540,7 +540,7 @@
                     @endif
                     @if (!empty($all_locations))
                         <div
-                            class="tw-transition-all lg:tw-col-span-2 xl:tw-col-span-2 tw-duration-200 tw-bg-white tw-shadow-sm tw-rounded-xl tw-ring-1 hover:tw-shadow-md hover:tw--translate-y-0.5 tw-ring-gray-200">
+                            class="tw-transition-all tw-duration-200 tw-bg-white tw-shadow-sm tw-rounded-xl tw-ring-1 hover:tw-shadow-md hover:tw--translate-y-0.5 tw-ring-gray-200">
                             <div class="tw-p-4 sm:tw-p-5">
                                 <div class="tw-flex tw-items-center tw-gap-2.5">
                                     <div
@@ -690,7 +690,7 @@
                 @if (auth()->user()->can('sell.view') || auth()->user()->can('direct_sell.view'))
                     @if (!empty($all_locations))
                         <div
-                            class="tw-transition-all lg:tw-col-span-2 xl:tw-col-span-2 tw-duration-200 tw-bg-white tw-shadow-sm tw-rounded-xl tw-ring-1 hover:tw-shadow-md hover:tw--translate-y-0.5 tw-ring-gray-200">
+                            class="tw-transition-all tw-duration-200 tw-bg-white tw-shadow-sm tw-rounded-xl tw-ring-1 hover:tw-shadow-md hover:tw--translate-y-0.5 tw-ring-gray-200">
                             <div class="tw-p-4 sm:tw-p-5">
                                 <div class="tw-flex tw-items-center tw-gap-2.5">
                                     <div
@@ -730,7 +730,7 @@
                     @endif --}}
                     @if (!empty($all_locations))
                         <div
-                            class="tw-transition-all lg:tw-col-span-2 xl:tw-col-span-2 tw-duration-200 tw-bg-white tw-shadow-sm tw-rounded-xl tw-ring-1 hover:tw-shadow-md hover:tw--translate-y-0.5 tw-ring-gray-200">
+                            class="tw-transition-all tw-duration-200 tw-bg-white tw-shadow-sm tw-rounded-xl tw-ring-1 hover:tw-shadow-md hover:tw--translate-y-0.5 tw-ring-gray-200">
                             <div class="tw-p-4 sm:tw-p-5">
                                 <div class="tw-flex tw-items-center tw-gap-2.5">
                                     <div
@@ -1340,11 +1340,69 @@
 @section('css')
     <style>
         .select2-container {
-            width: 100% !important;
+            width: 200px !important;
         }
+
         .dashboard-icon {
             width: 7rem;
             height: 7rem;
+            display: none
+        }
+
+        .filter-box {
+            margin: 0.5rem;
+        }
+
+        .select2-container .select2-selection--single {
+            height: 36px !important;
+            border: none !important;
+            border-radius: 12px !important;
+            background: #fff !important;
+            display: flex !important;
+            align-items: center !important;
+            padding: 0 14px !important;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            color: #111827;
+            line-height: 36px !important;
+            font-size: 14px;
+            font-weight: 500;
+            padding-left: 0 !important;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 36px !important;
+            right: 10px !important;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__arrow b {
+            border-color: #111827 transparent transparent transparent !important;
+            border-width: 5px 5px 0 5px !important;
+        }
+
+        /* Dropdown menu */
+        .select2-dropdown {
+            border: none !important;
+            border-radius: 12px !important;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .select2-results__option {
+            padding: 10px 14px;
+            font-size: 14px;
+        }
+
+        .select2-results__option--highlighted {
+            background: #f3f4f6 !important;
+            color: #111827 !important;
+        }
+
+        .select2-results__option:hover {
+            background: #f3f4f6 !important;
+            color: #111827 !important;
         }
     </style>
 @endsection
