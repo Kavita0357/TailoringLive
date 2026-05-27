@@ -331,6 +331,10 @@
                                                 <input type="hidden" name="measurements[{{ $index }}][id]"
                                                     value="{{ $m->id }}">
 
+                                                <input type="hidden"
+                                                    name="measurements[{{ $index }}][measurement_name]"
+                                                    value="{{ $m->measurement_name }}">
+
                                                 <input type="text" class="form-control"
                                                     @if ($view_only) readonly @endif
                                                     name="measurements[{{ $index }}][value]"
