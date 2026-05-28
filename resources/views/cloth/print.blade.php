@@ -43,7 +43,7 @@
 
     .measurement-grid {
         display: grid;
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: repeat(6, 1fr);
         gap: 10px;
         width: 100%;
     }
@@ -67,6 +67,7 @@
         padding: 10px;
         text-align: center;
         min-height: 85px;
+        margin-bottom: 0px;
 
         display: flex;
         flex-direction: column;
@@ -144,7 +145,7 @@
                     @foreach ($m->subMeasurements as $sub_index => $sub)
                         <div class="box">
                             <h5>{{ $sub->sub_measurement_name }}</h5>
-                            <p>{{ $cloth_customization['measurements'][$index]['sub_measurements'][$sub_index]['value'] ?? '-' }}
+                            <p>{{ $cloth_customization['measurements'][$index]['sub_measurements'][$sub_index]['value'] ?? '-' }}</p>
                         </div>
                     @endforeach
                 @endif
