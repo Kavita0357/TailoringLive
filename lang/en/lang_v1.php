@@ -1552,5 +1552,6 @@ return [
     'in_stock' => 'in stock',
     'cogs' => 'COGS:',
     'cogs_help_text' => 'Cost of Goods Sold = Starting inventory(opening stock) + purchases − ending inventory(closing stock)',
-    'overall_summary' => 'Overall Summary'
+    'overall_summary' => 'Overall Summary',
+    'last_30_days' => 'Last 30 days',
 ];

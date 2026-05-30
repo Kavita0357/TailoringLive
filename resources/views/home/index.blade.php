@@ -1,6 +1,81 @@
 @extends('layouts.app')
 @section('title', __('home.home'))
 
+@php
+    $orders_30_days_labels = isset($orders_chart_1) ? $orders_chart_1->labels ?? [] : [];
+    $orders_30_days_datasets = [];
+    if (isset($orders_chart_1) && !empty($orders_chart_1->datasets)) {
+        foreach ($orders_chart_1->datasets as $dataset) {
+            $orders_30_days_datasets[] = [
+                'label' => $dataset->name,
+                'data' => $dataset->values,
+            ];
+        }
+    }
+
+    $orders_fy_labels = isset($orders_chart_2) ? $orders_chart_2->labels ?? [] : [];
+    $orders_fy_datasets = [];
+    if (isset($orders_chart_2) && !empty($orders_chart_2->datasets)) {
+        foreach ($orders_chart_2->datasets as $dataset) {
+            $orders_fy_datasets[] = [
+                'label' => $dataset->name,
+                'data' => $dataset->values,
+            ];
+        }
+    }
+
+    $sells_30_days_labels = isset($sells_chart_1) ? $sells_chart_1->labels ?? [] : [];
+    $sells_30_days_datasets = [];
+    if (isset($sells_chart_1) && !empty($sells_chart_1->datasets)) {
+        foreach ($sells_chart_1->datasets as $dataset) {
+            $sells_30_days_datasets[] = [
+                'label' => $dataset->name,
+                'data' => $dataset->values,
+            ];
+        }
+    }
+
+    $sells_fy_labels = isset($sells_chart_2) ? $sells_chart_2->labels ?? [] : [];
+    $sells_fy_datasets = [];
+    if (isset($sells_chart_2) && !empty($sells_chart_2->datasets)) {
+        foreach ($sells_chart_2->datasets as $dataset) {
+            $sells_fy_datasets[] = [
+                'label' => $dataset->name,
+                'data' => $dataset->values,
+            ];
+        }
+    }
+
+    $orders_30_days_total = 0;
+    if (isset($orders_chart_1) && !empty($orders_chart_1->datasets)) {
+        $temp_datasets = $orders_chart_1->datasets;
+        $total_dataset = end($temp_datasets);
+        $orders_30_days_total = array_sum($total_dataset->values ?? []);
+    }
+
+    $orders_fy_total = 0;
+    if (isset($orders_chart_2) && !empty($orders_chart_2->datasets)) {
+        $temp_datasets = $orders_chart_2->datasets;
+        $total_dataset = end($temp_datasets);
+        $orders_fy_total = array_sum($total_dataset->values ?? []);
+    }
+
+    $sells_30_days_total = 0;
+    if (isset($sells_chart_1) && !empty($sells_chart_1->datasets)) {
+        $temp_datasets = $sells_chart_1->datasets;
+        $total_dataset = end($temp_datasets);
+        $sells_30_days_total = array_sum($total_dataset->values ?? []);
+    }
+
+    $sells_fy_total = 0;
+    if (isset($sells_chart_2) && !empty($sells_chart_2->datasets)) {
+        $temp_datasets = $sells_chart_2->datasets;
+        $total_dataset = end($temp_datasets);
+        $sells_fy_total = array_sum($total_dataset->values ?? []);
+    }
+@endphp
+
+
 @section('content')
 
     <div
@@ -505,68 +580,79 @@
             <div class="tw-grid tw-grid-cols-1 tw-gap-4 sm:tw-gap-5 lg:tw-grid-cols-2">
                 @if (auth()->user()->can('sell.view') || auth()->user()->can('direct_sell.view'))
                     @if (!empty($all_locations))
-                        <div
-                            class="tw-transition-all tw-duration-200 tw-bg-white tw-shadow-sm tw-rounded-xl tw-ring-1 hover:tw-shadow-md hover:tw--translate-y-0.5 tw-ring-gray-200">
-                            <div class="tw-p-4 sm:tw-p-5">
-                                <div class="tw-flex tw-items-center tw-gap-2.5">
-                                    <div
-                                        class="tw-border-2 tw-flex tw-items-center tw-justify-center tw-rounded-full tw-w-10 tw-h-10">
-                                        <svg aria-hidden="true" class="tw-size-5 tw-text-sky-500 tw-shrink-0"
-                                            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2"
-                                            stroke="currentColor" fill="none" stroke-linecap="round"
-                                            stroke-linejoin="round">
-                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                            <path d="M6 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"></path>
-                                            <path d="M17 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"></path>
-                                            <path d="M17 17h-11v-14h-2"></path>
-                                            <path d="M6 5l14 1l-1 7h-13"></path>
-                                        </svg>
+                        {{-- Left Order Card --}}
+                        <div class="tw-transition-all tw-duration-200 tw-bg-white tw-shadow-sm tw-rounded-2xl tw-ring-1 tw-ring-gray-200 hover:tw-shadow-md hover:tw--translate-y-0.5"
+                            style="height: 700px;">
+                            <div class="tw-p-6 tw-flex tw-flex-col tw-justify-between tw-h-full">
+                                <div>
+                                    <!-- Card Header -->
+                                    <div class="tw-flex tw-justify-between tw-items-start">
+                                        <div>
+                                            <h4
+                                                class="tw-text-3xl tw-font-bold tw-text-gray-900 tw-tracking-tight tw-font-sans">
+                                                @format_currency($orders_30_days_total)</h4>
+                                            <p class="tw-text-sm tw-font-medium tw-text-gray-500 tw-mt-1">
+                                                {{ __('tailoring.order_last_30_days') }}
+                                            </p>
+                                        </div>
                                     </div>
 
-                                    <h3 class="tw-font-bold tw-text-base lg:tw-text-xl">
-                                        {{ __('tailoring.order_last_30_days') }}
-                                    </h3>
-                                </div>
-                                <div class="tw-mt-5">
-                                    <div
-                                        class="tw-grid tw-w-full tw-h-100 tw-border tw-border-gray-200 tw-border-dashed tw-rounded-xl tw-bg-gray-50 ">
-                                        <p class="tw-text-sm tw-italic tw-font-normal tw-text-gray-400">
-                                            {!! $orders_chart_1->container() !!}
-                                        </p>
+                                    <!-- Chart Container -->
+                                    <div class="tw-relative tw-mt-6" style="height: 480px;">
+                                        <canvas id="orderChart30DaysCanvas"></canvas>
                                     </div>
+                                </div>
+
+                                <!-- Card Footer -->
+                                <div
+                                    class="tw-flex tw-justify-between tw-items-center tw-pt-4 tw-border-t tw-border-gray-100">
+                                    <button
+                                        class="tw-text-sm tw-text-gray-500 tw-font-semibold hover:tw-text-gray-900 tw-flex tw-items-center tw-gap-1 tw-whitespace-nowrap">
+                                        {{ __('lang_v1.last_30_days') }}
+                                    </button>
+                                    <a href="{{ action([\App\Http\Controllers\SellController::class, 'index']) }}?sale_type=sales_order"
+                                        class="tw-text-sm tw-text-red-600 tw-font-bold hover:tw-text-red-800 tw-flex tw-items-center tw-gap-1 tw-whitespace-nowrap">
+                                        Progress report &rarr;
+                                    </a>
                                 </div>
                             </div>
                         </div>
                     @endif
                     @if (!empty($all_locations))
-                        <div
-                            class="tw-transition-all tw-duration-200 tw-bg-white tw-shadow-sm tw-rounded-xl tw-ring-1 hover:tw-shadow-md hover:tw--translate-y-0.5 tw-ring-gray-200">
-                            <div class="tw-p-4 sm:tw-p-5">
-                                <div class="tw-flex tw-items-center tw-gap-2.5">
-                                    <div
-                                        class="tw-border-2 tw-flex tw-items-center tw-justify-center tw-rounded-full tw-w-10 tw-h-10">
-                                        <svg aria-hidden="true" class="tw-size-5 tw-text-sky-500 tw-shrink-0"
-                                            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2"
-                                            stroke="currentColor" fill="none" stroke-linecap="round"
-                                            stroke-linejoin="round">
-                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                            <path d="M6 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"></path>
-                                            <path d="M17 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"></path>
-                                            <path d="M17 17h-11v-14h-2"></path>
-                                            <path d="M6 5l14 1l-1 7h-13"></path>
-                                        </svg>
+                        {{-- Right Order Card --}}
+                        <div class="tw-transition-all tw-duration-200 tw-bg-white tw-shadow-sm tw-rounded-2xl tw-ring-1 tw-ring-gray-200 hover:tw-shadow-md hover:tw--translate-y-0.5"
+                            style="height: 700px;">
+                            <div class="tw-p-6 tw-flex tw-flex-col tw-justify-between tw-h-full">
+                                <div>
+                                    <!-- Card Header -->
+                                    <div class="tw-flex tw-justify-between tw-items-start">
+                                        <div>
+                                            <h4
+                                                class="tw-text-3xl tw-font-bold tw-text-gray-900 tw-tracking-tight tw-font-sans">
+                                                @format_currency($orders_fy_total)</h4>
+                                            <p class="tw-text-sm tw-font-medium tw-text-gray-500 tw-mt-1">
+                                                {{ __('tailoring.order_current_fy') }}
+                                            </p>
+                                        </div>
                                     </div>
-                                    <h3 class="tw-font-bold tw-text-base lg:tw-text-xl">
-                                        {{ __('tailoring.order_current_fy') }}
-                                    </h3>
+
+                                    <!-- Chart Container -->
+                                    <div class="tw-relative tw-mt-6" style="height: 480px;">
+                                        <canvas id="orderChartFYCanvas"></canvas>
+                                    </div>
                                 </div>
-                                <div class="tw-mt-5">
-                                    <div
-                                        class="tw-grid tw-w-full tw-h-100 tw-border tw-border-gray-200 tw-border-dashed tw-rounded-xl tw-bg-gray-50 ">
-                                        <p class="tw-text-sm tw-italic tw-font-normal tw-text-gray-400">
-                                            {!! $orders_chart_2->container() !!}
-                                        </p>
-                                    </div>
+
+                                <!-- Card Footer -->
+                                <div
+                                    class="tw-flex tw-justify-between tw-items-center tw-pt-4 tw-border-t tw-border-gray-100">
+                                    <button
+                                        class="tw-text-sm tw-text-gray-500 tw-font-semibold hover:tw-text-gray-900 tw-flex tw-items-center tw-gap-1 tw-whitespace-nowrap">
+                                        {{ __('home.this_fy') }}
+                                    </button>
+                                    <a href="{{ action([\App\Http\Controllers\SellController::class, 'index']) }}?sale_type=sales_order"
+                                        class="tw-text-sm tw-text-red-600 tw-font-bold hover:tw-text-red-800 tw-flex tw-items-center tw-gap-1 tw-whitespace-nowrap">
+                                        Progress report &rarr;
+                                    </a>
                                 </div>
                             </div>
                         </div>
@@ -689,35 +775,40 @@
             <div class="tw-grid tw-grid-cols-1 tw-gap-4 sm:tw-gap-5 lg:tw-grid-cols-2">
                 @if (auth()->user()->can('sell.view') || auth()->user()->can('direct_sell.view'))
                     @if (!empty($all_locations))
-                        <div
-                            class="tw-transition-all tw-duration-200 tw-bg-white tw-shadow-sm tw-rounded-xl tw-ring-1 hover:tw-shadow-md hover:tw--translate-y-0.5 tw-ring-gray-200">
-                            <div class="tw-p-4 sm:tw-p-5">
-                                <div class="tw-flex tw-items-center tw-gap-2.5">
-                                    <div
-                                        class="tw-border-2 tw-flex tw-items-center tw-justify-center tw-rounded-full tw-w-10 tw-h-10">
-                                        <svg aria-hidden="true" class="tw-size-5 tw-text-sky-500 tw-shrink-0"
-                                            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2"
-                                            stroke="currentColor" fill="none" stroke-linecap="round"
-                                            stroke-linejoin="round">
-                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                            <path d="M6 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"></path>
-                                            <path d="M17 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"></path>
-                                            <path d="M17 17h-11v-14h-2"></path>
-                                            <path d="M6 5l14 1l-1 7h-13"></path>
-                                        </svg>
+                        {{-- Left Sell Card --}}
+                        <div class="tw-transition-all tw-duration-200 tw-bg-white tw-shadow-sm tw-rounded-2xl tw-ring-1 tw-ring-gray-200 hover:tw-shadow-md hover:tw--translate-y-0.5"
+                            style="height: 700px;">
+                            <div class="tw-p-6 tw-flex tw-flex-col tw-justify-between tw-h-full">
+                                <div>
+                                    <!-- Card Header -->
+                                    <div class="tw-flex tw-justify-between tw-items-start">
+                                        <div>
+                                            <h4
+                                                class="tw-text-3xl tw-font-bold tw-text-gray-900 tw-tracking-tight tw-font-sans">
+                                                @format_currency($sells_30_days_total)</h4>
+                                            <p class="tw-text-sm tw-font-medium tw-text-gray-500 tw-mt-1">
+                                                {{ __('home.sells_last_30_days') }}
+                                            </p>
+                                        </div>
                                     </div>
 
-                                    <h3 class="tw-font-bold tw-text-base lg:tw-text-xl">
-                                        {{ __('home.sells_last_30_days') }}
-                                    </h3>
-                                </div>
-                                <div class="tw-mt-5">
-                                    <div
-                                        class="tw-grid tw-w-full tw-h-100 tw-border tw-border-gray-200 tw-border-dashed tw-rounded-xl tw-bg-gray-50 ">
-                                        <p class="tw-text-sm tw-italic tw-font-normal tw-text-gray-400">
-                                            {!! $sells_chart_1->container() !!}
-                                        </p>
+                                    <!-- Chart Container -->
+                                    <div class="tw-relative tw-mt-6" style="height: 480px;">
+                                        <canvas id="sellChart30DaysCanvas"></canvas>
                                     </div>
+                                </div>
+
+                                <!-- Card Footer -->
+                                <div
+                                    class="tw-flex tw-justify-between tw-items-center tw-pt-4 tw-border-t tw-border-gray-100">
+                                    <button
+                                        class="tw-text-sm tw-text-gray-500 tw-font-semibold hover:tw-text-gray-900 tw-flex tw-items-center tw-gap-1">
+                                        {{ __('lang_v1.last_30_days') }}
+                                    </button>
+                                    <a href="{{ action([\App\Http\Controllers\SellController::class, 'index']) }}"
+                                        class="tw-text-sm tw-text-blue-600 tw-font-bold hover:tw-text-blue-800 tw-flex tw-items-center tw-gap-1">
+                                        Progress report &rarr;
+                                    </a>
                                 </div>
                             </div>
                         </div>
@@ -729,34 +820,40 @@
                         @endforeach
                     @endif --}}
                     @if (!empty($all_locations))
-                        <div
-                            class="tw-transition-all tw-duration-200 tw-bg-white tw-shadow-sm tw-rounded-xl tw-ring-1 hover:tw-shadow-md hover:tw--translate-y-0.5 tw-ring-gray-200">
-                            <div class="tw-p-4 sm:tw-p-5">
-                                <div class="tw-flex tw-items-center tw-gap-2.5">
-                                    <div
-                                        class="tw-border-2 tw-flex tw-items-center tw-justify-center tw-rounded-full tw-w-10 tw-h-10">
-                                        <svg aria-hidden="true" class="tw-size-5 tw-text-sky-500 tw-shrink-0"
-                                            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2"
-                                            stroke="currentColor" fill="none" stroke-linecap="round"
-                                            stroke-linejoin="round">
-                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                            <path d="M6 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"></path>
-                                            <path d="M17 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"></path>
-                                            <path d="M17 17h-11v-14h-2"></path>
-                                            <path d="M6 5l14 1l-1 7h-13"></path>
-                                        </svg>
+                        {{-- Right Sell Card --}}
+                        <div class="tw-transition-all tw-duration-200 tw-bg-white tw-shadow-sm tw-rounded-2xl tw-ring-1 tw-ring-gray-200 hover:tw-shadow-md hover:tw--translate-y-0.5"
+                            style="height: 700px;">
+                            <div class="tw-p-6 tw-flex tw-flex-col tw-justify-between tw-h-full">
+                                <div>
+                                    <!-- Card Header -->
+                                    <div class="tw-flex tw-justify-between tw-items-start">
+                                        <div>
+                                            <h4
+                                                class="tw-text-3xl tw-font-bold tw-text-gray-900 tw-tracking-tight tw-font-sans">
+                                                @format_currency($sells_fy_total)</h4>
+                                            <p class="tw-text-sm tw-font-medium tw-text-gray-500 tw-mt-1">
+                                                {{ __('home.sells_current_fy') }}
+                                            </p>
+                                        </div>
                                     </div>
-                                    <h3 class="tw-font-bold tw-text-base lg:tw-text-xl">
-                                        {{ __('home.sells_current_fy') }}
-                                    </h3>
+
+                                    <!-- Chart Container -->
+                                    <div class="tw-relative tw-mt-6" style="height: 480px;">
+                                        <canvas id="sellChartFYCanvas"></canvas>
+                                    </div>
                                 </div>
-                                <div class="tw-mt-5">
-                                    <div
-                                        class="tw-grid tw-w-full tw-h-100 tw-border tw-border-gray-200 tw-border-dashed tw-rounded-xl tw-bg-gray-50 ">
-                                        <p class="tw-text-sm tw-italic tw-font-normal tw-text-gray-400">
-                                            {!! $sells_chart_2->container() !!}
-                                        </p>
-                                    </div>
+
+                                <!-- Card Footer -->
+                                <div
+                                    class="tw-flex tw-justify-between tw-items-center tw-pt-4 tw-border-t tw-border-gray-100">
+                                    <button
+                                        class="tw-text-sm tw-text-gray-500 tw-font-semibold hover:tw-text-gray-900 tw-flex tw-items-center tw-gap-1 tw-whitespace-nowrap">
+                                        {{ __('home.this_fy') }}
+                                    </button>
+                                    <a href="{{ action([\App\Http\Controllers\SellController::class, 'index']) }}"
+                                        class="tw-text-sm tw-text-red-600 tw-font-bold hover:tw-text-red-800 tw-flex tw-items-center tw-gap-1 tw-whitespace-nowrap">
+                                        Progress report &rarr;
+                                    </a>
                                 </div>
                             </div>
                         </div>
@@ -1408,18 +1505,183 @@
 @endsection
 
 @section('javascript')
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="{{ asset('js/home.js?v=' . $asset_v) }}"></script>
     <script src="{{ asset('js/payment.js?v=' . $asset_v) }}"></script>
     @includeIf('sales_order.common_js')
     @includeIf('purchase_order.common_js')
-    @if (!empty($all_locations))
-        {!! $sells_chart_1->script() !!}
-        {!! $sells_chart_2->script() !!}
-        {!! $orders_chart_1->script() !!}
-        {!! $orders_chart_2->script() !!}
-    @endif
     <script type="text/javascript">
         $(document).ready(function() {
+            // Helper function to initialize our custom Chart.js charts
+            const initChartJS = (canvasId, labels, datasets) => {
+                const canvas = document.getElementById(canvasId);
+                if (!canvas) return;
+                const ctx = canvas.getContext('2d');
+
+                const colors = ['#2563eb', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#3b82f6', '#f43f5e',
+                    '#14b8a6', '#06b6d4', '#64748b'
+                ];
+
+                // Helper to convert hex to rgba
+                const hexToRgba = (hex, alpha) => {
+                    let r = parseInt(hex.slice(1, 3), 16),
+                        g = parseInt(hex.slice(3, 5), 16),
+                        b = parseInt(hex.slice(5, 7), 16);
+                    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+                };
+
+                const chartDatasets = datasets.map((ds, index) => {
+                    const color = colors[index % colors.length];
+                    return {
+                        label: ds.label,
+                        data: ds.data,
+                        borderColor: color,
+                        borderWidth: 3.5,
+                        backgroundColor: (context) => {
+                            const chart = context.chart;
+                            const {
+                                ctx,
+                                chartArea
+                            } = chart;
+                            if (!chartArea) return null;
+                            const gradient = ctx.createLinearGradient(0, chartArea.top, 0, chartArea
+                                .bottom);
+                            gradient.addColorStop(0, hexToRgba(color, 0.2));
+                            gradient.addColorStop(1, hexToRgba(color, 0));
+                            return gradient;
+                        },
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 0,
+                        pointHoverRadius: 6,
+                        pointBackgroundColor: '#ffffff',
+                        pointBorderColor: color,
+                        pointBorderWidth: 2
+                    };
+                });
+
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: chartDatasets
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        interaction: {
+                            mode: 'index',
+                            intersect: false,
+                        },
+                        plugins: {
+                            legend: {
+                                display: datasets.length > 1,
+                                position: 'top',
+                                labels: {
+                                    usePointStyle: true,
+                                    boxWidth: 8,
+                                    font: {
+                                        family: 'sans-serif',
+                                        size: 12
+                                    }
+                                }
+                            },
+                            tooltip: {
+                                enabled: true,
+                                backgroundColor: '#ffffff',
+                                titleColor: '#111827',
+                                bodyColor: '#4b5563',
+                                borderColor: '#e5e7eb',
+                                borderWidth: 1,
+                                padding: 12,
+                                boxPadding: 6,
+                                usePointStyle: true,
+                                titleFont: {
+                                    family: 'sans-serif',
+                                    size: 13,
+                                    weight: '600'
+                                },
+                                bodyFont: {
+                                    family: 'sans-serif',
+                                    size: 12
+                                },
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.dataset.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        if (context.parsed.y !== null) {
+                                            label += new Intl.NumberFormat('en-US', {
+                                                style: 'currency',
+                                                currency: 'USD'
+                                            }).format(context.parsed.y);
+                                        }
+                                        return label;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                display: true,
+                                grid: {
+                                    display: false,
+                                    drawBorder: false
+                                },
+                                ticks: {
+                                    font: {
+                                        family: 'sans-serif',
+                                        size: 11
+                                    },
+                                    color: '#6b7280'
+                                }
+                            },
+                            y: {
+                                display: true,
+                                grid: {
+                                    color: '#f3f4f6',
+                                    drawBorder: false,
+                                    borderDash: [5, 5]
+                                },
+                                ticks: {
+                                    font: {
+                                        family: 'sans-serif',
+                                        size: 11
+                                    },
+                                    color: '#6b7280',
+                                    callback: function(value, index, values) {
+                                        if (value >= 1000) {
+                                            return '$' + value / 1000 + 'k';
+                                        }
+                                        return '$' + value;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            };
+
+            const order30DaysLabels = @json($orders_30_days_labels);
+            const order30DaysDatasets = @json($orders_30_days_datasets);
+
+            const orderFYLabels = @json($orders_fy_labels);
+            const orderFYDatasets = @json($orders_fy_datasets);
+
+            const sell30DaysLabels = @json($sells_30_days_labels);
+            const sell30DaysDatasets = @json($sells_30_days_datasets);
+
+            const sellFYLabels = @json($sells_fy_labels);
+            const sellFYDatasets = @json($sells_fy_datasets);
+
+            // Initialize all 4 charts with dynamic data
+            initChartJS('orderChart30DaysCanvas', order30DaysLabels, order30DaysDatasets);
+            initChartJS('orderChartFYCanvas', orderFYLabels, orderFYDatasets);
+            initChartJS('sellChart30DaysCanvas', sell30DaysLabels, sell30DaysDatasets);
+            initChartJS('sellChartFYCanvas', sellFYLabels, sellFYDatasets);
+
+
             sales_order_table = $('#sales_order_table').DataTable({
                 processing: true,
                 serverSide: true,
