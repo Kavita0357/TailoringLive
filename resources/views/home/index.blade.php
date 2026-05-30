@@ -505,68 +505,75 @@
             <div class="tw-grid tw-grid-cols-1 tw-gap-4 sm:tw-gap-5 lg:tw-grid-cols-2">
                 @if (auth()->user()->can('sell.view') || auth()->user()->can('direct_sell.view'))
                     @if (!empty($all_locations))
-                        <div
-                            class="tw-transition-all tw-duration-200 tw-bg-white tw-shadow-sm tw-rounded-xl tw-ring-1 hover:tw-shadow-md hover:tw--translate-y-0.5 tw-ring-gray-200">
-                            <div class="tw-p-4 sm:tw-p-5">
-                                <div class="tw-flex tw-items-center tw-gap-2.5">
-                                    <div
-                                        class="tw-border-2 tw-flex tw-items-center tw-justify-center tw-rounded-full tw-w-10 tw-h-10">
-                                        <svg aria-hidden="true" class="tw-size-5 tw-text-sky-500 tw-shrink-0"
-                                            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2"
-                                            stroke="currentColor" fill="none" stroke-linecap="round"
-                                            stroke-linejoin="round">
-                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                            <path d="M6 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"></path>
-                                            <path d="M17 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"></path>
-                                            <path d="M17 17h-11v-14h-2"></path>
-                                            <path d="M6 5l14 1l-1 7h-13"></path>
-                                        </svg>
+                        {{-- Left Order Card --}}
+                        <div class="tw-transition-all tw-duration-200 tw-bg-white tw-shadow-sm tw-rounded-2xl tw-ring-1 tw-ring-gray-200 hover:tw-shadow-md hover:tw--translate-y-0.5" style="height: 700px;">
+                            <div class="tw-p-6 tw-flex tw-flex-col tw-justify-between tw-h-full">
+                                <div>
+                                    <!-- Card Header -->
+                                    <div class="tw-flex tw-justify-between tw-items-start">
+                                        <div>
+                                            <h4 class="tw-text-3xl tw-font-bold tw-text-gray-900 tw-tracking-tight tw-font-sans">$12,423</h4>
+                                            <p class="tw-text-sm tw-font-medium tw-text-gray-500 tw-mt-1">Sales this week</p>
+                                        </div>
+                                        <div class="tw-flex tw-items-center tw-text-green-600 tw-font-semibold tw-text-sm tw-gap-1">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="tw-h-4 tw-w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                                            </svg>
+                                            <span>12%</span>
+                                        </div>
                                     </div>
 
-                                    <h3 class="tw-font-bold tw-text-base lg:tw-text-xl">
-                                        {{ __('tailoring.order_last_30_days') }}
-                                    </h3>
-                                </div>
-                                <div class="tw-mt-5">
-                                    <div
-                                        class="tw-grid tw-w-full tw-h-100 tw-border tw-border-gray-200 tw-border-dashed tw-rounded-xl tw-bg-gray-50 ">
-                                        <p class="tw-text-sm tw-italic tw-font-normal tw-text-gray-400">
-                                            {!! $orders_chart_1->container() !!}
-                                        </p>
+                                    <!-- Chart Container -->
+                                    <div class="tw-relative tw-mt-6" style="height: 480px;">
+                                        <canvas id="orderChart30DaysCanvas"></canvas>
                                     </div>
+                                </div>
+
+                                <!-- Card Footer -->
+                                <div class="tw-flex tw-justify-between tw-items-center tw-pt-4 tw-border-t tw-border-gray-100">
+                                    <button class="tw-text-sm tw-text-gray-500 tw-font-semibold hover:tw-text-gray-900 tw-flex tw-items-center tw-gap-1 tw-whitespace-nowrap">
+                                        Last 7 days <svg xmlns="http://www.w3.org/2000/svg" class="tw-h-4 tw-w-4 tw-text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg>
+                                    </button>
+                                    <a href="#" class="tw-text-sm tw-text-red-600 tw-font-bold hover:tw-text-red-800 tw-flex tw-items-center tw-gap-1 tw-whitespace-nowrap">
+                                        Progress report &rarr;
+                                    </a>
                                 </div>
                             </div>
                         </div>
                     @endif
                     @if (!empty($all_locations))
-                        <div
-                            class="tw-transition-all tw-duration-200 tw-bg-white tw-shadow-sm tw-rounded-xl tw-ring-1 hover:tw-shadow-md hover:tw--translate-y-0.5 tw-ring-gray-200">
-                            <div class="tw-p-4 sm:tw-p-5">
-                                <div class="tw-flex tw-items-center tw-gap-2.5">
-                                    <div
-                                        class="tw-border-2 tw-flex tw-items-center tw-justify-center tw-rounded-full tw-w-10 tw-h-10">
-                                        <svg aria-hidden="true" class="tw-size-5 tw-text-sky-500 tw-shrink-0"
-                                            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2"
-                                            stroke="currentColor" fill="none" stroke-linecap="round"
-                                            stroke-linejoin="round">
-                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                            <path d="M6 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"></path>
-                                            <path d="M17 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"></path>
-                                            <path d="M17 17h-11v-14h-2"></path>
-                                            <path d="M6 5l14 1l-1 7h-13"></path>
-                                        </svg>
+                        {{-- Right Order Card --}}
+                        <div class="tw-transition-all tw-duration-200 tw-bg-white tw-shadow-sm tw-rounded-2xl tw-ring-1 tw-ring-gray-200 hover:tw-shadow-md hover:tw--translate-y-0.5" style="height: 700px;">
+                            <div class="tw-p-6 tw-flex tw-flex-col tw-justify-between tw-h-full">
+                                <div>
+                                    <!-- Card Header -->
+                                    <div class="tw-flex tw-justify-between tw-items-start">
+                                        <div>
+                                            <h4 class="tw-text-3xl tw-font-bold tw-text-gray-900 tw-tracking-tight tw-font-sans">$12,423</h4>
+                                            <p class="tw-text-sm tw-font-medium tw-text-gray-500 tw-mt-1">Sales this week</p>
+                                        </div>
+                                        <div class="tw-flex tw-items-center tw-text-green-600 tw-font-semibold tw-text-sm tw-gap-1">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="tw-h-4 tw-w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                                            </svg>
+                                            <span>12%</span>
+                                        </div>
                                     </div>
-                                    <h3 class="tw-font-bold tw-text-base lg:tw-text-xl">
-                                        {{ __('tailoring.order_current_fy') }}
-                                    </h3>
+
+                                    <!-- Chart Container -->
+                                    <div class="tw-relative tw-mt-6" style="height: 480px;">
+                                        <canvas id="orderChartFYCanvas"></canvas>
+                                    </div>
                                 </div>
-                                <div class="tw-mt-5">
-                                    <div
-                                        class="tw-grid tw-w-full tw-h-100 tw-border tw-border-gray-200 tw-border-dashed tw-rounded-xl tw-bg-gray-50 ">
-                                        <p class="tw-text-sm tw-italic tw-font-normal tw-text-gray-400">
-                                            {!! $orders_chart_2->container() !!}
-                                        </p>
-                                    </div>
+
+                                <!-- Card Footer -->
+                                <div class="tw-flex tw-justify-between tw-items-center tw-pt-4 tw-border-t tw-border-gray-100">
+                                    <button class="tw-text-sm tw-text-gray-500 tw-font-semibold hover:tw-text-gray-900 tw-flex tw-items-center tw-gap-1 tw-whitespace-nowrap">
+                                        Last 7 days <svg xmlns="http://www.w3.org/2000/svg" class="tw-h-4 tw-w-4 tw-text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg>
+                                    </button>
+                                    <a href="#" class="tw-text-sm tw-text-red-600 tw-font-bold hover:tw-text-red-800 tw-flex tw-items-center tw-gap-1 tw-whitespace-nowrap">
+                                        Progress report &rarr;
+                                    </a>
                                 </div>
                             </div>
                         </div>
@@ -689,35 +696,38 @@
             <div class="tw-grid tw-grid-cols-1 tw-gap-4 sm:tw-gap-5 lg:tw-grid-cols-2">
                 @if (auth()->user()->can('sell.view') || auth()->user()->can('direct_sell.view'))
                     @if (!empty($all_locations))
-                        <div
-                            class="tw-transition-all tw-duration-200 tw-bg-white tw-shadow-sm tw-rounded-xl tw-ring-1 hover:tw-shadow-md hover:tw--translate-y-0.5 tw-ring-gray-200">
-                            <div class="tw-p-4 sm:tw-p-5">
-                                <div class="tw-flex tw-items-center tw-gap-2.5">
-                                    <div
-                                        class="tw-border-2 tw-flex tw-items-center tw-justify-center tw-rounded-full tw-w-10 tw-h-10">
-                                        <svg aria-hidden="true" class="tw-size-5 tw-text-sky-500 tw-shrink-0"
-                                            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2"
-                                            stroke="currentColor" fill="none" stroke-linecap="round"
-                                            stroke-linejoin="round">
-                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                            <path d="M6 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"></path>
-                                            <path d="M17 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"></path>
-                                            <path d="M17 17h-11v-14h-2"></path>
-                                            <path d="M6 5l14 1l-1 7h-13"></path>
-                                        </svg>
+                        {{-- Left Sell Card --}}
+                        <div class="tw-transition-all tw-duration-200 tw-bg-white tw-shadow-sm tw-rounded-2xl tw-ring-1 tw-ring-gray-200 hover:tw-shadow-md hover:tw--translate-y-0.5" style="height: 700px;">
+                            <div class="tw-p-6 tw-flex tw-flex-col tw-justify-between tw-h-full">
+                                <div>
+                                    <!-- Card Header -->
+                                    <div class="tw-flex tw-justify-between tw-items-start">
+                                        <div>
+                                            <h4 class="tw-text-3xl tw-font-bold tw-text-gray-900 tw-tracking-tight tw-font-sans">$12,423</h4>
+                                            <p class="tw-text-sm tw-font-medium tw-text-gray-500 tw-mt-1">Sales this week</p>
+                                        </div>
+                                        <div class="tw-flex tw-items-center tw-text-green-600 tw-font-semibold tw-text-sm tw-gap-1">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="tw-h-4 tw-w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                                            </svg>
+                                            <span>12%</span>
+                                        </div>
                                     </div>
 
-                                    <h3 class="tw-font-bold tw-text-base lg:tw-text-xl">
-                                        {{ __('home.sells_last_30_days') }}
-                                    </h3>
-                                </div>
-                                <div class="tw-mt-5">
-                                    <div
-                                        class="tw-grid tw-w-full tw-h-100 tw-border tw-border-gray-200 tw-border-dashed tw-rounded-xl tw-bg-gray-50 ">
-                                        <p class="tw-text-sm tw-italic tw-font-normal tw-text-gray-400">
-                                            {!! $sells_chart_1->container() !!}
-                                        </p>
+                                    <!-- Chart Container -->
+                                    <div class="tw-relative tw-mt-6" style="height: 480px;">
+                                        <canvas id="sellChart30DaysCanvas"></canvas>
                                     </div>
+                                </div>
+
+                                <!-- Card Footer -->
+                                <div class="tw-flex tw-justify-between tw-items-center tw-pt-4 tw-border-t tw-border-gray-100">
+                                    <button class="tw-text-sm tw-text-gray-500 tw-font-semibold hover:tw-text-gray-900 tw-flex tw-items-center tw-gap-1">
+                                        Last 7 days <svg xmlns="http://www.w3.org/2000/svg" class="tw-h-4 tw-w-4 tw-text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg>
+                                    </button>
+                                    <a href="#" class="tw-text-sm tw-text-blue-600 tw-font-bold hover:tw-text-blue-800 tw-flex tw-items-center tw-gap-1">
+                                        Progress report &rarr;
+                                    </a>
                                 </div>
                             </div>
                         </div>
@@ -729,34 +739,38 @@
                         @endforeach
                     @endif --}}
                     @if (!empty($all_locations))
-                        <div
-                            class="tw-transition-all tw-duration-200 tw-bg-white tw-shadow-sm tw-rounded-xl tw-ring-1 hover:tw-shadow-md hover:tw--translate-y-0.5 tw-ring-gray-200">
-                            <div class="tw-p-4 sm:tw-p-5">
-                                <div class="tw-flex tw-items-center tw-gap-2.5">
-                                    <div
-                                        class="tw-border-2 tw-flex tw-items-center tw-justify-center tw-rounded-full tw-w-10 tw-h-10">
-                                        <svg aria-hidden="true" class="tw-size-5 tw-text-sky-500 tw-shrink-0"
-                                            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2"
-                                            stroke="currentColor" fill="none" stroke-linecap="round"
-                                            stroke-linejoin="round">
-                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                            <path d="M6 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"></path>
-                                            <path d="M17 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"></path>
-                                            <path d="M17 17h-11v-14h-2"></path>
-                                            <path d="M6 5l14 1l-1 7h-13"></path>
-                                        </svg>
+                        {{-- Right Sell Card --}}
+                        <div class="tw-transition-all tw-duration-200 tw-bg-white tw-shadow-sm tw-rounded-2xl tw-ring-1 tw-ring-gray-200 hover:tw-shadow-md hover:tw--translate-y-0.5" style="height: 700px;">
+                            <div class="tw-p-6 tw-flex tw-flex-col tw-justify-between tw-h-full">
+                                <div>
+                                    <!-- Card Header -->
+                                    <div class="tw-flex tw-justify-between tw-items-start">
+                                        <div>
+                                            <h4 class="tw-text-3xl tw-font-bold tw-text-gray-900 tw-tracking-tight tw-font-sans">$12,423</h4>
+                                            <p class="tw-text-sm tw-font-medium tw-text-gray-500 tw-mt-1">Sales this week</p>
+                                        </div>
+                                        <div class="tw-flex tw-items-center tw-text-green-600 tw-font-semibold tw-text-sm tw-gap-1">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="tw-h-4 tw-w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                                            </svg>
+                                            <span>12%</span>
+                                        </div>
                                     </div>
-                                    <h3 class="tw-font-bold tw-text-base lg:tw-text-xl">
-                                        {{ __('home.sells_current_fy') }}
-                                    </h3>
+
+                                    <!-- Chart Container -->
+                                    <div class="tw-relative tw-mt-6" style="height: 480px;">
+                                        <canvas id="sellChartFYCanvas"></canvas>
+                                    </div>
                                 </div>
-                                <div class="tw-mt-5">
-                                    <div
-                                        class="tw-grid tw-w-full tw-h-100 tw-border tw-border-gray-200 tw-border-dashed tw-rounded-xl tw-bg-gray-50 ">
-                                        <p class="tw-text-sm tw-italic tw-font-normal tw-text-gray-400">
-                                            {!! $sells_chart_2->container() !!}
-                                        </p>
-                                    </div>
+
+                                <!-- Card Footer -->
+                                <div class="tw-flex tw-justify-between tw-items-center tw-pt-4 tw-border-t tw-border-gray-100">
+                                    <button class="tw-text-sm tw-text-gray-500 tw-font-semibold hover:tw-text-gray-900 tw-flex tw-items-center tw-gap-1 tw-whitespace-nowrap">
+                                        Last 7 days <svg xmlns="http://www.w3.org/2000/svg" class="tw-h-4 tw-w-4 tw-text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg>
+                                    </button>
+                                    <a href="#" class="tw-text-sm tw-text-red-600 tw-font-bold hover:tw-text-red-800 tw-flex tw-items-center tw-gap-1 tw-whitespace-nowrap">
+                                        Progress report &rarr;
+                                    </a>
                                 </div>
                             </div>
                         </div>
@@ -1408,18 +1422,192 @@
 @endsection
 
 @section('javascript')
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="{{ asset('js/home.js?v=' . $asset_v) }}"></script>
     <script src="{{ asset('js/payment.js?v=' . $asset_v) }}"></script>
     @includeIf('sales_order.common_js')
     @includeIf('purchase_order.common_js')
-    @if (!empty($all_locations))
-        {!! $sells_chart_1->script() !!}
-        {!! $sells_chart_2->script() !!}
-        {!! $orders_chart_1->script() !!}
-        {!! $orders_chart_2->script() !!}
-    @endif
     <script type="text/javascript">
         $(document).ready(function() {
+            // Helper function to initialize our custom Chart.js charts
+            const initChartJS = (canvasId, labels, data1, data2, label1, label2, color1, color2) => {
+                const canvas = document.getElementById(canvasId);
+                if (!canvas) return;
+                const ctx = canvas.getContext('2d');
+                
+                // Helper to convert hex to rgba
+                const hexToRgba = (hex, alpha) => {
+                    let r = parseInt(hex.slice(1, 3), 16),
+                        g = parseInt(hex.slice(3, 5), 16),
+                        b = parseInt(hex.slice(5, 7), 16);
+                    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+                };
+
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            {
+                                label: label1,
+                                data: data1,
+                                borderColor: color1,
+                                borderWidth: 3.5,
+                                backgroundColor: (context) => {
+                                    const chart = context.chart;
+                                    const {ctx, chartArea} = chart;
+                                    if (!chartArea) return null;
+                                    const gradient = ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
+                                    gradient.addColorStop(0, hexToRgba(color1, 0.7)); // Adjust opacity here if needed
+                                    gradient.addColorStop(1, hexToRgba(color1, 0));
+                                    return gradient;
+                                },
+                                fill: true,
+                                tension: 0.4,
+                                pointRadius: 0,
+                                pointHoverRadius: 6,
+                                pointBackgroundColor: '#ffffff',
+                                pointBorderColor: color1,
+                                pointBorderWidth: 2
+                            },
+                            {
+                                label: label2,
+                                data: data2,
+                                borderColor: color2,
+                                borderWidth: 3.5,
+                                backgroundColor: (context) => {
+                                    const chart = context.chart;
+                                    const {ctx, chartArea} = chart;
+                                    if (!chartArea) return null;
+                                    const gradient = ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
+                                    gradient.addColorStop(0, hexToRgba(color2, 0.7)); // Adjust opacity here if needed
+                                    gradient.addColorStop(1, hexToRgba(color2, 0));
+                                    return gradient;
+                                },
+                                fill: true,
+                                tension: 0.4,
+                                pointRadius: 0,
+                                pointHoverRadius: 6,
+                                pointBackgroundColor: '#ffffff',
+                                pointBorderColor: color2,
+                                pointBorderWidth: 2
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        interaction: {
+                            mode: 'index',
+                            intersect: false,
+                        },
+                        plugins: {
+                            legend: {
+                                display: false,
+                                position: 'top',
+                                labels: {
+                                    usePointStyle: true,
+                                    boxWidth: 8,
+                                    font: {
+                                        family: 'sans-serif',
+                                        size: 12
+                                    }
+                                }
+                            },
+                            tooltip: {
+                                enabled: true,
+                                backgroundColor: '#ffffff',
+                                titleColor: '#111827',
+                                bodyColor: '#4b5563',
+                                borderColor: '#e5e7eb',
+                                borderWidth: 1,
+                                padding: 12,
+                                boxPadding: 6,
+                                usePointStyle: true,
+                                titleFont: {
+                                    family: 'sans-serif',
+                                    size: 13,
+                                    weight: '600'
+                                },
+                                bodyFont: {
+                                    family: 'sans-serif',
+                                    size: 12
+                                },
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.dataset.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        if (context.parsed.y !== null) {
+                                            label += new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(context.parsed.y);
+                                        }
+                                        return label;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                display: true,
+                                grid: {
+                                    display: false,
+                                    drawBorder: false
+                                },
+                                ticks: {
+                                    font: {
+                                        family: 'sans-serif',
+                                        size: 11
+                                    },
+                                    color: '#6b7280'
+                                }
+                            },
+                            y: {
+                                display: true,
+                                grid: {
+                                    color: '#f3f4f6',
+                                    drawBorder: false,
+                                    borderDash: [5, 5]
+                                },
+                                ticks: {
+                                    font: {
+                                        family: 'sans-serif',
+                                        size: 11
+                                    },
+                                    color: '#6b7280',
+                                    callback: function(value, index, values) {
+                                        if (value >= 1000) {
+                                            return '$' + value / 1000 + 'k';
+                                        }
+                                        return '$' + value;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            };
+
+            const labels30Days = ['1 May', '5 May', '10 May', '15 May', '20 May', '25 May', '30 May'];
+            const dataOrder30_1 = [3200, 4100, 3800, 5200, 4800, 6100, 5900];
+            const dataOrder30_2 = [2800, 3600, 3500, 4200, 4100, 5300, 5100];
+            
+            const labelsFY = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const dataOrderFY_1 = [12000, 15000, 14000, 18000, 22000, 25000, 23000, 26000, 28000, 31000, 35000, 42000];
+            const dataOrderFY_2 = [10000, 13000, 12500, 16000, 19000, 21000, 20000, 23000, 24000, 27000, 31000, 38000];
+
+            const dataSell30_1 = [4500, 5200, 4900, 6500, 5800, 7200, 6900];
+            const dataSell30_2 = [3800, 4300, 4100, 5200, 4800, 6100, 5700];
+
+            const dataSellFY_1 = [15000, 18000, 16000, 22000, 26000, 30000, 28000, 32000, 35000, 39000, 45000, 52000];
+            const dataSellFY_2 = [12500, 15000, 14000, 18500, 22000, 25000, 23000, 27000, 29000, 33000, 38000, 44000];
+
+            // Initialize all 4 charts with distinct colors and data
+            initChartJS('orderChart30DaysCanvas', labels30Days, dataOrder30_1, dataOrder30_2, 'Current Period', 'Previous Period', '#2563eb', '#22c55e');
+            initChartJS('orderChartFYCanvas', labelsFY, dataOrderFY_1, dataOrderFY_2, 'Current Year', 'Previous Year', '#2563eb', '#22c55e');
+            initChartJS('sellChart30DaysCanvas', labels30Days, dataSell30_1, dataSell30_2, 'Current Period', 'Previous Period', '#2563eb', '#22c55e');
+            initChartJS('sellChartFYCanvas', labelsFY, dataSellFY_1, dataSellFY_2, 'Current Year', 'Previous Year', '#2563eb', '#22c55e');
+            
             sales_order_table = $('#sales_order_table').DataTable({
                 processing: true,
                 serverSide: true,
