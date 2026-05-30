@@ -1639,6 +1639,7 @@
                             },
                             y: {
                                 display: true,
+                                min: 0,
                                 grid: {
                                     color: '#f3f4f6',
                                     drawBorder: false,
