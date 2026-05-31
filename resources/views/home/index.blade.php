@@ -756,7 +756,7 @@
                                                 <th>@lang('messages.date')</th>
                                                 <th>@lang('tailoring.order_no')</th>
                                                 <th>@lang('sale.customer_name')</th>
-                                                <th>@lang('lang_v1.contact_no')</th>
+                                                {{-- <th>@lang('lang_v1.contact_no')</th> --}}
                                                 <th>@lang('sale.location')</th>
                                                 <th>@lang('tailoring.delivery_status')</th>
                                                 <th>@lang('sale.payment_status')</th>
@@ -1624,7 +1624,7 @@
                         },
                         scales: {
                             x: {
-                                display: true,
+                                display: false,
                                 grid: {
                                     display: false,
                                     drawBorder: false
@@ -1638,7 +1638,7 @@
                                 }
                             },
                             y: {
-                                display: true,
+                                display: false,
                                 min: 0,
                                 grid: {
                                     color: '#f3f4f6',
@@ -2113,7 +2113,8 @@
                     },
                     {
                         data: 'mobile',
-                        name: 'contacts.mobile'
+                        name: 'contacts.mobile',
+                        visible: false
                     },
                     {
                         data: 'business_location',
