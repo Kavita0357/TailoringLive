@@ -218,7 +218,7 @@ $(document).ready(function () {
         //Uncomment below line to enable save state of datatable.
         //stateSave: true,
         fixedHeader: true,
-        dom: '<"row margin-bottom-20 text-center"<"col-sm-1"l><"col-sm-8"B><"col-sm-3"f> r>tip',
+        dom: '<"row margin-bottom-20 text-center"<"col-sm-3"l><"col-sm-6"B><"col-sm-3"f> r>tip',
         buttons: buttons,
         aLengthMenu: [
             [25, 50, 100, 200, 500, 1000, -1],
@@ -244,7 +244,7 @@ $(document).ready(function () {
         },
     });
 
-   
+
 
     if ($('input#iraqi_selling_price_adjustment').length > 0) {
         iraqi_selling_price_adjustment = true;

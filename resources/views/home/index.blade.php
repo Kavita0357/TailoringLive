@@ -658,8 +658,9 @@
                         </div>
                     @endif
                 @endif
+                <div class="lg:tw-col-span-2 tw-flex tw-flex-col lg:tw-flex-row tw-gap-4 sm:tw-gap-5 tw-w-full">
                 <div
-                    class="tw-transition-all lg:tw-col-span-2 tw-duration-200 tw-bg-white tw-shadow-sm tw-rounded-xl tw-ring-1 hover:tw-shadow-md hover:tw--translate-y-0.5 tw-ring-gray-200">
+                    class="tw-flex-1 tw-min-w-0 tw-transition-all tw-duration-200 tw-bg-white tw-shadow-sm tw-rounded-xl tw-ring-1 hover:tw-shadow-md hover:tw--translate-y-0.5 tw-ring-gray-200">
                     <div class="tw-p-4 sm:tw-p-5">
                         <div class="tw-flex tw-items-center tw-gap-2.5">
                             <div
@@ -713,7 +714,7 @@
                     </div>
                 </div>
                 <div
-                    class="tw-transition-all lg:tw-col-span-2 tw-duration-200 tw-bg-white tw-shadow-sm tw-rounded-xl tw-ring-1 hover:tw-shadow-md hover:tw--translate-y-0.5 tw-ring-gray-200">
+                    class="tw-flex-1 tw-min-w-0 tw-transition-all tw-duration-200 tw-bg-white tw-shadow-sm tw-rounded-xl tw-ring-1 hover:tw-shadow-md hover:tw--translate-y-0.5 tw-ring-gray-200">
                     <div class="tw-p-4 sm:tw-p-5">
                         <div class="tw-flex tw-items-center tw-gap-2.5">
                             <div
@@ -756,7 +757,7 @@
                                                 <th>@lang('messages.date')</th>
                                                 <th>@lang('tailoring.order_no')</th>
                                                 <th>@lang('sale.customer_name')</th>
-                                                <th>@lang('lang_v1.contact_no')</th>
+                                                {{-- <th>@lang('lang_v1.contact_no')</th> --}}
                                                 <th>@lang('sale.location')</th>
                                                 <th>@lang('tailoring.delivery_status')</th>
                                                 <th>@lang('sale.payment_status')</th>
@@ -768,6 +769,7 @@
                             </div>
                         </div>
                     </div>
+                </div>
                 </div>
             </div>
         </div>
@@ -1624,7 +1626,7 @@
                         },
                         scales: {
                             x: {
-                                display: true,
+                                display: false,
                                 grid: {
                                     display: false,
                                     drawBorder: false
@@ -1638,7 +1640,7 @@
                                 }
                             },
                             y: {
-                                display: true,
+                                display: false,
                                 min: 0,
                                 grid: {
                                     color: '#f3f4f6',
@@ -2113,7 +2115,8 @@
                     },
                     {
                         data: 'mobile',
-                        name: 'contacts.mobile'
+                        name: 'contacts.mobile',
+                        visible: false
                     },
                     {
                         data: 'business_location',
