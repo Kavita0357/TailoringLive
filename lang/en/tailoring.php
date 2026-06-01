@@ -33,6 +33,7 @@ return [
     'stock_status' => 'Stock Status',
     'in_stock' => 'In Stock',
     'out_of_stock' => 'Out Of Stock',
+    'transfer_fee' => 'Transfer Fee',
 
     'measurement' => 'Measurement',
     'measurements' => 'Measurements',
