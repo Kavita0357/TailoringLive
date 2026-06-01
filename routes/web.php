@@ -199,6 +199,7 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
     Route::post('/products/get_variation_template', [ProductController::class, 'getVariationTemplate']);
     Route::get('/products/get_variation_value_row', [ProductController::class, 'getVariationValueRow']);
     Route::post('/products/check_product_sku', [ProductController::class, 'checkProductSku']);
+    Route::post('/products/check_product_name', [ProductController::class, 'checkProductName']);
     Route::post('/products/validate_variation_skus', [ProductController::class, 'validateVaritionSkus']); //validates multiple skus at once
     Route::get('/products/quick_add', [ProductController::class, 'quickAdd']);
     Route::post('/products/save_quick_product', [ProductController::class, 'saveQuickProduct']);

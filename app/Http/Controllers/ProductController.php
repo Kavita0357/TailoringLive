@@ -163,6 +163,16 @@ class ProductController extends Controller
                 $products->where('products.type', $type);
             }
 
+            $stock_status = request()->get('stock_status', null);
+
+            if (! empty($stock_status)) {
+                if ($stock_status == 'in_stock') {
+                    $products->havingRaw('SUM(vld.qty_available) > 0');
+                } else {
+                    $products->having('current_stock', '=', "0");
+                }
+            }
+
             $category_id = request()->get('category_id', null);
             if (! empty($category_id)) {
                 $products->where('products.category_id', $category_id);
@@ -1385,6 +1395,40 @@ class ProductController extends Controller
             echo 'false';
             exit;
         }
+    }
+
+    /**
+     * Checks if product name already exists.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function checkProductName(Request $request)
+    {
+        $business_id = $request->session()->get('user.business_id');
+        $product_name = $request->input('name');
+        $product_id = $request->input('product_id');
+
+        //check in products table
+        $query = Product::where('business_id', $business_id)
+            ->whereRaw('LOWER(name) LIKE ?', ['%' . strtolower($product_name) . '%']);
+        if (!empty($product_id)) {
+            $query->where('id', '!=', $product_id);
+        }
+        $product = $query->first();
+
+        if ($product) {
+            // Return info but NOT an error
+            return response()->json([
+                'exists' => true,
+                'product_name' => $product->name,
+                'message' => "'{$product->name}' is already exists."
+            ]);
+        }
+
+        return response()->json([
+            'exists' => false
+        ]);
     }
 
     /**

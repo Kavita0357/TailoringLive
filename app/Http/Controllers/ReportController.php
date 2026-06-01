@@ -378,6 +378,7 @@ class ReportController extends Controller
                 'repair_model_id',
                 'product_id',
                 'active_state',
+                'stock_status'
             ]);
 
             $filters['not_for_selling'] = isset($filters['not_for_selling']) && $filters['not_for_selling'] == 'true' ? 1 : 0;

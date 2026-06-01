@@ -28,7 +28,11 @@ return [
     'tailor_copy' => 'Tailor Copy',
     'shop_copy' => 'Shop Copy',
     'note' => 'Note',
-    'products'=>'Products',
+    'products' => 'Products',
+    'status' => 'Status',
+    'stock_status' => 'Stock Status',
+    'in_stock' => 'In Stock',
+    'out_of_stock' => 'Out Of Stock',
 
     'measurement' => 'Measurement',
     'measurements' => 'Measurements',
@@ -68,7 +72,7 @@ return [
     'style_update' => 'Style updated successfully',
     'style_delete' => 'Style deleted successfully',
     'style_cannot_delete' => 'This style is connected to cloths and cannot be deleted',
-    'cloth_product'=>'Cloths/Fabrics',
+    'cloth_product' => 'Cloths/Fabrics',
 
     'cloth' => 'Cloth',
     'cloths' => 'Cloths',
@@ -162,5 +166,5 @@ return [
     'delete' => 'Delete',
     'preview' => 'Preview',
     'cancel' => 'Cancel',
-    'address'=> 'Address'
+    'address' => 'Address'
 ];

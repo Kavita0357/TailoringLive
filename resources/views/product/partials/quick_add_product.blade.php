@@ -333,6 +333,45 @@
     $(document).ready(function() {
         $("form#quick_add_product_form").validate({
             rules: {
+                name: {
+                    remote: {
+                        url: '/products/check_product_name',
+                        type: 'post',
+                        data: {
+                            name: function() {
+                                return $('#name').val();
+                            },
+                            product_id: function() {
+                                if ($('#product_id').length > 0) {
+                                    return $('#product_id').val();
+                                } else {
+                                    return '';
+                                }
+                            },
+                        },
+                        dataFilter: function(response) {
+                            var res = JSON.parse(response);
+                            var nameVal = $('#name').val().trim();
+                            if (nameVal === '') {
+                                $(document).find('#quick_add_product_form .existing-product-msg')
+                                    .remove();
+                                return true;
+                            }
+                            if (!res.valid && res.exists) {
+                                $(document).find('#quick_add_product_form .existing-product-msg')
+                                    .remove();
+                                $('#name').after(
+                                    `<label class="existing-product-msg error">${res.message}</label>`
+                                );
+                                return true;
+                            } else {
+                                $(document).find('#quick_add_product_form .existing-product-msg')
+                                    .remove();
+                                return true;
+                            }
+                        }
+                    },
+                },
                 sku: {
                     remote: {
                         url: "/products/check_product_sku",
