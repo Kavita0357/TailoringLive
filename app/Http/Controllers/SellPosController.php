@@ -1595,9 +1595,8 @@ class SellPosController extends Controller
         ];
     }
 
-    private function getSellLineRow($variation_id, $location_id, $quantity, $row_count, $is_direct_sell, $so_line = null)
+    private function getSellLineRow($variation_id, $location_id, $quantity, $row_count, $is_direct_sell, $so_line = null, $price_group_id = null)
     {
-        $line_type = 'product';
         $business_id = request()->session()->get('user.business_id');
         $business_details = $this->businessUtil->getDetails($business_id);
         //Check for weighing scale barcode
@@ -1633,9 +1632,40 @@ class SellPosController extends Controller
         //Get customer group and change the price accordingly
         $customer_id = request()->get('customer_id', null);
         $cg = $this->contactUtil->getCustomerGroup($business_id, $customer_id);
-        $percent = empty($cg) || empty($cg->amount) || $cg->price_calculation_type != 'percentage' ? 0 : $cg->amount;
-        $product->default_sell_price = $product->default_sell_price + ($percent * $product->default_sell_price) / 100;
-        $product->sell_price_inc_tax = $product->sell_price_inc_tax + ($percent * $product->sell_price_inc_tax) / 100;
+        $percent = 0;
+        if (!empty($price_group_id)) {
+            $price_group = SellingPriceGroup::find($price_group_id);
+            if ($price_group->discount_type == 'percentage') {
+                $percent = $price_group->discount_amount;
+                if ($price_group->selling_col_type == 'deduct') {
+                    $product->default_sell_price = $product->default_sell_price - ($percent * $product->default_sell_price / 100);
+                    $product->sell_price_inc_tax = $product->sell_price_inc_tax - ($percent * $product->sell_price_inc_tax / 100);
+                } else {
+                    $product->default_sell_price = $product->default_sell_price + ($percent * $product->default_sell_price / 100);
+                    $product->sell_price_inc_tax = $product->sell_price_inc_tax + ($percent * $product->sell_price_inc_tax / 100);
+                }
+            } else {
+                $percent = $price_group->discount_amount;
+                if ($price_group->selling_col_type == 'deduct') {
+                    $product->default_sell_price = $product->default_sell_price - $percent;
+                    $product->sell_price_inc_tax = $product->sell_price_inc_tax - $percent;
+                } else {
+                    $product->default_sell_price = $product->default_sell_price + $percent;
+                    $product->sell_price_inc_tax = $product->sell_price_inc_tax + $percent;
+                }
+            }
+        }
+        /* if (!empty($cg)) {
+            if ($cg->price_calculation_type == 'selling_price_group') {
+            } else if ($cg->price_calculation_type == 'percentage') {
+                $percent = $cg->amount;
+                $product->default_sell_price = $product->default_sell_price + ($percent * $product->default_sell_price / 100);
+                $product->sell_price_inc_tax = $product->sell_price_inc_tax + ($percent * $product->sell_price_inc_tax / 100);
+            }
+        } */
+        // $percent = (empty($cg) || empty($cg->amount) || $cg->price_calculation_type != 'percentage') ? 0 : $cg->amount;
+        // $product->default_sell_price = $product->default_sell_price + ($percent * $product->default_sell_price / 100);
+        // $product->sell_price_inc_tax = $product->sell_price_inc_tax + ($percent * $product->sell_price_inc_tax / 100);
 
         $tax_dropdown = TaxRate::forBusinessDropdown($business_id, true, true);
 
@@ -1681,7 +1711,9 @@ class SellPosController extends Controller
         }
 
         if (request()->get('type') == 'sell-return') {
-            $output['html_content'] = view('sell_return.partials.product_row')->with(compact('product', 'row_count', 'tax_dropdown', 'enabled_modules', 'sub_units'))->render();
+            $output['html_content'] = view('sell_return.partials.product_row')
+                ->with(compact('product', 'row_count', 'tax_dropdown', 'enabled_modules', 'sub_units'))
+                ->render();
         } else {
             $is_cg = !empty($cg->id) ? true : false;
 
@@ -1695,7 +1727,9 @@ class SellPosController extends Controller
                 $edit_price = auth()->user()->can('edit_product_price_from_pos_screen');
             }
 
-            $output['html_content'] = view('sale_pos.product_row')->with(compact('product', 'row_count', 'tax_dropdown', 'enabled_modules', 'pos_settings', 'sub_units', 'discount', 'waiters', 'edit_discount', 'edit_price', 'purchase_line_id', 'warranties', 'quantity', 'is_direct_sell', 'so_line', 'is_sales_order', 'last_sell_line', 'line_type'))->render();
+            $output['html_content'] = view('sale_pos.product_row')
+                ->with(compact('product', 'row_count', 'tax_dropdown', 'enabled_modules', 'pos_settings', 'sub_units', 'discount', 'waiters', 'edit_discount', 'edit_price', 'purchase_line_id', 'warranties', 'quantity', 'is_direct_sell', 'so_line', 'is_sales_order', 'last_sell_line'))
+                ->render();
         }
 
         return $output;
@@ -1726,6 +1760,7 @@ class SellPosController extends Controller
             $row_count = request()->get('product_row');
             $row_count = $row_count + 1;
             $quantity = request()->get('quantity', 1);
+            $price_group = request()->get('price_group', null);
             $weighing_barcode = request()->get('weighing_scale_barcode', null);
 
             $is_direct_sell = false;
@@ -1746,7 +1781,7 @@ class SellPosController extends Controller
                 }
             }
 
-            $output = $this->getSellLineRow($variation_id, $location_id, $quantity, $row_count, $is_direct_sell);
+            $output = $this->getSellLineRow($variation_id, $location_id, $quantity, $row_count, $is_direct_sell, null, $price_group);
 
             if ($this->transactionUtil->isModuleEnabled('modifiers') && !$is_direct_sell) {
                 $variation = Variation::find($variation_id);
@@ -1756,11 +1791,12 @@ class SellPosController extends Controller
                     ->find($variation->product_id);
                 if (count($this_product->modifier_sets) > 0) {
                     $product_ms = $this_product->modifier_sets;
-                    $output['html_modifier'] = view('restaurant.product_modifier_set.modifier_for_product')->with(compact('product_ms', 'row_count'))->render();
+                    $output['html_modifier'] = view('restaurant.product_modifier_set.modifier_for_product')
+                        ->with(compact('product_ms', 'row_count'))->render();
                 }
             }
         } catch (\Exception $e) {
-            Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
             $output['success'] = false;
             $output['msg'] = __('lang_v1.item_out_of_stock');

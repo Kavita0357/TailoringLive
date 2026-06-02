@@ -1316,6 +1316,7 @@ $(document).ready(function () {
 
     $('select#price_group').change(function () {
         $('input#hidden_price_group').val($(this).val());
+        $(document).find("#pos_table tbody tr.product_row").remove();
     });
 
     //Quick add product

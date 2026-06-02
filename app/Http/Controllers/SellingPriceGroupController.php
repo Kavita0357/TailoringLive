@@ -45,7 +45,7 @@ class SellingPriceGroupController extends Controller
             $business_id = request()->session()->get('user.business_id');
 
             $price_groups = SellingPriceGroup::where('business_id', $business_id)
-                        ->select(['name', 'description', 'id', 'is_active']);
+                ->select(['name', 'description', 'id', 'is_active']);
 
             return Datatables::of($price_groups)
                 ->addColumn(
@@ -92,23 +92,25 @@ class SellingPriceGroupController extends Controller
         }
 
         try {
-            $input = $request->only(['name', 'description']);
+            $input = $request->only(['name', 'description', 'auto_price_group', 'selling_col_type', 'selling_col', 'discount_type', 'discount_amount']);
             $business_id = $request->session()->get('user.business_id');
             $input['business_id'] = $business_id;
-
+            $input['auto_price_group'] = isset($input['auto_price_group']) ? true : false;
             $spg = SellingPriceGroup::create($input);
 
             //Create a new permission related to the created selling price group
-            Permission::create(['name' => 'selling_price_group.'.$spg->id]);
+            Permission::create(['name' => 'selling_price_group.' . $spg->id]);
 
-            $output = ['success' => true,
+            $output = [
+                'success' => true,
                 'data' => $spg,
                 'msg' => __('lang_v1.added_success'),
             ];
         } catch (\Exception $e) {
-            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
-            $output = ['success' => false,
+            $output = [
+                'success' => false,
                 'msg' => __('messages.something_went_wrong'),
             ];
         }
@@ -163,21 +165,29 @@ class SellingPriceGroupController extends Controller
 
         if (request()->ajax()) {
             try {
-                $input = $request->only(['name', 'description']);
+                $input = $request->only(['name', 'description', 'auto_price_group', 'selling_col_type', 'selling_col', 'discount_type', 'discount_amount']);
                 $business_id = $request->session()->get('user.business_id');
 
                 $spg = SellingPriceGroup::where('business_id', $business_id)->findOrFail($id);
                 $spg->name = $input['name'];
                 $spg->description = $input['description'];
+                $spg->auto_price_group = isset($input['auto_price_group']) ? true : false;
+                $spg->selling_col = isset($input['auto_price_group']) ? $input['selling_col'] : null;
+                $spg->selling_col_type = isset($input['auto_price_group']) ?  $input['selling_col_type'] : null;
+                $spg->discount_type = isset($input['auto_price_group']) ? $input['discount_type'] : null;
+                $spg->discount_type = isset($input['auto_price_group']) ? $input['discount_type'] : null;
+                $spg->discount_amount = isset($input['auto_price_group']) ?  $input['discount_amount'] : null;
                 $spg->save();
 
-                $output = ['success' => true,
+                $output = [
+                    'success' => true,
                     'msg' => __('lang_v1.updated_success'),
                 ];
             } catch (\Exception $e) {
-                \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+                \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
-                $output = ['success' => false,
+                $output = [
+                    'success' => false,
                     'msg' => __('messages.something_went_wrong'),
                 ];
             }
@@ -205,13 +215,15 @@ class SellingPriceGroupController extends Controller
                 $spg = SellingPriceGroup::where('business_id', $business_id)->findOrFail($id);
                 $spg->delete();
 
-                $output = ['success' => true,
+                $output = [
+                    'success' => true,
                     'msg' => __('lang_v1.deleted_success'),
                 ];
             } catch (\Exception $e) {
-                \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+                \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
-                $output = ['success' => false,
+                $output = [
+                    'success' => false,
                     'msg' => __('messages.something_went_wrong'),
                 ];
             }
@@ -225,7 +237,8 @@ class SellingPriceGroupController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function updateProductPrice(){
+    public function updateProductPrice()
+    {
         if (! auth()->user()->can('product.update')) {
             abort(403, 'Unauthorized action.');
         }
@@ -244,16 +257,16 @@ class SellingPriceGroupController extends Controller
         $price_groups = SellingPriceGroup::where('business_id', $business_id)->active()->get();
 
         $variations = Variation::join('products as p', 'variations.product_id', '=', 'p.id')
-                            ->join('product_variations as pv', 'variations.product_variation_id', '=', 'pv.id')
-                            ->where('p.business_id', $business_id)
-                            ->whereIn('p.type', ['single', 'variable'])
-                            ->select('sub_sku', 'p.name as product_name', 'variations.name as variation_name', 'p.type', 'variations.id', 'pv.name as product_variation_name', 'sell_price_inc_tax')
-                            ->with(['group_prices'])
-                            ->get();
+            ->join('product_variations as pv', 'variations.product_variation_id', '=', 'pv.id')
+            ->where('p.business_id', $business_id)
+            ->whereIn('p.type', ['single', 'variable'])
+            ->select('sub_sku', 'p.name as product_name', 'variations.name as variation_name', 'p.type', 'variations.id', 'pv.name as product_variation_name', 'sell_price_inc_tax')
+            ->with(['group_prices'])
+            ->get();
         $export_data = [];
         foreach ($variations as $variation) {
             $temp = [];
-            $temp['product'] = $variation->type == 'single' ? $variation->product_name : $variation->product_name.' - '.$variation->product_variation_name.' - '.$variation->variation_name;
+            $temp['product'] = $variation->type == 'single' ? $variation->product_name : $variation->product_name . ' - ' . $variation->product_variation_name . ' - ' . $variation->variation_name;
             $temp['sku'] = $variation->sub_sku;
             $temp['Selling Price Including Tax'] = $variation->sell_price_inc_tax;
 
@@ -324,7 +337,7 @@ class SellingPriceGroupController extends Controller
 
                 foreach ($imported_data as $key => $value) {
                     $variation = Variation::where('sub_sku', $value[1])
-                                        ->first();
+                        ->first();
                     if (empty($variation)) {
                         $row = $key + 1;
                         $error_msg = __('lang_v1.product_not_found_exception', ['sku' => $value[1], 'row' => $row]);
@@ -333,14 +346,14 @@ class SellingPriceGroupController extends Controller
                     }
 
                     //Check if product base price is changed
-                    if($variation->sell_price_inc_tax != $value[2]){
+                    if ($variation->sell_price_inc_tax != $value[2]) {
                         //update price for base selling price, adjust default_sell_price, profit %
                         $variation->sell_price_inc_tax = $value[2];
                         $tax = $variation->product->product_tax()->get();
                         $tax_percent = !empty($tax) && !empty($tax->first()) ? $tax->first()->amount : 0;
                         $variation->default_sell_price = $this->commonUtil->calc_percentage_base($value[2], $tax_percent);
                         $variation->profit_percent = $this->commonUtil
-                                        ->get_percent($variation->default_purchase_price, $variation->default_sell_price);
+                            ->get_percent($variation->default_purchase_price, $variation->default_sell_price);
                         $variation->update();
                     }
 
@@ -361,10 +374,12 @@ class SellingPriceGroupController extends Controller
 
                             if (! is_null($value[$k])) {
                                 VariationGroupPrice::updateOrCreate(
-                                    ['variation_id' => $variation->id,
+                                    [
+                                        'variation_id' => $variation->id,
                                         'price_group_id' => $price_group->first()->id,
                                     ],
-                                    ['price_inc_tax' => $value[$k],
+                                    [
+                                        'price_inc_tax' => $value[$k],
                                     ]
                                 );
                             }
@@ -378,14 +393,16 @@ class SellingPriceGroupController extends Controller
                 }
                 DB::commit();
             }
-            $output = ['success' => 1,
+            $output = [
+                'success' => 1,
                 'msg' => __('lang_v1.product_prices_imported_successfully'),
             ];
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
-            $output = ['success' => 0,
+            $output = [
+                'success' => 0,
                 'msg' => $e->getMessage(),
             ];
 
@@ -410,7 +427,8 @@ class SellingPriceGroupController extends Controller
             $spg->is_active = $spg->is_active == 1 ? 0 : 1;
             $spg->save();
 
-            $output = ['success' => true,
+            $output = [
+                'success' => true,
                 'msg' => __('lang_v1.updated_success'),
             ];
 

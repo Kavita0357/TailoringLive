@@ -34,6 +34,13 @@ return [
     'in_stock' => 'In Stock',
     'out_of_stock' => 'Out Of Stock',
     'transfer_fee' => 'Transfer Fee',
+    'auto_price_group' => 'Enable Auto Price Group',
+    'select_selling_col' => 'Select Pricing Column',
+    'default_selling_price' => 'Default Selling Price',
+    'default_purchase_price' => 'Default Purchase Price',
+    'select_selling_col_type' => 'Select Type',
+    'add' => 'Add',
+    'deduct' => 'Deduct',
 
     'measurement' => 'Measurement',
     'measurements' => 'Measurements',
