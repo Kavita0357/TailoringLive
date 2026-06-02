@@ -117,7 +117,13 @@
       <div class="col-md-6">
         <div class="form-group">
           {!! Form::label('role', __( 'user.role' ) . ':*') !!} @show_tooltip(__('lang_v1.admin_role_location_permission_help'))
-            {!! Form::select('role', $roles, null, ['class' => 'form-control select2']); !!}
+            {!! Form::select('role', $roles, null, ['class' => 'form-control select2', 'id' => 'role']); !!}
+        </div>
+      </div>
+      <div class="col-md-6" id="tailor_wages_field" style="display: none;">
+        <div class="form-group">
+          {!! Form::label('wages', __('tailoring.wages') . ':') !!}
+          {!! Form::text('wages', null, ['class' => 'form-control input_number', 'placeholder' => __('tailoring.wages')]); !!}
         </div>
       </div>
       <div class="clearfix"></div>
@@ -229,6 +235,18 @@
     $('#allow_login').on('ifUnchecked', function(event){
       $('div.user_auth_fields').addClass('hide');
     });
+
+    function toggleTailorWagesField() {
+      var selectedRole = $('#role option:selected').text().toLowerCase().trim();
+      if ($('#role').val() === 'tailor master' || selectedRole === 'tailor master') {
+        $('#tailor_wages_field').show();
+      } else {
+        $('#tailor_wages_field').hide();
+      }
+    }
+
+    toggleTailorWagesField();
+    $('#role').on('change', toggleTailorWagesField);
 
     $('#user_allowed_contacts').select2({
         ajax: {

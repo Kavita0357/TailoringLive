@@ -659,117 +659,119 @@
                     @endif
                 @endif
                 <div class="lg:tw-col-span-2 tw-flex tw-flex-col lg:tw-flex-row tw-gap-4 sm:tw-gap-5 tw-w-full">
-                <div
-                    class="tw-flex-1 tw-min-w-0 tw-transition-all tw-duration-200 tw-bg-white tw-shadow-sm tw-rounded-xl tw-ring-1 hover:tw-shadow-md hover:tw--translate-y-0.5 tw-ring-gray-200">
-                    <div class="tw-p-4 sm:tw-p-5">
-                        <div class="tw-flex tw-items-center tw-gap-2.5">
-                            <div
-                                class="tw-border-2 tw-flex tw-items-center tw-justify-center tw-rounded-full tw-w-10 tw-h-10">
-                                <svg aria-hidden="true" class="tw-text-yellow-500 tw-size-5 tw-shrink-0"
-                                    xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2"
-                                    stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                    <path d="M12 9v4"></path>
-                                    <path
-                                        d="M10.363 3.591l-8.106 13.534a1.914 1.914 0 0 0 1.636 2.871h16.214a1.914 1.914 0 0 0 1.636 -2.87l-8.106 -13.536a1.914 1.914 0 0 0 -3.274 0z">
-                                    </path>
-                                    <path d="M12 16h.01"></path>
-                                </svg>
-                            </div>
-                            <div class="tw-flex tw-items-center tw-flex-1 tw-min-w-0 tw-gap-1">
-                                <div class="tw-w-full sm:tw-w-1/2 md:tw-w-1/2">
-                                    <h3 class="tw-font-bold tw-text-base lg:tw-text-xl">
-                                        {{ __('tailoring.orders_payment_due') }}
-                                        @show_tooltip(__('tailoring.tooltip_order_payment_dues'))
-                                    </h3>
+                    <div
+                        class="tw-flex-1 tw-min-w-0 tw-transition-all tw-duration-200 tw-bg-white tw-shadow-sm tw-rounded-xl tw-ring-1 hover:tw-shadow-md hover:tw--translate-y-0.5 tw-ring-gray-200">
+                        <div class="tw-p-4 sm:tw-p-5">
+                            <div class="tw-flex tw-items-center tw-gap-2.5">
+                                <div
+                                    class="tw-border-2 tw-flex tw-items-center tw-justify-center tw-rounded-full tw-w-10 tw-h-10">
+                                    <svg aria-hidden="true" class="tw-text-yellow-500 tw-size-5 tw-shrink-0"
+                                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2"
+                                        stroke="currentColor" fill="none" stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                        <path d="M12 9v4"></path>
+                                        <path
+                                            d="M10.363 3.591l-8.106 13.534a1.914 1.914 0 0 0 1.636 2.871h16.214a1.914 1.914 0 0 0 1.636 -2.87l-8.106 -13.536a1.914 1.914 0 0 0 -3.274 0z">
+                                        </path>
+                                        <path d="M12 16h.01"></path>
+                                    </svg>
                                 </div>
-                                <div class="tw-w-full sm:tw-w-1/2 md:tw-w-1/2">
-                                    {!! Form::select('orders_payment_dues_location', $all_locations, null, [
-                                        'class' => 'form-control select2',
-                                        'placeholder' => __('lang_v1.select_location'),
-                                        'id' => 'orders_payment_dues_location',
-                                    ]) !!}
-                                </div>
-                            </div>
-                        </div>
-
-
-                        <div class="tw-flow-root tw-mt-5  tw-border-gray-200">
-                            <div class="tw--mx-4 tw--my-2 tw-overflow-x-auto sm:tw--mx-5">
-                                <div class="tw-inline-block tw-min-w-full tw-py-2 tw-align-middle sm:tw-px-5">
-                                    <table class="table table-bordered table-striped ajax_view"
-                                        id="orders_payment_dues_table" style="width: 100%;">
-                                        <thead>
-                                            <tr>
-                                                <th>@lang('contact.customer')</th>
-                                                <th>@lang('tailoring.order_no')</th>
-                                                <th>@lang('home.due_amount')</th>
-                                                <th>@lang('messages.action')</th>
-                                            </tr>
-                                        </thead>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div
-                    class="tw-flex-1 tw-min-w-0 tw-transition-all tw-duration-200 tw-bg-white tw-shadow-sm tw-rounded-xl tw-ring-1 hover:tw-shadow-md hover:tw--translate-y-0.5 tw-ring-gray-200">
-                    <div class="tw-p-4 sm:tw-p-5">
-                        <div class="tw-flex tw-items-center tw-gap-2.5">
-                            <div
-                                class="tw-border-2 tw-flex tw-items-center tw-justify-center tw-rounded-full tw-w-10 tw-h-10">
-                                <svg aria-hidden="true" class="tw-text-yellow-500 tw-size-5 tw-shrink-0"
-                                    xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2"
-                                    stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                    <path d="M7 17m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"></path>
-                                    <path d="M17 17m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"></path>
-                                    <path d="M5 17h-2v-4m-1 -8h11v12m-4 0h6m4 0h2v-6h-8m0 -5h5l3 5"></path>
-                                    <path d="M3 9l4 0"></path>
-                                </svg>
-                            </div>
-                            <div class="tw-flex tw-items-center tw-flex-1 tw-min-w-0 tw-gap-1">
-                                <div class="tw-w-full sm:tw-w-1/2 md:tw-w-1/2">
-                                    <h3 class="tw-font-bold tw-text-base lg:tw-text-xl">
-                                        @lang('tailoring.ready_to_delivery')
-                                    </h3>
-                                </div>
-                                <div class="tw-w-full sm:tw-w-1/2 md:tw-w-1/2">
-                                    @if (count($all_locations) > 1)
-                                        {!! Form::select('ready_to_deliver_location', $all_locations, null, [
-                                            'class' => 'form-control select2 ',
+                                <div class="tw-flex tw-items-center tw-flex-1 tw-min-w-0 tw-gap-1">
+                                    <div class="tw-w-full sm:tw-w-1/2 md:tw-w-1/2">
+                                        <h3 class="tw-font-bold tw-text-base lg:tw-text-xl">
+                                            {{ __('tailoring.orders_payment_due') }}
+                                            @show_tooltip(__('tailoring.tooltip_order_payment_dues'))
+                                        </h3>
+                                    </div>
+                                    <div class="tw-w-full sm:tw-w-1/2 md:tw-w-1/2">
+                                        {!! Form::select('orders_payment_dues_location', $all_locations, null, [
+                                            'class' => 'form-control select2',
                                             'placeholder' => __('lang_v1.select_location'),
-                                            'id' => 'ready_to_deliver_location',
+                                            'id' => 'orders_payment_dues_location',
                                         ]) !!}
-                                    @endif
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="tw-flow-root tw-mt-5  tw-border-gray-200">
-                            <div class="tw--mx-4 tw--my-2 tw-overflow-x-auto sm:tw--mx-5">
-                                <div class="tw-inline-block tw-min-w-full tw-py-2 tw-align-middle sm:tw-px-5">
-                                    <table class="table table-bordered table-striped ajax_view"
-                                        id="ready_to_deliver_table">
-                                        <thead>
-                                            <tr>
-                                                <th>@lang('messages.action')</th>
-                                                <th>@lang('messages.date')</th>
-                                                <th>@lang('tailoring.order_no')</th>
-                                                <th>@lang('sale.customer_name')</th>
-                                                {{-- <th>@lang('lang_v1.contact_no')</th> --}}
-                                                <th>@lang('sale.location')</th>
-                                                <th>@lang('tailoring.delivery_status')</th>
-                                                <th>@lang('sale.payment_status')</th>
-                                                <th>@lang('restaurant.service_staff')</th>
-                                            </tr>
-                                        </thead>
-                                    </table>
+
+
+                            <div class="tw-flow-root tw-mt-5  tw-border-gray-200">
+                                <div class="tw--mx-4 tw--my-2 tw-overflow-x-auto sm:tw--mx-5">
+                                    <div class="tw-inline-block tw-min-w-full tw-py-2 tw-align-middle sm:tw-px-5">
+                                        <table class="table table-bordered table-striped ajax_view"
+                                            id="orders_payment_dues_table" style="width: 100%;">
+                                            <thead>
+                                                <tr>
+                                                    <th>@lang('contact.customer')</th>
+                                                    <th>@lang('tailoring.order_no')</th>
+                                                    <th>@lang('home.due_amount')</th>
+                                                    <th>@lang('messages.action')</th>
+                                                </tr>
+                                            </thead>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                    <div
+                        class="tw-flex-1 tw-min-w-0 tw-transition-all tw-duration-200 tw-bg-white tw-shadow-sm tw-rounded-xl tw-ring-1 hover:tw-shadow-md hover:tw--translate-y-0.5 tw-ring-gray-200">
+                        <div class="tw-p-4 sm:tw-p-5">
+                            <div class="tw-flex tw-items-center tw-gap-2.5">
+                                <div
+                                    class="tw-border-2 tw-flex tw-items-center tw-justify-center tw-rounded-full tw-w-10 tw-h-10">
+                                    <svg aria-hidden="true" class="tw-text-yellow-500 tw-size-5 tw-shrink-0"
+                                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2"
+                                        stroke="currentColor" fill="none" stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                        <path d="M7 17m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"></path>
+                                        <path d="M17 17m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"></path>
+                                        <path d="M5 17h-2v-4m-1 -8h11v12m-4 0h6m4 0h2v-6h-8m0 -5h5l3 5"></path>
+                                        <path d="M3 9l4 0"></path>
+                                    </svg>
+                                </div>
+                                <div class="tw-flex tw-items-center tw-flex-1 tw-min-w-0 tw-gap-1">
+                                    <div class="tw-w-full sm:tw-w-1/2 md:tw-w-1/2">
+                                        <h3 class="tw-font-bold tw-text-base lg:tw-text-xl">
+                                            @lang('tailoring.ready_to_delivery')
+                                        </h3>
+                                    </div>
+                                    <div class="tw-w-full sm:tw-w-1/2 md:tw-w-1/2">
+                                        @if (count($all_locations) > 1)
+                                            {!! Form::select('ready_to_deliver_location', $all_locations, null, [
+                                                'class' => 'form-control select2 ',
+                                                'placeholder' => __('lang_v1.select_location'),
+                                                'id' => 'ready_to_deliver_location',
+                                            ]) !!}
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tw-flow-root tw-mt-5  tw-border-gray-200">
+                                <div class="tw--mx-4 tw--my-2 tw-overflow-x-auto sm:tw--mx-5">
+                                    <div class="tw-inline-block tw-min-w-full tw-py-2 tw-align-middle sm:tw-px-5">
+                                        <table class="table table-bordered table-striped ajax_view"
+                                            id="ready_to_deliver_table">
+                                            <thead>
+                                                <tr>
+                                                    <th>@lang('messages.action')</th>
+                                                    <th>@lang('messages.date')</th>
+                                                    <th>@lang('tailoring.order_no')</th>
+                                                    <th>@lang('sale.customer_name')</th>
+                                                    {{-- <th>@lang('lang_v1.contact_no')</th> --}}
+                                                    <th>@lang('sale.location')</th>
+                                                    <th>@lang('tailoring.delivery_status')</th>
+                                                    <th>@lang('sale.payment_status')</th>
+                                                    <th>@lang('restaurant.service_staff')</th>
+                                                </tr>
+                                            </thead>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1502,6 +1504,16 @@
         .select2-results__option:hover {
             background: #f3f4f6 !important;
             color: #111827 !important;
+        }
+
+        @media (max-width: 599px) {
+            .select2-container {
+                width: 100% !important;
+                max-width: 100%;
+            }
+            .select2-container .select2-selection--single{
+                justify-content: center;
+            }
         }
     </style>
 @endsection

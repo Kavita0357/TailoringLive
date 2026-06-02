@@ -37,6 +37,12 @@
                             {{$user->role_name}}
                         </p>
 
+                        @if(strtolower(trim($user->role_name)) === 'tailor master')
+                        <p class="text-muted text-center">
+                            <strong>@lang('tailoring.wages'): </strong> {{ isset($user->wages) ? @num_format($user->wages) : '-' }}
+                        </p>
+                        @endif
+
                         <ul class="list-group list-group-unbordered">
                             <li class="list-group-item">
                                 <b>@lang( 'business.username' )</b>

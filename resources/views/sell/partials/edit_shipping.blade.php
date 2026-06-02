@@ -34,6 +34,14 @@
                             ) !!}
                         </div>
                     </div>
+                    <div class="col-md-4" id="deliveryPerson"
+                        @if (empty($transaction->delivery_status) || $transaction->delivery_status != 'delivered') style="display: none;" @endif>
+                        <div class="form-group">
+                            {!! Form::label('delivery_person', __('lang_v1.delivery_person') . ':') !!}
+                            <p class="form-control-static">
+                                {{ auth()->user()->first_name . ' ' . auth()->user()->last_name }}</p>
+                        </div>
+                    </div>
                 @else
                     <div class="col-md-6">
                         <div class="form-group">
@@ -68,6 +76,7 @@
                             ) !!}
                         </div>
                     </div>
+
                     <div class="col-md-4">
                         <div class="form-group">
                             {!! Form::label('delivered_to', __('lang_v1.delivered_to') . ':') !!}
@@ -77,19 +86,20 @@
                             ]) !!}
                         </div>
                     </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            {!! Form::label('delivery_person', __('lang_v1.delivery_person') . ':') !!}
+                            {!! Form::select(
+                                'delivery_person',
+                                $users,
+                                !empty($transaction->delivery_person) ? $transaction->delivery_person : null,
+                                ['class' => 'form-control select2', 'placeholder' => __('messages.please_select')],
+                            ) !!}
+                        </div>
+                    </div>
                 @endif
 
-                <div class="col-md-4">
-                    <div class="form-group">
-                        {!! Form::label('delivery_person', __('lang_v1.delivery_person') . ':') !!}
-                        {!! Form::select(
-                            'delivery_person',
-                            $users,
-                            !empty($transaction->delivery_person) ? $transaction->delivery_person : null,
-                            ['class' => 'form-control select2', 'placeholder' => __('messages.please_select')],
-                        ) !!}
-                    </div>
-                </div>
                 @php
                     $custom_labels = json_decode(session('business.custom_labels'), true);
 
@@ -320,3 +330,16 @@
         {!! Form::close() !!}
     </div><!-- /.modal-content -->
 </div><!-- /.modal-dialog -->
+<script>
+    $(document).ready(function() {
+        $(document).on('change', '#delivery_status', function() {
+            var status = $(this).val();
+
+            if (status === 'delivered') {
+                $('#deliveryPerson').show();
+            } else {
+                $('#deliveryPerson').hide();
+            }
+        });
+    });
+</script>

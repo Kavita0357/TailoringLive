@@ -1633,8 +1633,10 @@ class Util
             'selected_contacts',
             'is_enable_service_staff_pin',
             'service_staff_pin',
+            'wages'
         ]);
 
+        $user_details['wages'] = !empty($request->input('wages')) ? $this->num_uf($request->input('wages')) : null;
         $user_details['status'] = !empty($request->input('is_active')) ? $request->input('is_active') : 'inactive';
         $user_details['user_type'] = !empty($user_details['user_type']) ? $user_details['user_type'] : 'user';
 

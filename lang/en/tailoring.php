@@ -41,6 +41,7 @@ return [
     'select_selling_col_type' => 'Select Type',
     'add' => 'Add',
     'deduct' => 'Deduct',
+    'wages' => 'Wages',
 
     'measurement' => 'Measurement',
     'measurements' => 'Measurements',
