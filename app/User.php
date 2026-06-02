@@ -39,7 +39,7 @@ class User extends Authenticatable
     // change api guard to web
     protected $guard_name = 'web';
 
-    
+
 
     /**
      * The attributes that should be mutated to dates.
@@ -206,6 +206,22 @@ class User extends Authenticatable
 
         return $users;
     }
+
+
+    public static function tailorMasters($business_id)
+    {
+        $role_name = 'Tailor Master#' . $business_id;
+
+        $query = User::where('business_id', $business_id)
+            ->user()
+            ->role($role_name);
+
+        $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(surname, ''),' ',COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
+        $users = $all_users->pluck('full_name', 'id');
+
+        return $users;
+    }
+
 
     /**
      * Return list of sales commission agents dropdown for a business

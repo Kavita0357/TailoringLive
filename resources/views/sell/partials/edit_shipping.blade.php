@@ -42,6 +42,18 @@
                                 {{ auth()->user()->first_name . ' ' . auth()->user()->last_name }}</p>
                         </div>
                     </div>
+                    <div class="col-md-4" id="tailoringMaster"
+                        @if (empty($transaction->delivery_status) || $transaction->delivery_status != 'preparing') style="display: none;" @endif>
+                        <div class="form-group">
+                            {!! Form::label('tailoring_master', __('tailoring.assign_to_tailoring_master') . ':') !!}
+                            {!! Form::select(
+                                'tailoring_master',
+                                $tailor_masters,
+                                !empty($transaction->tailoring_master) ? $transaction->tailoring_master : null,
+                                ['class' => 'form-control select2', 'placeholder' => __('messages.please_select')],
+                            ) !!}
+                        </div>
+                    </div>
                 @else
                     <div class="col-md-6">
                         <div class="form-group">
@@ -337,8 +349,13 @@
 
             if (status === 'delivered') {
                 $('#deliveryPerson').show();
+                $('#tailoringMaster').hide();
+            } else if (status === 'preparing') {
+                $('#deliveryPerson').hide();
+                $('#tailoringMaster').show();
             } else {
                 $('#deliveryPerson').hide();
+                $('#tailoringMaster').hide();
             }
         });
     });

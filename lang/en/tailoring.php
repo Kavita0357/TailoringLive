@@ -42,6 +42,7 @@ return [
     'add' => 'Add',
     'deduct' => 'Deduct',
     'wages' => 'Wages',
+    'assign_to_tailoring_master' => 'Assign to Tailor Master',
 
     'measurement' => 'Measurement',
     'measurements' => 'Measurements',

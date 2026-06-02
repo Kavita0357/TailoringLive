@@ -1671,6 +1671,8 @@ class SellController extends Controller
             ->findorfail($id);
 
         $users = User::forDropdown($business_id, false, false, false);
+        
+        $tailor_masters = User::tailorMasters($business_id);
 
         $shipping_statuses = $this->transactionUtil->shipping_statuses();
 
@@ -1683,7 +1685,7 @@ class SellController extends Controller
             ->get();
 
         return view('sell.partials.edit_shipping')
-            ->with(compact('transaction', 'shipping_statuses', 'delivery_statuses', 'activities', 'users'));
+            ->with(compact('transaction', 'shipping_statuses', 'delivery_statuses', 'activities', 'users', 'tailor_masters'));
     }
 
     /**
