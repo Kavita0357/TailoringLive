@@ -20,9 +20,9 @@ class Business extends Model
      */
     protected $guarded = ['id', 'woocommerce_api_settings'];
 
-    protected $fillable = [
+    /* protected $fillable = [
         'remaining_sms_balance',
-    ];
+    ]; */
 
     /**
      * The attributes that should be hidden for arrays.

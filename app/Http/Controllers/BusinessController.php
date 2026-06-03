@@ -307,7 +307,6 @@ class BusinessController extends Controller
 
         $business_id = request()->session()->get('user.business_id');
         $business = Business::where('id', $business_id)->first();
-
         $currencies = $this->businessUtil->allCurrencies();
         $tax_details = TaxRate::forBusinessDropdown($business_id);
         $tax_rates = $tax_details['tax_rates'];

@@ -2,15 +2,23 @@
 
 namespace Modules\Superadmin\Http\Controllers;
 
+use App\Business;
 use App\System;
 use Illuminate\Routing\Controller;
 use Modules\Superadmin\Entities\Package;
 use Modules\Superadmin\Entities\Subscription;
 use Modules\Superadmin\Notifications\NewSubscriptionNotification;
 use Notification;
+use App\Utils\ModuleUtil;
 
 class BaseController extends Controller
 {
+    protected $moduleUtil;
+
+    public function __construct(ModuleUtil $moduleUtil)
+    {
+        $this->moduleUtil = $moduleUtil;
+    }
     /**
      * Returns the list of all configured payment gateway
      *
@@ -66,17 +74,25 @@ class BaseController extends Controller
      *
      * @return object
      */
-    public function _add_subscription($code,$price, $business_id, $package, $gateway, $payment_transaction_id, $user_id, $is_superadmin = false)
+    public function _add_subscription($code, $price, $business_id, $package, $gateway, $payment_transaction_id, $user_id, $is_superadmin = false)
     {
         if (! is_object($package)) {
             $package = Package::active()->find($package);
         }
 
-        $subscription = ['business_id' => $business_id,
+        foreach (array_keys($this->moduleUtil->availableModules()) as $module) {
+            if (isset($package->$module) && $package->$module) {
+                $enabled_modules[] = $module;
+            }
+        }
+
+        $subscription = [
+            'business_id' => $business_id,
             'package_id' => $package->id,
             'paid_via' => $gateway,
             'payment_transaction_id' => $payment_transaction_id,
         ];
+
 
         if ($package->price != 0 && (in_array($gateway, ['offline', 'pesapal']) && ! $is_superadmin)) {
             //If offline then dates will be decided when approved by superadmin
@@ -115,13 +131,17 @@ class BaseController extends Controller
         $subscription['created_id'] = $user_id;
         $subscription = Subscription::create($subscription);
 
+        $business = Business::find($business_id);
+        $business->enabled_modules = $enabled_modules;
+        $business->save();
+
         if (! $is_superadmin) {
             $email = System::getProperty('email');
             $is_notif_enabled = System::getProperty('enable_new_subscription_notification');
 
             if (! empty($email) && $is_notif_enabled == 1) {
                 Notification::route('mail', $email)
-                ->notify(new NewSubscriptionNotification($subscription));
+                    ->notify(new NewSubscriptionNotification($subscription));
             }
         }
 

@@ -16,12 +16,6 @@
     <!-- Main content -->
     <section class="content">
 
-        <!-- Page level currency setting -->
-        <input type="hidden" id="p_code" value="{{ $currency->code }}">
-        <input type="hidden" id="p_symbol" value="{{ $currency->symbol }}">
-        <input type="hidden" id="p_thousand" value="{{ $currency->thousand_separator }}">
-        <input type="hidden" id="p_decimal" value="{{ $currency->decimal_separator }}">
-
         {!! Form::open([
             'url' => action([\Modules\Superadmin\Http\Controllers\PackagesController::class, 'store']),
             'method' => 'post',
@@ -46,7 +40,6 @@
                         </div>
                     </div>
 
-                    <div class="clearfix"></div>
                     <div class="col-sm-6">
                         <div class="form-group">
                             {!! Form::label('location_count', __('superadmin::lang.location_count') . ':') !!}
@@ -68,7 +61,6 @@
                             </span>
                         </div>
                     </div>
-                    <div class="clearfix"></div>
 
                     <div class="col-sm-6">
                         <div class="form-group">
@@ -91,7 +83,6 @@
                             </span>
                         </div>
                     </div>
-                    <div class="clearfix"></div>
 
                     <div class="col-sm-6">
                         <div class="form-group">
@@ -114,7 +105,6 @@
                             </span>
                         </div>
                     </div>
-                    <div class="clearfix"></div>
 
                     <div class="col-sm-6">
                         <div class="form-group">
@@ -134,7 +124,6 @@
                             {!! Form::number('interval_count', null, ['class' => 'form-control', 'required', 'min' => 1]) !!}
                         </div>
                     </div>
-                    <div class="clearfix"></div>
 
                     <div class="col-sm-6">
                         <div class="form-group">
@@ -146,29 +135,28 @@
                     <div class="col-sm-6">
                         <div class="form-group">
                             {!! Form::label('price', __('superadmin::lang.price') . ':') !!}
-                            @show_tooltip(__('superadmin::lang.tooltip_pkg_price'))
-
-                            <div class="input-group">
-                                <span class="input-group-addon" id="basic-addon3"><b>{{ $currency->code }}
-                                        {{ $currency->symbol }}</b></span>
-                                {!! Form::text('price', null, ['class' => 'form-control input_number', 'required']) !!}
-                            </div>
-                            <span class="help-block">
-                                0 = @lang('superadmin::lang.free_package')
-                            </span>
+                            {!! Form::text('price', null, ['class' => 'form-control input_number', 'required']) !!}
                         </div>
                     </div>
-                    <div class="clearfix"></div>
 
                     <div class="col-sm-6">
                         <div class="form-group">
                             {!! Form::label('sort_order	', __('superadmin::lang.sort_order') . ':') !!}
-                            {!! Form::number('sort_order', 1, ['class' => 'form-control', 'required']) !!}
+                            {!! Form::number('sort_order', null, ['class' => 'form-control', 'required']) !!}
                         </div>
                     </div>
-
-                    <div class="clearfix"></div>
                     <div class="col-sm-6">
+                        <div class="form-group">
+                            {!! Form::label('price', __('superadmin::lang.only_for_businesses') . ':') !!}
+                            @show_tooltip(__('superadmin::lang.tooltip_only_for_businesses'))
+                            {!! Form::select('businesses[]', $businesses, null, [
+                                'class' => 'form-control select2',
+                                'multiple',
+                            ]) !!}
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="col-sm-3">
                         <div class="checkbox">
                             <label>
                                 {!! Form::checkbox('is_private', 1, false, ['class' => 'input-icheck']) !!}
@@ -176,9 +164,7 @@
                             </label>
                         </div>
                     </div>
-
-
-                    <div class="col-sm-6">
+                    <div class="col-sm-3">
                         <div class="checkbox">
                             <label>
                                 {!! Form::checkbox('is_one_time', 1, false, ['class' => 'input-icheck']) !!}
@@ -187,22 +173,41 @@
                         </div>
                     </div>
                     <div class="clearfix"></div>
-                    <div class="col-sm-4">
+                    @foreach ($modules as $k => $v)
+                        <div class="col-sm-3">
+                            <div class="checkbox">
+                                <label>
+                                    {!! Form::checkbox('enabled_modules[]', $k, false, [
+                                        'class' => 'input-icheck',
+                                    ]) !!}
+                                    {{ $v['name'] }}
+                                </label>
+
+                                @if (!empty($v['tooltip']))
+                                    @show_tooltip($v['tooltip'])
+                                @endif
+                            </div>
+                        </div>
+                    @endforeach
+                    <div class="col-sm-3">
                         <div class="checkbox">
                             <label>
-                                {!! Form::checkbox('enable_custom_link', 1, false, ['class' => 'input-icheck', 'id' => 'enable_custom_link']) !!}
+                                {!! Form::checkbox('enable_custom_link', 1, false, [
+                                    'class' => 'input-icheck',
+                                    'id' => 'enable_custom_link',
+                                ]) !!}
                                 {{ __('superadmin::lang.enable_custom_subscription_link') }}
                             </label>
                         </div>
                     </div>
                     <div id="custom_link_div" class="hide">
-                        <div class="col-sm-4">
+                        <div class="col-sm-3">
                             <div class="form-group">
                                 {!! Form::label('custom_link', __('superadmin::lang.custom_link') . ':') !!}
                                 {!! Form::text('custom_link', null, ['class' => 'form-control']) !!}
                             </div>
                         </div>
-                        <div class="col-sm-4">
+                        <div class="col-sm-3">
                             <div class="form-group">
                                 {!! Form::label('custom_link_text', __('superadmin::lang.custom_link_text') . ':') !!}
                                 {!! Form::text('custom_link_text', null, ['class' => 'form-control']) !!}
@@ -210,6 +215,7 @@
                         </div>
                     </div>
                     <div class="clearfix"></div>
+
                     @foreach ($permissions as $module => $module_permissions)
                         @foreach ($module_permissions as $permission)
                             <div class="col-sm-3">
@@ -255,16 +261,9 @@
                             </label>
                         </div>
                     </div>
-                    <div class="col-sm-3">
-                        <div class="form-group">
-                            {!! Form::label('price', __('superadmin::lang.only_for_businesses') . ':') !!}
-                            @show_tooltip(__('superadmin::lang.tooltip_only_for_businesses'))
-                            {!! Form::select('businesses[]', $businesses, '', [
-                                'class' => 'form-control select2',
-                                'multiple',
-                            ]) !!}
-                        </div>
-                    </div>
+
+                    <div class="clearfix"></div>
+
                 </div>
 
                 <div class="row text-center">

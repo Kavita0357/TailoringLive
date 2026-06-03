@@ -121,7 +121,7 @@ class BusinessController extends BaseController
 
             return Datatables::of($query)
                 ->addColumn('address', '{{$city}}, {{$state}}, {{$country}} {{$landmark}}, {{$zip_code}}')
-                ->addColumn('business_contact_number', '{{ !empty($mobile) ? $mobile : "-" }} @if(!empty($alternate_number)), {{$alternate_number}}@endif')    
+                ->addColumn('business_contact_number', '{{ !empty($mobile) ? $mobile : "-" }} @if(!empty($alternate_number)), {{$alternate_number}}@endif')
                 ->editColumn('is_active', '@if($is_active == 1) <span class="label bg-green">@lang("business.is_active")</span> @else <span class="label bg-gray">@lang("lang_v1.inactive")</span> @endif')
                 ->editColumn('remaining_sms_balance', '{{ $remaining_sms_balance ?? 0 }}')
                 ->addColumn('action', function ($row) {
@@ -326,6 +326,9 @@ class BusinessController extends BaseController
 
             //Create the business
             $business_details['owner_id'] = $user->id;
+
+            \Log::info('User ID: ' . $user->id);
+
             if (!empty($business_details['start_date'])) {
                 $business_details['start_date'] = $this->businessUtil->uf_date($business_details['start_date']);
             }
@@ -337,7 +340,24 @@ class BusinessController extends BaseController
             }
 
             //default enabled modules
-            $business_details['enabled_modules'] = ['purchases', 'add_sale', 'pos_sale', 'stock_transfers', 'stock_adjustment', 'expenses'];
+            /*  $business_details['enabled_modules'] = ['purchases', 'add_sale', 'pos_sale', 'stock_transfers', 'stock_adjustment', 'expenses']; */
+
+            $enabled_modules = [];
+
+            $subscription_details = $request->only(['package_id', 'paid_via', 'payment_transaction_id']);
+
+            if (!empty($subscription_details['package_id'])) {
+
+                $package = Package::find($subscription_details['package_id']);
+
+                foreach (array_keys($this->moduleUtil->availableModules()) as $module) {
+                    if (isset($package->$module) && $package->$module) {
+                        $enabled_modules[] = $module;
+                    }
+                }
+            }
+
+            $business_details['enabled_modules'] = $enabled_modules;
 
             //created_by
             $business_details['created_by'] = $request->session()->get('user.id');
@@ -353,8 +373,6 @@ class BusinessController extends BaseController
 
             //create new permission with the new location
             Permission::create(['name' => 'location.' . $new_location->id]);
-
-            $subscription_details = $request->only(['package_id', 'paid_via', 'payment_transaction_id']);
 
             //Add subscription if present
             if (!empty($subscription_details['package_id']) && !empty($subscription_details['paid_via'])) {
@@ -428,9 +446,7 @@ class BusinessController extends BaseController
      * @param  Request  $request
      * @return Response
      */
-    public function update(Request $request)
-    {
-    }
+    public function update(Request $request) {}
 
     /**
      * Remove the specified resource from storage.

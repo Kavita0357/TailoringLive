@@ -76,9 +76,10 @@ class PackagesController extends Controller
         $businesses = Business::get()->pluck('name', 'id');
 
         $permissions = $this->moduleUtil->getModuleData('superadmin_package');
+        $modules = $this->moduleUtil->availableModules();
 
         return view('superadmin::packages.create')
-            ->with(compact('intervals', 'currency', 'permissions', 'businesses'));
+            ->with(compact('intervals', 'currency', 'permissions', 'modules', 'businesses'));
     }
 
     /**
@@ -119,6 +120,28 @@ class PackagesController extends Controller
                 'cloths_count',
                 'orders_count'
             ]);
+
+            $enabled_modules = $request->input('enabled_modules', []);
+
+            $module_columns = [
+                'purchases',
+                'add_sale',
+                'pos_sale',
+                'stock_transfers',
+                'stock_adjustment',
+                'expenses',
+                'account',
+                'modifiers',
+                'service_staff',
+                'booking',
+                'subscription',
+                'tailoring'
+            ];
+
+            foreach ($module_columns as $module) {
+                $input[$module] = in_array($module, $enabled_modules) ? 1 : 0;
+            }
+
             $currency = System::getCurrency();
 
             $input['price'] = $this->businessUtil->num_uf($input['price'], $currency);
@@ -171,16 +194,26 @@ class PackagesController extends Controller
      */
     public function edit($id)
     {
-        $packages = Package::where('id', $id)
-            ->first();
+        $packages = Package::findOrFail($id);
 
-        $intervals = ['days' => __('lang_v1.days'), 'months' => __('lang_v1.months'), 'years' => __('lang_v1.years')];
+        $intervals = [
+            'days' => __('lang_v1.days'),
+            'months' => __('lang_v1.months'),
+            'years' => __('lang_v1.years')
+        ];
 
         $permissions = $this->moduleUtil->getModuleData('superadmin_package', true);
+        $modules = $this->moduleUtil->availableModules();
         $businesses = Business::get()->pluck('name', 'id');
 
         return view('superadmin::packages.edit')
-            ->with(compact('packages', 'intervals', 'permissions', 'businesses'));
+            ->with(compact(
+                'packages',
+                'intervals',
+                'permissions',
+                'modules',
+                'businesses'
+            ));
     }
 
     /**
@@ -197,6 +230,27 @@ class PackagesController extends Controller
 
         try {
             $packages_details = $request->only(['name', 'id', 'description', 'location_count', 'user_count', 'product_count', 'invoice_count', 'interval', 'interval_count', 'trial_days', 'price', 'sort_order', 'is_active', 'mark_package_as_popular', 'custom_permissions', 'is_private', 'is_one_time', 'enable_custom_link', 'custom_link', 'custom_link_text', 'businesses', 'cloths_count', 'orders_count']);
+
+            $enabled_modules = $request->input('enabled_modules', []);
+
+            $module_columns = [
+                'purchases',
+                'add_sale',
+                'pos_sale',
+                'stock_transfers',
+                'stock_adjustment',
+                'expenses',
+                'account',
+                'modifiers',
+                'service_staff',
+                'booking',
+                'subscription',
+                'tailoring'
+            ];
+
+            foreach ($module_columns as $module) {
+                $packages_details[$module] = in_array($module, $enabled_modules) ? 1 : 0;
+            }
 
             $packages_details['is_active'] = empty($packages_details['is_active']) ? 0 : 1;
             $packages_details['mark_package_as_popular'] = empty($packages_details['mark_package_as_popular']) ? 0 : 1;
