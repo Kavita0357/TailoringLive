@@ -127,10 +127,10 @@
             border-radius: 50px;
             background-color: #ed143d;
         }
-        
-        .new-order-button{
+
+        .new-order-button {
             border-radius: .5rem;
-            color:#fff;
+            color: #fff;
             background-color: #ed143d;
         }
 
@@ -243,7 +243,8 @@
             @endforeach
         @endif
         <div>
-
+            <div class="modal fade cloth_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
+            </div>
             <div class="overlay tw-hidden"></div>
 </body>
 <style>

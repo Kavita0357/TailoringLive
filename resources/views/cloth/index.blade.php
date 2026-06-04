@@ -52,8 +52,6 @@
                 </table>
             </div>
         @endcomponent
-
-        <div class="modal fade cloth_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel"></div>
     </section>
 @stop
 

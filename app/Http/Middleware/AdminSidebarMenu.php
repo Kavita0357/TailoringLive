@@ -272,11 +272,11 @@ class AdminSidebarMenu
                             __('tailoring.list_cloths'),
                             ['icon' => '', 'active' => request()->segment(1) == 'cloths']
                         );
-                        /* $sub->url(
-                            action([\App\Http\Controllers\ClothController::class, 'create']),
+                        $sub->url(
+                            '#',
                             __('tailoring.add_cloth'),
-                            ['icon' => '', 'active' => request()->segment(1) == 'cloth' && request()->segment(2) == 'create']
-                        );   */
+                            ['icon' => '', 'class' => 'btn-modal', 'data-href' => action([\App\Http\Controllers\ClothController::class, 'create']), 'data-container' => '.cloth_modal', 'active' => request()->segment(1) == 'cloth' && request()->segment(2) == 'create']
+                        );
                     },
                     [
                         'icon' => '<svg aria-hidden="true" class="tw-size-5 tw-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
