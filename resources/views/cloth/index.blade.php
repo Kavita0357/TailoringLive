@@ -133,7 +133,7 @@
             });
 
             // ADD
-            $(document).on('submit', 'form#cloth_add_form', function(e) {
+            /* $(document).on('submit', 'form#cloth_add_form', function(e) {
                 e.preventDefault();
                 let form = $(this);
                 let formData = new FormData(this);
@@ -158,7 +158,7 @@
                         }
                     },
                 });
-            });
+            }); */
 
             // EDIT
             $(document).on('click', 'button.edit_cloth_button', function() {

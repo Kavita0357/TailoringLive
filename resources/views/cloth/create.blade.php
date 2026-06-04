@@ -227,5 +227,32 @@
         $(document).on('click', '.remove_style_row', function() {
             $(this).closest('.style_row').remove();
         });
+
+        $(document).on('submit', 'form#cloth_add_form', function(e) {
+            e.preventDefault();
+            let form = $(this);
+            let formData = new FormData(this);
+            $.ajax({
+                method: 'POST',
+                url: form.attr('action'),
+                data: formData,
+                processData: false,
+                contentType: false,
+                dataType: 'json',
+                beforeSend: function() {
+                    __disable_submit_button(form.find('button[type="submit"]'));
+                },
+                success: function(result) {
+                    if (result.success) {
+                        $('div.cloth_modal').modal('hide');
+                        toastr.success(result.msg);
+                        cloth_table.ajax.reload();
+                    } else {
+                        toastr.error(result.msg);
+                        form.find('button[type="submit"]').removeAttr('disabled');
+                    }
+                },
+            });
+        });
     });
 </script>
