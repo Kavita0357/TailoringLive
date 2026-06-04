@@ -3368,6 +3368,9 @@ function add_cloth_row(data, is_pos = false) {
                     </button>
                 </span>
             </div>
+        </td>
+        <td class="hide">
+            <input type="text" name="cloths[${rowIndex}][unit_price_inc_tax]" class="form-control pos_unit_price_inc_tax input_number" value="${data.cloth.wages || 0}">
         </td>`;
 
     if (!is_pos) {
