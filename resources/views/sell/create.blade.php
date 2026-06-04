@@ -361,6 +361,15 @@
                                 ]) !!}
                             </div>
                         </div>
+                        <div class="tailoring_master @if (!empty($commission_agent)) col-sm-3 @else col-sm-4 @endif">
+                            <div class="form-group">
+                                {!! Form::label('tailoring_master', __('tailoring.assign_to_tailoring_master') . ':') !!}
+                                {!! Form::select('tailoring_master', $tailor_masters, null, [
+                                    'class' => 'form-control select2',
+                                    'placeholder' => __('messages.please_select'),
+                                ]) !!}
+                            </div>
+                        </div>
                     @endif
                     @if ($sale_type != 'sales_order' && $sale_type != 'order')
                         <div class="col-sm-3">
@@ -595,6 +604,9 @@
                                             </th>
                                             <th class="@if (!auth()->user()->can('edit_product_discount_from_sale_screen')) hide @endif">
                                                 @lang('receipt.discount')
+                                            </th>
+                                            <th>
+                                                @lang('tailoring.assign_to_tailoring_master')
                                             </th>
                                             <th class="text-center">
                                                 @lang('sale.subtotal')

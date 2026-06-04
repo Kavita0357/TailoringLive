@@ -513,6 +513,7 @@ class SellController extends Controller
                             if (auth()->user()->can('print_invoice')) {
                                 $html .= '<li><a href="#" class="btn-modal" data-container=".print_measurements_modal" data-href="' . route('sell.viewMeasurement', [$row->id]) . '"><i class="fas fa-print" aria-hidden="true"></i> ' . __('tailoring.print_measurements') . '</a></li>';
                             }
+                            $html .= '<li><a href="#" class="btn-modal" data-container=".assign_tailoring_master_modal" data-href="' . route('sell.viewAssignTailoringMaster', [$row->id]) . '"><i class="fas fa-tshirt" aria-hidden="true"></i> ' . __('tailoring.assign_to_tailoring_master') . '</a></li>';
                             $html .= '<li class="divider"></li>';
                             if (! $only_shipments) {
 
@@ -840,6 +841,8 @@ class SellController extends Controller
 
         $change_return = $this->dummyPaymentLine;
 
+        $tailor_masters = User::tailorMasters($business_id);
+
         $cloths = Cloth::where('business_id', $business_id)
             ->pluck('cloth_name', 'id');
 
@@ -872,7 +875,8 @@ class SellController extends Controller
                 'users',
                 'default_price_group_id',
                 'change_return',
-                'cloths'
+                'cloths',
+                'tailor_masters'
             ));
     }
 
@@ -1671,7 +1675,7 @@ class SellController extends Controller
             ->findorfail($id);
 
         $users = User::forDropdown($business_id, false, false, false);
-        
+
         $tailor_masters = User::tailorMasters($business_id);
 
         $shipping_statuses = $this->transactionUtil->shipping_statuses();
@@ -1884,6 +1888,127 @@ class SellController extends Controller
             ->with(compact('transaction', 'delivery_statuses', 'sell_details'));
     }
 
+    public function updatePartialDelivery(Request $request, $id)
+    {
+        try {
+            DB::beginTransaction();
+
+            $cloths = $request->input('cloths', []);
+            $is_valid = true;
+
+            if (!empty($cloths)) {
+
+                foreach ($cloths as $cloth) {
+                    $completed = (int)$cloth['completed'];
+                    $delivered = (int)$cloth['delivered'];
+                    $qty = (int)$cloth['qty'];
+
+                    if ($completed <= $qty && $delivered <= $qty && $delivered <= $completed) {
+                        \DB::table('transaction_sell_lines')
+                            ->where('id', $cloth['sell_line_id'])
+                            ->update([
+                                'completed_quantity' => (int)$cloth['completed'],
+                                'delivered_quantity' => (int)$cloth['delivered'],
+                                'updated_at' => now(),
+                            ]);
+                    } else {
+                        $is_valid = false;
+                        break;
+                    }
+                }
+
+                if ($is_valid) {
+                    $allDelivered = \DB::table('transaction_sell_lines')
+                        ->where('transaction_id', $id)
+                        ->whereRaw('delivered_quantity < quantity')
+                        ->doesntExist();
+
+                    $allCompleted = \DB::table('transaction_sell_lines')
+                        ->where('transaction_id', $id)
+                        ->whereRaw('completed_quantity < quantity')
+                        ->doesntExist();
+
+                    if ($allDelivered) {
+                        \DB::table('transactions')
+                            ->where('id', $id)
+                            ->update([
+                                'delivery_status' => 'delivered',
+                                'updated_at' => now(),
+                            ]);
+                    } elseif ($allCompleted) {
+                        \DB::table('transactions')
+                            ->where('id', $id)
+                            ->update([
+                                'delivery_status' => 'ready_to_deliver',
+                                'updated_at' => now(),
+                            ]);
+                    }
+
+                    DB::commit();
+
+                    $output = [
+                        'success' => 1,
+                        'msg' => __('tailoring.partial_delivery_updated'),
+                    ];
+                } else {
+                    DB::rollBack();
+                    $output = [
+                        'success' => 0,
+                        'msg' => __('tailoring.qty_exceeded'),
+                    ];
+                }
+            } else {
+                $output = [
+                    'success' => 0,
+                    'msg' => __('tailoring.no_cloth'),
+                ];
+            }
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::emergency(
+                'File:' . $e->getFile() .
+                    ' Line:' . $e->getLine() .
+                    ' Message:' . $e->getMessage()
+            );
+            $output = [
+                'success' => 0,
+                'msg' => __('messages.something_went_wrong'),
+            ];
+        }
+
+
+        return redirect()
+            ->action([\App\Http\Controllers\SellController::class, 'index'])
+            ->with('status', $output);
+    }
+
+    public function viewAssignTailoringMaster($transaction_id)
+    {
+
+        $business_id = request()->session()->get('user.business_id');
+        $transaction = Transaction::where('business_id', $business_id)
+            ->findorfail($transaction_id);
+
+        $sell_details = DB::table('transaction_sell_lines')
+            ->leftJoin('cloths as c', 'transaction_sell_lines.cloth_id', '=', 'c.id')
+            ->where('transaction_sell_lines.transaction_id', $transaction_id)
+            ->select([
+                'c.id as cloth_id',
+                'c.cloth_name',
+                'transaction_sell_lines.secondary_unit_quantity',
+                'transaction_sell_lines.id as sell_line_id',
+                'transaction_sell_lines.quantity as quantity_ordered',
+                'transaction_sell_lines.tailoring_master_id',
+                'transaction_sell_lines.assigned_quantity',
+            ])
+            ->get();
+
+        $tailor_masters = User::tailorMasters($business_id);
+
+        return view('sell.partials.view_assign_tailoring_master')
+            ->with(compact('transaction', 'sell_details', 'tailor_masters'));
+    }
+
     public function viewMeasurement($transaction_id)
     {
         $business_id = request()->session()->get('user.business_id');
@@ -1958,5 +2083,87 @@ class SellController extends Controller
         // 👉 Return PRINT view (not normal view)
         return view('sell.partials.print_measurement')
             ->with(compact('transaction', 'sell'));
+    }
+
+    public function updateAssignedTailoringMaster(Request $request, $id)
+    {
+        try {
+            DB::beginTransaction();
+
+            $cloths = $request->input('cloths', []);
+            $common_tailoring_master = $request->input('tailoring_master', "");
+            $is_valid = true;
+
+            if (!empty($cloths)) {
+
+                if ($common_tailoring_master != "") {
+                    \DB::table('transactions')
+                        ->where('id', $id)
+                        ->update([
+                            'tailoring_master_id' => $common_tailoring_master,
+                            'updated_at' => now(),
+                        ]);
+                }
+
+                foreach ($cloths as $cloth) {
+
+                    $assigned_qty = (int)$cloth['assigned_qty'];
+
+                    $tailoring_master =  $common_tailoring_master != "" ? $common_tailoring_master : $cloth['tailoring_master'];
+
+                    $qty = (int)$cloth['qty'];
+
+                    if ($assigned_qty <= $qty) {
+                        \DB::table('transaction_sell_lines')
+                            ->where('id', $cloth['sell_line_id'])
+                            ->update([
+                                'assigned_quantity' => $assigned_qty,
+                                'tailoring_master_id' => $tailoring_master,
+                                'updated_at' => now(),
+                            ]);
+                    } else {
+                        $is_valid = false;
+                        break;
+                    }
+                }
+
+                if ($is_valid) {
+
+                    DB::commit();
+
+                    $output = [
+                        'success' => 1,
+                        'msg' => __('tailoring.assigned_tailoring_master_updated'),
+                    ];
+                } else {
+                    DB::rollBack();
+                    $output = [
+                        'success' => 0,
+                        'msg' => __('tailoring.assigned_qty_exceeded'),
+                    ];
+                }
+            } else {
+                $output = [
+                    'success' => 0,
+                    'msg' => __('tailoring.no_cloth'),
+                ];
+            }
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::emergency(
+                'File:' . $e->getFile() .
+                    ' Line:' . $e->getLine() .
+                    ' Message:' . $e->getMessage()
+            );
+            $output = [
+                'success' => 0,
+                'msg' => __('messages.something_went_wrong'),
+            ];
+        }
+
+
+        return redirect()
+            ->action([\App\Http\Controllers\SellController::class, 'index'])
+            ->with('status', $output);
     }
 }

@@ -10,6 +10,7 @@ use App\Design;
 use App\Measurement;
 use App\Style;
 use App\TransactionSellLine;
+use App\User;
 use App\Utils\BusinessUtil;
 use App\Utils\ModuleUtil;
 
@@ -376,9 +377,11 @@ class ClothController extends Controller
         ]);
     }
 
-    public function getClothDetails($id)
+    public function getClothDetails(Request $request, $id)
     {
         $cloth = Cloth::findOrFail($id);
+        $business_id = $request->session()->get('user.business_id');
+        $tailor_masters = User::tailorMasters($business_id);
 
         /* $selected_styles = $cloth->styles
             ->sortBy(fn($style) => $style->pivot->serial_no ?? 999999)
@@ -406,6 +409,7 @@ class ClothController extends Controller
             'success' => true,
             'data' => [
                 'cloth' => $cloth,
+                'tailor_masters' => $tailor_masters,
                 // 'selected_styles' => $selected_styles,
                 // 'selected_measurements' => $selected_measurements,
             ],

@@ -138,7 +138,10 @@
 
     <div id="print_section" style="display:none;"></div>
 
-    <div class="modal fade edit_payment_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
+    <div class="modal fade edit_payment_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel"></div>
+
+    <div class="modal fade assign_tailoring_master_modal" tabindex="-1" role="dialog"
+        aria-labelledby="gridSystemModalLabel">
     </div>
 
     <!-- This will be printed -->

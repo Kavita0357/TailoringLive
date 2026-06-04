@@ -147,7 +147,7 @@
             @if (auth()->user()->can('dashboard.data'))
                 @if ($is_admin)
                     <div
-                        class="tw-grid tw-grid-cols-1 tw-gap-4 tw-mt-6 sm:tw-grid-cols-2 xl:tw-grid-cols-4 tw-pb-6 sm:tw-gap-5 order-summary">
+                        class="tw-grid tw-grid-cols-1 tw-gap-4 tw-mt-6 sm:tw-grid-cols-2 xl:tw-grid-cols-4 sm:tw-gap-5 order-summary">
                         <div
                             class="tw-transition-all tw-duration-200 tw-bg-white tw-shadow-sm hover:tw-shadow-md tw-rounded-xl hover:tw-translate-y-0.5 tw-ring-1 tw-ring-gray-200">
                             <div class="tw-p-4 sm:tw-p-5">
