@@ -340,7 +340,7 @@ class BusinessController extends BaseController
             }
 
             //default enabled modules
-            /*  $business_details['enabled_modules'] = ['purchases', 'add_sale', 'pos_sale', 'stock_transfers', 'stock_adjustment', 'expenses']; */
+            $default_modules = ['purchases', 'add_sale', 'pos_sale', 'stock_transfers', 'stock_adjustment', 'expenses'];
 
             $enabled_modules = [];
 
@@ -350,14 +350,18 @@ class BusinessController extends BaseController
 
                 $package = Package::find($subscription_details['package_id']);
 
-                foreach (array_keys($this->moduleUtil->availableModules()) as $module) {
+                foreach (array_keys($this->moduleUtil->availableModules(true)) as $module) {
                     if (isset($package->$module) && $package->$module) {
                         $enabled_modules[] = $module;
                     }
                 }
             }
 
-            $business_details['enabled_modules'] = $enabled_modules;
+            $business_details['enabled_modules'] = array_values(
+                array_unique(
+                    array_merge($default_modules, $enabled_modules)
+                )
+            );
 
             //created_by
             $business_details['created_by'] = $request->session()->get('user.id');

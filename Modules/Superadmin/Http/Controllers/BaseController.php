@@ -80,12 +80,6 @@ class BaseController extends Controller
             $package = Package::active()->find($package);
         }
 
-        foreach (array_keys($this->moduleUtil->availableModules()) as $module) {
-            if (isset($package->$module) && $package->$module) {
-                $enabled_modules[] = $module;
-            }
-        }
-
         $subscription = [
             'business_id' => $business_id,
             'package_id' => $package->id,
@@ -131,8 +125,19 @@ class BaseController extends Controller
         $subscription['created_id'] = $user_id;
         $subscription = Subscription::create($subscription);
 
+        $enabled_modules = [];
         $business = Business::find($business_id);
-        $business->enabled_modules = $enabled_modules;
+        foreach (array_keys($this->moduleUtil->availableModules(true)) as $module) {
+            if (isset($package->$module) && $package->$module) {
+                $enabled_modules[] = $module;
+            }
+        }
+        $current_modules = $business->enabled_modules ?? [];
+        $business->enabled_modules = array_values(
+            array_unique(
+                array_merge($current_modules, $enabled_modules)
+            )
+        );
         $business->save();
 
         if (! $is_superadmin) {

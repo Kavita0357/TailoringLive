@@ -8,9 +8,9 @@
     <section class="content-header">
         <h1>@lang('superadmin::lang.packages') <small>@lang('superadmin::lang.add_package')</small></h1>
         <!-- <ol class="breadcrumb">
-            <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
-            <li class="active">Here</li>
-        </ol> -->
+                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
+                <li class="active">Here</li>
+            </ol> -->
     </section>
 
     <!-- Main content -->
@@ -177,7 +177,7 @@
                         <div class="col-sm-3">
                             <div class="checkbox">
                                 <label>
-                                    {!! Form::checkbox('enabled_modules[]', $k, false, [
+                                    {!! Form::checkbox('enabled_modules[]', $k, $k === 'tailoring', [
                                         'class' => 'input-icheck',
                                     ]) !!}
                                     {{ $v['name'] }}
@@ -214,7 +214,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="clearfix"></div>
+                    {{-- <div class="clearfix"></div> --}}
 
                     @foreach ($permissions as $module => $module_permissions)
                         @foreach ($module_permissions as $permission)

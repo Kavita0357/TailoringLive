@@ -76,7 +76,7 @@ class PackagesController extends Controller
         $businesses = Business::get()->pluck('name', 'id');
 
         $permissions = $this->moduleUtil->getModuleData('superadmin_package');
-        $modules = $this->moduleUtil->availableModules();
+        $modules = $this->moduleUtil->availableModules(true);
 
         return view('superadmin::packages.create')
             ->with(compact('intervals', 'currency', 'permissions', 'modules', 'businesses'));
@@ -124,17 +124,6 @@ class PackagesController extends Controller
             $enabled_modules = $request->input('enabled_modules', []);
 
             $module_columns = [
-                'purchases',
-                'add_sale',
-                'pos_sale',
-                'stock_transfers',
-                'stock_adjustment',
-                'expenses',
-                'account',
-                'modifiers',
-                'service_staff',
-                'booking',
-                'subscription',
                 'tailoring'
             ];
 
@@ -203,7 +192,7 @@ class PackagesController extends Controller
         ];
 
         $permissions = $this->moduleUtil->getModuleData('superadmin_package', true);
-        $modules = $this->moduleUtil->availableModules();
+        $modules = $this->moduleUtil->availableModules(true);
         $businesses = Business::get()->pluck('name', 'id');
 
         return view('superadmin::packages.edit')
@@ -234,17 +223,17 @@ class PackagesController extends Controller
             $enabled_modules = $request->input('enabled_modules', []);
 
             $module_columns = [
-                'purchases',
-                'add_sale',
-                'pos_sale',
-                'stock_transfers',
-                'stock_adjustment',
-                'expenses',
-                'account',
-                'modifiers',
-                'service_staff',
-                'booking',
-                'subscription',
+                // 'purchases',
+                // 'add_sale',
+                // 'pos_sale',
+                // 'stock_transfers',
+                // 'stock_adjustment',
+                // 'expenses',
+                // 'account',
+                // 'modifiers',
+                // 'service_staff',
+                // 'booking',
+                // 'subscription',
                 'tailoring'
             ];
 

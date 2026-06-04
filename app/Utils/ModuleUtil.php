@@ -554,8 +554,13 @@ class ModuleUtil extends Util
         return $output;
     }
 
-    public function availableModules()
+    public function availableModules($is_package = false)
     {
+        if ($is_package) {
+            return [
+                'tailoring' => ['name' => __('tailoring.tailoring')],
+            ];
+        }
         return [
             'purchases' => ['name' => __('purchase.purchases')],
             'add_sale' => ['name' => __('sale.add_sale')],
@@ -581,7 +586,7 @@ class ModuleUtil extends Util
                 'name' => __('restaurant.kitchen_for_restaurant'),
             ],
             'subscription' => ['name' => __('lang_v1.enable_subscription')],
-            'tailoring' => ['name' => __('tailoring.tailoring')],
+            // 'tailoring' => ['name' => __('tailoring.tailoring')],
             'types_of_service' => [
                 'name' => __('lang_v1.types_of_service'),
                 'tooltip' => __('lang_v1.types_of_service_help_long'),
