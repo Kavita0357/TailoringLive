@@ -512,4 +512,85 @@ class ManageUserController extends Controller
 
         return redirect()->route('home');
     }
+
+    public function tailorMasterDashboard()
+    {
+        $business_id = request()->session()->get('user.business_id');
+        $tailor_masters = User::where('business_id', $business_id)
+            ->whereHas('roles', function ($q) use ($business_id) {
+                $q->where('name', 'Tailor Master#' . $business_id);
+            })
+            ->get();
+
+        return $tailor_masters;
+    }
+
+    public function getAllTailorMasters()
+    {
+        /* $business_id = request()->session()->get('user.business_id');
+        $tailor_masters = User::where('business_id', $business_id)
+            ->whereHas('roles', function ($q) use ($business_id) {
+                $q->where('name', 'Tailor Master#' . $business_id);
+            })
+            ->get(); */
+
+        if (request()->ajax()) {
+            $business_id = request()->session()->get('user.business_id');
+
+            $role_name = 'Tailor Master#' . $business_id;
+
+            $query = User::where('business_id', $business_id)
+                ->user()
+                ->role($role_name);
+
+            $tailor_masters = $query->select(
+                'id',
+                'username',
+                'email',
+                'allow_login',
+                DB::raw("
+        CONCAT(
+            COALESCE(surname, ''),
+            ' ',
+            COALESCE(first_name, ''),
+            ' ',
+            COALESCE(last_name, '')
+        ) as full_name
+    ")
+            );
+
+            return Datatables::of($tailor_masters)
+                ->editColumn('username', '{{$username}} @if(empty($allow_login)) <span class="label bg-gray">@lang("lang_v1.login_not_allowed")</span>@endif')
+                ->addColumn(
+                    'role',
+                    function ($row) {
+                        $role_name = $this->moduleUtil->getUserRoleName($row->id);
+
+                        return $role_name;
+                    }
+                )
+                ->addColumn(
+                    'action',
+                    '@can("user.update")
+                        <a href="{{action(\'App\Http\Controllers\ManageUserController@edit\', [$id])}}" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline tw-dw-btn-primary"><i class="glyphicon glyphicon-edit"></i> @lang("messages.edit")</a>
+                        &nbsp;
+                    @endcan
+                    @can("user.view")
+                    <a href="{{action(\'App\Http\Controllers\ManageUserController@show\', [$id])}}" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline  tw-dw-btn-info"><i class="fa fa-eye"></i> @lang("messages.view")</a>
+                    &nbsp;
+                    @endcan
+                    @can("user.delete")
+                        <button data-href="{{action(\'App\Http\Controllers\ManageUserController@destroy\', [$id])}}" class="tw-dw-btn tw-dw-btn-outline tw-dw-btn-xs tw-dw-btn-error delete_user_button"><i class="glyphicon glyphicon-trash"></i> @lang("messages.delete")</button>
+                    @endcan'
+                )
+                ->filterColumn('full_name', function ($query, $keyword) {
+                    $query->whereRaw("CONCAT(COALESCE(surname, ''), ' ', COALESCE(first_name, ''), ' ', COALESCE(last_name, '')) like ?", ["%{$keyword}%"]);
+                })
+                ->removeColumn('id')
+                ->rawColumns(['action', 'username'])
+                ->make(true);
+        }
+
+        return view('manage_user.tailoring_master_list');
+    }
 }

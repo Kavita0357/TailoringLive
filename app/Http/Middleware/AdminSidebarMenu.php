@@ -97,6 +97,37 @@ class AdminSidebarMenu
                     ]
                 )->order(10);
             }
+            //TailoringMaster management dropdown
+
+            if (in_array('tailoring', $enabled_modules) && auth()->user()->can('user.view') || auth()->user()->can('user.create')) {
+                $menu->dropdown(
+                    __('tailoring.tailor_management'),
+                    function ($sub) {
+                        if (auth()->user()->can('user.view')) {
+                            $sub->url(
+                                action([\App\Http\Controllers\ManageUserController::class, 'tailorMasterDashboard']),
+                                __('tailoring.dashboard'),
+                                ['icon' => '', 'active' => request()->segment(1) == 'tailor-master' && request()->segment(2) == 'dashboard']
+                            );
+                        }
+                        $sub->url(
+                            action([\App\Http\Controllers\ManageUserController::class, 'getAllTailorMasters']),
+                            __('tailoring.tailor_master_list'),
+                            ['icon' => '', 'active' => request()->segment(1) == 'tailor-master' && request()->segment(2) == 'list']
+                        );
+                    },
+                    [
+                        'icon' => '<svg aria-hidden="true" class="tw-size-5 tw-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                    <path d="M9 7m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0"></path>
+                    <path d="M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    <path d="M21 21v-2a4 4 0 0 0 -3 -3.85"></path>
+                  </svg>',
+                    ]
+                )->order(10);
+            }
 
             //Contacts dropdown
             if (auth()->user()->can('supplier.view') || auth()->user()->can('customer.view') || auth()->user()->can('supplier.view_own') || auth()->user()->can('customer.view_own')) {
