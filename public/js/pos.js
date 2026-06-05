@@ -3375,9 +3375,12 @@ function add_cloth_row(data, is_pos = false) {
 
     if (!is_pos) {
         let tailorOptions = '<option value="">Please Select</option>';
+        let commonTailorMaster = $('#common_tailoring_master').val();
+        let tailoringMasterDisabled = commonTailorMaster ? ' disabled' : '';
 
         $.each(data.tailor_masters, function (id, name) {
-            tailorOptions += `<option value="${id}">${name}</option>`;
+            const selected = commonTailorMaster && commonTailorMaster.toString() === id.toString() ? ' selected' : '';
+            tailorOptions += `<option value="${id}"${selected}>${name}</option>`;
         });
 
         html += `<td>
@@ -3394,9 +3397,10 @@ function add_cloth_row(data, is_pos = false) {
         </td>
         <td>
             <select name="cloths[${rowIndex}][tailoring_master]"
-                    class="form-control select2">
+                    class="form-control select2"${tailoringMasterDisabled}>
                 ${tailorOptions}
             </select>
+            ${commonTailorMaster ? `<input type="hidden" name="cloths[${rowIndex}][tailoring_master]" value="${commonTailorMaster}">` : ''}
         </td>`;
     }
 

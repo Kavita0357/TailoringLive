@@ -38,8 +38,8 @@
             <input type="hidden" name="cloths[{{ $row_count }}][cloth_id]" value="{{ $product->cloth_id }}"
                 class="cloth_id">
             @if (!empty($product->transaction_sell_lines_id))
-                <input type="hidden" name="cloths[{{ $row_count }}][transaction_sell_lines_id]"
-                    class="form-control" value="{{ $product->transaction_sell_lines_id }}">
+                <input type="hidden" name="cloths[{{ $row_count }}][transaction_sell_lines_id]" class="form-control"
+                    value="{{ $product->transaction_sell_lines_id }}">
             @endif
             <div class="input-group input-number">
                 <span class="input-group-btn">
@@ -75,6 +75,26 @@
                 <option value="fixed" {{ $discount_type == 'fixed' ? 'selected' : '' }}>Fixed</option>
                 <option value="percentage" {{ $discount_type == 'percentage' ? 'selected' : '' }}>Percentage</option>
             </select>
+        </td>
+
+        @php
+            $tailoringMasterValue = $transaction->tailoring_master_id ?? $product->tailoring_master_id ?? null;
+            $tailoringMasterDisabled = !empty($transaction->tailoring_master_id);
+        @endphp
+        <td>
+            {!! Form::select(
+                'cloths[' . $row_count . '][tailoring_master]',
+                $tailor_masters,
+                $tailoringMasterValue,
+                [
+                    'class' => 'form-control',
+                    'placeholder' => __('tailoring.select'),
+                    $tailoringMasterDisabled ? 'disabled' : '' => $tailoringMasterDisabled,
+                ],
+            ) !!}
+            @if ($tailoringMasterDisabled)
+                <input type="hidden" name="cloths[{{ $row_count }}][tailoring_master]" value="{{ $tailoringMasterValue }}">
+            @endif
         </td>
 
         <td class="text-center">

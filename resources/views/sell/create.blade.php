@@ -365,7 +365,8 @@
                             <div class="form-group">
                                 {!! Form::label('tailoring_master', __('tailoring.assign_to_tailoring_master') . ':') !!}
                                 {!! Form::select('tailoring_master', $tailor_masters, null, [
-                                    'class' => 'form-control select2',
+                                    'class' => 'form-control',
+                                    'id' => 'common_tailoring_master',
                                     'placeholder' => __('messages.please_select'),
                                 ]) !!}
                             </div>
@@ -1526,6 +1527,22 @@
                 });
             });
 
+            var $commonTailoringMaster = $('#common_tailoring_master');
+            var $innerTailoringMasters = $(".pos_cloth_div select[name*='[tailoring_master]']");
+
+            $('#common_tailoring_master').on('change', function() {
+                var commonValue = $('#common_tailoring_master').val();
+                if (commonValue) {
+                    $(document).find(".pos_cloth_div select[name*='[tailoring_master]']").each(function() {
+                        $(this).val(commonValue).trigger('change');
+                    });
+                    $(document).find(".pos_cloth_div select[name*='[tailoring_master]']").prop('disabled',
+                        true);
+                } else {
+                    $(document).find(".pos_cloth_div select[name*='[tailoring_master]']").prop('disabled',
+                        false);
+                }
+            });
         });
     </script>
 @endsection

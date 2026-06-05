@@ -64,6 +64,7 @@ class TransactionUtil extends Util
             'type' => $sale_type,
             'status' => $input['status'],
             'delivery_status' =>  ! empty($input['delivery_status']) ? $input['delivery_status'] : null,
+            'tailoring_master_id' =>  ! empty($input['tailoring_master']) ? $input['tailoring_master'] : null,
             'sub_status' => ! empty($input['sub_status']) ? $input['sub_status'] : null,
             'contact_id' => $input['contact_id'],
             'customer_group_id' => ! empty($input['customer_group_id']) ? $input['customer_group_id'] : null,
@@ -568,12 +569,12 @@ class TransactionUtil extends Util
                     }
                 }
 
-                 $completed = 0;
+                $completed = 0;
                 $delivered = 0;
-                if ($transaction->delivery_status== 'ready_to_deliver') {
+                if ($transaction->delivery_status == 'ready_to_deliver') {
                     $completed = $uf_quantity * $multiplier;
                     // $delivered = $sell_line->delivered_quantity;
-                }else if ($transaction->delivery_status == 'delivered') {
+                } else if ($transaction->delivery_status == 'delivered') {
                     $completed = $uf_quantity * $multiplier;
                     $delivered = $uf_quantity * $multiplier;
                 }
@@ -597,7 +598,9 @@ class TransactionUtil extends Util
                     'so_line_id' => null,
                     'secondary_unit_quantity' => 0,
                     'completed_quantity' => $completed,
-                    'delivered_quantity' => $delivered
+                    'delivered_quantity' => $delivered,
+                    'assigned_quantity' => $uf_quantity,
+                    'tailoring_master_id' => $transaction->tailoring_master_id ?? $cloth['tailoring_master'] ?? null,
                 ];
 
                 foreach ($extra_line_parameters as $key => $value) {
@@ -5178,7 +5181,7 @@ class TransactionUtil extends Util
             ->with(['sell_lines', 'payment_lines'])
             ->first();
 
-            $is_order = $transaction->type == 'order' ? true : false;
+        $is_order = $transaction->type == 'order' ? true : false;
 
         if (! empty($transaction)) {
             $log_properities = [

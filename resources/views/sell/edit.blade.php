@@ -337,6 +337,16 @@
                                 ]) !!}
                             </div>
                         </div>
+                        <div class="tailoring_master @if (!empty($commission_agent)) col-sm-3 @else col-sm-4 @endif">
+                            <div class="form-group">
+                                {!! Form::label('tailoring_master', __('tailoring.assign_to_tailoring_master') . ':') !!}
+                                {!! Form::select('tailoring_master', $tailor_masters, $transaction->tailoring_master_id ?? null, [
+                                    'class' => 'form-control select2',
+                                    'id' => 'common_tailoring_master',
+                                    'placeholder' => __('messages.please_select'),
+                                ]) !!}
+                            </div>
+                        </div>
                     @endif
                     @if ($transaction->type != 'order' && $transaction->status == 'draft')
                         <div class="col-sm-3">
@@ -548,7 +558,8 @@
 
                         <div class="row col-sm-12 pos_cloth_div" style="min-height: 0">
                             <!-- Keeps count of cloth rows -->
-                            <input type="hidden" id="cloth_row_count" value="{{ $sell_details->whereNotNull('cloth_id')->count() }}">
+                            <input type="hidden" id="cloth_row_count"
+                                value="{{ $sell_details->whereNotNull('cloth_id')->count() }}">
                             <div class="table-responsive">
                                 <table class="table table-condensed table-bordered table-striped table-responsive"
                                     id="pos_cloth_table">
@@ -565,6 +576,9 @@
                                             </th>
                                             <th class="@if (!auth()->user()->can('edit_product_discount_from_sale_screen')) hide @endif">
                                                 @lang('receipt.discount')
+                                            </th>
+                                            <th>
+                                                @lang('tailoring.assign_to_tailoring_master')
                                             </th>
                                             <th class="text-center">
                                                 @lang('sale.subtotal')
@@ -649,7 +663,8 @@
                             value="{{ $business_details->sell_price_tax }}">
 
                         <!-- Keeps count of product rows -->
-                        <input type="hidden" id="product_row_count" value="{{ $sell_details->whereNotNull('product_id')->count() }}">
+                        <input type="hidden" id="product_row_count"
+                            value="{{ $sell_details->whereNotNull('product_id')->count() }}">
 
                         @php
                             $hide_tax = '';
@@ -1452,6 +1467,23 @@
                 $('div.style_measurement_modal').load(url, function() {
                     $(this).modal('show');
                 });
+            });
+
+            var $commonTailoringMaster = $('#common_tailoring_master');
+            var $innerTailoringMasters = $(".pos_cloth_div select[name*='[tailoring_master]']");
+
+            $('#common_tailoring_master').on('change', function() {
+                var commonValue = $('#common_tailoring_master').val();
+                if (commonValue) {
+                    $(document).find(".pos_cloth_div select[name*='[tailoring_master]']").each(function() {
+                        $(this).val(commonValue).trigger('change');
+                    });
+                    $(document).find(".pos_cloth_div select[name*='[tailoring_master]']").prop('disabled',
+                        true);
+                } else {
+                    $(document).find(".pos_cloth_div select[name*='[tailoring_master]']").prop('disabled',
+                        false);
+                }
             });
         });
     </script>

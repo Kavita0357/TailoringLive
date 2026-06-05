@@ -1044,6 +1044,8 @@ class SellController extends Controller
         $location_printer_type = BusinessLocation::find($location_id)->receipt_printer_type;
         $sell_details = [];
 
+        $tailor_masters = User::tailorMasters($business_id);
+
         $sell_details = DB::table('transaction_sell_lines')
             ->leftJoin('products as p', 'transaction_sell_lines.product_id', '=', 'p.id')
             ->leftJoin('cloths as c', 'transaction_sell_lines.cloth_id', '=', 'c.id')
@@ -1088,6 +1090,7 @@ class SellController extends Controller
                 'transaction_sell_lines.line_discount_type',
                 'transaction_sell_lines.line_discount_amount',
                 'transaction_sell_lines.res_service_staff_id',
+                'transaction_sell_lines.tailoring_master_id',
                 'units.id as unit_id',
                 'transaction_sell_lines.sub_unit_id',
                 'transaction_sell_lines.so_line_id',
@@ -1296,7 +1299,36 @@ class SellController extends Controller
         $users = config('constants.enable_contact_assign') ? User::forDropdown($business_id, false, false, false, true) : [];
 
         return view('sell.edit')
-            ->with(compact('business_details', 'cloths', 'taxes', 'sell_details', 'transaction', 'commission_agent', 'types', 'customer_groups', 'pos_settings', 'waiters', 'invoice_schemes', 'default_invoice_schemes', 'redeem_details', 'edit_discount', 'edit_price', 'shipping_statuses', 'warranties', 'statuses', 'delivery_statuses', 'sales_orders', 'payment_types', 'accounts', 'payment_lines', 'change_return', 'is_order_request_enabled', 'customer_due', 'users'));
+            ->with(compact(
+                'business_details',
+                'cloths',
+                'taxes',
+                'sell_details',
+                'transaction',
+                'commission_agent',
+                'types',
+                'customer_groups',
+                'pos_settings',
+                'waiters',
+                'invoice_schemes',
+                'default_invoice_schemes',
+                'redeem_details',
+                'edit_discount',
+                'edit_price',
+                'shipping_statuses',
+                'warranties',
+                'statuses',
+                'delivery_statuses',
+                'sales_orders',
+                'payment_types',
+                'accounts',
+                'payment_lines',
+                'change_return',
+                'is_order_request_enabled',
+                'customer_due',
+                'users',
+                'tailor_masters'
+            ));
     }
 
     /**
