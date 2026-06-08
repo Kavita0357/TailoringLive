@@ -591,6 +591,6 @@ class ManageUserController extends Controller
                 ->make(true);
         }
 
-        return view('manage_user.tailoring_master_list');
+        return view('tailor_master.tailoring_master_list');
     }
 }

@@ -1030,6 +1030,7 @@ return [
     'source' => 'Source',
     'life_stage' => 'Life Stage',
     'assigned_to' => 'Assigned to',
+    'assigned_user' => 'Assigned user',
     'view_own_purchase' => 'View own purchase only',
     'view_own_expense' => 'View own expense only',
     'allow_login' => 'Allow login',
@@ -1554,4 +1555,6 @@ return [
     'cogs_help_text' => 'Cost of Goods Sold = Starting inventory(opening stock) + purchases − ending inventory(closing stock)',
     'overall_summary' => 'Overall Summary',
     'last_30_days' => 'Last 30 days',
+    'add_tailor_master' => 'Add Tailor Master',
+    'edit_tailor_master' => 'Edit Tailor Master',
 ];

@@ -15,8 +15,9 @@
             @can('user.create')
                 @slot('tool')
                     <div class="box-tools">
-                        <a class="tw-dw-btn tw-bg-gradient-to-r tw-from-indigo-600 tw-to-blue-500 tw-font-bold tw-text-white tw-border-none tw-rounded-full"
-                            href="{{ action([\App\Http\Controllers\ManageUserController::class, 'create']) }}">
+                        <a id="open_quick_add_tailor"
+                            class="tw-dw-btn tw-bg-gradient-to-r tw-from-indigo-600 tw-to-blue-500 tw-font-bold tw-text-white tw-border-none tw-rounded-full"
+                            href="#" data-toggle="modal" data-target="#quick_add_tailor_modal">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
                                 class="icon icon-tabler icons-tabler-outline icon-tabler-plus">
@@ -50,6 +51,12 @@
         @endcomponent
 
         <div class="modal fade user_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
+        </div>
+
+        <!-- Quick Add Tailor Master Modal -->
+        <div id="quick_add_tailor_modal" class="modal fade" tabindex="-1" role="dialog"
+            aria-labelledby="quickAddTailorLabel">
+            @include('tailor_master.create')
         </div>
 
     </section>
