@@ -23,7 +23,7 @@
 
         <div class="modal-body">
             <div class="row">
-                <div class="col-md-6">
+                <div class="col-md-12">
                     <div class="form-group">
                         {!! Form::label('contact_id', __('lang_v1.contact_id') . ':') !!}
                         <div class="input-group">
@@ -35,7 +35,7 @@
                     </div>
                 </div>
 
-                <div class="col-md-6">
+                <div class="col-md-12">
                     <div class="form-group">
                         {!! Form::label('assigned_to_users', __('lang_v1.assigned_user') . ':*') !!}
                         <div class="input-group">
@@ -52,7 +52,7 @@
                     </div>
                 </div>
 
-                <div class="col-md-6">
+                <div class="col-md-12">
                     <div class="form-group">
                         {!! Form::label('first_name', __('tailoring.name') . ':*') !!}
                         {!! Form::text('first_name', null, [
@@ -63,7 +63,7 @@
                     </div>
                 </div>
 
-                <div class="col-md-6">
+                <div class="col-md-12">
                     <div class="form-group">
                         {!! Form::label('contact_number', __('contact.mobile') . ':*') !!}
                         <div class="input-group">
