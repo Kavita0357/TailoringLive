@@ -17,7 +17,7 @@
                     <div class="box-tools">
                         <a id="open_quick_add_tailor"
                             class="tw-dw-btn tw-bg-gradient-to-r tw-from-indigo-600 tw-to-blue-500 tw-font-bold tw-text-white tw-border-none tw-rounded-full"
-                            href="#" data-toggle="modal" data-target="#quick_add_tailor_modal">
+                            href="#" data-toggle="modal" data-target="#tailor_master_add_form">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
                                 class="icon icon-tabler icons-tabler-outline icon-tabler-plus">
@@ -54,7 +54,7 @@
         </div>
 
         <!-- Quick Add Tailor Master Modal -->
-        <div id="quick_add_tailor_modal" class="modal fade" tabindex="-1" role="dialog"
+        <div id="tailor_master_add_form" class="modal fade" tabindex="-1" role="dialog"
             aria-labelledby="quickAddTailorLabel">
             @include('tailor_master.create')
         </div>
@@ -93,6 +93,7 @@
                     }
                 ]
             }); */
+
             $(document).on('click', 'button.delete_user_button', function() {
                 swal({
                     title: LANG.sure,

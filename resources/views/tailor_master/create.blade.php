@@ -1,7 +1,7 @@
 <div class="modal-dialog modal-md" role="document">
     <div class="modal-content">
         @php
-            $form_id = 'quick_add_tailor_form';
+            $form_id = 'tailor_master_add_form';
             $business_id = session('user.business_id');
             $tailor_master_role_id = \Spatie\Permission\Models\Role::where(
                 'name',
