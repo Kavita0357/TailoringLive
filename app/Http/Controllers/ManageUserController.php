@@ -592,7 +592,16 @@ class ManageUserController extends Controller
                 ->make(true);
         }
 
-        return view('tailor_master.tailoring_master_list');
+        $business_id = request()->session()->get('user.business_id');
+        $form_id = 'tailor_master_add_form';
+        $tailor_master_role_id = Role::where(
+            'name',
+            'Tailor Master#' . $business_id
+        )->value('id');
+        $users = User::forDropdown($business_id, true);
+
+        return view('tailor_master.tailoring_master_list')
+            ->with(compact('form_id', 'tailor_master_role_id', 'users'));
     }
 
     public function storeTailorMaster(Request $request)

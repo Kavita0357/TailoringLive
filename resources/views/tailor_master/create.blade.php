@@ -1,14 +1,5 @@
 <div class="modal-dialog modal-md" role="document">
     <div class="modal-content">
-        @php
-            $form_id = 'tailor_master_add_form';
-            $business_id = session('user.business_id');
-            $tailor_master_role_id = \Spatie\Permission\Models\Role::where(
-                'name',
-                'Tailor Master#' . $business_id,
-            )->value('id');
-            $users = \App\User::forDropdown($business_id, true);
-        @endphp
         {!! Form::open([
             'url' => action([\App\Http\Controllers\ManageUserController::class, 'store']),
             'method' => 'post',
