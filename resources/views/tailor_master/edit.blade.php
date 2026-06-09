@@ -1,15 +1,15 @@
 <div class="modal-dialog modal-md" role="document">
     <div class="modal-content">
         {!! Form::open([
-            'url' => action([\App\Http\Controllers\ManageUserController::class, 'storeTailorMaster']),
-            'method' => 'post',
-            'id' => $form_id,
+            'url' => action([\App\Http\Controllers\ManageUserController::class, 'updateTailorMaster'], [$tailor->id]),
+            'method' => 'put',
+            'id' => 'tailor_master_edit_form',
         ]) !!}
 
         <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                     aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title">@lang('lang_v1.add_tailor_master')</h4>
+            <h4 class="modal-title">@lang('lang_v1.edit_tailor_master')</h4>
         </div>
 
         <div class="modal-body">
@@ -21,7 +21,7 @@
                             <span class="input-group-addon">
                                 <i class="fa fa-id-badge"></i>
                             </span>
-                            {!! Form::text('contact_id', null, ['class' => 'form-control', 'placeholder' => __('lang_v1.contact_id')]) !!}
+                            {!! Form::text('contact_id', $tailor->contact_id, ['class' => 'form-control', 'placeholder' => __('lang_v1.contact_id')]) !!}
                         </div>
                     </div>
                 </div>
@@ -33,11 +33,13 @@
                             <span class="input-group-addon">
                                 <i class="fa fa-user"></i>
                             </span>
-                            {!! Form::select('assigned_to_users', $users, null, [
-    'class' => 'form-control select2',
-    'id' => 'assigned_to_users',
-    'style' => 'width: 100%;',
-]) !!}
+                            {!! Form::select('assigned_to_users_disabled', $users, $tailor->user_id, [
+                                'class' => 'form-control select2',
+                                'id' => 'assigned_to_users_edit',
+                                'style' => 'width: 100%;',
+                                'disabled' => 'disabled'
+                            ]) !!}
+                            {!! Form::hidden('assigned_to_users', $tailor->user_id) !!}
                         </div>
                     </div>
                 </div>
@@ -45,11 +47,11 @@
                 <div class="col-md-12">
                     <div class="form-group">
                         {!! Form::label('first_name', __('tailoring.name') . ':*') !!}
-                        {!! Form::text('first_name', null, [
-    'class' => 'form-control',
-    'id' => 'first_name',
-    'required',
-]) !!}
+                        {!! Form::text('first_name', $tailor->name, [
+                            'class' => 'form-control',
+                            'id' => 'first_name_edit',
+                            'required',
+                        ]) !!}
                     </div>
                 </div>
 
@@ -60,26 +62,22 @@
                             <span class="input-group-addon">
                                 <i class="fa fa-mobile"></i>
                             </span>
-                            {!! Form::text('contact_number', null, [
-    'class' => 'form-control',
-    'id' => 'contact_number',
-    'required',
-    'maxlength' => 11,
-    'pattern' => '[0-9]{11}',
-    'placeholder' => __('contact.mobile'),
-]) !!}
+                            {!! Form::text('contact_number', $tailor->mobile, [
+                                'class' => 'form-control',
+                                'id' => 'contact_number_edit',
+                                'required',
+                                'maxlength' => 11,
+                                'pattern' => '[0-9]{11}',
+                                'placeholder' => __('contact.mobile'),
+                            ]) !!}
                         </div>
                     </div>
                 </div>
             </div>
-
-            {!! Form::hidden('role', $tailor_master_role_id) !!}
-            {!! Form::hidden('user_type', 'user') !!}
-            {!! Form::hidden('allow_login', 0) !!}
         </div>
 
         <div class="modal-footer">
-            <button type="submit" class="tw-dw-btn tw-dw-btn-primary tw-text-white">@lang('messages.save')</button>
+            <button type="submit" class="tw-dw-btn tw-dw-btn-primary tw-text-white">@lang('messages.update')</button>
             <button type="button" class="tw-dw-btn tw-dw-btn-neutral tw-text-white"
                 data-dismiss="modal">@lang('messages.close')</button>
         </div>
@@ -88,29 +86,3 @@
 
     </div>
 </div>
-@section('javascript')
-    <script type="text/javascript">
-        $(document).ready(function() {
-            $('#assigned_to_users').on('change', function() {
-
-                var user_id = $(this).val();
-
-                if (user_id != '') {
-
-                    $.ajax({
-                        url: '/user-details/' + user_id,
-                        type: 'GET',
-                        success: function(response) {
-
-                            if (response.success) {
-                                // $('#first_name').val(response.name);
-                                $('#contact_number').val(response.mobile);
-                            }
-                        }
-                    });
-
-                }
-            });
-        });
-    </script>
-@endsection

@@ -45,6 +45,29 @@
                                 <th>@lang('messages.action')</th>
                             </tr>
                         </thead>
+                        <tbody>
+                            @foreach ($tailor_masters as $tailor_master)
+                                <tr>
+                                    <td>{{ $tailor_master->contact_id ?? $tailor_master->id }}</td>
+                                    <td>{{ $tailor_master->name }}</td>
+                                    <td>{{ $tailor_master->mobile }}</td>
+                                    <td>{{ $tailor_master->added_on }}</td>
+                                    <td>{{ $tailor_master->total_completed_orders }}</td>
+                                    <td>{{ $tailor_master->total_wages }}</td>
+                                    <td>{{ $tailor_master->total_wages_paid }}</td>
+                                    <td>{{ $tailor_master->total_wages_due }}</td>
+                                    <td>
+                                        <button data-href="{{ action('App\Http\Controllers\ManageUserController@editTailorMaster', [$tailor_master->id]) }}"
+                                            class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline tw-dw-btn-primary btn-modal" data-container=".user_modal"><i
+                                                class="glyphicon glyphicon-edit"></i> @lang('messages.edit')</button>
+                                        &nbsp;
+                                        <button data-href="{{ action('App\Http\Controllers\ManageUserController@destroyTailorMaster', [$tailor_master->id]) }}"
+                                            class="tw-dw-btn tw-dw-btn-outline tw-dw-btn-xs tw-dw-btn-error delete_user_button"><i
+                                                class="glyphicon glyphicon-trash"></i> @lang('messages.delete')</button>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
                     </table>
                 </div>
             @endcan
@@ -66,33 +89,34 @@
     <script type="text/javascript">
         //Roles table
         $(document).ready(function() {
-            /* var users_table = $('#users_table').DataTable({
-                processing: true,
-                serverSide: true,
-                fixedHeader: false,
-                ajax: '/tailor-master/list',
+            var users_table = $('#users_table').DataTable({
                 columnDefs: [{
-                    "targets": [4],
+                    "targets": [8],
                     "orderable": false,
                     "searchable": false
-                }],
-                "columns": [{
-                        "data": "username"
-                    },
-                    {
-                        "data": "full_name"
-                    },
-                    {
-                        "data": "role"
-                    },
-                    {
-                        "data": "email"
-                    },
-                    {
-                        "data": "action"
+                }]
+            });
+
+            $(document).on('submit', 'form#tailor_master_edit_form', function(e) {
+                e.preventDefault();
+                var form = $(this);
+                var data = form.serialize();
+                $.ajax({
+                    method: "POST",
+                    url: form.attr('action'),
+                    dataType: "json",
+                    data: data,
+                    success: function(result) {
+                        if (result.success == true) {
+                            $('.user_modal').modal('hide');
+                            toastr.success(result.msg);
+                            window.location.reload();
+                        } else {
+                            toastr.error(result.msg);
+                        }
                     }
-                ]
-            }); */
+                });
+            });
 
             $(document).on('click', 'button.delete_user_button', function() {
                 swal({
@@ -113,7 +137,7 @@
                             success: function(result) {
                                 if (result.success == true) {
                                     toastr.success(result.msg);
-                                    // users_table.ajax.reload();
+                                    window.location.reload();
                                 } else {
                                     toastr.error(result.msg);
                                 }

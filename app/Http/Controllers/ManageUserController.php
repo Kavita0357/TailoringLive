@@ -600,8 +600,12 @@ class ManageUserController extends Controller
         )->value('id');
         $users = User::forDropdown($business_id, true);
 
+        $tailor_masters = TailorMasterList::whereHas('user', function ($query) use ($business_id) {
+            $query->where('business_id', $business_id);
+        })->get();
+
         return view('tailor_master.tailoring_master_list')
-            ->with(compact('form_id', 'tailor_master_role_id', 'users'));
+            ->with(compact('form_id', 'tailor_master_role_id', 'users', 'tailor_masters'));
     }
 
     public function storeTailorMaster(Request $request)
@@ -662,5 +666,85 @@ class ManageUserController extends Controller
             'name' => trim($user->surname . ' ' . $user->first_name . ' ' . $user->last_name),
             'mobile' => $user->contact_number
         ]);
+    }
+
+    public function editTailorMaster($id)
+    {
+        $business_id = request()->session()->get('user.business_id');
+        $tailor = TailorMasterList::whereHas('user', function ($query) use ($business_id) {
+            $query->where('business_id', $business_id);
+        })->findOrFail($id);
+
+        $users = User::forDropdown($business_id, true);
+
+        return view('tailor_master.edit')
+            ->with(compact('tailor', 'users'));
+    }
+
+    public function updateTailorMaster(Request $request, $id)
+    {
+        try {
+            $request->validate([
+                'first_name' => 'required|string|max:255',
+                'contact_number' => 'required'
+            ]);
+
+            $business_id = request()->session()->get('user.business_id');
+            $tailor = TailorMasterList::whereHas('user', function ($query) use ($business_id) {
+                $query->where('business_id', $business_id);
+            })->findOrFail($id);
+
+            $tailor->update([
+                'name' => $request->first_name,
+                'mobile' => $request->contact_number,
+            ]);
+
+            $output = [
+                'success' => true,
+                'msg' => __('messages.success')
+            ];
+        } catch (\Exception $e) {
+            \Log::error(
+                'File:' . $e->getFile() .
+                    ' Line:' . $e->getLine() .
+                    ' Message:' . $e->getMessage()
+            );
+
+            $output = [
+                'success' => false,
+                'msg' => __('messages.something_went_wrong')
+            ];
+        }
+
+        return response()->json($output);
+    }
+
+    public function destroyTailorMaster($id)
+    {
+        if (request()->ajax()) {
+            try {
+                $business_id = request()->session()->get('user.business_id');
+
+                $tailor = TailorMasterList::whereHas('user', function ($query) use ($business_id) {
+                    $query->where('business_id', $business_id);
+                })->findOrFail($id);
+
+                $tailor->delete();
+
+                $output = [
+                    'success' => true,
+                    'msg' => __('messages.success'),
+                ];
+            } catch (\Exception $e) {
+                \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+
+                $output = [
+                    'success' => false,
+                    'msg' => __('messages.something_went_wrong'),
+                ];
+            }
+
+            return response()->json($output);
+        }
     }
 }
