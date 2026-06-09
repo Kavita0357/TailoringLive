@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Cloth extends Model
 {
     use HasFactory;
-    protected $fillable = ['cloth_name', 'serial_no', 'wages', 'cloth_image', 'business_id', 'created_by'];
+    protected $fillable = ['cloth_name', 'serial_no', 'making_charge', 'wages', 'cloth_image', 'business_id', 'created_by'];
 
     public function measurements()
     {

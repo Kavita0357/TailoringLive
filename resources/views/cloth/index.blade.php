@@ -43,6 +43,7 @@
                             <th>@lang('tailoring.cloth_name')</th>
                             <th>@lang('tailoring.cloth_image')</th>
                             <th>@lang('tailoring.serial_no')</th>
+                            <th>@lang('tailoring.making_charge')</th>
                             <th>@lang('tailoring.wages')</th>
                             <th>@lang('tailoring.measurements')</th>
                             <th>@lang('tailoring.style')</th>
@@ -79,6 +80,10 @@
                     {
                         data: 'serial_no',
                         name: 'serial_no'
+                    },
+                    {
+                        data: 'making_charge',
+                        name: 'making_charge'
                     },
                     {
                         data: 'wages',

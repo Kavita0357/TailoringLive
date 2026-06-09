@@ -49,6 +49,18 @@
                     </div>
                 </div>
 
+                {{-- Making Charge --}}
+                <div class="col-md-12">
+                    <div class="form-group">
+                        {!! Form::label('making_charge', 'Making Charge:') !!}
+                        {!! Form::number('making_charge', $cloth->making_charge, [
+                            'class' => 'form-control',
+                            'step' => '0.01',
+                            'placeholder' => __('tailoring.making_charge'),
+                        ]) !!}
+                    </div>
+                </div>
+
                 {{-- Wages --}}
                 <div class="col-md-12">
                     <div class="form-group">

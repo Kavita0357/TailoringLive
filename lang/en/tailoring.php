@@ -101,6 +101,7 @@ return [
     'wages' => 'Wages',
     'add_cloth' => 'Add Cloth',
     'edit_cloth' => 'Edit Cloth',
+    'making_charge' => 'Making Charge',
     'cloth_add' => 'Cloth added successfully',
     'cloth_update' => 'Cloth updated successfully',
     'cloth_delete' => 'Cloth deleted successfully',

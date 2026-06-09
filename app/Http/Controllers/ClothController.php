@@ -6,7 +6,6 @@ use App\BusinessLocation;
 use App\Cloth;
 use App\ClothCustomization;
 use App\Contact;
-use App\Design;
 use App\Measurement;
 use App\Style;
 use App\TransactionSellLine;
@@ -30,7 +29,6 @@ class ClothController extends Controller
     /**
      * Constructor
      *
-     * @param  Util  $commonUtil
      * @return void
      */
     public function __construct(
@@ -52,7 +50,7 @@ class ClothController extends Controller
 
             $cloths = Cloth::with(['styles', 'measurements'])
                 ->where('business_id', $business_id)
-                ->select(['id', 'cloth_name', 'serial_no', 'cloth_image', 'wages'])
+                ->select(['id', 'cloth_name', 'serial_no', 'cloth_image', 'making_charge', 'wages'])
                 ->get();
 
             // Sort relationships in memory (not SQL)
@@ -61,7 +59,7 @@ class ClothController extends Controller
                 $cloth->measurements = $cloth->measurements->sortBy('pivot.serial_no')->values();
             });
 
-            return Datatables::of($cloths)
+            return DataTables::of($cloths)
                 ->addColumn('cloth_image', function ($row) {
                     if ($row->cloth_image) {
                         $imageUrl = asset('storage/' . $row->cloth_image);
@@ -140,6 +138,7 @@ class ClothController extends Controller
             $request->validate([
                 'cloth_name' => 'required|string|max:255',
                 'serial_no' => 'required|numeric',
+                'making_charge' => 'nullable|numeric',
                 'wages' => 'nullable|numeric',
                 'cloth_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
 
@@ -165,6 +164,7 @@ class ClothController extends Controller
             $cloth = Cloth::create([
                 'cloth_name' => $request->cloth_name,
                 'serial_no' => $request->serial_no,
+                'making_charge' => $request->making_charge,
                 'wages' => $request->wages,
                 'cloth_image' => $imagePath,
                 'business_id' => $business_id,
@@ -261,6 +261,7 @@ class ClothController extends Controller
             $request->validate([
                 'cloth_name' => 'required|string|max:255',
                 'serial_no' => 'required|numeric',
+                'making_charge' => 'nullable|numeric',
                 'wages' => 'nullable|numeric',
                 'cloth_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
 
@@ -286,6 +287,7 @@ class ClothController extends Controller
             $cloth->update([
                 'cloth_name' => $request->cloth_name,
                 'serial_no' => $request->serial_no,
+                'making_charge' => $request->making_charge,
                 'wages' => $request->wages,
                 'cloth_image' => $imagePath,
             ]);
