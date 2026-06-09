@@ -13,6 +13,7 @@ use Spatie\Activitylog\Models\Activity;
 use Spatie\Permission\Models\Role;
 use Yajra\DataTables\Facades\DataTables;
 use App\Events\UserCreatedOrModified;
+use App\TailorMasterList;
 
 class ManageUserController extends Controller
 {
@@ -592,5 +593,65 @@ class ManageUserController extends Controller
         }
 
         return view('tailor_master.tailoring_master_list');
+    }
+
+    public function storeTailorMaster(Request $request)
+    {
+        try {
+
+            $request->validate([
+                'assigned_to_users' => 'required',
+                'first_name' => 'required|string|max:255',
+                'contact_number' => 'required'
+            ]);
+
+            TailorMasterList::create([
+                'user_id' => $request->assigned_to_users,
+                'name' => $request->first_name,
+                'mobile' => $request->contact_number,
+                'added_on' => now(),
+                'total_completed_orders' => 0,
+                'total_wages' => 0,
+                'total_wages_paid' => 0,
+                'total_wages_due' => 0,
+            ]);
+
+            $output = [
+                'success' => true,
+                'msg' => __('messages.success')
+            ];
+        } catch (\Exception $e) {
+
+            \Log::error(
+                'File:' . $e->getFile() .
+                    ' Line:' . $e->getLine() .
+                    ' Message:' . $e->getMessage()
+            );
+
+            $output = [
+                'success' => false,
+                'msg' => __('messages.something_went_wrong')
+            ];
+        }
+
+        return redirect()->back()->with('status', $output);
+    }
+
+    public function getUserDetails($id)
+    {
+        $user = User::select('first_name', 'last_name', 'contact_number', 'surname')
+            ->find($id);
+
+        if (!$user) {
+            return response()->json([
+                'success' => false
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'name' => trim($user->surname . ' ' . $user->first_name . ' ' . $user->last_name),
+            'mobile' => $user->contact_number
+        ]);
     }
 }

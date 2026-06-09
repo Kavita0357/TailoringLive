@@ -278,6 +278,7 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
     Route::resource('users', ManageUserController::class);
     Route::get('/tailor-master/dashboard', [ManageUserController::class, 'tailorMasterDashboard'])->name('tailor_master.dashboard');
     Route::get('/tailor-master/list', [ManageUserController::class, 'getAllTailorMasters'])->name('tailor_master.list');
+    Route::get('/user-details/{id}', [ManageUserController::class, 'getUserDetails']);
 
     Route::resource('group-taxes', GroupTaxController::class);
 

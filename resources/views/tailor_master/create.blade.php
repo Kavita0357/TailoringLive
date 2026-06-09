@@ -42,10 +42,9 @@
                             <span class="input-group-addon">
                                 <i class="fa fa-user"></i>
                             </span>
-                            {!! Form::select('assigned_to_users[]', $users, null, [
+                            {!! Form::select('assigned_to_users', $users, null, [
                                 'class' => 'form-control select2',
                                 'id' => 'assigned_to_users',
-                                'multiple',
                                 'style' => 'width: 100%;',
                             ]) !!}
                         </div>
@@ -57,8 +56,8 @@
                         {!! Form::label('first_name', __('tailoring.name') . ':*') !!}
                         {!! Form::text('first_name', null, [
                             'class' => 'form-control',
+                            'id' => 'first_name',
                             'required',
-                            'placeholder' => __('tailoring.name'),
                         ]) !!}
                     </div>
                 </div>
@@ -72,6 +71,7 @@
                             </span>
                             {!! Form::text('contact_number', null, [
                                 'class' => 'form-control',
+                                'id' => 'contact_number',
                                 'required',
                                 'maxlength' => 11,
                                 'pattern' => '[0-9]{11}',
@@ -97,3 +97,29 @@
 
     </div>
 </div>
+@section('javascript')
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('#assigned_to_users').on('change', function() {
+
+                var user_id = $(this).val();
+
+                if (user_id != '') {
+
+                    $.ajax({
+                        url: '/user-details/' + user_id,
+                        type: 'GET',
+                        success: function(response) {
+
+                            if (response.success) {
+                                $('#first_name').val(response.name);
+                                $('#contact_number').val(response.mobile);
+                            }
+                        }
+                    });
+
+                }
+            });
+        });
+    </script>
+@endsection
