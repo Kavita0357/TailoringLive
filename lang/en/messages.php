@@ -23,6 +23,7 @@ return [
     'transfer_sms_blalance' => 'Transfer SMS Balance',
     'close' => 'Close',
     'something_went_wrong' => 'Something went wrong, please try again later',
+    'success' => 'Success',
     'required' => 'This field is required',
     'please_select' => 'Please Select',
     'cancel' => 'Cancel',

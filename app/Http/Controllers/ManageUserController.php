@@ -716,7 +716,11 @@ class ManageUserController extends Controller
             ];
         }
 
-        return response()->json($output);
+        if ($request->ajax() || $request->expectsJson()) {
+            return response()->json($output);
+        }
+
+        return redirect()->route('tailor_master.list')->with('status', $output);
     }
 
     public function destroyTailorMaster($id)
