@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class TailorMasterList extends Model
 {
@@ -11,4 +12,9 @@ class TailorMasterList extends Model
     protected $guarded = ['id'];
 
     public $timestamps = true;
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 }
