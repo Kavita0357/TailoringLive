@@ -572,7 +572,8 @@
                                                 @lang('sale.qty')
                                             </th>
                                             <th class="@if (!auth()->user()->can('edit_product_price_from_sale_screen')) hide @endif">
-                                                @lang('tailoring.wages')
+                                                <!-- @lang('tailoring.wages') -->
+                                                @lang('tailoring.making_charge')
                                             </th>
                                             <th class="@if (!auth()->user()->can('edit_product_discount_from_sale_screen')) hide @endif">
                                                 @lang('receipt.discount')

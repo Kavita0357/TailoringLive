@@ -3370,7 +3370,7 @@ function add_cloth_row(data, is_pos = false) {
             </div>
         </td>
         <td class="hide">
-            <input type="text" name="cloths[${rowIndex}][unit_price_inc_tax]" class="form-control pos_unit_price_inc_tax input_number" value="${data.cloth.wages || 0}">
+               <input type="text" name="cloths[${rowIndex}][unit_price_inc_tax]" class="form-control pos_unit_price_inc_tax input_number" value="${data.cloth.making_charge || 0}">
         </td>`;
 
     if (!is_pos) {
@@ -3384,8 +3384,8 @@ function add_cloth_row(data, is_pos = false) {
         });
 
         html += `<td>
-            <input type="text" name="cloths[${rowIndex}][unit_price]" class="form-control pos_unit_price input_number" value="${data.cloth.wages || 0}">
-            <input type="text" name="cloths[${rowIndex}][unit_price_inc_tax]" class="form-control hide pos_unit_price_inc_tax input_number" value="${data.cloth.wages || 0}">
+            <input type="text" name="cloths[${rowIndex}][unit_price]" class="form-control pos_unit_price input_number" value="${data.cloth.making_charge || 0}">
+            <input type="text" name="cloths[${rowIndex}][unit_price_inc_tax]" class="form-control hide pos_unit_price_inc_tax input_number" value="${data.cloth.making_charge || 0}">
         </td>
 
         <td>
@@ -3405,8 +3405,8 @@ function add_cloth_row(data, is_pos = false) {
     }
 
     html += `<td class="text-center">
-            <input type="hidden" class="form-control pos_line_total" value="${data.cloth.wages || 0}">
-            <span class="display_currency pos_line_total_text" data-currency_symbol="true">৳ ${__currency_trans_from_en(data.cloth.wages || 0, false)}</span>
+            <input type="hidden" class="form-control pos_line_total" value="${data.cloth.making_charge || 0}">
+            <span class="display_currency pos_line_total_text" data-currency_symbol="true">৳ ${__currency_trans_from_en(data.cloth.making_charge || 0, false)}</span>
         </td>
 
         <td class="text-center v-center">
@@ -3419,7 +3419,7 @@ function add_cloth_row(data, is_pos = false) {
     } else {
         $('#pos_cloth_table tbody').append(html);
         $('#cloth_price span.total_quantity').html(__currency_trans_from_en(1, false));
-        $('#cloth_price span.price_total').html(__currency_trans_from_en(data.cloth.wages || 0, false));
+        $('#cloth_price span.price_total').html(__currency_trans_from_en(data.cloth.making_charge || 0, false));
         $('#cloth_row_count').val(rowIndex + 1);
     }
     pos_total_row();

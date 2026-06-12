@@ -2027,8 +2027,8 @@ class SellPosController extends Controller
             foreach ($price_groups as $key => $value) {
                 if (
                     auth()
-                    ->user()
-                    ->can('selling_price_group.' . $key)
+                        ->user()
+                        ->can('selling_price_group.' . $key)
                 ) {
                     $allowed_group_prices[$key] = $value;
                 }
@@ -2052,7 +2052,7 @@ class SellPosController extends Controller
             $business_id = request()->session()->get('user.business_id');
             $cloths = Cloth::with(['styles', 'measurements'])
                 ->where('business_id', $business_id)
-                ->select(['id', 'cloth_name', 'serial_no', 'cloth_image', 'wages'])
+                ->select(['id', 'cloth_name', 'serial_no', 'cloth_image', 'making_charge'])
                 ->get();
             return view('sale_pos.partials.cloth_list')->with(compact('cloths'));
         }
