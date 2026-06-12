@@ -17,7 +17,8 @@
                 @lang('restaurant.service_staff')
             </th>
         @endif
-        <th>{{ __('tailoring.wages') }}</th>
+        <!-- <th>{{ __('tailoring.wages') }}</th> -->
+        <th>{{ __('tailoring.making_charge') }}</th>
         <th>{{ __('sale.discount') }}</th>
         <th>{{ __('sale.tax') }}</th>
         <th>{{ __('sale.price_inc_tax') }}</th>
