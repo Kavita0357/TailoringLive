@@ -34,6 +34,7 @@
                     <table class="table table-bordered table-striped" id="users_table">
                         <thead>
                             <tr>
+                                <th>@lang('messages.action')</th>
                                 <th>@lang('tailoring.id')</th>
                                 <th>@lang('tailoring.name')</th>
                                 <th>@lang('tailoring.mobile')</th>
@@ -42,12 +43,76 @@
                                 <th>@lang('tailoring.total_wages')</th>
                                 <th>@lang('tailoring.total_wages_paid')</th>
                                 <th>@lang('tailoring.total_wages_due')</th>
-                                <th>@lang('messages.action')</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach ($tailor_masters as $tailor_master)
                                 <tr>
+                                    <td>
+                                        <div class="btn-group">
+                                            <button type="button" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline tw-dw-btn-info tw-w-max dropdown-toggle" 
+                                                data-toggle="dropdown" aria-expanded="false">
+                                                @lang('messages.actions')
+                                                <span class="caret"></span>
+                                                <span class="sr-only">Toggle Dropdown</span>
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-menu-left" role="menu">
+                                                <li>
+                                                    <a href="#">
+                                                        <i class="fas fa-money-bill-alt" aria-hidden="true"></i>
+                                                        @lang('lang_v1.pay')
+                                                    </a>
+                                                </li>
+                                                @can('user.view')
+                                                    <li>
+                                                        <a href="{{ action('App\Http\Controllers\ManageUserController@show', [$tailor_master->user_id]) }}">
+                                                            <i class="fas fa-eye" aria-hidden="true"></i>
+                                                            @lang('messages.view')
+                                                        </a>
+                                                    </li>
+                                                @endcan
+                                                @can('user.update')
+                                                    <li>
+                                                        <a href="#" data-href="{{ action('App\Http\Controllers\ManageUserController@editTailorMaster', [$tailor_master->id]) }}" class="btn-modal" data-container=".user_modal">
+                                                            <i class="glyphicon glyphicon-edit"></i>
+                                                            @lang('messages.edit')
+                                                        </a>
+                                                    </li>
+                                                @endcan
+                                                @can('user.delete')
+                                                    <li>
+                                                        <a href="#" data-href="{{ action('App\Http\Controllers\ManageUserController@destroyTailorMaster', [$tailor_master->id]) }}" class="delete_user_button">
+                                                            <i class="glyphicon glyphicon-trash"></i>
+                                                            @lang('messages.delete')
+                                                        </a>
+                                                    </li>
+                                                @endcan
+                                                @can('user.update')
+                                                    <li>
+                                                        <a href="#">
+                                                            <i class="fas fa-power-off"></i>
+                                                            @lang('messages.deactivate')
+                                                        </a>
+                                                    </li>
+                                                @endcan
+                                                <li class="divider"></li>
+                                                @can('user.view')
+                                                    <li>
+                                                        <a href="#">
+                                                            <i class="fas fa-scroll" aria-hidden="true"></i>
+                                                            @lang('lang_v1.ledger')
+                                                        </a>
+                                                    </li>
+                                                @endcan
+                                                <li>
+                                                    <a href="#">
+                                                        <i class="fas fa-cut" aria-hidden="true"></i>
+                                                        @lang('tailoring.cloths_made')
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </td>
                                     <td>{{ $tailor_master->contact_id ?? $tailor_master->id }}</td>
                                     <td>{{ $tailor_master->name }}</td>
                                     <td>{{ $tailor_master->mobile }}</td>
@@ -56,15 +121,6 @@
                                     <td>{{ $tailor_master->total_wages }}</td>
                                     <td>{{ $tailor_master->total_wages_paid }}</td>
                                     <td>{{ $tailor_master->total_wages_due }}</td>
-                                    <td>
-                                        <button data-href="{{ action('App\Http\Controllers\ManageUserController@editTailorMaster', [$tailor_master->id]) }}"
-                                            class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline tw-dw-btn-primary btn-modal" data-container=".user_modal"><i
-                                                class="glyphicon glyphicon-edit"></i> @lang('messages.edit')</button>
-                                        &nbsp;
-                                        <button data-href="{{ action('App\Http\Controllers\ManageUserController@destroyTailorMaster', [$tailor_master->id]) }}"
-                                            class="tw-dw-btn tw-dw-btn-outline tw-dw-btn-xs tw-dw-btn-error delete_user_button"><i
-                                                class="glyphicon glyphicon-trash"></i> @lang('messages.delete')</button>
-                                    </td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -91,7 +147,7 @@
         $(document).ready(function() {
             var users_table = $('#users_table').DataTable({
                 columnDefs: [{
-                    "targets": [8],
+                    "targets": [0],
                     "orderable": false,
                     "searchable": false
                 }]

@@ -194,5 +194,6 @@ return [
     'delete' => 'Delete',
     'preview' => 'Preview',
     'cancel' => 'Cancel',
-    'address' => 'Address'
+    'address' => 'Address',
+    'cloths_made' => 'Cloths Made'
 ];
