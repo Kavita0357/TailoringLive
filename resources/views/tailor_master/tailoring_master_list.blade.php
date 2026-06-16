@@ -53,6 +53,9 @@
         <div class="modal fade user_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
         </div>
 
+        <div class="modal fade pay_contact_due_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
+        </div>
+
         <!-- Quick Add Tailor Master Modal -->
         <div id="tailor_master_add_form" class="modal fade" tabindex="-1" role="dialog"
             aria-labelledby="quickAddTailorLabel">

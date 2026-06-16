@@ -560,11 +560,13 @@ class ManageUserController extends Controller
                     }
                 })
                 ->addColumn('action', function ($row) {
-                    $html = '<div class="btn-group">';
-                    $html .= '<button type="button" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline tw-dw-btn-info tw-w-max dropdown-toggle" data-toggle="dropdown" aria-expanded="false">';
-                    $html .= __('messages.actions') . '<span class="caret"></span><span class="sr-only">Toggle Dropdown</span></button>';
-                    $html .= '<ul class="dropdown-menu dropdown-menu-left" role="menu">';
-                    $html .= '<li><a href="#"><i class="fas fa-money-bill-alt" aria-hidden="true"></i> ' . __('lang_v1.pay') . '</a></li>';
+                    $html = '<div class="btn-group">
+                        <button type="button" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline tw-dw-btn-info tw-w-max dropdown-toggle" data-toggle="dropdown" aria-expanded="false">' .
+                        __('messages.actions') . '<span class="caret"></span><span class="sr-only">Toggle Dropdown</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-left" role="menu">';
+
+                    $html .= '<li><a href="' . action([\App\Http\Controllers\TransactionPaymentController::class, 'getPayContactDue'], [$row->id]) . '?type=purchase" class="pay_purchase_due"><i class="fas fa-money-bill-alt" aria-hidden="true"></i>' . __('lang_v1.pay') . '</a></li>';
 
                     if (auth()->user()->can('user.view')) {
                         $html .= '<li><a href="' . action([self::class, 'show'], [$row->user_id]) . '"><i class="fas fa-eye" aria-hidden="true"></i> ' . __('messages.view') . '</a></li>';
@@ -741,11 +743,11 @@ class ManageUserController extends Controller
         if (request()->ajax()) {
             try {
                 $business_id = request()->session()->get('user.business_id');
-                
+
                 $tailor = TailorMasterList::whereHas('user', function ($query) use ($business_id) {
                     $query->where('business_id', $business_id);
                 })->findOrFail($id);
-                
+
                 $tailor->is_active = $tailor->is_active == 'active' ? 'inactive' : 'active';
                 $tailor->save();
 
