@@ -528,67 +528,64 @@ class ManageUserController extends Controller
 
     public function getAllTailorMasters()
     {
-        /* $business_id = request()->session()->get('user.business_id');
-        $tailor_masters = User::where('business_id', $business_id)
-            ->whereHas('roles', function ($q) use ($business_id) {
-                $q->where('name', 'Tailor Master#' . $business_id);
-            })
-            ->get(); */
+        if (! auth()->user()->can('user.view') && ! auth()->user()->can('user.create')) {
+            abort(403, 'Unauthorized action.');
+        }
 
         if (request()->ajax()) {
             $business_id = request()->session()->get('user.business_id');
 
-            $role_name = 'Tailor Master#' . $business_id;
-
-            $query = User::where('business_id', $business_id)
-                ->user()
-                ->role($role_name);
-
-            $tailor_masters = $query->select(
+            $tailor_masters = TailorMasterList::whereHas('user', function ($query) use ($business_id) {
+                $query->where('business_id', $business_id);
+            })->select([
                 'id',
-                'username',
-                'email',
-                'allow_login',
-                DB::raw("
-        CONCAT(
-            COALESCE(surname, ''),
-            ' ',
-            COALESCE(first_name, ''),
-            ' ',
-            COALESCE(last_name, '')
-        ) as full_name
-    ")
-            );
+                'user_id',
+                'name',
+                'mobile',
+                'added_on',
+                'total_completed_orders',
+                'total_wages',
+                'total_wages_paid',
+                'total_wages_due',
+            ]);
 
-            return Datatables::of($tailor_masters)
-                ->editColumn('username', '{{$username}} @if(empty($allow_login)) <span class="label bg-gray">@lang("lang_v1.login_not_allowed")</span>@endif')
-                ->addColumn(
-                    'role',
-                    function ($row) {
-                        $role_name = $this->moduleUtil->getUserRoleName($row->id);
+            return DataTables::of($tailor_masters)
+                ->editColumn('added_on', '{{@format_date($added_on)}}')
+                ->addColumn('action', function ($row) {
+                    $html = '<div class="btn-group">';
+                    $html .= '<button type="button" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline tw-dw-btn-info tw-w-max dropdown-toggle" data-toggle="dropdown" aria-expanded="false">';
+                    $html .= __('messages.actions') . '<span class="caret"></span><span class="sr-only">Toggle Dropdown</span></button>';
+                    $html .= '<ul class="dropdown-menu dropdown-menu-left" role="menu">';
+                    $html .= '<li><a href="#"><i class="fas fa-money-bill-alt" aria-hidden="true"></i> ' . __('lang_v1.pay') . '</a></li>';
 
-                        return $role_name;
+                    if (auth()->user()->can('user.view')) {
+                        $html .= '<li><a href="' . action([self::class, 'show'], [$row->user_id]) . '"><i class="fas fa-eye" aria-hidden="true"></i> ' . __('messages.view') . '</a></li>';
                     }
-                )
-                ->addColumn(
-                    'action',
-                    '@can("user.update")
-                        <a href="{{action(\'App\Http\Controllers\ManageUserController@edit\', [$id])}}" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline tw-dw-btn-primary"><i class="glyphicon glyphicon-edit"></i> @lang("messages.edit")</a>
-                        &nbsp;
-                    @endcan
-                    @can("user.view")
-                    <a href="{{action(\'App\Http\Controllers\ManageUserController@show\', [$id])}}" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline  tw-dw-btn-info"><i class="fa fa-eye"></i> @lang("messages.view")</a>
-                    &nbsp;
-                    @endcan
-                    @can("user.delete")
-                        <button data-href="{{action(\'App\Http\Controllers\ManageUserController@destroy\', [$id])}}" class="tw-dw-btn tw-dw-btn-outline tw-dw-btn-xs tw-dw-btn-error delete_user_button"><i class="glyphicon glyphicon-trash"></i> @lang("messages.delete")</button>
-                    @endcan'
-                )
-                ->filterColumn('full_name', function ($query, $keyword) {
-                    $query->whereRaw("CONCAT(COALESCE(surname, ''), ' ', COALESCE(first_name, ''), ' ', COALESCE(last_name, '')) like ?", ["%{$keyword}%"]);
+
+                    if (auth()->user()->can('user.update')) {
+                        $html .= '<li><a href="#" data-href="' . action([self::class, 'editTailorMaster'], [$row->id]) . '" class="btn-modal" data-container=".user_modal"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a></li>';
+                    }
+
+                    if (auth()->user()->can('user.delete')) {
+                        $html .= '<li><a href="#" data-href="' . action([self::class, 'destroyTailorMaster'], [$row->id]) . '" class="delete_user_button"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</a></li>';
+                    }
+
+                    if (auth()->user()->can('user.update')) {
+                        $html .= '<li><a href="#"><i class="fas fa-power-off"></i> ' . __('messages.deactivate') . '</a></li>';
+                    }
+
+                    $html .= '<li class="divider"></li>';
+
+                    if (auth()->user()->can('user.view')) {
+                        $html .= '<li><a href="#"><i class="fas fa-scroll" aria-hidden="true"></i> ' . __('lang_v1.ledger') . '</a></li>';
+                    }
+
+                    $html .= '<li><a href="#"><i class="fas fa-cut" aria-hidden="true"></i> ' . __('tailoring.cloths_made') . '</a></li>';
+                    $html .= '</ul></div>';
+
+                    return $html;
                 })
-                ->removeColumn('id')
-                ->rawColumns(['action', 'username'])
+                ->rawColumns(['action'])
                 ->make(true);
         }
 
@@ -600,12 +597,8 @@ class ManageUserController extends Controller
         )->value('id');
         $users = User::forDropdown($business_id, true);
 
-        $tailor_masters = TailorMasterList::whereHas('user', function ($query) use ($business_id) {
-            $query->where('business_id', $business_id);
-        })->get();
-
         return view('tailor_master.tailoring_master_list')
-            ->with(compact('form_id', 'tailor_master_role_id', 'users', 'tailor_masters'));
+            ->with(compact('form_id', 'tailor_master_role_id', 'users'));
     }
 
     public function storeTailorMaster(Request $request)

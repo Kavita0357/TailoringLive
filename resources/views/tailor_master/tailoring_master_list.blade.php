@@ -31,7 +31,7 @@
             @endcan
             @can('user.view')
                 <div class="table-responsive">
-                    <table class="table table-bordered table-striped" id="users_table">
+                    <table class="table table-bordered table-striped" id="tailor_masters_table">
                         <thead>
                             <tr>
                                 <th>@lang('messages.action')</th>
@@ -45,85 +45,6 @@
                                 <th>@lang('tailoring.total_wages_due')</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            @foreach ($tailor_masters as $tailor_master)
-                                <tr>
-                                    <td>
-                                        <div class="btn-group">
-                                            <button type="button" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline tw-dw-btn-info tw-w-max dropdown-toggle" 
-                                                data-toggle="dropdown" aria-expanded="false">
-                                                @lang('messages.actions')
-                                                <span class="caret"></span>
-                                                <span class="sr-only">Toggle Dropdown</span>
-                                            </button>
-                                            <ul class="dropdown-menu dropdown-menu-left" role="menu">
-                                                <li>
-                                                    <a href="#">
-                                                        <i class="fas fa-money-bill-alt" aria-hidden="true"></i>
-                                                        @lang('lang_v1.pay')
-                                                    </a>
-                                                </li>
-                                                @can('user.view')
-                                                    <li>
-                                                        <a href="{{ action('App\Http\Controllers\ManageUserController@show', [$tailor_master->user_id]) }}">
-                                                            <i class="fas fa-eye" aria-hidden="true"></i>
-                                                            @lang('messages.view')
-                                                        </a>
-                                                    </li>
-                                                @endcan
-                                                @can('user.update')
-                                                    <li>
-                                                        <a href="#" data-href="{{ action('App\Http\Controllers\ManageUserController@editTailorMaster', [$tailor_master->id]) }}" class="btn-modal" data-container=".user_modal">
-                                                            <i class="glyphicon glyphicon-edit"></i>
-                                                            @lang('messages.edit')
-                                                        </a>
-                                                    </li>
-                                                @endcan
-                                                @can('user.delete')
-                                                    <li>
-                                                        <a href="#" data-href="{{ action('App\Http\Controllers\ManageUserController@destroyTailorMaster', [$tailor_master->id]) }}" class="delete_user_button">
-                                                            <i class="glyphicon glyphicon-trash"></i>
-                                                            @lang('messages.delete')
-                                                        </a>
-                                                    </li>
-                                                @endcan
-                                                @can('user.update')
-                                                    <li>
-                                                        <a href="#">
-                                                            <i class="fas fa-power-off"></i>
-                                                            @lang('messages.deactivate')
-                                                        </a>
-                                                    </li>
-                                                @endcan
-                                                <li class="divider"></li>
-                                                @can('user.view')
-                                                    <li>
-                                                        <a href="#">
-                                                            <i class="fas fa-scroll" aria-hidden="true"></i>
-                                                            @lang('lang_v1.ledger')
-                                                        </a>
-                                                    </li>
-                                                @endcan
-                                                <li>
-                                                    <a href="#">
-                                                        <i class="fas fa-cut" aria-hidden="true"></i>
-                                                        @lang('tailoring.cloths_made')
-                                                    </a>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </td>
-                                    <td>{{ $tailor_master->contact_id ?? $tailor_master->id }}</td>
-                                    <td>{{ $tailor_master->name }}</td>
-                                    <td>{{ $tailor_master->mobile }}</td>
-                                    <td>{{ $tailor_master->added_on }}</td>
-                                    <td>{{ $tailor_master->total_completed_orders }}</td>
-                                    <td>{{ $tailor_master->total_wages }}</td>
-                                    <td>{{ $tailor_master->total_wages_paid }}</td>
-                                    <td>{{ $tailor_master->total_wages_due }}</td>
-                                </tr>
-                            @endforeach
-                        </tbody>
                     </table>
                 </div>
             @endcan
@@ -143,14 +64,77 @@
 @stop
 @section('javascript')
     <script type="text/javascript">
-        //Roles table
         $(document).ready(function() {
-            var users_table = $('#users_table').DataTable({
-                columnDefs: [{
-                    "targets": [0],
-                    "orderable": false,
-                    "searchable": false
-                }]
+            @can('user.view')
+                var tailor_masters_table = $('#tailor_masters_table').DataTable({
+                    processing: true,
+                    serverSide: true,
+                    fixedHeader: false,
+                    ajax: '/tailor-master/list',
+                    order: [
+                        [1, 'asc']
+                    ],
+                    columnDefs: [{
+                        targets: [0],
+                        orderable: false,
+                        searchable: false
+                    }],
+                    columns: [{
+                            data: 'action',
+                            name: 'action',
+                            orderable: false,
+                            searchable: false
+                        },
+                        {
+                            data: 'id',
+                            name: 'id'
+                        },
+                        {
+                            data: 'name',
+                            name: 'name'
+                        },
+                        {
+                            data: 'mobile',
+                            name: 'mobile'
+                        },
+                        {
+                            data: 'added_on',
+                            name: 'added_on'
+                        },
+                        {
+                            data: 'total_completed_orders',
+                            name: 'total_completed_orders'
+                        },
+                        {
+                            data: 'total_wages',
+                            name: 'total_wages'
+                        },
+                        {
+                            data: 'total_wages_paid',
+                            name: 'total_wages_paid'
+                        },
+                        {
+                            data: 'total_wages_due',
+                            name: 'total_wages_due'
+                        }
+                    ]
+                });
+            @endcan
+
+            $(document).on('change', '#assigned_to_users', function() {
+                var user_id = $(this).val();
+
+                if (user_id != '') {
+                    $.ajax({
+                        url: '/user-details/' + user_id,
+                        type: 'GET',
+                        success: function(response) {
+                            if (response.success) {
+                                $('#contact_number').val(response.mobile);
+                            }
+                        }
+                    });
+                }
             });
 
             $(document).on('submit', 'form#tailor_master_edit_form', function(e) {
@@ -166,7 +150,9 @@
                         if (result.success == true) {
                             $('.user_modal').modal('hide');
                             toastr.success(result.msg);
-                            window.location.reload();
+                            if (typeof tailor_masters_table !== 'undefined') {
+                                tailor_masters_table.ajax.reload();
+                            }
                         } else {
                             toastr.error(result.msg);
                         }
@@ -174,7 +160,8 @@
                 });
             });
 
-            $(document).on('click', 'button.delete_user_button', function() {
+            $(document).on('click', '.delete_user_button', function() {
+                var delete_button = $(this);
                 swal({
                     title: LANG.sure,
                     text: LANG.confirm_delete_user,
@@ -183,17 +170,16 @@
                     dangerMode: true,
                 }).then((willDelete) => {
                     if (willDelete) {
-                        var href = $(this).data('href');
-                        var data = $(this).serialize();
                         $.ajax({
                             method: "DELETE",
-                            url: href,
+                            url: delete_button.data('href'),
                             dataType: "json",
-                            data: data,
                             success: function(result) {
                                 if (result.success == true) {
                                     toastr.success(result.msg);
-                                    window.location.reload();
+                                    if (typeof tailor_masters_table !== 'undefined') {
+                                        tailor_masters_table.ajax.reload();
+                                    }
                                 } else {
                                     toastr.error(result.msg);
                                 }

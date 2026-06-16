@@ -34,10 +34,10 @@
                                 <i class="fa fa-user"></i>
                             </span>
                             {!! Form::select('assigned_to_users', $users, null, [
-    'class' => 'form-control select2',
-    'id' => 'assigned_to_users',
-    'style' => 'width: 100%;',
-]) !!}
+                                'class' => 'form-control select2',
+                                'id' => 'assigned_to_users',
+                                'style' => 'width: 100%;',
+                            ]) !!}
                         </div>
                     </div>
                 </div>
@@ -46,10 +46,10 @@
                     <div class="form-group">
                         {!! Form::label('first_name', __('tailoring.name') . ':*') !!}
                         {!! Form::text('first_name', null, [
-    'class' => 'form-control',
-    'id' => 'first_name',
-    'required',
-]) !!}
+                            'class' => 'form-control',
+                            'id' => 'first_name',
+                            'required',
+                        ]) !!}
                     </div>
                 </div>
 
@@ -61,13 +61,13 @@
                                 <i class="fa fa-mobile"></i>
                             </span>
                             {!! Form::text('contact_number', null, [
-    'class' => 'form-control',
-    'id' => 'contact_number',
-    'required',
-    'maxlength' => 11,
-    'pattern' => '[0-9]{11}',
-    'placeholder' => __('contact.mobile'),
-]) !!}
+                                'class' => 'form-control',
+                                'id' => 'contact_number',
+                                'required',
+                                'maxlength' => 11,
+                                'pattern' => '[0-9]{11}',
+                                'placeholder' => __('contact.mobile'),
+                            ]) !!}
                         </div>
                     </div>
                 </div>
@@ -88,7 +88,7 @@
 
     </div>
 </div>
-@section('javascript')
+{{-- @section('javascript')
     <script type="text/javascript">
         $(document).ready(function() {
             $('#assigned_to_users').on('change', function() {
@@ -113,4 +113,4 @@
             });
         });
     </script>
-@endsection
+@endsection --}}
