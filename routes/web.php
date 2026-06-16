@@ -281,6 +281,7 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
     Route::post('/tailor-master/store', [ManageUserController::class, 'storeTailorMaster'])->name('tailor_master.store');
     Route::get('/tailor-master/edit/{id}', [ManageUserController::class, 'editTailorMaster'])->name('tailor_master.edit');
     Route::put('/tailor-master/update/{id}', [ManageUserController::class, 'updateTailorMaster'])->name('tailor_master.update');
+    Route::post('/tailor-master/update-status/{id}', [ManageUserController::class, 'updateTailorMasterStatus'])->name('tailor_master.updateStatus');
     Route::delete('/tailor-master/destroy/{id}', [ManageUserController::class, 'destroyTailorMaster'])->name('tailor_master.destroy');
     Route::get('/user-details/{id}', [ManageUserController::class, 'getUserDetails']);
 

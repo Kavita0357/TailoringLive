@@ -543,6 +543,7 @@ class ManageUserController extends Controller
                 'name',
                 'mobile',
                 'added_on',
+                'is_active',
                 'total_completed_orders',
                 'total_wages',
                 'total_wages_paid',
@@ -551,6 +552,13 @@ class ManageUserController extends Controller
 
             return DataTables::of($tailor_masters)
                 ->editColumn('added_on', '{{@format_date($added_on)}}')
+                ->editColumn('name', function ($row) {
+                    if ($row->is_active == 'inactive') {
+                        return $row->name . ' <small class="label pull-right bg-red no-print">' . __('lang_v1.inactive') . '</small>';
+                    } else {
+                        return $row->name;
+                    }
+                })
                 ->addColumn('action', function ($row) {
                     $html = '<div class="btn-group">';
                     $html .= '<button type="button" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline tw-dw-btn-info tw-w-max dropdown-toggle" data-toggle="dropdown" aria-expanded="false">';
@@ -571,7 +579,15 @@ class ManageUserController extends Controller
                     }
 
                     if (auth()->user()->can('user.update')) {
-                        $html .= '<li><a href="#"><i class="fas fa-power-off"></i> ' . __('messages.deactivate') . '</a></li>';
+                        $html .= '<li><a href="' . action([self::class, 'updateTailorMasterStatus'], [$row->id]) . '" class="update_tailor_status"><i class="fas fa-power-off"></i> ';
+
+                        if ($row->is_active == 'active') {
+                            $html .= __('messages.deactivate');
+                        } else {
+                            $html .= __('messages.activate');
+                        }
+
+                        $html .= '</a></li>';
                     }
 
                     $html .= '<li class="divider"></li>';
@@ -585,7 +601,7 @@ class ManageUserController extends Controller
 
                     return $html;
                 })
-                ->rawColumns(['action'])
+                ->rawColumns(['action', 'name'])
                 ->make(true);
         }
 
@@ -714,6 +730,44 @@ class ManageUserController extends Controller
         }
 
         return redirect()->route('tailor_master.list')->with('status', $output);
+    }
+
+    public function updateTailorMasterStatus($id)
+    {
+        if (! auth()->user()->can('user.update')) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        if (request()->ajax()) {
+            try {
+                $business_id = request()->session()->get('user.business_id');
+                
+                $tailor = TailorMasterList::whereHas('user', function ($query) use ($business_id) {
+                    $query->where('business_id', $business_id);
+                })->findOrFail($id);
+                
+                $tailor->is_active = $tailor->is_active == 'active' ? 'inactive' : 'active';
+                $tailor->save();
+
+                $output = [
+                    'success' => true,
+                    'msg' => __('messages.success'),
+                ];
+            } catch (\Exception $e) {
+                \Log::error(
+                    'File:' . $e->getFile() .
+                        ' Line:' . $e->getLine() .
+                        ' Message:' . $e->getMessage()
+                );
+
+                $output = [
+                    'success' => false,
+                    'msg' => __('messages.something_went_wrong')
+                ];
+            }
+
+            return response()->json($output);
+        }
     }
 
     public function destroyTailorMaster($id)

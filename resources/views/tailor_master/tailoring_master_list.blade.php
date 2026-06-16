@@ -189,6 +189,26 @@
                 });
             });
 
+            $(document).on('click', '.update_tailor_status', function(e) {
+                e.preventDefault();
+                var status_button = $(this);
+                $.ajax({
+                    method: "POST",
+                    url: status_button.attr('href'),
+                    dataType: "json",
+                    success: function(result) {
+                        if (result.success == true) {
+                            toastr.success(result.msg);
+                            if (typeof tailor_masters_table !== 'undefined') {
+                                tailor_masters_table.ajax.reload();
+                            }
+                        } else {
+                            toastr.error(result.msg);
+                        }
+                    }
+                });
+            });
+
         });
     </script>
 @endsection
