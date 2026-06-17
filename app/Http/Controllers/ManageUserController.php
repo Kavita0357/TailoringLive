@@ -569,7 +569,7 @@ class ManageUserController extends Controller
                     $html .= '<li><a href="' . action([\App\Http\Controllers\ManageUserController::class, 'getPayTailorMasterDue'], [$row->id]) . '" class="pay_purchase_due"><i class="fas fa-money-bill-alt" aria-hidden="true"></i>' . __('lang_v1.pay') . '</a></li>';
 
                     if (auth()->user()->can('user.view')) {
-                        $html .= '<li><a href="' . action([self::class, 'show'], [$row->user_id]) . '"><i class="fas fa-eye" aria-hidden="true"></i> ' . __('messages.view') . '</a></li>';
+                        $html .= '<li><a href="' . action([self::class, 'showTailorMaster'], [$row->id]) . '"><i class="fas fa-eye" aria-hidden="true"></i> ' . __('messages.view') . '</a></li>';
                     }
 
                     if (auth()->user()->can('user.update')) {
@@ -800,6 +800,22 @@ class ManageUserController extends Controller
             return response()->json($output);
         }
     }
+
+    public function showTailorMaster($id)
+    {
+        if (! auth()->user()->can('user.view')) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $business_id = request()->session()->get('user.business_id');
+
+        $tailor = TailorMasterList::whereHas('user', function ($query) use ($business_id) {
+            $query->where('business_id', $business_id);
+        })->findOrFail($id);
+
+        return view('tailor_master.show')->with(compact('tailor'));
+    }
+
 
     public function getPayTailorMasterDue($id)
     {

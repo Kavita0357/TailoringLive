@@ -285,7 +285,8 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
     Route::delete('/tailor-master/destroy/{id}', [ManageUserController::class, 'destroyTailorMaster'])->name('tailor_master.destroy');
     Route::get('/tailor-master/pay-due/{id}', [ManageUserController::class, 'getPayTailorMasterDue'])->name('tailor_master.pay_due');
     Route::post('/tailor-master/pay-due', [ManageUserController::class, 'postPayTailorMasterDue'])->name('tailor_master.post_pay_due');
-    Route::get('/user-details/{id}', [ManageUserController::class, 'getUserDetails']);
+    Route::get('/tailor-master/{id}', [ManageUserController::class, 'showTailorMaster'])->name('tailor_master.show');
+    // Route::get('/user-details/{id}', [ManageUserController::class, 'getUserDetails']);
 
     Route::resource('group-taxes', GroupTaxController::class);
 

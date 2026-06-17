@@ -196,5 +196,7 @@ return [
     'preview' => 'Preview',
     'cancel' => 'Cancel',
     'address' => 'Address',
-    'cloths_made' => 'Cloths Made'
+    'cloths_made' => 'Cloths Made',
+    'view_tailor_master' => 'View Tailor Master',
+    "all_locations" => "All Locations"
 ];
