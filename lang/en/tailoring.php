@@ -160,6 +160,7 @@ return [
     "tailor_management" => "Tailor Management",
     "dashboard" => "Dashboard",
     "tailor_master_list" => "Tailor Master List",
+    "tailor_master" => "Tailor Master",
     'id' => 'ID',
     'name' => 'Name',
     'mobile' => 'Mobile',
