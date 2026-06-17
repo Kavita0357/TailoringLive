@@ -566,7 +566,7 @@ class ManageUserController extends Controller
                         </button>
                         <ul class="dropdown-menu dropdown-menu-left" role="menu">';
 
-                    $html .= '<li><a href="' . action([\App\Http\Controllers\TransactionPaymentController::class, 'getPayContactDue'], [$row->id]) . '?type=purchase" class="pay_purchase_due"><i class="fas fa-money-bill-alt" aria-hidden="true"></i>' . __('lang_v1.pay') . '</a></li>';
+                    $html .= '<li><a href="' . action([\App\Http\Controllers\ManageUserController::class, 'getPayTailorMasterDue'], [$row->id]) . '" class="pay_purchase_due"><i class="fas fa-money-bill-alt" aria-hidden="true"></i>' . __('lang_v1.pay') . '</a></li>';
 
                     if (auth()->user()->can('user.view')) {
                         $html .= '<li><a href="' . action([self::class, 'show'], [$row->user_id]) . '"><i class="fas fa-eye" aria-hidden="true"></i> ' . __('messages.view') . '</a></li>';
@@ -799,5 +799,111 @@ class ManageUserController extends Controller
 
             return response()->json($output);
         }
+    }
+
+    public function getPayTailorMasterDue($id)
+    {
+        if (! auth()->user()->can('user.update')) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        if (request()->ajax()) {
+            $business_id = request()->session()->get('user.business_id');
+
+            $tailor = TailorMasterList::whereHas('user', function ($query) use ($business_id) {
+                $query->where('business_id', $business_id);
+            })->findOrFail($id);
+
+            $payment_line = new \App\TransactionPayment();
+            $payment_line->amount = $tailor->total_wages_due;
+            $payment_line->method = 'cash';
+            $payment_line->paid_on = \Carbon::now()->toDateTimeString();
+
+            $transactionUtil = new \App\Utils\TransactionUtil();
+            $payment_types = $transactionUtil->payment_types(null, false, $business_id);
+
+            //Accounts
+            $accounts = $this->moduleUtil->accountsDropdown($business_id, true);
+
+            return view('tailor_master.pay_due_modal')
+                ->with(compact('tailor', 'payment_types', 'payment_line', 'accounts'));
+        }
+    }
+
+    public function postPayTailorMasterDue(Request $request)
+    {
+        if (! auth()->user()->can('user.update')) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        try {
+            DB::beginTransaction();
+
+            $business_id = request()->session()->get('user.business_id');
+            $tailor_id = $request->input('tailor_id');
+            
+            $tailor = TailorMasterList::whereHas('user', function ($query) use ($business_id) {
+                $query->where('business_id', $business_id);
+            })->findOrFail($tailor_id);
+
+            $transactionUtil = new \App\Utils\TransactionUtil();
+            
+            $inputs = $request->only(['amount', 'method', 'note', 'card_number', 'card_holder_name',
+                'card_transaction_number', 'card_type', 'card_month', 'card_year', 'card_security',
+                'cheque_number', 'bank_account_number']);
+            $inputs['paid_on'] = $transactionUtil->uf_date($request->input('paid_on'), true);
+            $inputs['amount'] = $transactionUtil->num_uf($inputs['amount']);
+            $inputs['created_by'] = auth()->user()->id;
+            $inputs['business_id'] = $business_id;
+            
+            if ($inputs['method'] == 'custom_pay_1') {
+                $inputs['transaction_no'] = $request->input('transaction_no_1');
+            } elseif ($inputs['method'] == 'custom_pay_2') {
+                $inputs['transaction_no'] = $request->input('transaction_no_2');
+            } elseif ($inputs['method'] == 'custom_pay_3') {
+                $inputs['transaction_no'] = $request->input('transaction_no_3');
+            }
+
+            if (!empty($request->input('account_id'))) {
+                $inputs['account_id'] = $request->input('account_id');
+            }
+
+            $prefix_type = 'tailor_payment';
+            $ref_count = $transactionUtil->setAndGetReferenceCount($prefix_type);
+            $inputs['payment_ref_no'] = $transactionUtil->generateReferenceNumber($prefix_type, $ref_count);
+
+            $inputs['document'] = $transactionUtil->uploadFile($request, 'document', 'documents');
+
+            // Set payment_for to user_id to identify who was paid
+            $inputs['payment_for'] = $tailor->user_id;
+            
+            // It's a payment to tailor, so it acts like an expense. We will flag it as expense_payment.
+            $inputs['transaction_type'] = 'expense'; // Mocking so account transaction can be handled as debit. Wait, TransactionPaymentAdded may not handle if transaction_id is missing, let's pass it anyway.
+
+            $tp = \App\TransactionPayment::create($inputs);
+
+            // Update tailor master list balances
+            $tailor->total_wages_paid += $inputs['amount'];
+            $tailor->total_wages_due -= $inputs['amount'];
+            $tailor->save();
+
+            // event to update account balance
+            event(new \App\Events\TransactionPaymentAdded($tp, $inputs));
+
+            DB::commit();
+
+            $output = ['success' => true,
+                'msg' => __('messages.success'),
+            ];
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+
+            $output = ['success' => false,
+                'msg' => __('messages.something_went_wrong'),
+            ];
+        }
+
+        return redirect()->back()->with(['status' => $output]);
     }
 }

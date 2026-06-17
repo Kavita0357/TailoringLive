@@ -283,6 +283,8 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
     Route::put('/tailor-master/update/{id}', [ManageUserController::class, 'updateTailorMaster'])->name('tailor_master.update');
     Route::post('/tailor-master/update-status/{id}', [ManageUserController::class, 'updateTailorMasterStatus'])->name('tailor_master.updateStatus');
     Route::delete('/tailor-master/destroy/{id}', [ManageUserController::class, 'destroyTailorMaster'])->name('tailor_master.destroy');
+    Route::get('/tailor-master/pay-due/{id}', [ManageUserController::class, 'getPayTailorMasterDue'])->name('tailor_master.pay_due');
+    Route::post('/tailor-master/pay-due', [ManageUserController::class, 'postPayTailorMasterDue'])->name('tailor_master.post_pay_due');
     Route::get('/user-details/{id}', [ManageUserController::class, 'getUserDetails']);
 
     Route::resource('group-taxes', GroupTaxController::class);
