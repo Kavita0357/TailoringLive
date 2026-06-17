@@ -841,21 +841,32 @@ class ManageUserController extends Controller
 
             $business_id = request()->session()->get('user.business_id');
             $tailor_id = $request->input('tailor_id');
-            
+
             $tailor = TailorMasterList::whereHas('user', function ($query) use ($business_id) {
                 $query->where('business_id', $business_id);
             })->findOrFail($tailor_id);
 
             $transactionUtil = new \App\Utils\TransactionUtil();
-            
-            $inputs = $request->only(['amount', 'method', 'note', 'card_number', 'card_holder_name',
-                'card_transaction_number', 'card_type', 'card_month', 'card_year', 'card_security',
-                'cheque_number', 'bank_account_number']);
+
+            $inputs = $request->only([
+                'amount',
+                'method',
+                'note',
+                'card_number',
+                'card_holder_name',
+                'card_transaction_number',
+                'card_type',
+                'card_month',
+                'card_year',
+                'card_security',
+                'cheque_number',
+                'bank_account_number'
+            ]);
             $inputs['paid_on'] = $transactionUtil->uf_date($request->input('paid_on'), true);
             $inputs['amount'] = $transactionUtil->num_uf($inputs['amount']);
             $inputs['created_by'] = auth()->user()->id;
             $inputs['business_id'] = $business_id;
-            
+
             if ($inputs['method'] == 'custom_pay_1') {
                 $inputs['transaction_no'] = $request->input('transaction_no_1');
             } elseif ($inputs['method'] == 'custom_pay_2') {
@@ -876,7 +887,7 @@ class ManageUserController extends Controller
 
             // Set payment_for to user_id to identify who was paid
             $inputs['payment_for'] = $tailor->user_id;
-            
+
             // It's a payment to tailor, so it acts like an expense. We will flag it as expense_payment.
             $inputs['transaction_type'] = 'expense'; // Mocking so account transaction can be handled as debit. Wait, TransactionPaymentAdded may not handle if transaction_id is missing, let's pass it anyway.
 
@@ -892,14 +903,16 @@ class ManageUserController extends Controller
 
             DB::commit();
 
-            $output = ['success' => true,
+            $output = [
+                'success' => true,
                 'msg' => __('messages.success'),
             ];
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
-            $output = ['success' => false,
+            $output = [
+                'success' => false,
                 'msg' => __('messages.something_went_wrong'),
             ];
         }

@@ -34,7 +34,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="row payment_row">
                 <div class="col-md-4">
                     <div class="form-group">
@@ -83,7 +83,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 @php
                     $pos_settings = !empty(session()->get('business.pos_settings'))
                         ? json_decode(session()->get('business.pos_settings'), true)
@@ -152,7 +152,7 @@
                         @endif
                     </div>
                 @endif
-                
+
                 <div class="clearfix"></div>
                 <div class="col-md-4">
                     <div class="form-group">
