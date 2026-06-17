@@ -535,8 +535,13 @@ class ManageUserController extends Controller
         if (request()->ajax()) {
             $business_id = request()->session()->get('user.business_id');
 
-            $tailor_masters = TailorMasterList::whereHas('user', function ($query) use ($business_id) {
-                $query->where('business_id', $business_id);
+            $tailor_master_role_name = 'Tailor Master#' . $business_id;
+            
+            $tailor_masters = TailorMasterList::whereHas('user', function ($query) use ($business_id, $tailor_master_role_name) {
+                $query->where('business_id', $business_id)
+                      ->whereHas('roles', function ($q) use ($tailor_master_role_name) {
+                          $q->where('name', $tailor_master_role_name);
+                      });
             })->select([
                 'id',
                 'user_id',
@@ -613,7 +618,7 @@ class ManageUserController extends Controller
             'name',
             'Tailor Master#' . $business_id
         )->value('id');
-        $users = User::forDropdown($business_id, true);
+        $users = User::tailorMasters($business_id)->prepend(__('lang_v1.none'), '');
 
         return view('tailor_master.tailoring_master_list')
             ->with(compact('form_id', 'tailor_master_role_id', 'users'));
@@ -686,7 +691,7 @@ class ManageUserController extends Controller
             $query->where('business_id', $business_id);
         })->findOrFail($id);
 
-        $users = User::forDropdown($business_id, true);
+        $users = User::tailorMasters($business_id)->prepend(__('lang_v1.none'), '');
 
         return view('tailor_master.edit')
             ->with(compact('tailor', 'users'));
