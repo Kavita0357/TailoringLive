@@ -153,7 +153,7 @@
                     </div>
                 @endif
 
-                <div class="clearfix"></div>
+                {{-- <div class="clearfix"></div>
                 <div class="col-md-4">
                     <div class="form-group">
                         {!! Form::label('document', __('purchase.attach_document') . ':') !!}
@@ -163,7 +163,7 @@
                         <p class="help-block">
                             @includeIf('components.document_help_text')</p>
                     </div>
-                </div>
+                </div> --}}
                 @if (!empty($accounts))
                     <div class="col-md-6">
                         <div class="form-group">
@@ -184,12 +184,12 @@
                 <div class="clearfix"></div>
 
                 @include('transaction_payment.payment_type_details')
-                <div class="col-md-12">
+                {{-- <div class="col-md-12">
                     <div class="form-group">
                         {!! Form::label('note', __('lang_v1.payment_note') . ':') !!}
                         {!! Form::textarea('note', $payment_line->note, ['class' => 'form-control', 'rows' => 3]) !!}
                     </div>
-                </div>
+                </div> --}}
             </div>
         </div>
 
