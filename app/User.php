@@ -208,7 +208,7 @@ class User extends Authenticatable
     }
 
 
-    public static function tailorMasters($business_id)
+    /*  public static function tailorMasters($business_id)
     {
         $role_name = 'Tailor Master#' . $business_id;
 
@@ -220,6 +220,15 @@ class User extends Authenticatable
         $users = $all_users->pluck('full_name', 'id');
 
         return $users;
+    } */
+
+    public static function tailorMasters($business_id = null)
+    {
+        return TailorMasterList::where('is_active', 'active')
+            ->whereHas('user', function ($query) use ($business_id) {
+                $query->where('business_id', $business_id);
+            })
+            ->pluck('name', 'id');
     }
 
 

@@ -28,7 +28,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use App\CashRegister;
-
+use App\Cloth;
+use App\TailorMasterList;
 
 class TransactionUtil extends Util
 {
@@ -516,7 +517,7 @@ class TransactionUtil extends Util
                 $multiplier = $product['base_unit_multiplier'];
             }    */
             //Check if transaction_sell_lines_id is set, used when editing.
-            if (! empty($cloths['transaction_sell_lines_id'])) {
+            if (! empty($cloth['transaction_sell_lines_id'])) {
                 $edit_id_temp = $this->editClothSellLine($cloth, $location_id, $status_before, $multiplier, $uf_data);
                 $edit_ids = array_merge($edit_ids, $edit_id_temp);
 
@@ -579,6 +580,25 @@ class TransactionUtil extends Util
                     $delivered = $uf_quantity * $multiplier;
                 }
 
+                $tailorMasterId = $transaction->tailoring_master_id
+                    ?? $cloth['tailoring_master']
+                    ?? null;
+
+                if ($tailorMasterId) {
+
+                    $clothWages = Cloth::where(
+                        'id',
+                        $cloth['cloth_id']
+                    )->value('wages') ?? 0;
+
+                    $totalWages = $clothWages * $uf_quantity;
+
+                    $this->updateTailorMasterWages(
+                        $tailorMasterId,
+                        $totalWages
+                    );
+                }
+
                 $line = [
                     'cloth_id' => $cloth['cloth_id'],
                     'variation_id' => null,
@@ -601,7 +621,7 @@ class TransactionUtil extends Util
                     'completed_quantity' => $completed,
                     'delivered_quantity' => $delivered,
                     'assigned_quantity' => $uf_quantity,
-                    'tailoring_master_id' => $transaction->tailoring_master_id ?? $cloth['tailoring_master'] ?? null,
+                    'tailoring_master_id' => $tailorMasterId,
                 ];
 
                 foreach ($extra_line_parameters as $key => $value) {
@@ -646,17 +666,55 @@ class TransactionUtil extends Util
 
         //Delete the products removed and increment product stock.
         $deleted_lines = [];
-        if (! empty($edit_ids)) {
-            $deleted_lines = TransactionSellLine::where('transaction_id', $transaction->id)
+
+        if (!empty($edit_ids)) {
+
+            $deletedSellLines = TransactionSellLine::where('transaction_id', $transaction->id)
                 ->whereNotNull('cloth_id')
                 ->whereNotIn('id', $edit_ids)
-                ->select('id')->get()->toArray();
-            $combo_delete_lines = TransactionSellLine::whereIn('parent_sell_line_id', $deleted_lines)->where('children_type', 'combo')->select('id')->get()->toArray();
-            $deleted_lines = array_merge($deleted_lines, $combo_delete_lines);
+                ->get();
 
-            $adjust_qty = false;
-            if (!empty($deleted_lines))
-                $this->deleteSellLines($deleted_lines, $location_id, $adjust_qty);
+            if ($deletedSellLines->isNotEmpty()) {
+
+                foreach ($deletedSellLines as $line) {
+
+                    $quantity = $line->assigned_quantity ?? $line->quantity;
+
+                    $clothWages = $line->cloth->wages ?? 0;
+
+                    $totalWages = $clothWages * $quantity;
+
+                    $this->updateTailorMasterWages(
+                        $line->tailoring_master_id,
+                        -$totalWages
+                    );
+                }
+
+                $deleted_lines = $deletedSellLines
+                    ->pluck('id')
+                    ->toArray();
+
+                $comboDeleteLines = TransactionSellLine::whereIn(
+                    'parent_sell_line_id',
+                    $deleted_lines
+                )
+                    ->where('children_type', 'combo')
+                    ->pluck('id')
+                    ->toArray();
+
+                $deleted_lines = array_merge(
+                    $deleted_lines,
+                    $comboDeleteLines
+                );
+
+                $adjust_qty = false;
+
+                $this->deleteSellLines(
+                    $deleted_lines,
+                    $location_id,
+                    $adjust_qty
+                );
+            }
         }
 
         if (! empty($lines_formatted)) {
@@ -666,7 +724,6 @@ class TransactionUtil extends Util
         if ($return_deleted) {
             return $deleted_lines;
         }
-        Log::emergency('Cloth sale line Working fine');
         return true;
     }
 
@@ -859,6 +916,62 @@ class TransactionUtil extends Util
             }
         }
 
+        $tailorMasterId = $cloth['tailoring_master'] ?? null;
+
+        $uf_quantity = $uf_data
+            ? $this->num_uf($cloth['quantity']) * $multiplier
+            : $cloth['quantity'] * $multiplier;
+
+
+        // Existing values
+        $oldTailorMasterId = $sell_line->tailoring_master_id;
+
+        $oldQuantity = $sell_line->assigned_quantity ?? $sell_line->quantity;
+
+        $oldClothWages = $sell_line->cloth->wages ?? 0;
+
+        $oldTotalWages = $oldClothWages * $oldQuantity;
+
+
+        // New values
+        $newTailorMasterId = $tailorMasterId;
+
+        $newQuantity = $uf_quantity;
+
+        // Always fetch wages from DB
+        $newClothWages = Cloth::where(
+            'id',
+            $cloth['cloth_id']
+        )->value('wages') ?? 0;
+
+        $newTotalWages = $newClothWages * $newQuantity;
+
+
+        // Tailor master changed
+        if ($oldTailorMasterId != $newTailorMasterId) {
+
+            // Remove from old tailor master
+            $this->updateTailorMasterWages(
+                $oldTailorMasterId,
+                -$oldTotalWages
+            );
+
+            // Add to new tailor master
+            $this->updateTailorMasterWages(
+                $newTailorMasterId,
+                $newTotalWages
+            );
+        } else {
+
+            // Same tailor master
+            $difference = $newTotalWages - $oldTotalWages;
+
+            $this->updateTailorMasterWages(
+                $newTailorMasterId,
+                $difference
+            );
+        }
+
         // Update sell line
         $sell_line->fill([
             'cloth_id' => $cloth['cloth_id'],
@@ -868,11 +981,13 @@ class TransactionUtil extends Util
             'making_charge' => $unit_price_before_discount,
             'line_discount_type' => !empty($cloth['line_discount_type']) ? $cloth['line_discount_type'] : null,
             'line_discount_amount' => $line_discount_amount,
-            'item_tax' => $uf_data ? $this->num_uf($cloth['item_tax']) / $multiplier : $cloth['item_tax'] / $multiplier,
-            'tax_id' => $cloth['tax_id'],
+            'item_tax' => 0,
+            'tax_id' => null,
             'unit_price_inc_tax' => $uf_data ? $this->num_uf($cloth['unit_price_inc_tax']) / $multiplier : $cloth['unit_price_inc_tax'] / $multiplier,
             'sell_line_note' => !empty($cloth['sell_line_note']) ? $cloth['sell_line_note'] : '',
             'res_service_staff_id' => !empty($cloth['res_service_staff_id']) ? $cloth['res_service_staff_id'] : null,
+            'assigned_quantity' => $uf_quantity,
+            'tailoring_master_id' => $tailorMasterId,
         ]);
         $sell_line->save();
 
@@ -883,7 +998,30 @@ class TransactionUtil extends Util
         return $edit_ids;
     }
 
+    private function updateTailorMasterWages($tailorMasterId, $amount)
+    {
+        if (empty($tailorMasterId) || $amount == 0) {
+            return;
+        }
 
+        $tailorMaster = TailorMasterList::find($tailorMasterId);
+
+        if (!$tailorMaster) {
+            return;
+        }
+
+        $tailorMaster->total_wages = max(
+            0,
+            $tailorMaster->total_wages + $amount
+        );
+
+        $tailorMaster->total_wages_due = max(
+            0,
+            $tailorMaster->total_wages - $tailorMaster->total_wages_paid
+        );
+
+        $tailorMaster->save();
+    }
     /**
      * Delete the products removed and increment product stock.
      *
@@ -5165,6 +5303,45 @@ class TransactionUtil extends Util
      * @param  int  $transaction_id
      * @return array
      */
+
+    private function adjustTailorMasterWagesOnDelete($transaction)
+    {
+        if ($transaction->sell_lines->isEmpty()) {
+            return;
+        }
+
+        $cloths = Cloth::whereIn(
+            'id',
+            $transaction->sell_lines
+                ->pluck('cloth_id')
+                ->filter()
+                ->unique()
+        )->get()->keyBy('id');
+
+        foreach ($transaction->sell_lines as $line) {
+
+            if (empty($line->tailoring_master_id) || empty($line->cloth_id)) {
+                continue;
+            }
+
+            $cloth = $cloths->get($line->cloth_id);
+
+            if (!$cloth) {
+                continue;
+            }
+
+            $quantity = $line->assigned_quantity ?? $line->quantity;
+
+            $wages = ($cloth->wages ?? 0) * $quantity;
+
+            $this->updateTailorMasterWages(
+                $line->tailoring_master_id,
+                -$wages
+            );
+        }
+    }
+
+
     public function deleteSale($business_id, $transaction_id)
     {
         //Check if return exist then not allowed
@@ -5190,8 +5367,14 @@ class TransactionUtil extends Util
                 'id' => $transaction->id,
                 'invoice_no' => $transaction->invoice_no,
             ];
+
+
             $log_type = $transaction->type == 'sales_order' ? 'so_deleted' : 'sell_deleted';
             $this->activityLog($transaction, $log_type, null, $log_properities);
+
+            if ($is_order) {
+                $this->adjustTailorMasterWagesOnDelete($transaction);
+            }
 
             //If status is draft direct delete transaction
             if ($transaction->status == 'draft') {

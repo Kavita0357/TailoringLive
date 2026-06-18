@@ -3353,6 +3353,7 @@ function add_cloth_row(data, is_pos = false) {
 
         <td>
             <input type="hidden" name="cloths[${rowIndex}][cloth_id]" value="${data.cloth.id}" class="cloth_id">
+            <input type="hidden" name="cloths[${rowIndex}][wages]" value="${data.cloth.wages || 0}" class="wages">
 
             <div class="input-group input-number">
                 <span class="input-group-btn">

@@ -37,9 +37,11 @@
         <td>
             <input type="hidden" name="cloths[{{ $row_count }}][cloth_id]" value="{{ $product->cloth_id }}"
                 class="cloth_id">
+            <input type="hidden" name="cloths[{{ $row_count }}][wages]" value="{{ $product->wages }}"
+                class="cloth_wages">
             @if (!empty($product->transaction_sell_lines_id))
-                <input type="hidden" name="cloths[{{ $row_count }}][transaction_sell_lines_id]" class="form-control"
-                    value="{{ $product->transaction_sell_lines_id }}">
+                <input type="hidden" name="cloths[{{ $row_count }}][transaction_sell_lines_id]"
+                    class="form-control" value="{{ $product->transaction_sell_lines_id }}">
             @endif
             <div class="input-group input-number">
                 <span class="input-group-btn">
@@ -78,22 +80,18 @@
         </td>
 
         @php
-            $tailoringMasterValue = $transaction->tailoring_master_id ?? $product->tailoring_master_id ?? null;
+            $tailoringMasterValue = $transaction->tailoring_master_id ?? ($product->tailoring_master_id ?? null);
             $tailoringMasterDisabled = !empty($transaction->tailoring_master_id);
         @endphp
         <td>
-            {!! Form::select(
-                'cloths[' . $row_count . '][tailoring_master]',
-                $tailor_masters,
-                $tailoringMasterValue,
-                [
-                    'class' => 'form-control',
-                    'placeholder' => __('tailoring.select'),
-                    $tailoringMasterDisabled ? 'disabled' : '' => $tailoringMasterDisabled,
-                ],
-            ) !!}
+            {!! Form::select('cloths[' . $row_count . '][tailoring_master]', $tailor_masters, $tailoringMasterValue, [
+                'class' => 'form-control',
+                'placeholder' => __('tailoring.select'),
+                $tailoringMasterDisabled ? 'disabled' : '' => $tailoringMasterDisabled,
+            ]) !!}
             @if ($tailoringMasterDisabled)
-                <input type="hidden" name="cloths[{{ $row_count }}][tailoring_master]" value="{{ $tailoringMasterValue }}">
+                <input type="hidden" name="cloths[{{ $row_count }}][tailoring_master]"
+                    value="{{ $tailoringMasterValue }}">
             @endif
         </td>
 
