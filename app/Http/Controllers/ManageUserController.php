@@ -571,7 +571,7 @@ class ManageUserController extends Controller
                         </button>
                         <ul class="dropdown-menu dropdown-menu-left" role="menu">';
 
-                    $html .= '<li><a href="' . action([\App\Http\Controllers\ManageUserController::class, 'getPayTailorMasterDue'], [$row->id]) . '" class="pay_purchase_due"><i class="fas fa-money-bill-alt" aria-hidden="true"></i>' . __('lang_v1.pay') . '</a></li>';
+                    $html .= '<li><a href="' . action([\App\Http\Controllers\ManageUserController::class, 'getPayTailorMasterDue'], [$row->id]) . '" class="pay_tailor_due"><i class="fas fa-money-bill-alt" aria-hidden="true"></i>' . __('lang_v1.pay') . '</a></li>';
 
                     if (auth()->user()->can('user.view')) {
                         $html .= '<li><a href="' . action([self::class, 'showTailorMaster'], [$row->id]) . '"><i class="fas fa-eye" aria-hidden="true"></i> ' . __('messages.view') . '</a></li>';

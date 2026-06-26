@@ -4,7 +4,7 @@
         {!! Form::open([
             'url' => action([\App\Http\Controllers\ManageUserController::class, 'postPayTailorMasterDue']),
             'method' => 'post',
-            'id' => 'pay_contact_due_form',
+            'id' => 'pay_due_modal',
             'files' => true,
         ]) !!}
 

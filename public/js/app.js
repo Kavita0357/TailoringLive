@@ -1696,6 +1696,28 @@ $(document).ready(function () {
         });
     });
 
+
+    $(document).on('click', 'a.pay_tailor_due', function (e) {
+        e.preventDefault();
+        $.ajax({
+            url: $(this).attr('href'),
+            dataType: 'html',
+            success: function (result) {
+                $('.pay_contact_due_modal')
+                    .html(result)
+                    .modal('show');
+                __currency_convert_recursively($('.pay_contact_due_modal'));
+                $('#paid_on').datetimepicker({
+                    format: moment_date_format + ' ' + moment_time_format,
+                    ignoreReadonly: true,
+                });
+                $('.pay_contact_due_modal')
+                    .find('form#pay_due_modal')
+                    .validate();
+            },
+        });
+    });
+
     //Todays profit modal
     $('#view_todays_profit').click(function () {
         var loader = '<div class="text-center">' + __fa_awesome() + '</div>';
