@@ -325,6 +325,7 @@ class AccountController extends Controller
                 ->leftJoin('transaction_payments AS tp', 'account_transactions.transaction_payment_id', '=', 'tp.id')
                 ->leftJoin('contacts AS c', 'tp.payment_for', '=', 'c.id')
                 ->leftJoin('users AS u', 'account_transactions.created_by', '=', 'u.id')
+                ->leftJoin('users AS tp_user', 'tp.payment_for', '=', 'tp_user.id')
                 ->leftjoin(
                     'transaction_payments as child_payments',
                     'tp.id',
@@ -366,6 +367,7 @@ class AccountController extends Controller
                     'tp.cheque_number',
                     'tp.bank_account_number',
                     DB::raw("CONCAT(COALESCE(u.surname, ''),' ',COALESCE(u.first_name, ''),' ',COALESCE(u.last_name,'')) as added_by"),
+                    DB::raw("CONCAT(COALESCE(tp_user.surname, ''),' ',COALESCE(tp_user.first_name, ''),' ',COALESCE(tp_user.last_name,'')) as payment_for_user"),
                     'c.name as payment_for_contact',
                     'c.type as payment_for_type',
                     'c.supplier_business_name as payment_for_business_name',
@@ -1225,21 +1227,25 @@ class AccountController extends Controller
                         __('sale.invoice_no') . ':</b> <a href="#" data-href="' . action([\App\Http\Controllers\SellController::class, 'show'], [$row->transaction->id]) . '" class="btn-modal" data-container=".view_modal">' . $row->transaction->invoice_no . '</a>';
                 }
             } else {
-                //for contact payment which is not advance
+                //for contact/user payment which is not advance
                 if ($row->is_advance != 1) {
-                    if ($row->payment_for_type == 'supplier') {
-                        $details .= '<b>' . __('purchase.supplier') . ':</b> ';
-                    } elseif ($row->payment_for_type == 'customer') {
-                        $details .= '<b>' . __('contact.customer') . ':</b> ';
+                    if (! empty($row->payment_for_user)) {
+                        $details .= '<b>' . __('tailoring.tailor_master') . ':</b> ' . $row->payment_for_user;
                     } else {
-                        $details .= '<b>' . __('account.payment_for') . ':</b> ';
-                    }
+                        if ($row->payment_for_type == 'supplier') {
+                            $details .= '<b>' . __('purchase.supplier') . ':</b> ';
+                        } elseif ($row->payment_for_type == 'customer') {
+                            $details .= '<b>' . __('contact.customer') . ':</b> ';
+                        } else {
+                            $details .= '<b>' . __('account.payment_for') . ':</b> ';
+                        }
 
-                    if (! empty($row->payment_for_business_name)) {
-                        $details .= $row->payment_for_business_name . ', ';
-                    }
-                    if (! empty($row->payment_for_contact)) {
-                        $details .= $row->payment_for_contact;
+                        if (! empty($row->payment_for_business_name)) {
+                            $details .= $row->payment_for_business_name . ', ';
+                        }
+                        if (! empty($row->payment_for_contact)) {
+                            $details .= $row->payment_for_contact;
+                        }
                     }
                 }
             }
@@ -1282,19 +1288,23 @@ class AccountController extends Controller
                 $details .= '<b>' . __('lang_v1.payments_recovered_for') . '</b>: ' . $row->child_sells . '<br>';
             }
 
-            if ($row->payment_for_type == 'supplier') {
-                $details .= '<b>' . __('purchase.supplier') . ':</b> ';
-            } elseif ($row->payment_for_type == 'customer') {
-                $details .= '<b>' . __('contact.customer') . ':</b> ';
+            if (! empty($row->payment_for_user)) {
+                $details .= '<b>' . __('tailoring.tailor_master') . ':</b> ' . $row->payment_for_user;
             } else {
-                $details .= '<b>' . __('account.payment_for') . ':</b> ';
-            }
+                if ($row->payment_for_type == 'supplier') {
+                    $details .= '<b>' . __('purchase.supplier') . ':</b> ';
+                } elseif ($row->payment_for_type == 'customer') {
+                    $details .= '<b>' . __('contact.customer') . ':</b> ';
+                } else {
+                    $details .= '<b>' . __('account.payment_for') . ':</b> ';
+                }
 
-            if (! empty($row->payment_for_business_name)) {
-                $details .= $row->payment_for_business_name . ', ';
-            }
-            if (! empty($row->payment_for_contact)) {
-                $details .= $row->payment_for_contact;
+                if (! empty($row->payment_for_business_name)) {
+                    $details .= $row->payment_for_business_name . ', ';
+                }
+                if (! empty($row->payment_for_contact)) {
+                    $details .= $row->payment_for_contact;
+                }
             }
         }
 
