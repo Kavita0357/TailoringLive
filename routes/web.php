@@ -465,6 +465,7 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
         Route::get('/delete-account-transaction/{id}', [AccountController::class, 'destroyAccountTransaction']);
         Route::get('/edit-account-transaction/{id}', [AccountController::class, 'editAccountTransaction']);
         Route::post('/update-account-transaction/{id}', [AccountController::class, 'updateAccountTransaction']);
+        Route::post('/toggle-flag/{id}', [AccountController::class, 'toggleFlag']);
         Route::get('/get-account-balance/{id}', [AccountController::class, 'getAccountBalance']);
         Route::get('/balance-sheet', [AccountReportsController::class, 'balanceSheet']);
         Route::get('/trial-balance', [AccountReportsController::class, 'trialBalance']);

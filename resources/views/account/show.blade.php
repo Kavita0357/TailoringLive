@@ -82,6 +82,7 @@
                                     <th>@lang('account.debit')</th>
                                     <th>@lang('account.credit')</th>
                     				<th>@lang( 'lang_v1.balance' )</th>
+                                    <th><i class="fa fa-flag" aria-hidden="true"></i></th>
                                     <th>@lang( 'messages.action' )</th>
                     			</tr>
                     		</thead>
@@ -90,6 +91,7 @@
                                     <td colspan="6"><strong>@lang('sale.total'):</strong></td>
                                     <td class="footer_total_debit"></td>
                                     <td class="footer_total_credit"></td>
+                                    <td></td>
                                     <td></td>
                                     <td></td>
                                 </tr>
@@ -162,6 +164,7 @@
                                 {data: 'credit', name: 'amount', searchable: false},
                                 {data: 'debit', name: 'amount', searchable: false},
                                 {data: 'balance', name: 'balance', searchable: false},
+                                {data: 'flag', name: 'flag', searchable: false, orderable: false},
                                 {data: 'action', name: 'action', searchable: false}
                             ],
                             "fnDrawCallback": function (oSettings) {
@@ -245,6 +248,32 @@
                         }
                     }
                 });
+            }
+        });
+    });
+
+    $(document).on('click', '.toggle-flag', function(e) {
+        e.preventDefault();
+        var $icon = $(this);
+        var id = $icon.data('id');
+        $.ajax({
+            method: 'POST',
+            url: '/account/toggle-flag/' + id,
+            dataType: 'json',
+            data: {
+                _token: '{{ csrf_token() }}'
+            },
+            success: function(result) {
+                if (result.success) {
+                    if (result.flag) {
+                        $icon.removeClass('fa-flag-o text-muted').addClass('fa-flag text-danger');
+                    } else {
+                        $icon.removeClass('fa-flag text-danger').addClass('fa-flag-o text-muted');
+                    }
+                    toastr.success(result.msg);
+                } else {
+                    toastr.error(result.msg);
+                }
             }
         });
     });

@@ -352,6 +352,7 @@ class AccountController extends Controller
                     'account_transactions.transaction_id',
                     'account_transactions.id',
                     'account_transactions.note',
+                    'account_transactions.flag',
                     'tp.is_advance',
                     'tp.is_return',
                     'tp.payment_ref_no',
@@ -490,12 +491,16 @@ class AccountController extends Controller
 
                     return $action;
                 })
+                ->addColumn('flag', function ($row) {
+                    $class = $row->flag ? 'fa fa-flag text-danger' : 'fa fa-flag-o text-muted';
+                    return '<i class="' . $class . ' toggle-flag cursor-pointer" data-id="' . $row->id . '" style="cursor: pointer; font-size: 16px;"></i>';
+                })
                 ->filterColumn('added_by', function ($query, $keyword) {
                     $query->whereRaw("CONCAT(COALESCE(u.surname, ''), ' ', COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) like ?", ["%{$keyword}%"]);
                 })
                 ->removeColumn('id')
                 ->removeColumn('is_closed')
-                ->rawColumns(['credit', 'debit', 'balance', 'sub_type', 'action', 'payment_details'])
+                ->rawColumns(['credit', 'debit', 'balance', 'sub_type', 'action', 'payment_details', 'flag'])
                 ->make(true);
         }
         $account = Account::where('business_id', $business_id)
@@ -1434,5 +1439,44 @@ class AccountController extends Controller
         }
 
         return $output;
+    }
+
+    /**
+     * Toggles the flag of an account transaction.
+     *
+     * @param  int  $id
+     * @return array
+     */
+    public function toggleFlag($id)
+    {
+        if (! auth()->user()->can('account.access')) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        try {
+            $business_id = request()->session()->get('user.business_id');
+
+            $transaction = AccountTransaction::join('accounts as A', 'account_transactions.account_id', '=', 'A.id')
+                ->where('A.business_id', $business_id)
+                ->where('account_transactions.id', $id)
+                ->select('account_transactions.*')
+                ->firstOrFail();
+
+            $transaction->flag = $transaction->flag ? 0 : 1;
+            $transaction->save();
+
+            return [
+                'success' => true,
+                'flag' => $transaction->flag,
+                'msg' => __('lang_v1.updated_success')
+            ];
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+
+            return [
+                'success' => false,
+                'msg' => __('messages.something_went_wrong')
+            ];
+        }
     }
 }
