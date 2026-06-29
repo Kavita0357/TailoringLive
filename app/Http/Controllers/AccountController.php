@@ -353,6 +353,7 @@ class AccountController extends Controller
                     'account_transactions.id',
                     'account_transactions.note',
                     'account_transactions.flag',
+                    'account_transactions.is_tailoring',
                     'tp.is_advance',
                     'tp.is_return',
                     'tp.payment_ref_no',
@@ -491,16 +492,15 @@ class AccountController extends Controller
 
                     return $action;
                 })
-                ->addColumn('flag', function ($row) {
-                    $class = $row->flag ? 'fa fa-flag text-danger' : 'fa fa-flag-o text-muted';
-                    return '<i class="' . $class . ' toggle-flag cursor-pointer" data-id="' . $row->id . '" style="cursor: pointer; font-size: 16px;"></i>';
+                ->addColumn('is_tailoring', function ($row) {
+                    return $row->is_tailoring ? 'true' : 'false';
                 })
                 ->filterColumn('added_by', function ($query, $keyword) {
                     $query->whereRaw("CONCAT(COALESCE(u.surname, ''), ' ', COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) like ?", ["%{$keyword}%"]);
                 })
                 ->removeColumn('id')
                 ->removeColumn('is_closed')
-                ->rawColumns(['credit', 'debit', 'balance', 'sub_type', 'action', 'payment_details', 'flag'])
+                ->rawColumns(['credit', 'debit', 'balance', 'sub_type', 'action', 'payment_details', 'is_tailoring'])
                 ->make(true);
         }
         $account = Account::where('business_id', $business_id)
@@ -1462,7 +1462,7 @@ class AccountController extends Controller
                 ->select('account_transactions.*')
                 ->firstOrFail();
 
-            $transaction->flag = $transaction->flag ? 0 : 1;
+            $transaction->flag = !$transaction->flag;
             $transaction->save();
 
             return [

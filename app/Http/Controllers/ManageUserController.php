@@ -919,6 +919,8 @@ class ManageUserController extends Controller
             $tailor->total_wages_due -= $inputs['amount'];
             $tailor->save();
 
+            $inputs['is_tailoring'] = 1;
+
             // event to update account balance
             event(new \App\Events\TransactionPaymentAdded($tp, $inputs));
 

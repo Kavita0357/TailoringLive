@@ -53,6 +53,7 @@ class AddAccountTransaction
                 'created_by' => $event->transactionPayment->created_by,
                 'transaction_id' => $event->transactionPayment->transaction_id,
                 'transaction_payment_id' => $event->transactionPayment->id,
+                'is_tailoring' => ! empty($event->formInput['is_tailoring']) ? $event->formInput['is_tailoring'] : 0,
             ];
 
             //If change return then set type as debit

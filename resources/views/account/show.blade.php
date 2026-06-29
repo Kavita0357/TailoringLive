@@ -82,7 +82,7 @@
                                     <th>@lang('account.debit')</th>
                                     <th>@lang('account.credit')</th>
                     				<th>@lang( 'lang_v1.balance' )</th>
-                                    <th><i class="fa fa-flag" aria-hidden="true"></i></th>
+                                    <th>@lang('account.is_tailoring')</th>
                                     <th>@lang( 'messages.action' )</th>
                     			</tr>
                     		</thead>
@@ -164,7 +164,7 @@
                                 {data: 'credit', name: 'amount', searchable: false},
                                 {data: 'debit', name: 'amount', searchable: false},
                                 {data: 'balance', name: 'balance', searchable: false},
-                                {data: 'flag', name: 'flag', searchable: false, orderable: false},
+                                {data: 'is_tailoring', name: 'account_transactions.is_tailoring', searchable: false, orderable: false},
                                 {data: 'action', name: 'action', searchable: false}
                             ],
                             "fnDrawCallback": function (oSettings) {
@@ -254,8 +254,8 @@
 
     $(document).on('click', '.toggle-flag', function(e) {
         e.preventDefault();
-        var $icon = $(this);
-        var id = $icon.data('id');
+        var $el = $(this);
+        var id = $el.data('id');
         $.ajax({
             method: 'POST',
             url: '/account/toggle-flag/' + id,
@@ -266,9 +266,9 @@
             success: function(result) {
                 if (result.success) {
                     if (result.flag) {
-                        $icon.removeClass('fa-flag-o text-muted').addClass('fa-flag text-danger');
+                        $el.removeClass('text-muted').addClass('text-danger');
                     } else {
-                        $icon.removeClass('fa-flag text-danger').addClass('fa-flag-o text-muted');
+                        $el.removeClass('text-danger').addClass('text-muted');
                     }
                     toastr.success(result.msg);
                 } else {
