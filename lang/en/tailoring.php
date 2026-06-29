@@ -159,6 +159,7 @@ return [
     'tooltip_order_payment_dues' => "Pending payment for Orders. <br/><small class='text-muted'>Based on invoice pay term. <br/> Showing payments to be received in 7 days or less.</small>",
     "tailor_management" => "Tailor Management",
     "dashboard" => "Dashboard",
+    "tailor_master_dashboard" => "Tailor Master Dashboard",
     "tailor_master_list" => "Tailor Master List",
     "tailor_master" => "Tailor Master",
     'id' => 'ID',
@@ -169,7 +170,10 @@ return [
     'total_wages' => 'Total Wages',
     'total_wages_paid' => 'Total Wages Paid',
     'total_wages_due' => 'Total Wages Due',
+    'total_tailor_masters' => 'Total Tailor Masters',
+    'total_completed_orders' => 'Total Completed Orders',
     'all_tailor_masters' => 'All Tailor Masters',
+    'completed_orders' => 'Completed Orders',
     'designs' => 'Designs',
     'design_name' => 'Design Name',
 

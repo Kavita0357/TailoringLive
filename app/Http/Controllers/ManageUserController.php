@@ -517,13 +517,26 @@ class ManageUserController extends Controller
     public function tailorMasterDashboard()
     {
         $business_id = request()->session()->get('user.business_id');
-        $tailor_masters = User::where('business_id', $business_id)
-            ->whereHas('roles', function ($q) use ($business_id) {
-                $q->where('name', 'Tailor Master#' . $business_id);
-            })
-            ->get();
 
-        return $tailor_masters;
+        $tailor_masters = TailorMasterList::whereHas('user', function ($query) use ($business_id) {
+            $query->where('business_id', $business_id)
+                ->whereHas('roles', function ($q) use ($business_id) {
+                    $q->where('name', 'Tailor Master#' . $business_id);
+                });
+        })->get();
+
+        $total_tailor_masters = $tailor_masters->count();
+        $total_wages = $tailor_masters->sum('total_wages');
+        $total_wages_paid = $tailor_masters->sum('total_wages_paid');
+        $total_wages_due = $tailor_masters->sum('total_wages_due');
+
+        return view('tailor_master.dashboard')
+            ->with(compact(
+                'total_tailor_masters',
+                'total_wages',
+                'total_wages_paid',
+                'total_wages_due'
+            ));
     }
 
     public function getAllTailorMasters()
@@ -536,12 +549,12 @@ class ManageUserController extends Controller
             $business_id = request()->session()->get('user.business_id');
 
             $tailor_master_role_name = 'Tailor Master#' . $business_id;
-            
+
             $tailor_masters = TailorMasterList::whereHas('user', function ($query) use ($business_id, $tailor_master_role_name) {
                 $query->where('business_id', $business_id)
-                      ->whereHas('roles', function ($q) use ($tailor_master_role_name) {
-                          $q->where('name', $tailor_master_role_name);
-                      });
+                    ->whereHas('roles', function ($q) use ($tailor_master_role_name) {
+                        $q->where('name', $tailor_master_role_name);
+                    });
             })->select([
                 'id',
                 'user_id',
