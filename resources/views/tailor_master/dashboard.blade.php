@@ -8,7 +8,8 @@
             <div class="tw-pt-3 tw-mb-4">
                 <div class="sm:tw-flex sm:tw-items-center sm:tw-gap-3">
                     <div class="filter-box">
-                        <h1 class="tw-text-xl md:tw-text-3xl tw-font-bold tw-text-black">@lang('tailoring.tailor_master_dashboard')</h1>
+                        <h1 class="tw-text-xl md:tw-text-3xl tw-font-bold tw-text-black">
+                            @lang('tailoring.tailor_master_dashboard')</h1>
                     </div>
                 </div>
 
@@ -59,8 +60,7 @@
                                         </p>
                                         <p
                                             class="tw-mt-0.5 tw-text-gray-900 tw-text-xl tw-truncate tw-font-semibold tw-tracking-tight tw-font-mono">
-                                            <span class="display_currency"
-                                                data-currency_symbol="true">{{ $total_wages }}</span>
+                                            <span class="display_currency" data-currency_symbol="true">{{ $total_wages }}</span>
                                         </p>
                                     </div>
                                 </div>
@@ -148,7 +148,7 @@
 @endsection
 @section('javascript')
     <script type="text/javascript">
-        $(document).ready(function() {
+        $(document).ready(function () {
             @can('user.view')
                 var tailor_masters_table = $('#tailor_masters_dashboard_table').DataTable({
                     processing: true,
@@ -170,17 +170,23 @@
                             name: 'added_on'
                         },
                         {
-                            data: 'name',
-                            name: 'name'
+                            data: 'particulars',
+                            name: 'particulars',
+                            orderable: false,
+                            searchable: false
                         },
                         {
                             data: 'total_wages',
                             name: 'total_wages',
-                            render: $.fn.dataTable.render.number(',', '.', 2, '')
+                            render: $.fn.dataTable.render.number(',', '.', 2, ''),
+                            orderable: false,
+                            searchable: false
                         },
                         {
-                            data: 'name',
-                            name: 'name'
+                            data: 'tailor_master',
+                            name: 'tailor_master',
+                            orderable: false,
+                            searchable: false
                         },
                         {
                             data: 'payment_status',
@@ -191,18 +197,22 @@
                         {
                             data: 'total_wages_paid',
                             name: 'total_wages_paid',
-                            render: $.fn.dataTable.render.number(',', '.', 2, '')
+                            render: $.fn.dataTable.render.number(',', '.', 2, ''),
+                            orderable: false,
+                            searchable: false
                         },
                         {
                             data: 'total_wages_due',
                             name: 'total_wages_due',
-                            render: $.fn.dataTable.render.number(',', '.', 2, '')
+                            render: $.fn.dataTable.render.number(',', '.', 2, ''),
+                            orderable: false,
+                            searchable: false
                         }
                     ]
                 });
             @endcan
 
-            $(document).on('click', '.delete_user_button', function() {
+            $(document).on('click', '.delete_user_button', function () {
                 var delete_button = $(this);
                 swal({
                     title: LANG.sure,
@@ -216,7 +226,7 @@
                             method: "DELETE",
                             url: delete_button.data('href'),
                             dataType: "json",
-                            success: function(result) {
+                            success: function (result) {
                                 if (result.success == true) {
                                     toastr.success(result.msg);
                                     if (typeof tailor_masters_table !== 'undefined') {
@@ -231,14 +241,14 @@
                 });
             });
 
-            $(document).on('click', '.update_tailor_status', function(e) {
+            $(document).on('click', '.update_tailor_status', function (e) {
                 e.preventDefault();
                 var status_button = $(this);
                 $.ajax({
                     method: "POST",
                     url: status_button.attr('href'),
                     dataType: "json",
-                    success: function(result) {
+                    success: function (result) {
                         if (result.success == true) {
                             toastr.success(result.msg);
                             if (typeof tailor_masters_table !== 'undefined') {
@@ -251,19 +261,19 @@
                 });
             });
 
-            $(document).on('click', '.pay_tailor_due', function(e) {
+            $(document).on('click', '.pay_tailor_due', function (e) {
                 e.preventDefault();
                 var href = $(this).attr('href');
                 $.ajax({
                     url: href,
                     dataType: 'html',
-                    success: function(result) {
+                    success: function (result) {
                         $('.pay_contact_due_modal').html(result).modal('show');
                     }
                 });
             });
 
-            $(document).on('submit', 'form#tailor_master_edit_form', function(e) {
+            $(document).on('submit', 'form#tailor_master_edit_form', function (e) {
                 e.preventDefault();
                 var form = $(this);
                 var data = form.serialize();
@@ -272,7 +282,7 @@
                     url: form.attr('action'),
                     dataType: "json",
                     data: data,
-                    success: function(result) {
+                    success: function (result) {
                         if (result.success == true) {
                             $('.user_modal').modal('hide');
                             toastr.success(result.msg);

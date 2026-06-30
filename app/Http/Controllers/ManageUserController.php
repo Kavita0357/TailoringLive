@@ -14,6 +14,7 @@ use Spatie\Permission\Models\Role;
 use Yajra\DataTables\Facades\DataTables;
 use App\Events\UserCreatedOrModified;
 use App\TailorMasterList;
+use App\Transaction;
 
 class ManageUserController extends Controller
 {
@@ -547,6 +548,71 @@ class ManageUserController extends Controller
 
         if (request()->ajax()) {
             $business_id = request()->session()->get('user.business_id');
+
+            if (request()->has('is_dashboard') && request()->input('is_dashboard') == 'true') {
+                $orders = Transaction::where('transactions.business_id', $business_id)
+                    ->where('transactions.type', 'order')
+                    ->whereHas('sell_lines', function ($query) {
+                        $query->whereNotNull('tailoring_master_id');
+                    })
+                    ->with([
+                        'contact',
+                        'sell_lines.tailor_master',
+                        'sell_lines.cloth',
+                        'payment_lines'
+                    ])
+                    ->select('transactions.*');
+
+                return DataTables::of($orders)
+                    ->editColumn('added_on', function ($row) {
+                        return \Carbon::parse($row->transaction_date)->format(session('business.date_format') . ' H:i');
+                    })
+                    ->addColumn('particulars', function ($row) {
+                        return $row->invoice_no;
+                    })
+                    ->addColumn('total_wages', function ($row) {
+                        $wages = 0;
+                        foreach ($row->sell_lines as $line) {
+                            if (!empty($line->tailoring_master_id) && !empty($line->cloth)) {
+                                $quantity = $line->assigned_quantity ?? $line->quantity;
+                                $wages += ($line->cloth->wages ?? 0) * $quantity;
+                            }
+                        }
+                        return $wages;
+                    })
+                    ->addColumn('tailor_master', function ($row) {
+                        $names = [];
+                        foreach ($row->sell_lines as $line) {
+                            if (!empty($line->tailor_master)) {
+                                $names[] = $line->tailor_master->name;
+                            } elseif (!empty($line->tailoring_master_id)) {
+                                $tailor = \App\TailorMasterList::where('user_id', $line->tailoring_master_id)->first();
+                                if ($tailor) {
+                                    $names[] = $tailor->name;
+                                } else {
+                                    $user = \App\User::find($line->tailoring_master_id);
+                                    if ($user) {
+                                        $names[] = trim($user->surname . ' ' . $user->first_name . ' ' . $user->last_name);
+                                    }
+                                }
+                            }
+                        }
+                        return implode(', ', array_unique(array_filter($names)));
+                    })
+                    ->editColumn('payment_status', function ($row) {
+                        $payment_status = Transaction::getPaymentStatus($row);
+                        return (string) view('sell.partials.payment_status', ['payment_status' => $payment_status, 'id' => $row->id]);
+                    })
+                    ->addColumn('total_wages_paid', function ($row) {
+                        return $row->payment_lines->sum('amount');
+                    })
+                    ->addColumn('total_wages_due', function ($row) {
+                        $total_paid = $row->payment_lines->sum('amount');
+                        return max(0, $row->final_total - $total_paid);
+                    })
+                    ->rawColumns(['payment_status'])
+                    ->make(true);
+            }
 
             $tailor_master_role_name = 'Tailor Master#' . $business_id;
 

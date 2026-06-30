@@ -113,4 +113,9 @@ class TransactionSellLine extends Model
     {
         return $this->belongsTo(\App\TransactionSellLine::class, 'so_line_id');
     }
+
+    public function tailor_master()
+    {
+        return $this->belongsTo(\App\TailorMasterList::class, 'tailoring_master_id');
+    }
 }
