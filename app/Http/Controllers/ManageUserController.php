@@ -35,7 +35,7 @@ class ManageUserController extends Controller
      */
     public function index()
     {
-        if (! auth()->user()->can('user.view') && ! auth()->user()->can('user.create')) {
+        if (!auth()->user()->can('user.view') && !auth()->user()->can('user.create')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -96,16 +96,16 @@ class ManageUserController extends Controller
      */
     public function create()
     {
-        if (! auth()->user()->can('user.create')) {
+        if (!auth()->user()->can('user.create')) {
             abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
 
         //Check if subscribed or not, then check for users quota
-        if (! $this->moduleUtil->isSubscribed($business_id)) {
+        if (!$this->moduleUtil->isSubscribed($business_id)) {
             return $this->moduleUtil->expiredResponse();
-        } elseif (! $this->moduleUtil->isQuotaAvailable('users', $business_id)) {
+        } elseif (!$this->moduleUtil->isQuotaAvailable('users', $business_id)) {
             return $this->moduleUtil->quotaExpiredResponse('users', $business_id, action([\App\Http\Controllers\ManageUserController::class, 'index']));
         }
 
@@ -130,18 +130,18 @@ class ManageUserController extends Controller
      */
     public function store(Request $request)
     {
-        if (! auth()->user()->can('user.create')) {
+        if (!auth()->user()->can('user.create')) {
             abort(403, 'Unauthorized action.');
         }
 
         try {
-            if (! empty($request->input('dob'))) {
+            if (!empty($request->input('dob'))) {
                 $request['dob'] = $this->moduleUtil->uf_date($request->input('dob'));
             }
 
-            $request['cmmsn_percent'] = ! empty($request->input('cmmsn_percent')) ? $this->moduleUtil->num_uf($request->input('cmmsn_percent')) : 0;
+            $request['cmmsn_percent'] = !empty($request->input('cmmsn_percent')) ? $this->moduleUtil->num_uf($request->input('cmmsn_percent')) : 0;
 
-            $request['max_sales_discount_percent'] = ! is_null($request->input('max_sales_discount_percent')) ? $this->moduleUtil->num_uf($request->input('max_sales_discount_percent')) : null;
+            $request['max_sales_discount_percent'] = !is_null($request->input('max_sales_discount_percent')) ? $this->moduleUtil->num_uf($request->input('max_sales_discount_percent')) : null;
 
             $user = $this->moduleUtil->createUser($request);
 
@@ -171,7 +171,7 @@ class ManageUserController extends Controller
      */
     public function show($id)
     {
-        if (! auth()->user()->can('user.view')) {
+        if (!auth()->user()->can('user.view')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -202,7 +202,7 @@ class ManageUserController extends Controller
      */
     public function edit($id)
     {
-        if (! auth()->user()->can('user.update')) {
+        if (!auth()->user()->can('user.update')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -245,11 +245,11 @@ class ManageUserController extends Controller
     {
         //Disable in demo
         $notAllowed = $this->moduleUtil->notAllowedInDemo();
-        if (! empty($notAllowed)) {
+        if (!empty($notAllowed)) {
             return $notAllowed;
         }
 
-        if (! auth()->user()->can('user.update')) {
+        if (!auth()->user()->can('user.update')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -285,17 +285,17 @@ class ManageUserController extends Controller
                 'wages'
             ]);
 
-            $user_data['status'] = ! empty($request->input('is_active')) ? 'active' : 'inactive';
+            $user_data['status'] = !empty($request->input('is_active')) ? 'active' : 'inactive';
 
-            $user_data['is_enable_service_staff_pin'] = ! empty($request->input('is_enable_service_staff_pin')) ? true : false;
+            $user_data['is_enable_service_staff_pin'] = !empty($request->input('is_enable_service_staff_pin')) ? true : false;
 
             $business_id = request()->session()->get('user.business_id');
 
-            if (! isset($user_data['selected_contacts'])) {
+            if (!isset($user_data['selected_contacts'])) {
                 $user_data['selected_contacts'] = 0;
             }
 
-            if (! isset($user_data['wages'])) {
+            if (!isset($user_data['wages'])) {
                 $user_data['wages'] = null;
             }
 
@@ -307,20 +307,20 @@ class ManageUserController extends Controller
                 $user_data['allow_login'] = 1;
             }
 
-            if (! empty($request->input('password'))) {
+            if (!empty($request->input('password'))) {
                 $user_data['password'] = $user_data['allow_login'] == 1 ? Hash::make($request->input('password')) : null;
             }
 
 
-            if (! empty($request->input('service_staff_pin'))) {
+            if (!empty($request->input('service_staff_pin'))) {
                 $user_data['service_staff_pin'] = $request->input('service_staff_pin');
             }
 
 
             //Sales commission percentage
-            $user_data['cmmsn_percent'] = ! empty($user_data['cmmsn_percent']) ? $this->moduleUtil->num_uf($user_data['cmmsn_percent']) : 0;
+            $user_data['cmmsn_percent'] = !empty($user_data['cmmsn_percent']) ? $this->moduleUtil->num_uf($user_data['cmmsn_percent']) : 0;
 
-            $user_data['max_sales_discount_percent'] = ! is_null($user_data['max_sales_discount_percent']) ? $this->moduleUtil->num_uf($user_data['max_sales_discount_percent']) : null;
+            $user_data['max_sales_discount_percent'] = !is_null($user_data['max_sales_discount_percent']) ? $this->moduleUtil->num_uf($user_data['max_sales_discount_percent']) : null;
 
             // Normalize wages numeric format (handles formatted input like 1,000.00)
             if (isset($user_data['wages']) && $user_data['wages'] !== null && $user_data['wages'] !== '') {
@@ -329,11 +329,11 @@ class ManageUserController extends Controller
                 $user_data['wages'] = null;
             }
 
-            if (! empty($request->input('dob'))) {
+            if (!empty($request->input('dob'))) {
                 $user_data['dob'] = $this->moduleUtil->uf_date($request->input('dob'));
             }
 
-            if (! empty($request->input('bank_details'))) {
+            if (!empty($request->input('bank_details'))) {
                 $user_data['bank_details'] = json_encode($request->input('bank_details'));
             }
 
@@ -347,7 +347,7 @@ class ManageUserController extends Controller
                 }
 
                 $username_ext = $this->moduleUtil->getUsernameExtension();
-                if (! empty($username_ext)) {
+                if (!empty($username_ext)) {
                     $user_data['username'] .= $username_ext;
                 }
             }
@@ -358,7 +358,7 @@ class ManageUserController extends Controller
             $user->update($user_data);
             $role_id = $request->input('role');
             $user_role = $user->roles->first();
-            $previous_role = ! empty($user_role->id) ? $user_role->id : 0;
+            $previous_role = !empty($user_role->id) ? $user_role->id : 0;
             if ($previous_role != $role_id) {
                 $is_admin = $this->moduleUtil->is_admin($user);
                 $all_admins = $this->getAdmins();
@@ -366,7 +366,7 @@ class ManageUserController extends Controller
                 if ($is_admin && count($all_admins) <= 1) {
                     throw new \Exception(__('lang_v1.cannot_change_role'));
                 }
-                if (! empty($previous_role)) {
+                if (!empty($previous_role)) {
                     $user->removeRole($user_role->name);
                 }
 
@@ -430,11 +430,11 @@ class ManageUserController extends Controller
     {
         //Disable in demo
         $notAllowed = $this->moduleUtil->notAllowedInDemo();
-        if (! empty($notAllowed)) {
+        if (!empty($notAllowed)) {
             return $notAllowed;
         }
 
-        if (! auth()->user()->can('user.delete')) {
+        if (!auth()->user()->can('user.delete')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -481,7 +481,7 @@ class ManageUserController extends Controller
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
         foreach ($roles_array as $key => $value) {
-            if (! $is_admin && $value == 'Admin#' . $business_id) {
+            if (!$is_admin && $value == 'Admin#' . $business_id) {
                 continue;
             }
             $roles[$key] = str_replace('#' . $business_id, '', $value);
@@ -497,7 +497,7 @@ class ManageUserController extends Controller
      */
     public function signInAsUser($id)
     {
-        if (! auth()->user()->can('superadmin') && empty(session('previous_user_id'))) {
+        if (!auth()->user()->can('superadmin') && empty(session('previous_user_id'))) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -541,7 +541,7 @@ class ManageUserController extends Controller
 
     public function getAllTailorMasters()
     {
-        if (! auth()->user()->can('user.view') && ! auth()->user()->can('user.create')) {
+        if (!auth()->user()->can('user.view') && !auth()->user()->can('user.create')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -556,17 +556,17 @@ class ManageUserController extends Controller
                         $q->where('name', $tailor_master_role_name);
                     });
             })->select([
-                'id',
-                'user_id',
-                'name',
-                'mobile',
-                'added_on',
-                'is_active',
-                'total_completed_orders',
-                'total_wages',
-                'total_wages_paid',
-                'total_wages_due',
-            ]);
+                        'id',
+                        'user_id',
+                        'name',
+                        'mobile',
+                        'added_on',
+                        'is_active',
+                        'total_completed_orders',
+                        'total_wages',
+                        'total_wages_paid',
+                        'total_wages_due',
+                    ]);
 
             return DataTables::of($tailor_masters)
                 ->editColumn('added_on', '{{@format_date($added_on)}}')
@@ -579,9 +579,9 @@ class ManageUserController extends Controller
                 })
                 ->addColumn('payment_status', function ($row) {
                     if ($row->total_wages_due > 0) {
-                        return '<span class="label bg-red">' . __('lang_v1.due') . '</span>';
+                        return '<span class="label bg-yellow">' . __('lang_v1.due') . '</span>';
                     } else {
-                        return '<span class="text-success">' . __('lang_v1.paid') . '</span>';
+                        return '<span class="label bg-green">' . __('lang_v1.paid') . '</span>';
                     }
                 })
                 ->addColumn('action', function ($row) {
@@ -673,8 +673,8 @@ class ManageUserController extends Controller
 
             \Log::error(
                 'File:' . $e->getFile() .
-                    ' Line:' . $e->getLine() .
-                    ' Message:' . $e->getMessage()
+                ' Line:' . $e->getLine() .
+                ' Message:' . $e->getMessage()
             );
 
             $output = [
@@ -742,8 +742,8 @@ class ManageUserController extends Controller
         } catch (\Exception $e) {
             \Log::error(
                 'File:' . $e->getFile() .
-                    ' Line:' . $e->getLine() .
-                    ' Message:' . $e->getMessage()
+                ' Line:' . $e->getLine() .
+                ' Message:' . $e->getMessage()
             );
 
             $output = [
@@ -761,7 +761,7 @@ class ManageUserController extends Controller
 
     public function updateTailorMasterStatus($id)
     {
-        if (! auth()->user()->can('user.update')) {
+        if (!auth()->user()->can('user.update')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -783,8 +783,8 @@ class ManageUserController extends Controller
             } catch (\Exception $e) {
                 \Log::error(
                     'File:' . $e->getFile() .
-                        ' Line:' . $e->getLine() .
-                        ' Message:' . $e->getMessage()
+                    ' Line:' . $e->getLine() .
+                    ' Message:' . $e->getMessage()
                 );
 
                 $output = [
@@ -828,7 +828,7 @@ class ManageUserController extends Controller
 
     public function showTailorMaster($id)
     {
-        if (! auth()->user()->can('user.view')) {
+        if (!auth()->user()->can('user.view')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -844,7 +844,7 @@ class ManageUserController extends Controller
 
     public function getPayTailorMasterDue($id)
     {
-        if (! auth()->user()->can('user.update')) {
+        if (!auth()->user()->can('user.update')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -873,7 +873,7 @@ class ManageUserController extends Controller
 
     public function postPayTailorMasterDue(Request $request)
     {
-        if (! auth()->user()->can('user.update')) {
+        if (!auth()->user()->can('user.update')) {
             abort(403, 'Unauthorized action.');
         }
 
