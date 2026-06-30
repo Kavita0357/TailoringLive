@@ -556,17 +556,17 @@ class ManageUserController extends Controller
                         $q->where('name', $tailor_master_role_name);
                     });
             })->select([
-                        'id',
-                        'user_id',
-                        'name',
-                        'mobile',
-                        'added_on',
-                        'is_active',
-                        'total_completed_orders',
-                        'total_wages',
-                        'total_wages_paid',
-                        'total_wages_due',
-                    ]);
+                'id',
+                'user_id',
+                'name',
+                'mobile',
+                'added_on',
+                'is_active',
+                'total_completed_orders',
+                'total_wages',
+                'total_wages_paid',
+                'total_wages_due',
+            ]);
 
             return DataTables::of($tailor_masters)
                 ->editColumn('added_on', '{{@format_date($added_on)}}')
@@ -673,8 +673,8 @@ class ManageUserController extends Controller
 
             \Log::error(
                 'File:' . $e->getFile() .
-                ' Line:' . $e->getLine() .
-                ' Message:' . $e->getMessage()
+                    ' Line:' . $e->getLine() .
+                    ' Message:' . $e->getMessage()
             );
 
             $output = [
@@ -742,8 +742,8 @@ class ManageUserController extends Controller
         } catch (\Exception $e) {
             \Log::error(
                 'File:' . $e->getFile() .
-                ' Line:' . $e->getLine() .
-                ' Message:' . $e->getMessage()
+                    ' Line:' . $e->getLine() .
+                    ' Message:' . $e->getMessage()
             );
 
             $output = [
@@ -783,8 +783,8 @@ class ManageUserController extends Controller
             } catch (\Exception $e) {
                 \Log::error(
                     'File:' . $e->getFile() .
-                    ' Line:' . $e->getLine() .
-                    ' Message:' . $e->getMessage()
+                        ' Line:' . $e->getLine() .
+                        ' Message:' . $e->getMessage()
                 );
 
                 $output = [
