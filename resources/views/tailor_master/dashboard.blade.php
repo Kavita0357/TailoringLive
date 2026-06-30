@@ -123,14 +123,13 @@
                                 <thead>
                                     <tr>
                                         <th>@lang('messages.action')</th>
-                                        <th>@lang('tailoring.id')</th>
-                                        <th>@lang('tailoring.name')</th>
-                                        <th>@lang('tailoring.mobile')</th>
-                                        <th>@lang('tailoring.added_on')</th>
-                                        <th>@lang('tailoring.total_completed_orders')</th>
-                                        <th>@lang('tailoring.total_wages')</th>
-                                        <th>@lang('tailoring.total_wages_paid')</th>
-                                        <th>@lang('tailoring.total_wages_due')</th>
+                                        <th>@lang('tailoring.date')</th>
+                                        <th>@lang('tailoring.particulars')</th>
+                                        <th>@lang('tailoring.wages')</th>
+                                        <th>@lang('tailoring.tailor_master')</th>
+                                        <th>@lang('tailoring.payment_status')</th>
+                                        <th>@lang('tailoring.total_paid')</th>
+                                        <th>@lang('tailoring.total_due')</th>
                                     </tr>
                                 </thead>
                             </table>
@@ -171,36 +170,37 @@
                             searchable: false
                         },
                         {
-                            data: 'id',
-                            name: 'id'
+                            data: 'added_on',
+                            name: 'added_on'
                         },
                         {
                             data: 'name',
                             name: 'name'
                         },
                         {
-                            data: 'mobile',
-                            name: 'mobile'
-                        },
-                        {
-                            data: 'added_on',
-                            name: 'added_on'
-                        },
-                        {
-                            data: 'total_completed_orders',
-                            name: 'total_completed_orders'
-                        },
-                        {
                             data: 'total_wages',
-                            name: 'total_wages'
+                            name: 'total_wages',
+                            render: $.fn.dataTable.render.number(',', '.', 2, '')
+                        },
+                        {
+                            data: 'name',
+                            name: 'name'
+                        },
+                        {
+                            data: 'payment_status',
+                            name: 'payment_status',
+                            orderable: false,
+                            searchable: false
                         },
                         {
                             data: 'total_wages_paid',
-                            name: 'total_wages_paid'
+                            name: 'total_wages_paid',
+                            render: $.fn.dataTable.render.number(',', '.', 2, '')
                         },
                         {
                             data: 'total_wages_due',
-                            name: 'total_wages_due'
+                            name: 'total_wages_due',
+                            render: $.fn.dataTable.render.number(',', '.', 2, '')
                         }
                     ]
                 });

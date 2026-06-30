@@ -577,6 +577,13 @@ class ManageUserController extends Controller
                         return $row->name;
                     }
                 })
+                ->addColumn('payment_status', function ($row) {
+                    if ($row->total_wages_due > 0) {
+                        return '<span class="label bg-red">' . __('lang_v1.due') . '</span>';
+                    } else {
+                        return '<span class="text-success">' . __('lang_v1.paid') . '</span>';
+                    }
+                })
                 ->addColumn('action', function ($row) {
                     $html = '<div class="btn-group">
                         <button type="button" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline tw-dw-btn-info tw-w-max dropdown-toggle" data-toggle="dropdown" aria-expanded="false">' .
@@ -621,7 +628,7 @@ class ManageUserController extends Controller
 
                     return $html;
                 })
-                ->rawColumns(['action', 'name'])
+                ->rawColumns(['action', 'name', 'payment_status'])
                 ->make(true);
         }
 
