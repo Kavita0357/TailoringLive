@@ -122,7 +122,7 @@
                             <table class="table table-bordered table-striped tw-mb-0" id="tailor_masters_dashboard_table">
                                 <thead>
                                     <tr>
-                                        <th>@lang('messages.action')</th>
+                                        {{-- <th>@lang('messages.action')</th> --}}
                                         <th>@lang('tailoring.date')</th>
                                         <th>@lang('tailoring.particulars')</th>
                                         <th>@lang('tailoring.wages')</th>
@@ -156,19 +156,15 @@
                     fixedHeader: false,
                     ajax: '/tailor-master/list',
                     order: [
-                        [1, 'asc']
+                        [0, 'asc']
                     ],
-                    columnDefs: [{
-                        targets: [0],
-                        orderable: false,
-                        searchable: false
-                    }],
-                    columns: [{
-                            data: 'action',
-                            name: 'action',
-                            orderable: false,
-                            searchable: false
-                        },
+                    columns: [
+                        // {
+                        //     data: 'action',
+                        //     name: 'action',
+                        //     orderable: false,
+                        //     searchable: false
+                        // },
                         {
                             data: 'added_on',
                             name: 'added_on'
