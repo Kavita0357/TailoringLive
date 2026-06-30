@@ -568,7 +568,14 @@ class ManageUserController extends Controller
                         return \Carbon::parse($row->transaction_date)->format(session('business.date_format') . ' H:i');
                     })
                     ->addColumn('particulars', function ($row) {
-                        return $row->invoice_no;
+                        $particulars = [];
+                        foreach ($row->sell_lines as $line) {
+                            if (!empty($line->cloth)) {
+                                $quantity = $line->assigned_quantity ?? $line->quantity;
+                                $particulars[] = $line->cloth->cloth_name . ' ' . (int) $quantity . 'pc(s)';
+                            }
+                        }
+                        return implode(', ', $particulars);
                     })
                     ->addColumn('total_wages', function ($row) {
                         $wages = 0;
@@ -622,17 +629,17 @@ class ManageUserController extends Controller
                         $q->where('name', $tailor_master_role_name);
                     });
             })->select([
-                'id',
-                'user_id',
-                'name',
-                'mobile',
-                'added_on',
-                'is_active',
-                'total_completed_orders',
-                'total_wages',
-                'total_wages_paid',
-                'total_wages_due',
-            ]);
+                        'id',
+                        'user_id',
+                        'name',
+                        'mobile',
+                        'added_on',
+                        'is_active',
+                        'total_completed_orders',
+                        'total_wages',
+                        'total_wages_paid',
+                        'total_wages_due',
+                    ]);
 
             return DataTables::of($tailor_masters)
                 ->editColumn('added_on', '{{@format_date($added_on)}}')
@@ -642,6 +649,23 @@ class ManageUserController extends Controller
                     } else {
                         return $row->name;
                     }
+                })
+                ->addColumn('tailor_master', function ($row) {
+                    return $row->name;
+                })
+                ->addColumn('particulars', function ($row) {
+                    $sell_lines = \App\TransactionSellLine::whereIn('tailoring_master_id', [$row->id, $row->user_id])
+                        ->with('cloth')
+                        ->get();
+
+                    $particulars = [];
+                    foreach ($sell_lines as $line) {
+                        if (!empty($line->cloth)) {
+                            $quantity = $line->assigned_quantity ?? $line->quantity;
+                            $particulars[] = $line->cloth->cloth_name . ' ' . (int) $quantity . 'pc(s)';
+                        }
+                    }
+                    return implode(', ', array_unique($particulars));
                 })
                 ->addColumn('payment_status', function ($row) {
                     if ($row->total_wages_due > 0) {
@@ -739,8 +763,8 @@ class ManageUserController extends Controller
 
             \Log::error(
                 'File:' . $e->getFile() .
-                    ' Line:' . $e->getLine() .
-                    ' Message:' . $e->getMessage()
+                ' Line:' . $e->getLine() .
+                ' Message:' . $e->getMessage()
             );
 
             $output = [
@@ -808,8 +832,8 @@ class ManageUserController extends Controller
         } catch (\Exception $e) {
             \Log::error(
                 'File:' . $e->getFile() .
-                    ' Line:' . $e->getLine() .
-                    ' Message:' . $e->getMessage()
+                ' Line:' . $e->getLine() .
+                ' Message:' . $e->getMessage()
             );
 
             $output = [
@@ -849,8 +873,8 @@ class ManageUserController extends Controller
             } catch (\Exception $e) {
                 \Log::error(
                     'File:' . $e->getFile() .
-                        ' Line:' . $e->getLine() .
-                        ' Message:' . $e->getMessage()
+                    ' Line:' . $e->getLine() .
+                    ' Message:' . $e->getMessage()
                 );
 
                 $output = [
