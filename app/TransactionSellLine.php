@@ -116,6 +116,6 @@ class TransactionSellLine extends Model
 
     public function tailor_master()
     {
-        return $this->belongsTo(\App\TailorMasterList::class, 'tailoring_master_id');
+        return $this->belongsTo(\App\TailorMasterList::class, 'tailoring_master_id', 'user_id');
     }
 }
