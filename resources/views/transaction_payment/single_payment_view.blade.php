@@ -138,6 +138,18 @@
           </div>
         @endif
       </div>
+      @elseif(!empty($tailor))
+      <div class="row">
+        <div class="col-xs-6">
+          <strong>@lang('tailoring.tailor_master'):</strong>
+          <address>
+            <strong>{{ $tailor->name }}</strong>
+            @if(!empty($tailor->mobile))
+              <br>@lang('contact.mobile'): {{$tailor->mobile}}
+            @endif
+          </address>
+        </div>
+      </div>
       @endif
       <div class="row">
           <br>

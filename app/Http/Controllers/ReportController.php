@@ -2473,6 +2473,106 @@ class ReportController extends Controller
     }
 
     /**
+     * Shows tailor master payment report
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function tailorMasterPaymentReport(Request $request)
+    {
+        if (! auth()->user()->can('purchase_n_sell_report.view')) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $business_id = $request->session()->get('user.business_id');
+
+        $payment_types = $this->transactionUtil->payment_types(null, true, $business_id);
+        if ($request->ajax()) {
+            $tailor_id = $request->get('tailor_id', null);
+            $location_id = $request->get('location_id', null);
+
+            $query = TransactionPayment::join('tailor_master_list as tml', 'transaction_payments.payment_for', '=', 'tml.user_id')
+                ->where('transaction_payments.business_id', $business_id);
+
+            $start_date = $request->get('start_date');
+            $end_date = $request->get('end_date');
+            if (! empty($start_date) && ! empty($end_date)) {
+                $query->whereBetween(DB::raw('date(paid_on)'), [$start_date, $end_date]);
+            }
+
+            $permitted_locations = auth()->user()->permitted_locations();
+            if ($permitted_locations != 'all') {
+                $permitted_permissions = collect($permitted_locations)->map(function($loc_id) {
+                    return 'location.' . $loc_id;
+                })->push('access_all_locations')->all();
+                
+                $permitted_user_ids = User::permission($permitted_permissions)->pluck('id');
+                $query->whereIn('transaction_payments.payment_for', $permitted_user_ids);
+            }
+
+            if (! empty($location_id)) {
+                $tailor_user_ids = User::permission(['location.' . $location_id, 'access_all_locations'])
+                    ->pluck('id');
+                $query->whereIn('transaction_payments.payment_for', $tailor_user_ids);
+            }
+
+            if (!empty($tailor_id)) {
+                $query->where('transaction_payments.payment_for', $tailor_id);
+            }
+
+            $query->select(
+                'transaction_payments.amount',
+                'transaction_payments.method',
+                'transaction_payments.paid_on',
+                'transaction_payments.payment_ref_no',
+                'transaction_payments.document',
+                'tml.name as tailor_name',
+                'transaction_payments.id as DT_RowId',
+                'transaction_payments.cheque_number',
+                'transaction_payments.card_transaction_number',
+                'transaction_payments.bank_account_number',
+                'transaction_payments.transaction_no'
+            );
+
+            return Datatables::of($query)
+                ->editColumn('paid_on', '{{@format_datetime($paid_on)}}')
+                ->editColumn('method', function ($row) use ($payment_types) {
+                    $method = ! empty($payment_types[$row->method]) ? $payment_types[$row->method] : '';
+                    if ($row->method == 'cheque') {
+                        $method .= '<br>(' . __('lang_v1.cheque_no') . ': ' . $row->cheque_number . ')';
+                    } elseif ($row->method == 'card') {
+                        $method .= '<br>(' . __('lang_v1.card_transaction_no') . ': ' . $row->card_transaction_number . ')';
+                    } elseif ($row->method == 'bank_transfer') {
+                        $method .= '<br>(' . __('lang_v1.bank_account_no') . ': ' . $row->bank_account_number . ')';
+                    } elseif ($row->method == 'custom_pay_1') {
+                        $method .= '<br>(' . __('lang_v1.transaction_no') . ': ' . $row->transaction_no . ')';
+                    } elseif ($row->method == 'custom_pay_2') {
+                        $method .= '<br>(' . __('lang_v1.transaction_no') . ': ' . $row->transaction_no . ')';
+                    } elseif ($row->method == 'custom_pay_3') {
+                        $method .= '<br>(' . __('lang_v1.transaction_no') . ': ' . $row->transaction_no . ')';
+                    }
+
+                    return $method;
+                })
+                ->editColumn('amount', function ($row) {
+                    return '<span class="paid-amount" data-orig-value="' . $row->amount . '">' .
+                        $this->transactionUtil->num_f($row->amount, true) . '</span>';
+                })
+                ->addColumn('action', '<button type="button" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline  tw-dw-btn-primary view_payment" data-href="{{ action([\App\Http\Controllers\TransactionPaymentController::class, \'viewPayment\'], [$DT_RowId]) }}">@lang("messages.view")
+                    </button> @if(!empty($document))<a href="{{asset("/uploads/documents/" . $document)}}" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline  tw-dw-btn-accent" download=""><i class="fa fa-download"></i> @lang("purchase.download_document")</a>@endif')
+                ->rawColumns(['amount', 'method', 'action'])
+                ->make(true);
+        }
+
+        $business_locations = BusinessLocation::forDropdown($business_id);
+        $tailor_masters = \App\TailorMasterList::whereHas('user', function ($q) use ($business_id) {
+            $q->where('business_id', $business_id);
+        })->pluck('name', 'user_id');
+
+        return view('report.tailor_master_payment_report')
+            ->with(compact('business_locations', 'tailor_masters'));
+    }
+
+    /**
      * Shows sell payment report
      *
      * @return \Illuminate\Http\Response

@@ -326,6 +326,7 @@ class AccountController extends Controller
                 ->leftJoin('contacts AS c', 'tp.payment_for', '=', 'c.id')
                 ->leftJoin('users AS u', 'account_transactions.created_by', '=', 'u.id')
                 ->leftJoin('users AS tp_user', 'tp.payment_for', '=', 'tp_user.id')
+                ->leftJoin('tailor_master_list AS tml', 'tp.payment_for', '=', 'tml.user_id')
                 ->leftjoin(
                     'transaction_payments as child_payments',
                     'tp.id',
@@ -354,6 +355,7 @@ class AccountController extends Controller
                     'account_transactions.note',
                     'account_transactions.flag',
                     'account_transactions.is_tailoring',
+                    'tml.id as tailor_master_id',
                     'tp.is_advance',
                     'tp.is_return',
                     'tp.payment_ref_no',
@@ -493,7 +495,7 @@ class AccountController extends Controller
                     return $action;
                 })
                 ->addColumn('is_tailoring', function ($row) {
-                    return $row->is_tailoring ? 'true' : 'false';
+                    return ($row->is_tailoring || !empty($row->tailor_master_id)) ? 'true' : 'false';
                 })
                 ->filterColumn('added_by', function ($query, $keyword) {
                     $query->whereRaw("CONCAT(COALESCE(u.surname, ''), ' ', COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) like ?", ["%{$keyword}%"]);

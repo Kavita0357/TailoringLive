@@ -894,6 +894,12 @@ class AdminSidebarMenu
                                 __('lang_v1.sell_payment_report'),
                                 ['icon' => '', 'active' => request()->segment(2) == 'sell-payment-report']
                             );
+
+                            $sub->url(
+                                action([\App\Http\Controllers\ReportController::class, 'tailorMasterPaymentReport']),
+                                __('lang_v1.tailor_master_payment_report'),
+                                ['icon' => '', 'active' => request()->segment(2) == 'tailor-master-payment-report']
+                            );
                         }
                         if (in_array('expenses', $enabled_modules) && auth()->user()->can('expense_report.view')) {
                             $sub->url(

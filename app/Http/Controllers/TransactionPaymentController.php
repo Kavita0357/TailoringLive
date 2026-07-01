@@ -625,10 +625,17 @@ class TransactionPaymentController extends Controller
                 $transaction = ! empty($child_payment) ? $child_payment->transaction : null;
             }
 
+            $tailor = null;
+            if (empty($transaction) && !empty($single_payment_line->payment_for)) {
+                $tailor = \App\TailorMasterList::where('user_id', $single_payment_line->payment_for)
+                    ->with('user')
+                    ->first();
+            }
+
             $payment_types = $this->transactionUtil->payment_types(null, false, $business_id);
 
             return view('transaction_payment.single_payment_view')
-                    ->with(compact('single_payment_line', 'transaction', 'payment_types'));
+                    ->with(compact('single_payment_line', 'transaction', 'payment_types', 'tailor'));
         }
     }
 
