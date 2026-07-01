@@ -6,10 +6,18 @@
         <div
             class="tw-pb-6 tw-bg-gradient-to-r tw-from-@if (!empty(session('business.theme_color'))) {{ session('business.theme_color') }}@else{{ 'primary' }} @endif-800 tw-to-@if (!empty(session('business.theme_color'))) {{ session('business.theme_color') }}@else{{ 'primary' }} @endif-900 xl:tw-pb-0 ">
             <div class="tw-pt-3 tw-mb-4">
-                <div class="sm:tw-flex sm:tw-items-center sm:tw-gap-3">
+                <div class="tw-flex tw-items-center tw-justify-between tw-gap-3">
                     <div class="filter-box">
                         <h1 class="tw-text-xl md:tw-text-3xl tw-font-bold tw-text-black">
                             @lang('tailoring.tailor_master_dashboard')</h1>
+                    </div>
+                    <div class="filter-box" style="width: 250px;">
+                        {!! Form::select('location_id', $business_locations, $location_id, [
+                            'class' => 'form-control select2',
+                            'placeholder' => __('lang_v1.select_location'),
+                            'id' => 'location_id',
+                            'style' => 'width: 100%;'
+                        ]) !!}
                     </div>
                 </div>
 
@@ -25,7 +33,7 @@
                                         </p>
                                         <p
                                             class="tw-mt-0.5 tw-text-gray-900 tw-text-xl tw-truncate tw-font-semibold tw-tracking-tight tw-font-mono">
-                                            {{ $total_tailor_masters }}
+                                            <span id="total_tailor_masters_card">{{ $total_tailor_masters }}</span>
                                         </p>
                                     </div>
                                 </div>
@@ -42,8 +50,7 @@
                                         </p>
                                         <p
                                             class="tw-mt-0.5 tw-text-gray-900 tw-text-xl tw-truncate tw-font-semibold tw-tracking-tight tw-font-mono">
-                                            <span class="display_currency"
-                                                data-currency_symbol="true">{{ $total_wages_due }}</span>
+                                            <span id="total_completed_orders_card">{{ number_format($total_completed_orders, 2) }}</span> Pcs
                                         </p>
                                     </div>
                                 </div>
@@ -60,7 +67,7 @@
                                         </p>
                                         <p
                                             class="tw-mt-0.5 tw-text-gray-900 tw-text-xl tw-truncate tw-font-semibold tw-tracking-tight tw-font-mono">
-                                            <span class="display_currency" data-currency_symbol="true">{{ $total_wages }}</span>
+                                            <span id="total_wages_card" class="display_currency" data-currency_symbol="true">{{ $total_wages }}</span>
                                         </p>
                                     </div>
                                 </div>
@@ -77,7 +84,7 @@
                                         </p>
                                         <p
                                             class="tw-mt-0.5 tw-text-gray-900 tw-text-xl tw-truncate tw-font-semibold tw-tracking-tight tw-font-mono">
-                                            <span class="display_currency"
+                                            <span id="total_wages_paid_card" class="display_currency"
                                                 data-currency_symbol="true">{{ $total_wages_paid }}</span>
                                         </p>
                                     </div>
@@ -95,7 +102,7 @@
                                         </p>
                                         <p
                                             class="tw-mt-0.5 tw-text-gray-900 tw-text-xl tw-truncate tw-font-semibold tw-tracking-tight tw-font-mono">
-                                            <span class="display_currency"
+                                            <span id="total_wages_due_card" class="display_currency"
                                                 data-currency_symbol="true">{{ $total_wages_due }}</span>
                                         </p>
                                     </div>
@@ -111,8 +118,16 @@
             <div
                 class="box-primary tw-mb-4 tw-transition-all lg:tw-col-span-2 tw-duration-200 tw-bg-white tw-shadow-sm tw-rounded-xl tw-ring-1 hover:tw-shadow-md hover:tw-translate-y-0.5 tw-ring-gray-200">
                 <div class="tw-p-2 sm:tw-p-3">
-                    <div class="box-header">
+                    <div class="box-header tw-flex tw-items-center tw-justify-between">
                         <h3 class="box-title">@lang('tailoring.completed_orders')</h3>
+                        <div class="box-tools">
+                            {!! Form::select('tailor_master_filter_id', $tailor_masters->pluck('name', 'user_id'), null, [
+                                'class' => 'form-control select2',
+                                'placeholder' => __('tailoring.all_tailor_masters'),
+                                'id' => 'tailor_master_filter_id',
+                                'style' => 'width: 200px;'
+                            ]) !!}
+                        </div>
                     </div>
                 </div>
 
@@ -154,7 +169,14 @@
                     processing: true,
                     serverSide: true,
                     fixedHeader: false,
-                    ajax: '/tailor-master/list',
+                    ajax: {
+                        url: '/tailor-master/list',
+                        data: function (d) {
+                            d.is_dashboard = 'true';
+                            d.location_id = $('#location_id').val();
+                            d.tailoring_master_id = $('#tailor_master_filter_id').val();
+                        }
+                    },
                     order: [
                         [0, 'asc']
                     ],
@@ -167,7 +189,7 @@
                         // },
                         {
                             data: 'added_on',
-                            name: 'added_on'
+                            name: 'transaction_date'
                         },
                         {
                             data: 'particulars',
@@ -210,6 +232,31 @@
                         }
                     ]
                 });
+
+                tailor_masters_table.on('xhr.dt', function (e, settings, json, xhr) {
+                    if (json && json.totals !== undefined) {
+                        var totals = json.totals;
+                        $('#total_tailor_masters_card').text(totals.total_tailor_masters);
+                        $('#total_completed_orders_card').text(__currency_trans_from_en(totals.total_completed_orders, false, false, __currency_precision, true));
+                        $('#total_wages_card').text(__currency_trans_from_en(totals.total_wages, true));
+                        $('#total_wages_paid_card').text(__currency_trans_from_en(totals.total_wages_paid, true));
+                        $('#total_wages_due_card').text(__currency_trans_from_en(totals.total_wages_due, true));
+                    }
+                });
+
+                if ($('#location_id').length) {
+                    $('#location_id').select2();
+                    $('#location_id').change(function() {
+                        tailor_masters_table.ajax.reload();
+                    });
+                }
+
+                if ($('#tailor_master_filter_id').length) {
+                    $('#tailor_master_filter_id').select2();
+                    $('#tailor_master_filter_id').change(function() {
+                        tailor_masters_table.ajax.reload();
+                    });
+                }
             @endcan
 
             $(document).on('click', '.delete_user_button', function () {

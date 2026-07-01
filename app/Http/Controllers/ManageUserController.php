@@ -519,24 +519,72 @@ class ManageUserController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        $tailor_masters = TailorMasterList::whereHas('user', function ($query) use ($business_id) {
+        $business_locations = BusinessLocation::forDropdown($business_id);
+
+        $location_id = request()->input('location_id');
+
+        $tailor_masters_query = TailorMasterList::whereHas('user', function ($query) use ($business_id) {
             $query->where('business_id', $business_id)
                 ->whereHas('roles', function ($q) use ($business_id) {
                     $q->where('name', 'Tailor Master#' . $business_id);
                 });
-        })->get();
+        });
+
+
+
+        $tailor_masters = $tailor_masters_query->get();
 
         $total_tailor_masters = $tailor_masters->count();
-        $total_wages = $tailor_masters->sum('total_wages');
-        $total_wages_paid = $tailor_masters->sum('total_wages_paid');
-        $total_wages_due = $tailor_masters->sum('total_wages_due');
+
+        if (!empty($location_id)) {
+            // Fetch completed orders (transactions) for this location
+            $orders = Transaction::where('transactions.business_id', $business_id)
+                ->where('transactions.type', 'order')
+                ->where('transactions.location_id', $location_id)
+                ->whereHas('sell_lines', function ($query) {
+                    $query->whereNotNull('tailoring_master_id');
+                })
+                ->with(['sell_lines.cloth', 'payment_lines'])
+                ->get();
+
+            $total_wages = 0;
+            $total_wages_paid = 0;
+            $total_wages_due = 0;
+            $total_completed_orders = 0;
+
+            foreach ($orders as $order) {
+                $order_wages = 0;
+                foreach ($order->sell_lines as $line) {
+                    if (!empty($line->tailoring_master_id) && !empty($line->cloth)) {
+                        $quantity = $line->assigned_quantity ?? $line->quantity;
+                        $order_wages += ($line->cloth->wages ?? 0) * $quantity;
+                        $total_completed_orders += $quantity;
+                    }
+                }
+                $total_wages += $order_wages;
+
+                $order_paid = $order->payment_lines->sum('amount');
+                $total_wages_paid += $order_paid;
+
+                $total_wages_due += max(0, $order->final_total - $order_paid);
+            }
+        } else {
+            $total_wages = $tailor_masters->sum('total_wages');
+            $total_wages_paid = $tailor_masters->sum('total_wages_paid');
+            $total_wages_due = $tailor_masters->sum('total_wages_due');
+            $total_completed_orders = $tailor_masters->sum('total_completed_orders');
+        }
 
         return view('tailor_master.dashboard')
             ->with(compact(
                 'total_tailor_masters',
+                'total_completed_orders',
                 'total_wages',
                 'total_wages_paid',
-                'total_wages_due'
+                'total_wages_due',
+                'business_locations',
+                'location_id',
+                'tailor_masters'
             ));
     }
 
@@ -550,10 +598,16 @@ class ManageUserController extends Controller
             $business_id = request()->session()->get('user.business_id');
 
             if (request()->has('is_dashboard') && request()->input('is_dashboard') == 'true') {
+                $location_id = request()->input('location_id');
+                $tailoring_master_id = request()->input('tailoring_master_id');
+
                 $orders = Transaction::where('transactions.business_id', $business_id)
                     ->where('transactions.type', 'order')
-                    ->whereHas('sell_lines', function ($query) {
+                    ->whereHas('sell_lines', function ($query) use ($tailoring_master_id) {
                         $query->whereNotNull('tailoring_master_id');
+                        if (!empty($tailoring_master_id)) {
+                            $query->where('tailoring_master_id', $tailoring_master_id);
+                        }
                     })
                     ->with([
                         'contact',
@@ -562,6 +616,61 @@ class ManageUserController extends Controller
                         'payment_lines'
                     ])
                     ->select('transactions.*');
+
+                if (request()->has('location_id') && !empty(request()->input('location_id'))) {
+                    $orders->where('transactions.location_id', request()->input('location_id'));
+                }
+
+                $filtered_orders = $orders->get();
+
+                $total_wages = 0;
+                $total_wages_paid = 0;
+                $total_wages_due = 0;
+                $total_completed_orders = 0;
+
+                foreach ($filtered_orders as $order) {
+                    $order_wages = 0;
+                    foreach ($order->sell_lines as $line) {
+                        if (!empty($line->tailoring_master_id) && !empty($line->cloth)) {
+                            if (!empty($tailoring_master_id) && $line->tailoring_master_id != $tailoring_master_id) {
+                                continue;
+                            }
+                            $quantity = $line->assigned_quantity ?? $line->quantity;
+                            $order_wages += ($line->cloth->wages ?? 0) * $quantity;
+                            $total_completed_orders += $quantity;
+                        }
+                    }
+                    $total_wages += $order_wages;
+
+                    $order_paid = $order->payment_lines->sum('amount');
+                    $total_wages_paid += $order_paid;
+
+                    $total_wages_due += max(0, $order->final_total - $order_paid);
+                }
+
+                $tailor_masters_query = TailorMasterList::whereHas('user', function ($query) use ($business_id) {
+                    $query->where('business_id', $business_id)
+                        ->whereHas('roles', function ($q) use ($business_id) {
+                            $q->where('name', 'Tailor Master#' . $business_id);
+                        });
+                });
+
+
+
+                $tailor_masters = $tailor_masters_query->get();
+
+                if (!empty($tailoring_master_id)) {
+                    $total_tailor_masters = $tailor_masters->where('user_id', $tailoring_master_id)->count();
+                } else {
+                    $total_tailor_masters = $tailor_masters->count();
+                }
+
+                if (empty($location_id) && empty($tailoring_master_id)) {
+                    $total_wages = $tailor_masters->sum('total_wages');
+                    $total_wages_paid = $tailor_masters->sum('total_wages_paid');
+                    $total_wages_due = $tailor_masters->sum('total_wages_due');
+                    $total_completed_orders = $tailor_masters->sum('total_completed_orders');
+                }
 
                 return DataTables::of($orders)
                     ->editColumn('added_on', function ($row) {
@@ -579,8 +688,12 @@ class ManageUserController extends Controller
                     })
                     ->addColumn('total_wages', function ($row) {
                         $wages = 0;
+                        $filter_tailor_id = request()->input('tailoring_master_id');
                         foreach ($row->sell_lines as $line) {
                             if (!empty($line->tailoring_master_id) && !empty($line->cloth)) {
+                                if (!empty($filter_tailor_id) && $line->tailoring_master_id != $filter_tailor_id) {
+                                    continue;
+                                }
                                 $quantity = $line->assigned_quantity ?? $line->quantity;
                                 $wages += ($line->cloth->wages ?? 0) * $quantity;
                             }
@@ -589,7 +702,11 @@ class ManageUserController extends Controller
                     })
                     ->addColumn('tailor_master', function ($row) {
                         $names = [];
+                        $filter_tailor_id = request()->input('tailoring_master_id');
                         foreach ($row->sell_lines as $line) {
+                            if (!empty($filter_tailor_id) && $line->tailoring_master_id != $filter_tailor_id) {
+                                continue;
+                            }
                             if (!empty($line->tailor_master)) {
                                 $names[] = $line->tailor_master->name;
                             } elseif (!empty($line->tailoring_master_id)) {
@@ -618,6 +735,15 @@ class ManageUserController extends Controller
                         return max(0, $row->final_total - $total_paid);
                     })
                     ->rawColumns(['payment_status'])
+                    ->with([
+                        'totals' => [
+                            'total_tailor_masters' => $total_tailor_masters,
+                            'total_completed_orders' => $total_completed_orders,
+                            'total_wages' => $total_wages,
+                            'total_wages_paid' => $total_wages_paid,
+                            'total_wages_due' => $total_wages_due,
+                        ]
+                    ])
                     ->make(true);
             }
 
