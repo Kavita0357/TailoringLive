@@ -222,15 +222,15 @@ class User extends Authenticatable
         return $users;
     } */
 
-    public static function tailorMasters($business_id = null)
+    public static function tailorMasters($business_id)
     {
-        return TailorMasterList::where('is_active', 'active')
-            ->whereHas('user', function ($query) use ($business_id) {
-                $query->where('business_id', $business_id);
+        return User::where('business_id', $business_id)
+            ->whereHas('roles', function ($query) use ($business_id) {
+                $query->where('name', 'Tailor Master#' . $business_id);
             })
+            ->selectRaw("id, CONCAT(first_name, ' ', COALESCE(last_name, '')) as name")
             ->pluck('name', 'id');
     }
-
 
     /**
      * Return list of sales commission agents dropdown for a business
