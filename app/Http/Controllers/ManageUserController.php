@@ -854,7 +854,7 @@ class ManageUserController extends Controller
             'name',
             'Tailor Master#' . $business_id
         )->value('id');
-        $users = User::tailorMasters($business_id)->prepend(__('lang_v1.none'), '');
+        $users = User::allTailorMasterUsers($business_id)->prepend(__('lang_v1.none'), '');
 
         return view('tailor_master.tailoring_master_list')
             ->with(compact('form_id', 'tailor_master_role_id', 'users'));
@@ -927,7 +927,7 @@ class ManageUserController extends Controller
             $query->where('business_id', $business_id);
         })->findOrFail($id);
 
-        $users = User::tailorMasters($business_id)->prepend(__('lang_v1.none'), '');
+        $users = User::allTailorMasterUsers($business_id)->prepend(__('lang_v1.none'), '');
 
         return view('tailor_master.edit')
             ->with(compact('tailor', 'users'));
