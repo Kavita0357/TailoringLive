@@ -84,7 +84,7 @@
                                                 <input
                                                     class="form-control input_number row_discount_amount assigned-qty-input"
                                                     name="cloths[{{ $index }}][assignments][{{ $row_i }}][assigned_qty]"
-                                                    type="number" min="1" max="{{ intval($total_qty) }}"
+                                                    type="number" min="1"
                                                     value="{{ intval($sell_line->assigned_quantity) }}" required>
                                             </div>
                                             @php
@@ -100,8 +100,7 @@
                                                     <input
                                                         class="form-control input_number row_discount_amount assigned-qty-input"
                                                         name="cloths[{{ $index }}][assignments][{{ $row_i }}][assigned_qty]"
-                                                        type="number" min="1" max="{{ intval($total_qty) }}"
-                                                        value="1" required>
+                                                        type="number" min="1" max="{{ intval($total_qty) }}" value="1" required>
                                                 </div>
                                                 @php
                                                     $row_i++;
@@ -166,8 +165,8 @@
                                         @endif
                                     </div>
                                 </td>
-                                <td>
-                                    <button type="button" class="btn btn-primary btn-sm add-assignment-row-btn"><i
+                                <td style="vertical-align: bottom; padding-bottom: 10px;">
+                                    <button type="button" class="btn btn-primary btn-sm add-assignment-row-btn" style="margin-bottom: 10px;"><i
                                             class="fa fa-plus"></i></button>
                                 </td>
                             </tr>
@@ -205,7 +204,7 @@
             var $innerTailoringMasters = $(".assignment-tailor-select");
 
             if (commonValue) {
-                $innerTailoringMasters.each(function() {
+                $innerTailoringMasters.each(function () {
                     $(this)
                         .val(commonValue)
                         .trigger('change');
@@ -306,7 +305,6 @@
                            name="cloths[${cloth_index}][assignments][${sub_index}][assigned_qty]" 
                            type="number" 
                            min="1"
-                           max="${total_qty}"
                            value="1" 
                            required>
                 </div>
