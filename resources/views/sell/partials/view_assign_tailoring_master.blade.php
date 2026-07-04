@@ -5,10 +5,10 @@
 </style>
 <div class="modal-dialog" role="document">
     {!! Form::open([
-    'url' => action([\App\Http\Controllers\SellController::class, 'updateAssignedTailoringMaster'], [$transaction->id]),
-    'method' => 'put',
-    'id' => 'assign_tailoring_master_form',
-]) !!}
+        'url' => action([\App\Http\Controllers\SellController::class, 'updateAssignedTailoringMaster'], [$transaction->id]),
+        'method' => 'put',
+        'id' => 'assign_tailoring_master_form',
+    ]) !!}
     <div class="modal-content">
         <div class="modal-header">
             {{-- <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
@@ -21,10 +21,10 @@
                 <div class="col">
                     <div class="form-group">
                         {!! Form::select('tailoring_master', $tailor_masters, $transaction->tailoring_master_id ?? null, [
-    'id' => 'common_tailoring_master',
-    'class' => 'form-control select2',
-    'placeholder' => __('tailoring.select_tailoring_master'),
-]) !!}
+                            'id' => 'common_tailoring_master',
+                            'class' => 'form-control select2',
+                            'placeholder' => __('tailoring.select_tailoring_master'),
+                        ]) !!}
                     </div>
                 </div>
             </div>
@@ -47,7 +47,7 @@
                     @foreach ($grouped_sell_details as $cloth_id => $group)
                         @php
                             $first_line = $group->first();
-                         @endphp
+                        @endphp
                         @if ($first_line && $first_line->cloth_name)
                             @php
                                 $total_qty = $group->sum('quantity_ordered');
@@ -60,13 +60,14 @@
                                     }
                                 }
                                 $remaining_qty = intval($total_qty) - $assigned_sum;
-                             @endphp
+                            @endphp
                             <tr>
                                 <td>
                                     {{ $index + 1 }}
                                     <input type="hidden" name="cloths[{{ $index }}][cloth_id]"
                                         value="{{ $first_line->cloth_id }}">
-                                    <input type="hidden" name="cloths[{{ $index }}][qty]" value="{{ intval($total_qty) }}">
+                                    <input type="hidden" name="cloths[{{ $index }}][qty]"
+                                        value="{{ intval($total_qty) }}">
                                 </td>
                                 <td>{{ $first_line->cloth_name }}</td>
                                 <td>{{ intval($total_qty) }}</td>
@@ -74,20 +75,21 @@
                                     <div class="assigned-qty-container" data-cloth-index="{{ $index }}">
                                         @php
                                             $row_i = 0;
-                                         @endphp
+                                        @endphp
                                         @foreach ($valid_assignments as $sell_line)
                                             <div class="assignment-qty-row form-group" style="margin-bottom: 10px;">
                                                 <input type="hidden"
                                                     name="cloths[{{ $index }}][assignments][{{ $row_i }}][sell_line_id]"
                                                     value="{{ $sell_line->sell_line_id }}">
-                                                <input class="form-control input_number row_discount_amount assigned-qty-input"
+                                                <input
+                                                    class="form-control input_number row_discount_amount assigned-qty-input"
                                                     name="cloths[{{ $index }}][assignments][{{ $row_i }}][assigned_qty]"
                                                     type="number" min="1" max="{{ intval($total_qty) }}"
                                                     value="{{ intval($sell_line->assigned_quantity) }}" required>
                                             </div>
                                             @php
                                                 $row_i++;
-                                             @endphp
+                                            @endphp
                                         @endforeach
                                         @if ($assigned_sum == 0)
                                             @for ($r = 0; $r < $remaining_qty; $r++)
@@ -95,66 +97,71 @@
                                                     <input type="hidden"
                                                         name="cloths[{{ $index }}][assignments][{{ $row_i }}][sell_line_id]"
                                                         value="{{ $row_i == 0 ? $first_line->sell_line_id : '' }}">
-                                                    <input class="form-control input_number row_discount_amount assigned-qty-input"
+                                                    <input
+                                                        class="form-control input_number row_discount_amount assigned-qty-input"
                                                         name="cloths[{{ $index }}][assignments][{{ $row_i }}][assigned_qty]"
-                                                        type="number" min="1" max="{{ intval($total_qty) }}" value="1" required>
+                                                        type="number" min="1" max="{{ intval($total_qty) }}"
+                                                        value="1" required>
                                                 </div>
                                                 @php
                                                     $row_i++;
-                                                 @endphp
+                                                @endphp
                                             @endfor
                                         @endif
                                     </div>
-                                    <span class="text-danger error-msg" style="display: none; font-size: 11px; font-weight: bold; margin-top: 5px; display: block;"></span>
+                                    <span class="text-danger error-msg"
+                                        style="display: none; font-size: 11px; font-weight: bold; margin-top: 5px; display: block;"></span>
                                 </td>
                                 <td>
                                     <div class="tailor-select-container" data-cloth-index="{{ $index }}"
                                         data-total-qty="{{ intval($total_qty) }}">
                                         @php
                                             $row_i = 0;
-                                         @endphp
+                                        @endphp
                                         @foreach ($valid_assignments as $sell_line)
-                                                                <div class="assignment-tailor-row form-group"
-                                                                    style="margin-bottom: 10px; display: flex; align-items: center; gap: 5px;">
-                                                                    <div style="flex-grow: 1;">
-                                                                        {!! Form::select(
-                                                'cloths[' . $index . '][assignments][' . $row_i . '][tailoring_master]',
-                                                $tailor_masters,
-                                                $sell_line->tailoring_master_id,
-                                                [
-                                                    'class' => 'form-control select2 assignment-tailor-select',
-                                                    'required' => 'required'
-                                                ],
-                                            ) !!}
-                                                                    </div>
-                                                                    <button type="button" class="btn btn-xs btn-danger remove-assignment-row-btn"
-                                                                        style="height: 34px;"><i class="fa fa-times"></i></button>
-                                                                </div>
-                                                                @php
-                                                                    $row_i++;
-                                                                 @endphp
+                                            <div class="assignment-tailor-row form-group"
+                                                style="margin-bottom: 10px; display: flex; align-items: center; gap: 5px;">
+                                                <div style="flex-grow: 1;">
+                                                    {!! Form::select(
+                                                        'cloths[' . $index . '][assignments][' . $row_i . '][tailoring_master]',
+                                                        $tailor_masters,
+                                                        $sell_line->tailoring_master_id,
+                                                        [
+                                                            'class' => 'form-control select2 assignment-tailor-select',
+                                                            'required' => 'required',
+                                                        ],
+                                                    ) !!}
+                                                </div>
+                                                <button type="button"
+                                                    class="btn btn-xs btn-danger remove-assignment-row-btn"
+                                                    style="height: 34px;"><i class="fa fa-times"></i></button>
+                                            </div>
+                                            @php
+                                                $row_i++;
+                                            @endphp
                                         @endforeach
                                         @if ($assigned_sum == 0)
                                             @for ($r = 0; $r < $remaining_qty; $r++)
-                                                                    <div class="assignment-tailor-row form-group"
-                                                                        style="margin-bottom: 10px; display: flex; align-items: center; gap: 5px;">
-                                                                        <div style="flex-grow: 1;">
-                                                                            {!! Form::select(
-                                                    'cloths[' . $index . '][assignments][' . $row_i . '][tailoring_master]',
-                                                    $tailor_masters,
-                                                    null,
-                                                    [
-                                                        'class' => 'form-control select2 assignment-tailor-select',
-                                                        'required' => 'required'
-                                                    ],
-                                                ) !!}
-                                                                        </div>
-                                                                        <button type="button" class="btn btn-xs btn-danger remove-assignment-row-btn"
-                                                                            style="height: 34px;"><i class="fa fa-times"></i></button>
-                                                                    </div>
-                                                                    @php
-                                                                        $row_i++;
-                                                                     @endphp
+                                                <div class="assignment-tailor-row form-group"
+                                                    style="margin-bottom: 10px; display: flex; align-items: center; gap: 5px;">
+                                                    <div style="flex-grow: 1;">
+                                                        {!! Form::select(
+                                                            'cloths[' . $index . '][assignments][' . $row_i . '][tailoring_master]',
+                                                            $tailor_masters,
+                                                            null,
+                                                            [
+                                                                'class' => 'form-control select2 assignment-tailor-select',
+                                                                'required' => 'required',
+                                                            ],
+                                                        ) !!}
+                                                    </div>
+                                                    <button type="button"
+                                                        class="btn btn-xs btn-danger remove-assignment-row-btn"
+                                                        style="height: 34px;"><i class="fa fa-times"></i></button>
+                                                </div>
+                                                @php
+                                                    $row_i++;
+                                                @endphp
                                             @endfor
                                         @endif
                                     </div>
@@ -189,7 +196,7 @@
 </div>
 <!-- /.modal-dialog -->
 <script>
-    $(document).ready(function () {
+    $(document).ready(function() {
 
         var $commonTailoringMaster = $('#common_tailoring_master');
 
@@ -198,7 +205,7 @@
             var $innerTailoringMasters = $(".assignment-tailor-select");
 
             if (commonValue) {
-                $innerTailoringMasters.each(function () {
+                $innerTailoringMasters.each(function() {
                     $(this)
                         .val(commonValue)
                         .trigger('change');
@@ -208,7 +215,7 @@
             $innerTailoringMasters.trigger('change.select2');
         }
 
-        $commonTailoringMaster.on('change', function () {
+        $commonTailoringMaster.on('change', function() {
             toggleTailoringMasters();
         });
 
@@ -223,13 +230,16 @@
         function reindexRows($rowContainer, isQty) {
             var cloth_index = $rowContainer.attr('data-cloth-index');
             if (isQty) {
-                $rowContainer.find('.assignment-qty-row').each(function (index) {
-                    $(this).find('input[name*="[sell_line_id]"]').attr('name', `cloths[${cloth_index}][assignments][${index}][sell_line_id]`);
-                    $(this).find('input[name*="[assigned_qty]"]').attr('name', `cloths[${cloth_index}][assignments][${index}][assigned_qty]`);
+                $rowContainer.find('.assignment-qty-row').each(function(index) {
+                    $(this).find('input[name*="[sell_line_id]"]').attr('name',
+                        `cloths[${cloth_index}][assignments][${index}][sell_line_id]`);
+                    $(this).find('input[name*="[assigned_qty]"]').attr('name',
+                        `cloths[${cloth_index}][assignments][${index}][assigned_qty]`);
                 });
             } else {
-                $rowContainer.find('.assignment-tailor-row').each(function (index) {
-                    $(this).find('select').attr('name', `cloths[${cloth_index}][assignments][${index}][tailoring_master]`);
+                $rowContainer.find('.assignment-tailor-row').each(function(index) {
+                    $(this).find('select').attr('name',
+                        `cloths[${cloth_index}][assignments][${index}][tailoring_master]`);
                 });
             }
         }
@@ -243,12 +253,13 @@
             }
         }
 
-        $('.tailor-select-container').each(function () {
+        $('.tailor-select-container').each(function() {
             updateRemoveButtonsVisibility($(this));
         });
+
         function initSelect2($elements) {
             var $modal = $('#assign_tailoring_master_form').closest('.modal');
-            $elements.each(function () {
+            $elements.each(function() {
                 $(this).removeAttr('required');
 
                 if ($(this).hasClass("select2-hidden-accessible")) {
@@ -263,7 +274,7 @@
 
         initSelect2($(".assignment-tailor-select"));
 
-        $(document).on('click', '.add-assignment-row-btn', function () {
+        $(document).on('click', '.add-assignment-row-btn', function() {
             var $row = $(this).closest('tr');
             var $tailorContainer = $row.find('.tailor-select-container');
             var cloth_index = $tailorContainer.attr('data-cloth-index');
@@ -271,12 +282,13 @@
             var $qtyContainer = $row.find('.assigned-qty-container');
 
             var assigned_sum = 0;
-            $qtyContainer.find('.assigned-qty-input').each(function () {
+            $qtyContainer.find('.assigned-qty-input').each(function() {
                 assigned_sum += parseInt($(this).val()) || 0;
             });
 
             if (assigned_sum >= total_qty) {
-                toastr.error("Cannot add more rows. All quantities are already assigned (" + assigned_sum + "/" + total_qty + ").");
+                toastr.error("Cannot add more rows. All quantities are already assigned (" +
+                    assigned_sum + "/" + total_qty + ").");
                 return;
             }
 
@@ -327,12 +339,13 @@
             updateRemoveButtonsVisibility($tailorContainer);
             validateAssignedQuantities();
         });
-        $(document).on('click', '.remove-assignment-row-btn', function () {
+        $(document).on('click', '.remove-assignment-row-btn', function() {
             var $tailorContainer = $(this).closest('.tailor-select-container');
             var cloth_index = $tailorContainer.attr('data-cloth-index');
             var $qtyContainer = $(`.assigned-qty-container[data-cloth-index="${cloth_index}"]`);
 
-            var indexToRemove = $tailorContainer.find('.assignment-tailor-row').index($(this).closest('.assignment-tailor-row'));
+            var indexToRemove = $tailorContainer.find('.assignment-tailor-row').index($(this).closest(
+                '.assignment-tailor-row'));
 
             $qtyContainer.find('.assignment-qty-row').eq(indexToRemove).remove();
             $(this).closest('.assignment-tailor-row').remove();
@@ -344,7 +357,7 @@
         });
 
         function validateAssignedQuantities() {
-            $('.assigned-qty-container').each(function () {
+            $('.assigned-qty-container').each(function() {
                 var $container = $(this);
                 var $row = $container.closest('tr');
                 var $errorMsg = $row.find('.error-msg');
@@ -356,40 +369,45 @@
             $submitBtn.prop('disabled', false);
         }
 
-        $(document).on('change keyup', '.assigned-qty-input', function () {
+        $(document).on('change keyup', '.assigned-qty-input', function() {
             validateAssignedQuantities();
         });
 
-        $('#assign_tailoring_master_form').on('submit', function (e) {
+        $('#assign_tailoring_master_form').on('submit', function(e) {
             validateAssignedQuantities();
 
             var isValid = true;
             var commonValue = $commonTailoringMaster.val();
 
-            $('.assigned-qty-container').each(function () {
+            $('.assigned-qty-container').each(function() {
                 var cloth_index = $(this).attr('data-cloth-index');
                 var $row = $(this).closest('tr');
                 var cloth_name = $row.find('td').eq(1).text().trim();
                 var total_qty = parseInt($row.find('td').eq(2).text().trim()) || 0;
 
                 var assigned_sum = 0;
-                $(this).find('.assigned-qty-input').each(function () {
+                $(this).find('.assigned-qty-input').each(function() {
                     assigned_sum += parseInt($(this).val()) || 0;
                 });
 
                 if (assigned_sum > total_qty) {
-                    toastr.error(`Total assigned quantity for "${cloth_name}" cannot exceed ${total_qty} (currently ${assigned_sum}).`);
+                    toastr.error(
+                        `Total assigned quantity for "${cloth_name}" cannot exceed ${total_qty} (currently ${assigned_sum}).`
+                    );
                     isValid = false;
-                    return false; 
+                    return false;
                 }
 
                 if (!commonValue) {
-                    var $tailorContainer = $(`.tailor-select-container[data-cloth-index="${cloth_index}"]`);
-                    $tailorContainer.find('.assignment-tailor-select').each(function () {
+                    var $tailorContainer = $(
+                        `.tailor-select-container[data-cloth-index="${cloth_index}"]`);
+                    $tailorContainer.find('.assignment-tailor-select').each(function() {
                         if (!$(this).val()) {
-                            toastr.error(`Please select a Tailor Master for "${cloth_name}".`);
+                            toastr.error(
+                                `Please select a Tailor Master for "${cloth_name}".`
+                            );
                             isValid = false;
-                            return false; 
+                            return false;
                         }
                     });
                 }
@@ -403,7 +421,7 @@
             }
         });
 
-        toggleTailoringMasters();
+        // toggleTailoringMasters();
         validateAssignedQuantities();
     });
 </script>
