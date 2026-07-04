@@ -2140,135 +2140,177 @@ class SellController extends Controller
                 }
 
                 foreach ($cloths as $cloth) {
-
-                    $assigned_qty = (int)$cloth['assigned_qty'];
-
-                    $tailoring_master = $common_tailoring_master != ""
-                        ? $common_tailoring_master
-                        : $cloth['tailoring_master'];
-
                     $qty = (int)$cloth['qty'];
-
-                    if ($assigned_qty <= $qty) {
-
-                        // Existing sell line
-                        $sellLine = TransactionSellLine::with('cloth')
-                            ->find($cloth['sell_line_id']);
-
-                        if ($sellLine) {
-
-                            // OLD VALUES
-                            $oldTailorMasterId = $sellLine->tailoring_master_id;
-
-                            $oldAssignedQty = $sellLine->assigned_quantity ?? 0;
-
-                            $clothWages = $sellLine->cloth->wages ?? 0;
-
-                            $oldTotalWages = $clothWages * $oldAssignedQty;
-
-
-                            // NEW VALUES
-                            $newTailorMasterId = $tailoring_master;
-
-                            $newTotalWages = $clothWages * $assigned_qty;
-
-
-                            // Tailor master changed
-                            if ($oldTailorMasterId != $newTailorMasterId) {
-
-                                // Deduct from old tailor master
-                                if ($oldTailorMasterId) {
-
-                                    $oldTailorMaster = TailorMasterList::find(
-                                        $oldTailorMasterId
-                                    );
-
-                                    if ($oldTailorMaster) {
-
-                                        $oldTailorMaster->total_wages = max(
-                                            0,
-                                            $oldTailorMaster->total_wages - $oldTotalWages
-                                        );
-
-                                        $oldTailorMaster->total_wages_due = max(
-                                            0,
-                                            $oldTailorMaster->total_wages
-                                                - $oldTailorMaster->total_wages_paid
-                                        );
-
-                                        $oldTailorMaster->save();
-                                    }
-                                }
-
-                                // Add to new tailor master
-                                if ($newTailorMasterId) {
-
-                                    $newTailorMaster = TailorMasterList::find(
-                                        $newTailorMasterId
-                                    );
-
-                                    if ($newTailorMaster) {
-
-                                        $newTailorMaster->total_wages += $newTotalWages;
-
-                                        $newTailorMaster->total_wages_due = max(
-                                            0,
-                                            $newTailorMaster->total_wages
-                                                - $newTailorMaster->total_wages_paid
-                                        );
-
-                                        $newTailorMaster->save();
-                                    }
-                                }
-                            } else {
-
-                                // Same tailor master, only qty changed
-
-                                $diff = $newTotalWages - $oldTotalWages;
-
-                                if ($diff != 0 && $newTailorMasterId) {
-
-                                    $tailorMaster = TailorMasterList::find(
-                                        $newTailorMasterId
-                                    );
-
-                                    if ($tailorMaster) {
-
-                                        $tailorMaster->total_wages = max(
-                                            0,
-                                            $tailorMaster->total_wages + $diff
-                                        );
-
-                                        $tailorMaster->total_wages_due = max(
-                                            0,
-                                            $tailorMaster->total_wages
-                                                - $tailorMaster->total_wages_paid
-                                        );
-
-                                        $tailorMaster->save();
-                                    }
-                                }
-                            }
-                        }
-
-                        // Update sell line
-                        \DB::table('transaction_sell_lines')
-                            ->where('id', $cloth['sell_line_id'])
-                            ->update([
-                                'assigned_quantity' => $assigned_qty,
-                                'tailoring_master_id' => $tailoring_master,
-                                'updated_at' => now(),
-                            ]);
-                    } else {
+                    $assignments = $cloth['assignments'] ?? [];
+                    $total_assigned_qty = 0;
+                    foreach ($assignments as $assignment) {
+                        $total_assigned_qty += (int)($assignment['assigned_qty'] ?? 0);
+                    }
+                    if ($total_assigned_qty > $qty) {
                         $is_valid = false;
                         break;
                     }
                 }
 
                 if ($is_valid) {
+                    foreach ($cloths as $cloth) {
+                        $cloth_id = $cloth['cloth_id'];
+                        $qty = (int)$cloth['qty'];
+                        $assignments = $cloth['assignments'] ?? [];
+
+                        $existingSellLines = TransactionSellLine::where('transaction_id', $id)
+                            ->where('cloth_id', $cloth_id)
+                            ->with('cloth')
+                            ->get();
+
+                        if ($existingSellLines->isEmpty()) {
+                            continue;
+                        }
+
+                        $processed_assignments = [];
+                        $assigned_sum = 0;
+                        foreach ($assignments as $asn) {
+                            $a_qty = (int)($asn['assigned_qty'] ?? 0);
+                            $a_tailor = $asn['tailoring_master'] ?? "";
+                            if ($a_qty > 0 && $a_tailor != "") {
+                                $processed_assignments[] = [
+                                    'sell_line_id' => $asn['sell_line_id'] ?? null,
+                                    'quantity' => $a_qty,
+                                    'assigned_quantity' => $a_qty,
+                                    'tailoring_master_id' => $a_tailor,
+                                ];
+                                $assigned_sum += $a_qty;
+                            }
+                        }
+
+                        if ($assigned_sum < $qty) {
+                            $processed_assignments[] = [
+                                'sell_line_id' => null,
+                                'quantity' => $qty - $assigned_sum,
+                                'assigned_quantity' => null,
+                                'tailoring_master_id' => null,
+                            ];
+                        }
+
+                        $assignments_with_id = [];
+                        $assignments_without_id = [];
+                        foreach ($processed_assignments as $pa) {
+                            if (!empty($pa['sell_line_id'])) {
+                                $assignments_with_id[$pa['sell_line_id']] = $pa;
+                            } else {
+                                $assignments_without_id[] = $pa;
+                            }
+                        }
+
+                        $lines_to_delete = [];
+
+                        $updateSellLineAndWages = function ($sellLine, $pa) {
+                            $oldTailorMasterId = $sellLine->tailoring_master_id;
+                            $oldAssignedQty = $sellLine->assigned_quantity ?? 0;
+                            $clothWages = $sellLine->cloth->wages ?? 0;
+                            $oldTotalWages = $clothWages * $oldAssignedQty;
+
+                            $newTailorMasterId = $pa['tailoring_master_id'];
+                            $newAssignedQty = $pa['assigned_quantity'] ?? 0;
+                            $newTotalWages = $clothWages * $newAssignedQty;
+
+                            \DB::table('transaction_sell_lines')
+                                ->where('id', $sellLine->id)
+                                ->update([
+                                    'quantity' => $pa['quantity'],
+                                    'assigned_quantity' => $pa['assigned_quantity'],
+                                    'tailoring_master_id' => $pa['tailoring_master_id'],
+                                    'updated_at' => now(),
+                                ]);
+
+                            // Tailor master changed
+                            if ($oldTailorMasterId != $newTailorMasterId) {
+                                // Deduct from old
+                                if ($oldTailorMasterId && $oldTotalWages > 0) {
+                                    $oldTailorMaster = TailorMasterList::where('user_id', $oldTailorMasterId)->first();
+                                    if ($oldTailorMaster) {
+                                        $oldTailorMaster->total_wages = max(0, $oldTailorMaster->total_wages - $oldTotalWages);
+                                        $oldTailorMaster->total_wages_due = max(0, $oldTailorMaster->total_wages - $oldTailorMaster->total_wages_paid);
+                                        $oldTailorMaster->save();
+                                    }
+                                }
+                                // Add to new
+                                if ($newTailorMasterId && $newTotalWages > 0) {
+                                    $newTailorMaster = TailorMasterList::where('user_id', $newTailorMasterId)->first();
+                                    if ($newTailorMaster) {
+                                        $newTailorMaster->total_wages += $newTotalWages;
+                                        $newTailorMaster->total_wages_due = max(0, $newTailorMaster->total_wages - $newTailorMaster->total_wages_paid);
+                                        $newTailorMaster->save();
+                                    }
+                                }
+                            } else {
+                                // Same tailor master, qty changed
+                                $diff = $newTotalWages - $oldTotalWages;
+                                if ($diff != 0 && $newTailorMasterId) {
+                                    $tailorMaster = TailorMasterList::where('user_id', $newTailorMasterId)->first();
+                                    if ($tailorMaster) {
+                                        $tailorMaster->total_wages = max(0, $tailorMaster->total_wages + $diff);
+                                        $tailorMaster->total_wages_due = max(0, $tailorMaster->total_wages - $tailorMaster->total_wages_paid);
+                                        $tailorMaster->save();
+                                    }
+                                }
+                            }
+                        };
+
+                        foreach ($existingSellLines as $sellLine) {
+                            if (isset($assignments_with_id[$sellLine->id])) {
+                                $pa = $assignments_with_id[$sellLine->id];
+                                $updateSellLineAndWages($sellLine, $pa);
+                            } else {
+                                if (!empty($assignments_without_id)) {
+                                    $pa = array_shift($assignments_without_id);
+                                    $updateSellLineAndWages($sellLine, $pa);
+                                } else {
+                                    $lines_to_delete[] = $sellLine;
+                                }
+                            }
+                        }
+
+                        $baseSellLine = $existingSellLines->first();
+                        foreach ($assignments_without_id as $pa) {
+                            $newSellLine = $baseSellLine->replicate();
+                            $newSellLine->quantity = $pa['quantity'];
+                            $newSellLine->assigned_quantity = $pa['assigned_quantity'];
+                            $newSellLine->tailoring_master_id = $pa['tailoring_master_id'];
+                            $newSellLine->save();
+
+                            if ($newSellLine->tailoring_master_id && $newSellLine->assigned_quantity > 0) {
+                                $clothWages = $newSellLine->cloth->wages ?? 0;
+                                $newTotalWages = $clothWages * $newSellLine->assigned_quantity;
+                                if ($newTotalWages > 0) {
+                                    $newTailorMaster = TailorMasterList::where('user_id', $newSellLine->tailoring_master_id)->first();
+                                    if ($newTailorMaster) {
+                                        $newTailorMaster->total_wages += $newTotalWages;
+                                        $newTailorMaster->total_wages_due = max(0, $newTailorMaster->total_wages - $newTailorMaster->total_wages_paid);
+                                        $newTailorMaster->save();
+                                    }
+                                }
+                            }
+                        }
+
+                        foreach ($lines_to_delete as $sellLine) {
+                            if ($sellLine->tailoring_master_id && $sellLine->assigned_quantity > 0) {
+                                $clothWages = $sellLine->cloth->wages ?? 0;
+                                $oldTotalWages = $clothWages * $sellLine->assigned_quantity;
+                                if ($oldTotalWages > 0) {
+                                    $oldTailorMaster = TailorMasterList::where('user_id', $sellLine->tailoring_master_id)->first();
+                                    if ($oldTailorMaster) {
+                                        $oldTailorMaster->total_wages = max(0, $oldTailorMaster->total_wages - $oldTotalWages);
+                                        $oldTailorMaster->total_wages_due = max(0, $oldTailorMaster->total_wages - $oldTailorMaster->total_wages_paid);
+                                        $oldTailorMaster->save();
+                                    }
+                                }
+                            }
+                            $sellLine->delete();
+                        }
+                    }
 
                     DB::commit();
-
                     $output = [
                         'success' => 1,
                         'msg' => __('tailoring.assigned_tailoring_master_updated'),
@@ -2298,7 +2340,6 @@ class SellController extends Controller
                 'msg' => __('messages.something_went_wrong'),
             ];
         }
-
 
         return redirect()
             ->action([\App\Http\Controllers\SellController::class, 'index'])
