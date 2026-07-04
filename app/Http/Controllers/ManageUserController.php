@@ -678,8 +678,12 @@ class ManageUserController extends Controller
                     })
                     ->addColumn('particulars', function ($row) {
                         $particulars = [];
+                        $filter_tailor_id = request()->input('tailoring_master_id');
                         foreach ($row->sell_lines as $line) {
-                            if (!empty($line->cloth)) {
+                            if (!empty($line->cloth) && !empty($line->tailoring_master_id)) {
+                                if (!empty($filter_tailor_id) && $line->tailoring_master_id != $filter_tailor_id) {
+                                    continue;
+                                }
                                 $quantity = $line->assigned_quantity ?? $line->quantity;
                                 $particulars[] = $line->cloth->cloth_name . ' ' . (int) $quantity . 'pc(s)';
                             }

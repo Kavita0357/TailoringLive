@@ -2226,31 +2226,43 @@ class SellController extends Controller
                             // Tailor master changed
                             if ($oldTailorMasterId != $newTailorMasterId) {
                                 // Deduct from old
-                                if ($oldTailorMasterId && $oldTotalWages > 0) {
+                                if ($oldTailorMasterId) {
                                     $oldTailorMaster = TailorMasterList::where('user_id', $oldTailorMasterId)->first();
                                     if ($oldTailorMaster) {
-                                        $oldTailorMaster->total_wages = max(0, $oldTailorMaster->total_wages - $oldTotalWages);
-                                        $oldTailorMaster->total_wages_due = max(0, $oldTailorMaster->total_wages - $oldTailorMaster->total_wages_paid);
+                                        if ($oldTotalWages > 0) {
+                                            $oldTailorMaster->total_wages = max(0, $oldTailorMaster->total_wages - $oldTotalWages);
+                                            $oldTailorMaster->total_wages_due = max(0, $oldTailorMaster->total_wages - $oldTailorMaster->total_wages_paid);
+                                        }
+                                        $oldTailorMaster->total_completed_orders = max(0, $oldTailorMaster->total_completed_orders - $oldAssignedQty);
                                         $oldTailorMaster->save();
                                     }
                                 }
                                 // Add to new
-                                if ($newTailorMasterId && $newTotalWages > 0) {
+                                if ($newTailorMasterId) {
                                     $newTailorMaster = TailorMasterList::where('user_id', $newTailorMasterId)->first();
                                     if ($newTailorMaster) {
-                                        $newTailorMaster->total_wages += $newTotalWages;
-                                        $newTailorMaster->total_wages_due = max(0, $newTailorMaster->total_wages - $newTailorMaster->total_wages_paid);
+                                        if ($newTotalWages > 0) {
+                                            $newTailorMaster->total_wages += $newTotalWages;
+                                            $newTailorMaster->total_wages_due = max(0, $newTailorMaster->total_wages - $newTailorMaster->total_wages_paid);
+                                        }
+                                        $newTailorMaster->total_completed_orders += $newAssignedQty;
                                         $newTailorMaster->save();
                                     }
                                 }
                             } else {
                                 // Same tailor master, qty changed
                                 $diff = $newTotalWages - $oldTotalWages;
-                                if ($diff != 0 && $newTailorMasterId) {
+                                $qtyDiff = $newAssignedQty - $oldAssignedQty;
+                                if (($diff != 0 || $qtyDiff != 0) && $newTailorMasterId) {
                                     $tailorMaster = TailorMasterList::where('user_id', $newTailorMasterId)->first();
                                     if ($tailorMaster) {
-                                        $tailorMaster->total_wages = max(0, $tailorMaster->total_wages + $diff);
-                                        $tailorMaster->total_wages_due = max(0, $tailorMaster->total_wages - $tailorMaster->total_wages_paid);
+                                        if ($diff != 0) {
+                                            $tailorMaster->total_wages = max(0, $tailorMaster->total_wages + $diff);
+                                            $tailorMaster->total_wages_due = max(0, $tailorMaster->total_wages - $tailorMaster->total_wages_paid);
+                                        }
+                                        if ($qtyDiff != 0) {
+                                            $tailorMaster->total_completed_orders = max(0, $tailorMaster->total_completed_orders + $qtyDiff);
+                                        }
                                         $tailorMaster->save();
                                     }
                                 }
@@ -2282,13 +2294,14 @@ class SellController extends Controller
                             if ($newSellLine->tailoring_master_id && $newSellLine->assigned_quantity > 0) {
                                 $clothWages = $newSellLine->cloth->wages ?? 0;
                                 $newTotalWages = $clothWages * $newSellLine->assigned_quantity;
-                                if ($newTotalWages > 0) {
-                                    $newTailorMaster = TailorMasterList::where('user_id', $newSellLine->tailoring_master_id)->first();
-                                    if ($newTailorMaster) {
+                                $newTailorMaster = TailorMasterList::where('user_id', $newSellLine->tailoring_master_id)->first();
+                                if ($newTailorMaster) {
+                                    if ($newTotalWages > 0) {
                                         $newTailorMaster->total_wages += $newTotalWages;
                                         $newTailorMaster->total_wages_due = max(0, $newTailorMaster->total_wages - $newTailorMaster->total_wages_paid);
-                                        $newTailorMaster->save();
                                     }
+                                    $newTailorMaster->total_completed_orders += $newSellLine->assigned_quantity;
+                                    $newTailorMaster->save();
                                 }
                             }
                         }
@@ -2297,13 +2310,14 @@ class SellController extends Controller
                             if ($sellLine->tailoring_master_id && $sellLine->assigned_quantity > 0) {
                                 $clothWages = $sellLine->cloth->wages ?? 0;
                                 $oldTotalWages = $clothWages * $sellLine->assigned_quantity;
-                                if ($oldTotalWages > 0) {
-                                    $oldTailorMaster = TailorMasterList::where('user_id', $sellLine->tailoring_master_id)->first();
-                                    if ($oldTailorMaster) {
+                                $oldTailorMaster = TailorMasterList::where('user_id', $sellLine->tailoring_master_id)->first();
+                                if ($oldTailorMaster) {
+                                    if ($oldTotalWages > 0) {
                                         $oldTailorMaster->total_wages = max(0, $oldTailorMaster->total_wages - $oldTotalWages);
                                         $oldTailorMaster->total_wages_due = max(0, $oldTailorMaster->total_wages - $oldTailorMaster->total_wages_paid);
-                                        $oldTailorMaster->save();
                                     }
+                                    $oldTailorMaster->total_completed_orders = max(0, $oldTailorMaster->total_completed_orders - $sellLine->assigned_quantity);
+                                    $oldTailorMaster->save();
                                 }
                             }
                             $sellLine->delete();
