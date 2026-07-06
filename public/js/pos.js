@@ -1316,7 +1316,114 @@ $(document).ready(function () {
 
     $('select#price_group').change(function () {
         $('input#hidden_price_group').val($(this).val());
-        $(document).find("#pos_table tbody tr.product_row").remove();
+
+        let location_id = $('#location_id').val();
+        let price_group_id = $(this).val();
+
+        // 1. Find all regular product variation IDs in the cart
+        let variation_ids = [];
+        let regular_rows = $(document).find("#pos_table tbody tr.product_row:not([id^='cloth_row_'])");
+        regular_rows.each(function () {
+            let var_id = $(this).find('input.row_variation_id').val();
+            if (var_id) {
+                variation_ids.push(var_id);
+            }
+        });
+
+        // 2. Define function to update cloth rows
+        function updateClothRows(price_group) {
+            let discount_type = price_group ? price_group.discount_type : null;
+            let discount_amount = price_group ? parseFloat(price_group.discount_amount) || 0 : 0;
+            let selling_col_type = price_group ? price_group.selling_col_type : null;
+
+            $(document).find("tr.product_row[id^='cloth_row_']").each(function () {
+                let row = $(this);
+                let base_price = parseFloat(row.attr('data-base_price')) || 0;
+                let qty = parseFloat(row.find('input.pos_quantity').val()) || 1;
+
+                let new_unit_price = base_price;
+                if (price_group) {
+                    if (discount_type === 'percentage') {
+                        if (selling_col_type === 'deduct') {
+                            new_unit_price = base_price - (base_price * discount_amount / 100);
+                        } else {
+                            new_unit_price = base_price + (base_price * discount_amount / 100);
+                        }
+                    } else { // fixed amount
+                        if (selling_col_type === 'deduct') {
+                            new_unit_price = base_price - discount_amount;
+                        } else {
+                            new_unit_price = base_price + discount_amount;
+                        }
+                    }
+                }
+
+                new_unit_price = Math.round(new_unit_price * 100) / 100;
+
+                row.find('input.pos_unit_price_inc_tax').val(new_unit_price);
+                row.find('input.pos_unit_price').val(new_unit_price);
+
+                let line_total = new_unit_price * qty;
+                row.find('input.pos_line_total').val(line_total);
+                row.find('span.pos_line_total_text').text(__currency_trans_from_en(line_total, true));
+            });
+
+            pos_total_row();
+        }
+
+        // 3. Define function to update regular rows
+        function updateRegularRows(prices) {
+            regular_rows.each(function () {
+                let row = $(this);
+                let var_id = row.find('input.row_variation_id').val();
+                if (var_id && prices[var_id]) {
+                    let price_exc_tax = parseFloat(prices[var_id].price_exc_tax) || 0;
+                    let price_inc_tax = parseFloat(prices[var_id].price_inc_tax) || 0;
+
+                    row.find('input.pos_unit_price').val(price_exc_tax);
+                    row.find('input.pos_unit_price_inc_tax').val(price_inc_tax);
+
+                    row.find('input.pos_quantity').trigger('change');
+                }
+            });
+            pos_total_row();
+        }
+
+        // 4. Perform AJAX if there are variation_ids, otherwise just update cloths
+        if (variation_ids.length > 0) {
+            $.ajax({
+                url: '/sells/pos/get-group-prices',
+                type: 'GET',
+                data: {
+                    location_id: location_id,
+                    price_group_id: price_group_id,
+                    variation_ids: variation_ids
+                },
+                dataType: 'json',
+                success: function (result) {
+                    if (result.success) {
+                        updateRegularRows(result.prices);
+                        updateClothRows(result.price_group);
+                    }
+                }
+            });
+        } else {
+            $.ajax({
+                url: '/sells/pos/get-group-prices',
+                type: 'GET',
+                data: {
+                    location_id: location_id,
+                    price_group_id: price_group_id,
+                    variation_ids: []
+                },
+                dataType: 'json',
+                success: function (result) {
+                    if (result.success) {
+                        updateClothRows(result.price_group);
+                    }
+                }
+            });
+        }
     });
 
     //Quick add product
@@ -1906,9 +2013,18 @@ function pos_total_row() {
         $(this).html(__number_f(total_cloth_quantity));
     });
 
+    $('span.total_quantity').not('.pos_product_div span.total_quantity, .pos_cloth_div span.total_quantity').each(function () {
+        $(this).html(__number_f(total_quantity + total_cloth_quantity));
+    });
+
     //$('span.unit_price_total').html(unit_price_total);
     $('.pos_product_div span.price_total').html(__currency_trans_from_en(price_total, false));
     $('.pos_cloth_div span.price_total').html(__currency_trans_from_en(cloth_total, false));
+
+    $('span.price_total').not('.pos_product_div span.price_total, .pos_cloth_div span.price_total').each(function () {
+        $(this).html(__currency_trans_from_en(price_total + cloth_total, false));
+    });
+
     calculate_billing_details(price_total + cloth_total);
 }
 
@@ -3337,8 +3453,25 @@ function add_cloth_row(data, is_pos = false) {
     const rowIndex = parseInt($('#cloth_row_count').val()) || 0;
     const business_name = $('#default_location_name').val() || 0;
 
+    let base_charge = data.cloth.making_charge || 0;
+    let initial_charge = base_charge;
+    if (is_pos) {
+        let selected_text = $('select#price_group option:selected').text();
+        let match = selected_text.match(/([+-])\s*(\d+(?:\.\d+)?)\s*%/);
+        if (match) {
+            let op = match[1];
+            let percent = parseFloat(match[2]);
+            if (op === '+') {
+                initial_charge = parseFloat(base_charge) + (parseFloat(base_charge) * percent / 100);
+            } else if (op === '-') {
+                initial_charge = parseFloat(base_charge) - (parseFloat(base_charge) * percent / 100);
+            }
+        }
+    }
+    initial_charge = Math.round(initial_charge * 100) / 100;
+
     let html = `
-    <tr class="product_row" data-row_index="${rowIndex}" id="cloth_row_${data.cloth.id}">
+    <tr class="product_row" data-row_index="${rowIndex}" id="cloth_row_${data.cloth.id}" data-base_price="${base_charge}">
         <td>
             ${data.cloth.cloth_name}<br>
             <!-- ${business_name || ''}<br>
@@ -3371,7 +3504,8 @@ function add_cloth_row(data, is_pos = false) {
             </div>
         </td>
         <td class="hide">
-               <input type="text" name="cloths[${rowIndex}][unit_price_inc_tax]" class="form-control pos_unit_price_inc_tax input_number" value="${data.cloth.making_charge || 0}">
+               <input type="text" name="cloths[${rowIndex}][unit_price_inc_tax]" class="form-control pos_unit_price_inc_tax input_number" value="${initial_charge}">
+               <input type="hidden" name="cloths[${rowIndex}][unit_price]" class="form-control pos_unit_price input_number" value="${initial_charge}">
         </td>`;
 
     if (!is_pos) {
@@ -3406,8 +3540,8 @@ function add_cloth_row(data, is_pos = false) {
     }
 
     html += `<td class="text-center">
-            <input type="hidden" class="form-control pos_line_total" value="${data.cloth.making_charge || 0}">
-            <span class="display_currency pos_line_total_text" data-currency_symbol="true">৳ ${__currency_trans_from_en(data.cloth.making_charge || 0, false)}</span>
+            <input type="hidden" class="form-control pos_line_total" value="${initial_charge}">
+            <span class="display_currency pos_line_total_text" data-currency_symbol="true">৳ ${__currency_trans_from_en(initial_charge, false)}</span>
         </td>
 
         <td class="text-center v-center">

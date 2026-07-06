@@ -2059,6 +2059,84 @@ class SellPosController extends Controller
     }
 
     /**
+     * Fetch updated prices for a list of variation IDs based on selected selling price group.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getGroupPrices(Request $request)
+    {
+        try {
+            $business_id = $request->session()->get('user.business_id');
+            $location_id = $request->input('location_id');
+            $price_group_id = $request->input('price_group_id');
+            $variation_ids = $request->input('variation_ids', []);
+
+            $prices = [];
+            $price_group = null;
+
+            if (!empty($price_group_id)) {
+                $price_group = SellingPriceGroup::where('business_id', $business_id)
+                    ->find($price_group_id);
+            }
+
+            foreach ($variation_ids as $variation_id) {
+                $product = $this->productUtil->getDetailsFromVariation($variation_id, $business_id, $location_id, false);
+                
+                // Automatic customer group or price group adjustment
+                $percent = 0;
+                if (!empty($price_group)) {
+                    if ($price_group->discount_type == 'percentage') {
+                        $percent = $price_group->discount_amount;
+                        if ($price_group->selling_col_type == 'deduct') {
+                            $product->default_sell_price = $product->default_sell_price - ($percent * $product->default_sell_price / 100);
+                            $product->sell_price_inc_tax = $product->sell_price_inc_tax - ($percent * $product->sell_price_inc_tax / 100);
+                        } else {
+                            $product->default_sell_price = $product->default_sell_price + ($percent * $product->default_sell_price / 100);
+                            $product->sell_price_inc_tax = $product->sell_price_inc_tax + ($percent * $product->sell_price_inc_tax / 100);
+                        }
+                    } else {
+                        $percent = $price_group->discount_amount;
+                        if ($price_group->selling_col_type == 'deduct') {
+                            $product->default_sell_price = $product->default_sell_price - $percent;
+                            $product->sell_price_inc_tax = $product->sell_price_inc_tax - $percent;
+                        } else {
+                            $product->default_sell_price = $product->default_sell_price + $percent;
+                            $product->sell_price_inc_tax = $product->sell_price_inc_tax + $percent;
+                        }
+                    }
+                }
+
+                // Manual price group prices
+                if (!empty($price_group_id)) {
+                    $variation_group_prices = $this->productUtil->getVariationGroupPrice($variation_id, $price_group_id, $product->tax_id);
+                    if (!empty($variation_group_prices['price_inc_tax'])) {
+                        $product->sell_price_inc_tax = $variation_group_prices['price_inc_tax'];
+                        $product->default_sell_price = $variation_group_prices['price_exc_tax'];
+                    }
+                }
+
+                $prices[$variation_id] = [
+                    'price_exc_tax' => $product->default_sell_price,
+                    'price_inc_tax' => $product->sell_price_inc_tax,
+                ];
+            }
+
+            return response()->json([
+                'success' => true,
+                'prices' => $prices,
+                'price_group' => $price_group
+            ]);
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'msg' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
      * Shows invoice url.
      *
      * @param  int  $id
