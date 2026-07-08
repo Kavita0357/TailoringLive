@@ -1793,13 +1793,13 @@ class SellController extends Controller
                                 'delivered_quantity' => $detail->quantity_ordered,
                                 'updated_at' => now(),
                             ]);
-                    } elseif ($transaction->delivery_status == 'completed') {
-                        // reset to 0
+                    } elseif ($transaction->delivery_status == 'ready_to_deliver') {
+                        // mark all as completed but not yet delivered
                         DB::table('transaction_sell_lines')
                             ->where('id', $detail->sell_line_id)
                             ->update([
                                 'completed_quantity' => $detail->quantity_ordered,
-                                // 'delivered_quantity' => $detail->quantity_ordered,
+                                'delivered_quantity' => 0,
                                 'updated_at' => now(),
                             ]);
                     }
