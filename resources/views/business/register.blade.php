@@ -1,5 +1,6 @@
 @extends('layouts.auth2')
 @section('title', __('lang_v1.register'))
+@section('auth_class', 'register-content-width')
 
 @section('content')
 

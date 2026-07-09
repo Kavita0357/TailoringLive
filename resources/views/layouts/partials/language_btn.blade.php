@@ -1,12 +1,18 @@
-<details class="tw-dw-dropdown" style="margin: 10px;">
-    <summary class="tw-bg-transparent tw-text-white tw-font-medium tw-text-sm md:tw-text-base select-none">
-        {{ isset($_GET['lang']) ? config('constants.langs')[$_GET['lang']]['full_name'] : config('constants.langs')[config('app.locale')]['full_name'] }}
-    </summary>
-    <ul
-        class="tw-p-2 tw-shadow tw-dw-menu tw-dw-dropdown-content tw-z-[1] tw-w-48 md:tw-w-56 tw-bg-white tw-rounded-xl tw-mt-3">
-        @foreach (config('constants.langs') as $key => $val)
-            <li><a value="{{ $key }}" class="change_lang"> {{ $val['full_name'] }}</a>
-            </li>
-        @endforeach
-    </ul>
-</details>
+<!-- <div class="lang-dropdown-wrapper">
+    <details class="lang-dropdown">
+        <summary class="lang-dropdown-summary">
+            <span>{{ isset($_GET['lang']) ? config('constants.langs')[$_GET['lang']]['full_name'] : config('constants.langs')[config('app.locale')]['full_name'] }}</span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+        </summary>
+        <ul class="lang-dropdown-menu">
+            @foreach (config('constants.langs') as $key => $val)
+                <li>
+                    <a value="{{ $key }}" class="change_lang">{{ $val['full_name'] }}</a>
+                </li>
+            @endforeach
+        </ul>
+    </details>
+</div> -->
