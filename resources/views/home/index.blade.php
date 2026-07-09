@@ -73,6 +73,7 @@
         $total_dataset = end($temp_datasets);
         $sells_fy_total = array_sum($total_dataset->values ?? []);
     }
+    $custom_labels = json_decode(session('business.custom_labels'), true);
 @endphp
 
 
@@ -167,7 +168,8 @@
 
                                     <div class="tw-flex-1 tw-min-w-0">
                                         <p
-                                            class="tw-text-sm tw-font-medium tw-text-gray-500 tw-truncate tw-whitespace-nowrap">
+                                            class="tw-text-sm tw-font-medium tw-truncate tw-whitespace-nowrap"
+                                            style="color: green;">
                                             {{ __('tailoring.total_orders') }}
                                         </p>
                                         <p
@@ -200,7 +202,8 @@
 
                                     <div class="tw-flex-1 tw-min-w-0">
                                         <p
-                                            class="tw-text-sm tw-font-medium tw-text-gray-500 tw-truncate tw-whitespace-nowrap">
+                                            class="tw-text-sm tw-font-medium tw-truncate tw-whitespace-nowrap"
+                                            style="color: red;">
                                             {{ __('tailoring.total_order_due') }}
                                         </p>
                                         <p
@@ -230,7 +233,8 @@
 
                                     <div class="tw-flex-1 tw-min-w-0">
                                         <p
-                                            class="tw-text-sm tw-font-medium tw-text-gray-500 tw-truncate tw-whitespace-nowrap">
+                                            class="tw-text-sm tw-font-medium tw-truncate tw-whitespace-nowrap"
+                                            style="color: dodgerblue;">
                                             {{ __('tailoring.ready_to_deliver') }}
                                         </p>
                                         <p
@@ -260,7 +264,8 @@
 
                                     <div class="tw-flex-1 tw-min-w-0">
                                         <p
-                                            class="tw-text-sm tw-font-medium tw-text-gray-500 tw-truncate tw-whitespace-nowrap">
+                                            class="tw-text-sm tw-font-medium tw-truncate tw-whitespace-nowrap"
+                                            style="color: darkcyan;">
                                             {{ __('tailoring.delivered') }}
                                         </p>
                                         <p
@@ -755,15 +760,10 @@
                                             id="ready_to_deliver_table">
                                             <thead>
                                                 <tr>
-                                                    <th>@lang('messages.action')</th>
-                                                    <th>@lang('messages.date')</th>
+                                                    <th>@lang('tailoring.delivery_date')</th>
                                                     <th>@lang('tailoring.order_no')</th>
-                                                    <th>@lang('sale.customer_name')</th>
-                                                    {{-- <th>@lang('lang_v1.contact_no')</th> --}}
-                                                    <th>@lang('sale.location')</th>
                                                     <th>@lang('tailoring.delivery_status')</th>
                                                     <th>@lang('sale.payment_status')</th>
-                                                    <th>@lang('restaurant.service_staff')</th>
                                                 </tr>
                                             </thead>
                                         </table>
@@ -2092,11 +2092,12 @@
                 processing: true,
                 serverSide: true,
                 fixedHeader: false,
+                searching: false,
+                dom: 'tirp',
                 aaSorting: [
-                    [1, 'desc']
+                    [0, 'desc']
                 ],
                 scrollY: "75vh",
-                scrollX: true,
                 scrollCollapse: true,
                 "ajax": {
                     "url": '{{ route('cloth_orders.index') }}',
@@ -2107,83 +2108,28 @@
                         }
                     }
                 },
-                columns: [{
-                        data: 'action',
-                        name: 'action',
-                        searchable: false,
-                        orderable: false
-                    },
+                columns: [
                     {
                         data: 'transaction_date',
-                        name: 'transaction_date'
+                        name: 'transaction_date',
+                        orderable: false
                     },
                     {
                         data: 'invoice_no',
                         name: 'invoice_no'
                     },
                     {
-                        data: 'conatct_name',
-                        name: 'conatct_name'
-                    },
-                    {
-                        data: 'mobile',
-                        name: 'contacts.mobile',
-                        visible: false
-                    },
-                    {
-                        data: 'business_location',
-                        name: 'bl.name'
-                    },
-                    {
                         data: 'delivery_status',
                         name: 'delivery_status'
                     },
-                    @if (!empty($custom_labels['shipping']['custom_field_1']))
-                        {
-                            data: 'shipping_custom_field_1',
-                            name: 'shipping_custom_field_1'
-                        },
-                    @endif
-                    @if (!empty($custom_labels['shipping']['custom_field_2']))
-                        {
-                            data: 'shipping_custom_field_2',
-                            name: 'shipping_custom_field_2'
-                        },
-                    @endif
-                    @if (!empty($custom_labels['shipping']['custom_field_3']))
-                        {
-                            data: 'shipping_custom_field_3',
-                            name: 'shipping_custom_field_3'
-                        },
-                    @endif
-                    @if (!empty($custom_labels['shipping']['custom_field_4']))
-                        {
-                            data: 'shipping_custom_field_4',
-                            name: 'shipping_custom_field_4'
-                        },
-                    @endif
-                    @if (!empty($custom_labels['shipping']['custom_field_5']))
-                        {
-                            data: 'shipping_custom_field_5',
-                            name: 'shipping_custom_field_5'
-                        },
-                    @endif {
-                        data: 'payment_status',
-                        name: 'payment_status'
-                    },
                     {
-                        data: 'waiter',
-                        name: 'ss.first_name',
-                        @if (empty($is_service_staff_enabled))
-                            visible: false
-                        @endif
+                        data: 'payment_status',
+                        name: 'payment_status',
+                        className: 'clickable_td'
                     }
                 ],
                 "fnDrawCallback": function(oSettings) {
                     __currency_convert_recursively($('#sell_table'));
-                },
-                createdRow: function(row, data, dataIndex) {
-                    $(row).find('td:eq(4)').attr('class', 'clickable_td');
                 }
             });
 

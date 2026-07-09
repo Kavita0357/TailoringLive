@@ -178,7 +178,7 @@ $(document).ready(function () {
         scrollX: true,
         scrollCollapse: true,
         fixedHeader: false,
-        dom: 'Btirp',
+        dom: 'tirp',
         ajax: {
             "url": '/home/orders-payment-dues',
             "data": function (d) {
