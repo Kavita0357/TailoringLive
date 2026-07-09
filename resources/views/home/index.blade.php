@@ -582,7 +582,7 @@
                     @if (!empty($all_locations))
                         {{-- Left Order Card --}}
                         <div class="tw-transition-all tw-duration-200 tw-bg-white tw-shadow-sm tw-rounded-2xl tw-ring-1 tw-ring-gray-200 hover:tw-shadow-md hover:tw--translate-y-0.5"
-                            style="height: 700px;">
+                            style="height: 500px;">
                             <div class="tw-p-6 tw-flex tw-flex-col tw-justify-between tw-h-full">
                                 <div>
                                     <!-- Card Header -->
@@ -598,7 +598,7 @@
                                     </div>
 
                                     <!-- Chart Container -->
-                                    <div class="tw-relative tw-mt-6" style="height: 480px;">
+                                    <div class="tw-relative tw-mt-6" style="height: 280px;">
                                         <canvas id="orderChart30DaysCanvas"></canvas>
                                     </div>
                                 </div>
@@ -621,7 +621,7 @@
                     @if (!empty($all_locations))
                         {{-- Right Order Card --}}
                         <div class="tw-transition-all tw-duration-200 tw-bg-white tw-shadow-sm tw-rounded-2xl tw-ring-1 tw-ring-gray-200 hover:tw-shadow-md hover:tw--translate-y-0.5"
-                            style="height: 700px;">
+                            style="height: 500px;">
                             <div class="tw-p-6 tw-flex tw-flex-col tw-justify-between tw-h-full">
                                 <div>
                                     <!-- Card Header -->
@@ -637,7 +637,7 @@
                                     </div>
 
                                     <!-- Chart Container -->
-                                    <div class="tw-relative tw-mt-6" style="height: 480px;">
+                                    <div class="tw-relative tw-mt-6" style="height: 280px;">
                                         <canvas id="orderChartFYCanvas"></canvas>
                                     </div>
                                 </div>
@@ -781,7 +781,7 @@
                     @if (!empty($all_locations))
                         {{-- Left Sell Card --}}
                         <div class="tw-transition-all tw-duration-200 tw-bg-white tw-shadow-sm tw-rounded-2xl tw-ring-1 tw-ring-gray-200 hover:tw-shadow-md hover:tw--translate-y-0.5"
-                            style="height: 700px;">
+                            style="height: 500px;">
                             <div class="tw-p-6 tw-flex tw-flex-col tw-justify-between tw-h-full">
                                 <div>
                                     <!-- Card Header -->
@@ -797,7 +797,7 @@
                                     </div>
 
                                     <!-- Chart Container -->
-                                    <div class="tw-relative tw-mt-6" style="height: 480px;">
+                                    <div class="tw-relative tw-mt-6" style="height: 280px;">
                                         <canvas id="sellChart30DaysCanvas"></canvas>
                                     </div>
                                 </div>
@@ -826,7 +826,7 @@
                     @if (!empty($all_locations))
                         {{-- Right Sell Card --}}
                         <div class="tw-transition-all tw-duration-200 tw-bg-white tw-shadow-sm tw-rounded-2xl tw-ring-1 tw-ring-gray-200 hover:tw-shadow-md hover:tw--translate-y-0.5"
-                            style="height: 700px;">
+                            style="height: 500px;">
                             <div class="tw-p-6 tw-flex tw-flex-col tw-justify-between tw-h-full">
                                 <div>
                                     <!-- Card Header -->
@@ -842,7 +842,7 @@
                                     </div>
 
                                     <!-- Chart Container -->
-                                    <div class="tw-relative tw-mt-6" style="height: 480px;">
+                                    <div class="tw-relative tw-mt-6" style="height: 280px;">
                                         <canvas id="sellChartFYCanvas"></canvas>
                                     </div>
                                 </div>
