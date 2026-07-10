@@ -275,7 +275,44 @@ class TransactionUtil extends Util
         }
 
         $transaction->fill($update_date);
+        $is_delivery_status_dirty = $transaction->isDirty('delivery_status');
+        $new_delivery_status = $transaction->delivery_status;
         $transaction->update();
+
+        if ($is_delivery_status_dirty) {
+            $sell_lines = \DB::table('transaction_sell_lines')
+                ->where('transaction_id', $transaction->id)
+                ->get();
+            $tailor_master_ids = [];
+            foreach ($sell_lines as $line) {
+                if (!empty($line->tailoring_master_id)) {
+                    $tailor_master_ids[] = $line->tailoring_master_id;
+                }
+                $completed = $line->completed_quantity;
+                $delivered = $line->delivered_quantity;
+                if ($new_delivery_status == 'ready_to_deliver') {
+                    $completed = $line->quantity;
+                    $delivered = 0;
+                } elseif ($new_delivery_status == 'delivered') {
+                    $completed = $line->quantity;
+                    $delivered = $line->quantity;
+                } else {
+                    $completed = 0;
+                    $delivered = 0;
+                }
+                \DB::table('transaction_sell_lines')
+                    ->where('id', $line->id)
+                    ->update([
+                        'completed_quantity' => $completed,
+                        'delivered_quantity' => $delivered,
+                        'updated_at' => now(),
+                    ]);
+            }
+            $tailor_master_ids = array_filter(array_unique($tailor_master_ids));
+            foreach ($tailor_master_ids as $tm_id) {
+                \App\TailorMasterList::recalculateTailorMasterStats($tm_id);
+            }
+        }
 
         return $transaction;
     }
@@ -501,6 +538,10 @@ class TransactionUtil extends Util
 
     public function createOrUpdateClothSellLines($transaction, $cloths, $location_id, $return_deleted = false, $status_before = null, $extra_line_parameters = [], $uf_data = true)
     {
+        if (! is_object($transaction)) {
+            $transaction = Transaction::findOrFail($transaction);
+        }
+
         $lines_formatted = [];
         $modifiers_array = [];
         $edit_ids = [0];
@@ -518,7 +559,7 @@ class TransactionUtil extends Util
             }    */
             //Check if transaction_sell_lines_id is set, used when editing.
             if (! empty($cloth['transaction_sell_lines_id'])) {
-                $edit_id_temp = $this->editClothSellLine($cloth, $location_id, $status_before, $multiplier, $uf_data);
+                $edit_id_temp = $this->editClothSellLine($cloth, $location_id, $status_before, $multiplier, $uf_data, $transaction);
                 $edit_ids = array_merge($edit_ids, $edit_id_temp);
 
                 //update or create modifiers for existing sell lines
@@ -879,7 +920,7 @@ class TransactionUtil extends Util
      * @param  int  $location_id
      * @return bool
      */
-    public function editClothSellLine($cloth, $location_id, $status_before, $multiplier = 1, $uf_data = true)
+    public function editClothSellLine($cloth, $location_id, $status_before, $multiplier = 1, $uf_data = true, $transaction = null)
     {
         $sell_line = TransactionSellLine::with(['cloth'])->find($cloth['transaction_sell_lines_id']);
 
@@ -972,6 +1013,28 @@ class TransactionUtil extends Util
             );
         }
 
+        $completed_qty = $sell_line->completed_quantity;
+        $delivered_qty = $sell_line->delivered_quantity;
+        if (!empty($transaction)) {
+            if ($transaction->delivery_status == 'ready_to_deliver') {
+                $completed_qty = $uf_quantity;
+                $delivered_qty = 0;
+            } elseif ($transaction->delivery_status == 'delivered') {
+                $completed_qty = $uf_quantity;
+                $delivered_qty = $uf_quantity;
+            } else {
+                if ($completed_qty > $uf_quantity) {
+                    $completed_qty = $uf_quantity;
+                }
+                if ($delivered_qty > $uf_quantity) {
+                    $delivered_qty = $uf_quantity;
+                }
+                if ($delivered_qty > $completed_qty) {
+                    $delivered_qty = $completed_qty;
+                }
+            }
+        }
+
         // Update sell line
         $sell_line->fill([
             'cloth_id' => $cloth['cloth_id'],
@@ -988,6 +1051,8 @@ class TransactionUtil extends Util
             'res_service_staff_id' => !empty($cloth['res_service_staff_id']) ? $cloth['res_service_staff_id'] : null,
             'assigned_quantity' => $uf_quantity,
             'tailoring_master_id' => $tailorMasterId,
+            'completed_quantity' => $completed_qty,
+            'delivered_quantity' => $delivered_qty,
         ]);
         $sell_line->save();
 
@@ -998,29 +1063,13 @@ class TransactionUtil extends Util
         return $edit_ids;
     }
 
-    private function updateTailorMasterWages($tailorMasterId, $amount)
+    private function updateTailorMasterWages($tailorMasterId, $amount = 0)
     {
-        if (empty($tailorMasterId) || $amount == 0) {
+        if (empty($tailorMasterId)) {
             return;
         }
 
-        $tailorMaster = TailorMasterList::find($tailorMasterId);
-
-        if (!$tailorMaster) {
-            return;
-        }
-
-        $tailorMaster->total_wages = max(
-            0,
-            $tailorMaster->total_wages + $amount
-        );
-
-        $tailorMaster->total_wages_due = max(
-            0,
-            $tailorMaster->total_wages - $tailorMaster->total_wages_paid
-        );
-
-        $tailorMaster->save();
+        TailorMasterList::recalculateTailorMasterStats($tailorMasterId);
     }
     /**
      * Delete the products removed and increment product stock.
@@ -5372,8 +5421,13 @@ class TransactionUtil extends Util
             $log_type = $transaction->type == 'sales_order' ? 'so_deleted' : 'sell_deleted';
             $this->activityLog($transaction, $log_type, null, $log_properities);
 
+            $tailor_master_ids = [];
             if ($is_order) {
-                $this->adjustTailorMasterWagesOnDelete($transaction);
+                $tailor_master_ids = $transaction->sell_lines
+                    ->pluck('tailoring_master_id')
+                    ->filter()
+                    ->unique()
+                    ->toArray();
             }
 
             //If status is draft direct delete transaction
@@ -5421,6 +5475,12 @@ class TransactionUtil extends Util
 
                 foreach ($transaction_payments as $payment) {
                     event(new TransactionPaymentDeleted($payment));
+                }
+            }
+
+            if ($is_order && !empty($tailor_master_ids)) {
+                foreach ($tailor_master_ids as $tm_id) {
+                    \App\TailorMasterList::recalculateTailorMasterStats($tm_id);
                 }
             }
         }

@@ -332,9 +332,11 @@
                                 {!! Form::label('delivery_status', __('tailoring.delivery_status') . ':*') !!}
                                 {!! Form::select('delivery_status', $delivery_statuses, $transaction->delivery_status, [
                                     'class' => 'form-control',
+                                    'id' => 'delivery_status',
                                     'placeholder' => __('messages.please_select'),
                                     'required',
                                 ]) !!}
+                                <p id="delivery_status_subtitle" style="color: #c9302c; font-weight: bold; margin-top: 5px; display: none;"></p>
                             </div>
                         </div>
                         <div class="tailoring_master @if (!empty($commission_agent)) col-sm-3 @else col-sm-4 @endif">
@@ -1485,6 +1487,30 @@
                     $(document).find(".pos_cloth_div select[name*='[tailoring_master]']").prop('disabled',
                         false);
                 }
+            });
+
+            var statusSubtitles = {
+                'received': "{{ __('tailoring.received_subtitle') }}",
+                'preparing': "{{ __('tailoring.preparing_subtitle') }}",
+                'partially_delivered': "{{ __('tailoring.partially_delivered_subtitle') }}",
+                'ready_to_deliver': "{{ __('tailoring.ready_to_deliver_subtitle') }}",
+                'delivered': "{{ __('tailoring.delivered_subtitle') }}"
+            };
+
+            function updateSubtitle() {
+                var status = $('#delivery_status').val();
+                var subtitleText = statusSubtitles[status] || '';
+                if (subtitleText) {
+                    $('#delivery_status_subtitle').text(subtitleText).show();
+                } else {
+                    $('#delivery_status_subtitle').hide();
+                }
+            }
+
+            updateSubtitle();
+
+            $(document).on('change', '#delivery_status', function() {
+                updateSubtitle();
             });
         });
     </script>
