@@ -878,6 +878,7 @@ class ManageUserController extends Controller
                 'user_id' => $request->assigned_to_users,
                 'name' => $request->first_name,
                 'mobile' => $request->contact_number,
+                'show_work_history' => $request->has('show_work_history') ? 1 : 0,
                 'added_on' => now(),
                 'total_completed_orders' => 0,
                 'total_wages' => 0,
@@ -953,6 +954,7 @@ class ManageUserController extends Controller
             $tailor->update([
                 'name' => $request->first_name,
                 'mobile' => $request->contact_number,
+                'show_work_history' => $request->has('show_work_history') ? 1 : 0,
             ]);
 
             $output = [

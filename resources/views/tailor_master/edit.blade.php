@@ -46,6 +46,16 @@
 
                 <div class="col-md-12">
                     <div class="form-group">
+                        <div class="checkbox">
+                            <label>
+                                {!! Form::checkbox('show_work_history', 1, !empty($tailor->show_work_history), ['class' => 'input-icheck', 'id' => 'show_work_history_edit']) !!} @lang('lang_v1.show_work_history')
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-12">
+                    <div class="form-group">
                         {!! Form::label('first_name', __('tailoring.name') . ':*') !!}
                         {!! Form::text('first_name', $tailor->name, [
                             'class' => 'form-control',

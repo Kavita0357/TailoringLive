@@ -1558,4 +1558,5 @@ return [
     'last_30_days' => 'Last 30 days',
     'add_tailor_master' => 'Add Tailor Master',
     'edit_tailor_master' => 'Edit Tailor Master',
+    'show_work_history' => 'Show Work History',
 ];
