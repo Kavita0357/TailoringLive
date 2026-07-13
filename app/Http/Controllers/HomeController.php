@@ -71,6 +71,17 @@ class HomeController extends Controller
 
         $business_id = request()->session()->get('user.business_id');
 
+        if (empty($business_id)) {
+            $business_id = $user->business_id;
+        }
+
+        if ($user->hasRole('Tailor Master#' . $business_id)) {
+            $tailor = \App\TailorMasterList::where('user_id', $user->id)->first();
+            if ($tailor) {
+                return redirect()->route('tailor_master.show', [$tailor->id]);
+            }
+        }
+
         $is_admin = $this->businessUtil->is_admin(auth()->user());
 
         if (! auth()->user()->can('dashboard.data')) {

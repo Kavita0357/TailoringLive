@@ -39,7 +39,46 @@ class TransactionPaymentController extends Controller
      */
     public function index()
     {
-        //
+        $business_id = request()->session()->get('user.business_id');
+        if (request()->ajax()) {
+            $payment_for = request()->input('payment_for');
+            if (!empty($payment_for)) {
+                $payments = TransactionPayment::leftjoin('transactions as t', 'transaction_payments.transaction_id', '=', 't.id')
+                    ->leftjoin('transaction_payments as parent_payment', 'transaction_payments.parent_id', '=', 'parent_payment.id')
+                    ->where('transaction_payments.business_id', $business_id)
+                    ->whereNull('transaction_payments.parent_id')
+                    ->with(['child_payments', 'child_payments.transaction'])
+                    ->where('transaction_payments.payment_for', $payment_for)
+                    ->select(
+                        'transaction_payments.id',
+                        'transaction_payments.amount',
+                        'transaction_payments.is_return',
+                        'transaction_payments.method',
+                        'transaction_payments.paid_on',
+                        'transaction_payments.payment_ref_no',
+                        'transaction_payments.parent_id',
+                        'transaction_payments.transaction_no',
+                        't.invoice_no',
+                        't.ref_no',
+                        't.type as transaction_type',
+                        't.return_parent_id',
+                        't.id as transaction_id',
+                        'transaction_payments.cheque_number',
+                        'transaction_payments.card_transaction_number',
+                        'transaction_payments.bank_account_number',
+                        'transaction_payments.id as DT_RowId',
+                        'parent_payment.payment_ref_no as parent_payment_ref_no'
+                    )
+                    ->groupBy('transaction_payments.id')
+                    ->orderByDesc('transaction_payments.paid_on')
+                    ->paginate();
+
+                $payment_types = $this->transactionUtil->payment_types(null, true, $business_id);
+
+                return view('contact.partials.contact_payments_tab')
+                    ->with(compact('payments', 'payment_types'));
+            }
+        }
     }
 
     /**

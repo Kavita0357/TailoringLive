@@ -23,6 +23,36 @@ class AdminSidebarMenu
         }
 
         Menu::create('admin-sidebar-menu', function ($menu) {
+            $is_tailor_master = false;
+            $tailor_id = null;
+            if (auth()->check()) {
+                $business_id = session('business.id');
+                if (empty($business_id)) {
+                    $business_id = auth()->user()->business_id;
+                }
+                if (auth()->user()->hasRole('Tailor Master#' . $business_id)) {
+                    $is_tailor_master = true;
+                    $tailor = \App\TailorMasterList::where('user_id', auth()->user()->id)->first();
+                    if ($tailor) {
+                        $tailor_id = $tailor->id;
+                    }
+                }
+            }
+
+            if ($is_tailor_master) {
+                $dashboard_url = $tailor_id ? route('tailor_master.show', [$tailor_id]) : action([\App\Http\Controllers\HomeController::class, 'index']);
+                $menu->url($dashboard_url, __('tailoring.dashboard'), [
+                    'icon' => '<svg xmlns="http://www.w3.org/2000/svg" class="tw-size-5 tw-shrink-0" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                <path d="M5 12l-2 0l9 -9l9 9l-2 0" />
+                <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+                <path d="M10 12h4v4h-4z" />
+              </svg>',
+                    'active' => request()->segment(1) == 'tailor-master' || request()->segment(1) == 'home'
+                ])->order(1);
+                return;
+            }
+
             $enabled_modules = !empty(session('business.enabled_modules')) ? session('business.enabled_modules') : [];
 
             $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];

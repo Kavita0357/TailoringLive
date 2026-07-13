@@ -38,6 +38,11 @@ class ClothController extends Controller
         $this->middleware(function ($request, $next) use ($moduleUtil) {
             $this->moduleUtil = $moduleUtil;
             $this->enabled_modules = session('business.enabled_modules') ?? [];
+
+            $business_id = request()->session()->get('user.business_id');
+            if (auth()->user()->hasRole('Tailor Master#' . $business_id)) {
+                abort(403, 'Unauthorized action.');
+            }
             return $next($request);
         });
         $this->businessUtil = $businessUtil;

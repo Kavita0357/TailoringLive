@@ -590,7 +590,12 @@ class ManageUserController extends Controller
 
     public function getAllTailorMasters()
     {
-        if (!auth()->user()->can('user.view') && !auth()->user()->can('user.create')) {
+        $tailoring_master_id = request()->input('tailoring_master_id');
+        $is_querying_self = !empty($tailoring_master_id) && 
+                            request()->input('is_dashboard') === 'true' && 
+                            (int) auth()->user()->id === (int) $tailoring_master_id;
+
+        if (!auth()->user()->can('user.view') && !auth()->user()->can('user.create') && !$is_querying_self) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -731,6 +736,9 @@ class ManageUserController extends Controller
                         $payment_status = Transaction::getPaymentStatus($row);
                         return (string) view('sell.partials.payment_status', ['payment_status' => $payment_status, 'id' => $row->id]);
                     })
+                    ->editColumn('invoice_no', function ($row) {
+                        return '<a data-href="' . action([\App\Http\Controllers\SellController::class, 'show'], [$row->id]) . '" href="#" data-container=".view_modal" class="btn-modal">' . $row->invoice_no . '</a>';
+                    })
                     ->addColumn('total_wages_paid', function ($row) {
                         return $row->payment_lines->sum('amount');
                     })
@@ -738,7 +746,7 @@ class ManageUserController extends Controller
                         $total_paid = $row->payment_lines->sum('amount');
                         return max(0, $row->final_total - $total_paid);
                     })
-                    ->rawColumns(['payment_status'])
+                    ->rawColumns(['payment_status', 'invoice_no'])
                     ->with([
                         'totals' => [
                             'total_tailor_masters' => $total_tailor_masters,
@@ -1050,15 +1058,15 @@ class ManageUserController extends Controller
 
     public function showTailorMaster($id)
     {
-        if (!auth()->user()->can('user.view')) {
-            abort(403, 'Unauthorized action.');
-        }
-
         $business_id = request()->session()->get('user.business_id');
 
         $tailor = TailorMasterList::whereHas('user', function ($query) use ($business_id) {
             $query->where('business_id', $business_id);
         })->findOrFail($id);
+
+        if (!auth()->user()->can('user.view') && (int) auth()->user()->id !== (int) $tailor->user_id) {
+            abort(403, 'Unauthorized action.');
+        }
 
         return view('tailor_master.show')->with(compact('tailor'));
     }

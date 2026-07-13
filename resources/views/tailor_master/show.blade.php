@@ -229,7 +229,23 @@
                     </div>
 
                     <div class="tab-pane" id="work_list_tab">
-                        <!-- Work list content will go here -->
+                        <div class="row">
+                            <div class="col-md-12">
+                                <table class="table table-bordered table-striped" id="tailor_work_list_table" style="width: 100%;">
+                                    <thead>
+                                        <tr>
+                                            <th>@lang('tailoring.date')</th>
+                                            <th>@lang('tailoring.order_no')</th>
+                                            <th>@lang('tailoring.particulars')</th>
+                                            <th>@lang('tailoring.wages')</th>
+                                            <th>@lang('tailoring.payment_status')</th>
+                                            <th>@lang('tailoring.total_paid')</th>
+                                            <th>@lang('tailoring.total_due')</th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="tab-pane" id="payments_tab">
@@ -255,7 +271,66 @@
             $(document).on('click', '#contact_payments_pagination a', function (e) {
                 e.preventDefault();
                 get_contact_payments($(this).attr('href'));
-            })
+            });
+
+            var tailor_work_list_table = $('#tailor_work_list_table').DataTable({
+                processing: true,
+                serverSide: true,
+                fixedHeader: false,
+                ajax: {
+                    url: '/tailor-master/list',
+                    data: function (d) {
+                        d.is_dashboard = 'true';
+                        d.tailoring_master_id = "{{ $tailor->user_id }}";
+                    }
+                },
+                order: [
+                    [0, 'desc']
+                ],
+                columns: [
+                    {
+                        data: 'added_on',
+                        name: 'transaction_date'
+                    },
+                    {
+                        data: 'invoice_no',
+                        name: 'invoice_no'
+                    },
+                    {
+                        data: 'particulars',
+                        name: 'particulars',
+                        orderable: false,
+                        searchable: false
+                    },
+                    {
+                        data: 'total_wages',
+                        name: 'total_wages',
+                        render: $.fn.dataTable.render.number(',', '.', 2, ''),
+                        orderable: false,
+                        searchable: false
+                    },
+                    {
+                        data: 'payment_status',
+                        name: 'payment_status',
+                        orderable: false,
+                        searchable: false
+                    },
+                    {
+                        data: 'total_wages_paid',
+                        name: 'total_wages_paid',
+                        render: $.fn.dataTable.render.number(',', '.', 2, ''),
+                        orderable: false,
+                        searchable: false
+                    },
+                    {
+                        data: 'total_wages_due',
+                        name: 'total_wages_due',
+                        render: $.fn.dataTable.render.number(',', '.', 2, ''),
+                        orderable: false,
+                        searchable: false
+                    }
+                ]
+            });
         });
 
         function get_contact_payments(url = null) {

@@ -998,6 +998,8 @@ class AccountController extends Controller
                 )
                 ->leftJoin('users AS u', 'account_transactions.created_by', '=', 'u.id')
                 ->leftJoin('contacts AS c', 'TP.payment_for', '=', 'c.id')
+                ->leftJoin('users AS tp_user', 'TP.payment_for', '=', 'tp_user.id')
+                ->leftJoin('tailor_master_list AS tml', 'TP.payment_for', '=', 'tml.user_id')
                 ->where('A.business_id', $business_id)
                 ->with(['transaction', 'transaction.contact', 'transfer_transaction', 'transaction.transaction_for'])
                 ->select([
@@ -1024,7 +1026,9 @@ class AccountController extends Controller
                     'TP.cheque_number',
                     'TP.bank_account_number',
                     'account_transactions.account_id',
+                    'tml.id as tailor_master_id',
                     DB::raw("CONCAT(COALESCE(u.surname, ''),' ',COALESCE(u.first_name, ''),' ',COALESCE(u.last_name,'')) as added_by"),
+                    DB::raw("CONCAT(COALESCE(tp_user.surname, ''),' ',COALESCE(tp_user.first_name, ''),' ',COALESCE(tp_user.last_name,'')) as payment_for_user"),
                     'c.name as payment_for_contact',
                     'c.type as payment_for_type',
                     'c.supplier_business_name as payment_for_business_name',
@@ -1237,7 +1241,11 @@ class AccountController extends Controller
                 //for contact/user payment which is not advance
                 if ($row->is_advance != 1) {
                     if (! empty($row->payment_for_user)) {
-                        $details .= '<b>' . __('tailoring.tailor_master') . ':</b> ' . $row->payment_for_user;
+                        if (! empty($row->tailor_master_id)) {
+                            $details .= '<b>' . __('tailoring.tailor_master') . ':</b> ' . $row->payment_for_user;
+                        } else {
+                            $details .= '<b>' . __('report.user') . ':</b> ' . $row->payment_for_user;
+                        }
                     } else {
                         if ($row->payment_for_type == 'supplier') {
                             $details .= '<b>' . __('purchase.supplier') . ':</b> ';
@@ -1296,7 +1304,11 @@ class AccountController extends Controller
             }
 
             if (! empty($row->payment_for_user)) {
-                $details .= '<b>' . __('tailoring.tailor_master') . ':</b> ' . $row->payment_for_user;
+                if (! empty($row->tailor_master_id)) {
+                    $details .= '<b>' . __('tailoring.tailor_master') . ':</b> ' . $row->payment_for_user;
+                } else {
+                    $details .= '<b>' . __('report.user') . ':</b> ' . $row->payment_for_user;
+                }
             } else {
                 if ($row->payment_for_type == 'supplier') {
                     $details .= '<b>' . __('purchase.supplier') . ':</b> ';
