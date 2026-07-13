@@ -285,7 +285,7 @@
                     </div>
                 @endif
                 @if ($transaction->type == 'order')
-                    <div id="tailorMasterAssignmentSection" @if(empty($transaction->delivery_status) || $transaction->delivery_status != 'preparing') style="display: none;" @endif>
+                    <div id="tailorMasterAssignmentSection" class="col-md-12" @if(empty($transaction->delivery_status) || $transaction->delivery_status != 'preparing') style="display: none;" @endif>
                         @php
                             $grouped_sell_details = $sell_details->groupBy('cloth_id');
                             $index = 0;
