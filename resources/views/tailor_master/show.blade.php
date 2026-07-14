@@ -249,7 +249,20 @@
                     </div>
 
                     <div class="tab-pane" id="payments_tab">
-                        <div id="contact_payments_div" style="height: 500px;overflow-y: scroll;"></div>
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped" id="tailor_payments_table" style="width: 100%;">
+                                <thead>
+                                    <tr>
+                                        <th>@lang('lang_v1.paid_on')</th>
+                                        <th>@lang('purchase.ref_no')</th>
+                                        <th>@lang('sale.amount')</th>
+                                        <th>@lang('lang_v1.payment_method')</th>
+                                        <th>@lang('account.payment_for')</th>
+                                        <th>@lang('messages.action')</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
                     </div>
 
                     <div class="tab-pane" id="activities_tab">
@@ -266,17 +279,15 @@
     <script src="{{ asset('js/payment.js?v=' . $asset_v) }}"></script>
     <script type="text/javascript">
         $(document).ready(function () {
-            get_contact_payments();
-
-            $(document).on('click', '#contact_payments_pagination a', function (e) {
-                e.preventDefault();
-                get_contact_payments($(this).attr('href'));
-            });
 
             var tailor_work_list_table = $('#tailor_work_list_table').DataTable({
                 processing: true,
                 serverSide: true,
                 fixedHeader: false,
+                paging: true,
+                info: true,
+                pageLength: 25,
+                lengthChange: true,
                 ajax: {
                     url: '/tailor-master/list',
                     data: function (d) {
@@ -331,26 +342,24 @@
                     }
                 ]
             });
-        });
-
-        function get_contact_payments(url = null) {
-            if (!url) {
-                // We use the same route as contact, but with the user_id instead of contact_id?
-                // Wait! A Tailor Master is not a contact, it's a User. Payments made to Tailor Masters are expense payments linked to user_id.
-                // Let's just mock it or use an empty state for now, or if there is a way to fetch tailor master payments.
-                // Looking at postPayTailorMasterDue: it creates a payment with `payment_for = tailor->user_id`.
-                url = "/payments?payment_for={{ $tailor->user_id }}";
-            }
-            $.ajax({
-                url: url,
-                dataType: 'html',
-                success: function (result) {
-                    $('#contact_payments_div').fadeOut(400, function () {
-                        $('#contact_payments_div')
-                            .html(result).fadeIn(400);
-                    });
+            var tailor_payments_table = $('#tailor_payments_table').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: "{{ route('tailor_master.payments', [$tailor->id]) }}",
+                    data: function (d) {
+                        d.is_dashboard = 'true';
+                    }
                 },
+                columns: [
+                    { data: 'paid_on', name: 'transaction_payments.paid_on' },
+                    { data: 'payment_ref_no', name: 'transaction_payments.payment_ref_no' },
+                    { data: 'amount', name: 'transaction_payments.amount', searchable: false },
+                    { data: 'method', name: 'transaction_payments.method' },
+                    { data: 'payment_for', name: 'payment_for', searchable: false, orderable: false },
+                    { data: 'action', name: 'action', searchable: false, orderable: false }
+                ]
             });
-        }
+        });
     </script>
 @endsection

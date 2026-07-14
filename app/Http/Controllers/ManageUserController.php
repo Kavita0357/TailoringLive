@@ -1192,4 +1192,129 @@ class ManageUserController extends Controller
 
         return redirect()->back()->with(['status' => $output]);
     }
+
+    public function getTailorMasterPayments($id)
+    {
+        $business_id = request()->session()->get('user.business_id');
+
+        $tailor = TailorMasterList::whereHas('user', function ($query) use ($business_id) {
+            $query->where('business_id', $business_id);
+        })->findOrFail($id);
+
+        if (!auth()->user()->can('user.view') && (int) auth()->user()->id !== (int) $tailor->user_id) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        if (request()->ajax()) {
+            $payments = \App\TransactionPayment::leftjoin('transactions as t', 'transaction_payments.transaction_id', '=', 't.id')
+                ->leftjoin('transaction_payments as parent_payment', 'transaction_payments.parent_id', '=', 'parent_payment.id')
+                ->where('transaction_payments.business_id', $business_id)
+                ->whereNull('transaction_payments.parent_id')
+                ->with(['child_payments', 'child_payments.transaction'])
+                ->where('transaction_payments.payment_for', $tailor->user_id)
+                ->select(
+                    'transaction_payments.id',
+                    'transaction_payments.amount',
+                    'transaction_payments.is_return',
+                    'transaction_payments.method',
+                    'transaction_payments.paid_on',
+                    'transaction_payments.payment_ref_no',
+                    'transaction_payments.parent_id',
+                    'transaction_payments.transaction_no',
+                    't.invoice_no',
+                    't.ref_no',
+                    't.type as transaction_type',
+                    't.return_parent_id',
+                    't.id as transaction_id',
+                    'transaction_payments.cheque_number',
+                    'transaction_payments.card_transaction_number',
+                    'transaction_payments.bank_account_number',
+                    'transaction_payments.id as DT_RowId',
+                    'parent_payment.payment_ref_no as parent_payment_ref_no'
+                )
+                ->groupBy('transaction_payments.id')
+                ->orderByDesc('transaction_payments.paid_on');
+
+            return DataTables::of($payments)
+                ->editColumn('paid_on', function ($row) {
+                    return \Carbon::parse($row->paid_on)->format(session('business.date_format') . ' H:i');
+                })
+                ->editColumn('payment_ref_no', function ($row) {
+                    $html = $row->payment_ref_no;
+                    if (!empty($row->parent_payment_ref_no)) {
+                        $html .= '<br>' . __('lang_v1.parent_payment') . ': ' . $row->parent_payment_ref_no;
+                    }
+                    return $html;
+                })
+                ->editColumn('amount', function ($row) {
+                    return '<span class="display_currency" data-currency_symbol="true">' . $row->amount . '</span>';
+                })
+                ->editColumn('method', function ($row) {
+                    $transactionUtil = new \App\Utils\TransactionUtil();
+                    $payment_types = $transactionUtil->payment_types(null, true, request()->session()->get('user.business_id'));
+                    
+                    $method = !empty($payment_types[$row->method]) ? $payment_types[$row->method] : '';
+                    if ($row->method == 'cheque') {
+                        $method .= '<br>(' . __('lang_v1.cheque_no') . ': ' . $row->cheque_number . ')';
+                    } elseif ($row->method == 'card') {
+                        $method .= '<br>(' . __('lang_v1.card_transaction_no') . ': ' . $row->card_transaction_number . ')';
+                    } elseif ($row->method == 'bank_transfer') {
+                        $method .= '<br>(' . __('lang_v1.bank_account_no') . ': ' . $row->bank_account_number . ')';
+                    } elseif ($row->method == 'custom_pay_1') {
+                        $method .= '<br>(' . __('lang_v1.transaction_no') . ': ' . $row->transaction_no . ')';
+                    } elseif ($row->method == 'custom_pay_2') {
+                        $method .= '<br>(' . __('lang_v1.transaction_no') . ': ' . $row->transaction_no . ')';
+                    } elseif ($row->method == 'custom_pay_3') {
+                        $method .= '<br>(' . __('lang_v1.transaction_no') . ': ' . $row->transaction_no . ')';
+                    }
+                    if ($row->is_return == 1) {
+                        $method .= '<br><small>(' . __('lang_v1.change_return') . ')</small>';
+                    }
+                    return $method;
+                })
+                ->addColumn('payment_for', function ($row) {
+                    $transaction_type = $row->transaction_type;
+                    $invoice_no = $row->invoice_no;
+                    $ref_no = $row->ref_no;
+                    $transaction_id = $row->transaction_id;
+                    $return_parent_id = $row->return_parent_id;
+
+                    $html = '';
+                    if ($transaction_type == 'sell') {
+                        $html = '<a data-href="' . action([\App\Http\Controllers\SellController::class, 'show'], [$transaction_id]) . '" href="#" data-container=".view_modal" class="btn-modal">' . $invoice_no . '</a> <br> <small>(' . __('sale.sale') . ') </small>';
+                    } elseif ($transaction_type == 'sell_return') {
+                        $html = '<a data-href="' . action([\App\Http\Controllers\SellReturnController::class, 'show'], [$return_parent_id]) . '" href="#" data-container=".view_modal" class="btn-modal">' . $invoice_no . '</a> <br> <small>(' . __('lang_v1.sell_return') . ') </small>';
+                    } elseif ($transaction_type == 'purchase_return') {
+                        $html = '<a data-href="' . action([\App\Http\Controllers\PurchaseReturnController::class, 'show'], [$return_parent_id]) . '" href="#" data-container=".view_modal" class="btn-modal">' . $ref_no . '</a> <br> <small>(' . __('lang_v1.purchase_return') . ') </small>';
+                    } elseif ($transaction_type == 'purchase') {
+                        $html = '<a data-href="' . action([\App\Http\Controllers\PurchaseController::class, 'show'], [$transaction_id]) . '" href="#" data-container=".view_modal" class="btn-modal">' . $ref_no . '</a> <br> <small>(' . __('lang_v1.purchase') . ') </small>';
+                    } else {
+                        if (!empty($transaction_id)) {
+                            $html = $ref_no . ' <br> <small>(' . __('lang_v1.' . $transaction_type) . ') </small>';
+                        }
+                    }
+                    return $html;
+                })
+                ->addColumn('action', function ($row) {
+                    $html = '<button type="button" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline  tw-dw-btn-primary btn-modal" data-href="' . action([\App\Http\Controllers\TransactionPaymentController::class, 'viewPayment'], [$row->id]) . '" data-container=".view_modal"><i class="fas fa-eye"></i>' . __('messages.view') . '</button>';
+
+                    $transaction_type = $row->transaction_type;
+                    $transaction_id = $row->transaction_id;
+
+                    if (!empty($transaction_id)) {
+                        if ((in_array($transaction_type, ['purchase', 'purchase_return']) && auth()->user()->can('edit_purchase_payment')) || (in_array($transaction_type, ['sell', 'sell_return']) && auth()->user()->can('edit_sell_payment'))) {
+                            $html .= ' <button type="button" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline  tw-dw-btn-info btn-modal" data-href="' . action([\App\Http\Controllers\TransactionPaymentController::class, 'edit'], [$row->id]) . '" data-container=".view_modal"><i class="fas fa-edit"></i> ' . __('messages.edit') . '</button>';
+                        }
+                    }
+
+                    if ((in_array($transaction_type, ['purchase', 'purchase_return']) && auth()->user()->can('delete_purchase_payment')) || (in_array($transaction_type, ['sell', 'sell_return']) && auth()->user()->can('delete_sell_payment')) || ((empty($transaction_type) || $transaction_type == 'opening_balance') && (auth()->user()->can('customer.create') || auth()->user()->can('customer.update') || auth()->user()->can('supplier.create') || auth()->user()->can('supplier.update')))) {
+                        $html .= ' <button type="button" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline  tw-dw-btn-error delete_payment" data-href="' . action([\App\Http\Controllers\TransactionPaymentController::class, 'destroy'], [$row->id]) . '"> <i class="fas fa-trash"></i>' . __('messages.delete') . '</button>';
+                    }
+
+                    return $html;
+                })
+                ->rawColumns(['amount', 'payment_ref_no', 'method', 'payment_for', 'action'])
+                ->make(true);
+        }
+    }
 }
