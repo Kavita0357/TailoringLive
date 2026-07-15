@@ -86,7 +86,7 @@ class AdminSidebarMenu
             <path d="M10 12h4v4h-4z" />
           </svg>',
                 'active' => request()->segment(1) == 'home'
-            ])->order(5);
+            ])->order(10);
 
             //User management dropdown
             if (auth()->user()->can('user.view') || auth()->user()->can('user.create') || auth()->user()->can('roles.view')) {
@@ -125,7 +125,7 @@ class AdminSidebarMenu
                     <path d="M21 21v-2a4 4 0 0 0 -3 -3.85"></path>
                   </svg>',
                     ]
-                )->order(10);
+                )->order(20);
             }
             //TailoringMaster management dropdown
 
@@ -156,7 +156,7 @@ class AdminSidebarMenu
                     <path d="M21 21v-2a4 4 0 0 0 -3 -3.85"></path>
                   </svg>',
                     ]
-                )->order(10);
+                )->order(30);
             }
 
             //Contacts dropdown
@@ -212,7 +212,7 @@ class AdminSidebarMenu
                   </svg>',
                         'id' => 'tour_step4'
                     ]
-                )->order(15);
+                )->order(40);
             }
 
             //Products dropdown
@@ -320,7 +320,7 @@ class AdminSidebarMenu
                   </svg>',
                         'id' => 'tour_step5'
                     ]
-                )->order(20);
+                )->order(70);
             }
             //Tailoring dropdown
             if (in_array('tailoring', $enabled_modules)) {
@@ -351,7 +351,7 @@ class AdminSidebarMenu
                       </svg>',
                         'id' => 'tour_step8'
                     ]
-                )->order(25);
+                )->order(50);
 
                 $menu->dropdown(
                     __('tailoring.cloths_order'),
@@ -414,7 +414,7 @@ class AdminSidebarMenu
                       </svg>',
                         'id' => 'tour_step8'
                     ]
-                )->order(25);
+                )->order(60);
             }
 
             //Purchase dropdown
@@ -469,7 +469,7 @@ class AdminSidebarMenu
                   </svg>',
                         'id' => 'tour_step6'
                     ]
-                )->order(25);
+                )->order(80);
             }
 
             //Sell dropdown
@@ -600,27 +600,45 @@ class AdminSidebarMenu
                   </svg>',
                         'id' => 'tour_step7'
                     ]
-                )->order(30);
+                )->order(90);
             }
 
-            //Stock transfer dropdown
-            if (in_array('stock_transfers', $enabled_modules) && (auth()->user()->can('purchase.view') || auth()->user()->can('purchase.create') || auth()->user()->can('view_own_purchase'))) {
+            //Stock Control dropdown
+            if ((in_array('stock_transfers', $enabled_modules) || in_array('stock_adjustment', $enabled_modules)) && (auth()->user()->can('purchase.view') || auth()->user()->can('purchase.create') || auth()->user()->can('view_own_purchase'))) {
                 $menu->dropdown(
-                    __('lang_v1.stock_transfers'),
-                    function ($sub) {
-                        if (auth()->user()->can('purchase.view') || auth()->user()->can('view_own_purchase')) {
-                            $sub->url(
-                                action([\App\Http\Controllers\StockTransferController::class, 'index']),
-                                __('lang_v1.list_stock_transfers'),
-                                ['icon' => '', 'active' => request()->segment(1) == 'stock-transfers' && request()->segment(2) == null]
-                            );
+                    'Stock Control',
+                    function ($sub) use ($enabled_modules) {
+                        if (in_array('stock_transfers', $enabled_modules)) {
+                            if (auth()->user()->can('purchase.view') || auth()->user()->can('view_own_purchase')) {
+                                $sub->url(
+                                    action([\App\Http\Controllers\StockTransferController::class, 'index']),
+                                    __('lang_v1.list_stock_transfers'),
+                                    ['icon' => '', 'active' => request()->segment(1) == 'stock-transfers' && request()->segment(2) == null]
+                                );
+                            }
+                            if (auth()->user()->can('purchase.create')) {
+                                $sub->url(
+                                    action([\App\Http\Controllers\StockTransferController::class, 'create']),
+                                    __('lang_v1.add_stock_transfer'),
+                                    ['icon' => '', 'active' => request()->segment(1) == 'stock-transfers' && request()->segment(2) == 'create']
+                                );
+                            }
                         }
-                        if (auth()->user()->can('purchase.create')) {
-                            $sub->url(
-                                action([\App\Http\Controllers\StockTransferController::class, 'create']),
-                                __('lang_v1.add_stock_transfer'),
-                                ['icon' => '', 'active' => request()->segment(1) == 'stock-transfers' && request()->segment(2) == 'create']
-                            );
+                        if (in_array('stock_adjustment', $enabled_modules)) {
+                            if (auth()->user()->can('purchase.view') || auth()->user()->can('view_own_purchase')) {
+                                $sub->url(
+                                    action([\App\Http\Controllers\StockAdjustmentController::class, 'index']),
+                                    __('stock_adjustment.list'),
+                                    ['icon' => '', 'active' => request()->segment(1) == 'stock-adjustments' && request()->segment(2) == null]
+                                );
+                            }
+                            if (auth()->user()->can('purchase.create')) {
+                                $sub->url(
+                                    action([\App\Http\Controllers\StockAdjustmentController::class, 'create']),
+                                    __('stock_adjustment.add'),
+                                    ['icon' => '', 'active' => request()->segment(1) == 'stock-adjustments' && request()->segment(2) == 'create']
+                                );
+                            }
                         }
                     },
                     [
@@ -633,7 +651,7 @@ class AdminSidebarMenu
                     <path d="M3 9l4 0"></path>
                   </svg>'
                     ]
-                )->order(35);
+                )->order(100);
             }
 
             // Messaging dropdown
@@ -682,39 +700,9 @@ class AdminSidebarMenu
                   </svg>',
                     'id' => 'tour_step5'
                 ]
-            )->order(50);
+            )->order(120);
 
-            //stock adjustment dropdown
-            if (in_array('stock_adjustment', $enabled_modules) && (auth()->user()->can('purchase.view') || auth()->user()->can('purchase.create') || auth()->user()->can('view_own_purchase'))) {
-                $menu->dropdown(
-                    __('stock_adjustment.stock_adjustment'),
-                    function ($sub) {
-                        if (auth()->user()->can('purchase.view') || auth()->user()->can('view_own_purchase')) {
-                            $sub->url(
-                                action([\App\Http\Controllers\StockAdjustmentController::class, 'index']),
-                                __('stock_adjustment.list'),
-                                ['icon' => '', 'active' => request()->segment(1) == 'stock-adjustments' && request()->segment(2) == null]
-                            );
-                        }
-                        if (auth()->user()->can('purchase.create')) {
-                            $sub->url(
-                                action([\App\Http\Controllers\StockAdjustmentController::class, 'create']),
-                                __('stock_adjustment.add'),
-                                ['icon' => '', 'active' => request()->segment(1) == 'stock-adjustments' && request()->segment(2) == 'create']
-                            );
-                        }
-                    },
-                    [
-                        'icon' => '<svg aria-hidden="true" class="tw-size-5 tw-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                    <path d="M12 6m-8 0a8 3 0 1 0 16 0a8 3 0 1 0 -16 0"></path>
-                    <path d="M4 6v6a8 3 0 0 0 16 0v-6"></path>
-                    <path d="M4 12v6a8 3 0 0 0 16 0v-6"></path>
-                  </svg>'
-                    ]
-                )->order(40);
-            }
+
 
             //Expense dropdown
             if (in_array('expenses', $enabled_modules) && (auth()->user()->can('all_expense.access') || auth()->user()->can('view_own_expense'))) {
@@ -752,7 +740,7 @@ class AdminSidebarMenu
                     <path d="M12 6v10"></path>
                   </svg>'
                     ]
-                )->order(45);
+                )->order(110);
             }
             //Accounts dropdown
             if (auth()->user()->can('account.access') && in_array('account', $enabled_modules)) {
@@ -795,7 +783,7 @@ class AdminSidebarMenu
                     <path d="M11 15l2 0"></path>
                   </svg>'
                     ]
-                )->order(50);
+                )->order(130);
             }
 
             //Reports dropdown
@@ -1004,7 +992,7 @@ class AdminSidebarMenu
                   </svg>',
                         'id' => 'tour_step8'
                     ]
-                )->order(55);
+                )->order(140);
             }
 
             //Backup menu
@@ -1018,7 +1006,7 @@ class AdminSidebarMenu
                 <path d="M22 19l-3 -3l-3 3"></path>
               </svg>',
                     'active' => request()->segment(1) == 'backup'
-                ])->order(60);
+                ])->order(170);
             }
 
             //Modules menu
@@ -1032,22 +1020,22 @@ class AdminSidebarMenu
               <path d="M4 16l8 4l8 -4"></path>
             </svg>',
                     'active' => request()->segment(1) == 'manage-modules'
-                ])->order(60);
+                ])->order(175);
             }
 
             //Booking menu
             if (in_array('booking', $enabled_modules) && (auth()->user()->can('crud_all_bookings') || auth()->user()->can('crud_own_bookings'))) {
-                $menu->url(action([\App\Http\Controllers\Restaurant\BookingController::class, 'index']), __('restaurant.bookings'), ['icon' => '<svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-calendar-check"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M11.5 21h-5.5a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v6" /><path d="M16 3v4" /><path d="M8 3v4" /><path d="M4 11h16" /><path d="M15 19l2 2l4 -4" /></svg>', 'active' => request()->segment(1) == 'bookings'])->order(65);
+                $menu->url(action([\App\Http\Controllers\Restaurant\BookingController::class, 'index']), __('restaurant.bookings'), ['icon' => '<svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-calendar-check"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M11.5 21h-5.5a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v6" /><path d="M16 3v4" /><path d="M8 3v4" /><path d="M4 11h16" /><path d="M15 19l2 2l4 -4" /></svg>', 'active' => request()->segment(1) == 'bookings'])->order(180);
             }
 
             //Kitchen menu
             if (in_array('kitchen', $enabled_modules)) {
-                $menu->url(action([\App\Http\Controllers\Restaurant\KitchenController::class, 'index']), __('restaurant.kitchen'), ['icon' => '<svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-flame"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 12c2 -2.96 0 -7 -1 -8c0 3.038 -1.773 4.741 -3 6c-1.226 1.26 -2 3.24 -2 5a6 6 0 1 0 12 0c0 -1.532 -1.056 -3.94 -2 -5c-1.786 3 -2.791 3 -4 2z" /></svg>', 'active' => request()->segment(1) == 'modules' && request()->segment(2) == 'kitchen'])->order(70);
+                $menu->url(action([\App\Http\Controllers\Restaurant\KitchenController::class, 'index']), __('restaurant.kitchen'), ['icon' => '<svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-flame"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 12c2 -2.96 0 -7 -1 -8c0 3.038 -1.773 4.741 -3 6c-1.226 1.26 -2 3.24 -2 5a6 6 0 1 0 12 0c0 -1.532 -1.056 -3.94 -2 -5c-1.786 3 -2.791 3 -4 2z" /></svg>', 'active' => request()->segment(1) == 'modules' && request()->segment(2) == 'kitchen'])->order(185);
             }
 
             //Service Staff menu
             if (in_array('service_staff', $enabled_modules)) {
-                $menu->url(action([\App\Http\Controllers\Restaurant\OrderController::class, 'index']), __('restaurant.orders'), ['icon' => 'fa fas fa-list-alt', 'active' => request()->segment(1) == 'modules' && request()->segment(2) == 'orders'])->order(75);
+                $menu->url(action([\App\Http\Controllers\Restaurant\OrderController::class, 'index']), __('restaurant.orders'), ['icon' => 'fa fas fa-list-alt', 'active' => request()->segment(1) == 'modules' && request()->segment(2) == 'orders'])->order(190);
             }
 
             //Notification template menu
@@ -1150,7 +1138,7 @@ class AdminSidebarMenu
                   </svg>',
                         'id' => 'tour_step3'
                     ]
-                )->order(85);
+                )->order(150);
             }
 
             //Tailoring Dropdown
@@ -1187,7 +1175,7 @@ class AdminSidebarMenu
                       </svg>',
                         'id' => 'tour_step8'
                     ]
-                )->order(85);
+                )->order(160);
             }
         });
 

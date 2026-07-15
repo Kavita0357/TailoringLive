@@ -138,6 +138,9 @@
             background-color: #3c8dbc;
             color: #fff;
         }
+        .content-header small{
+            display: none !important;
+        }
     </style>
 
 </head>

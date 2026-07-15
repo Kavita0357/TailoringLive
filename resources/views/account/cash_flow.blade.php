@@ -5,7 +5,8 @@
 
 <!-- Content Header (Page header) -->
 <section class="content-header">
-    <h1>@lang('lang_v1.cash_flow')
+    <h1 class="tw-text-xl md:tw-text-3xl tw-font-bold tw-text-black">
+        @lang('lang_v1.cash_flow')
     </h1>
 </section>
 

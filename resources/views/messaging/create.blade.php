@@ -5,7 +5,7 @@
 @section('content')
 
     <section class="content-header">
-        <h1>
+        <h1 class="tw-text-xl md:tw-text-3xl tw-font-bold tw-text-black">
             @lang('tailoring.messaging')
             <small>@lang('tailoring.send_sms')</small>
         </h1>
