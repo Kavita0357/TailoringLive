@@ -125,7 +125,7 @@ return [
     'delivery_date' => 'Delivery Date',
     'delivery_note' => 'Delivery Note',
     'received' => 'Received',
-    'preparing' => 'Sent to Tailormaster',
+    'preparing' => 'Assigned Tailormaster',
     'partially_delivered' => 'Partially Delivered',
     'received_subtitle' => 'Fabrics for your outfit have been received at the shop.',
     'preparing_subtitle' => 'Handed over the fabrics to the tailor for stiching. Assign Tailormaster now.',

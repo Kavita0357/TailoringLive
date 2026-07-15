@@ -38,7 +38,7 @@
         }
         $closed = true;
     @endphp
-    <div id="collapseFilter" class="panel-collapse active collapse @if (empty($closed)) in @endif tw-pt-4 tw-pb-4"
+    <div id="collapseFilter" class="panel-collapse active collapse show @if (empty($closed)) in @endif tw-pt-4 tw-pb-4"
         aria-expanded="true">
         <div class="box-body">
             {{ $slot }}

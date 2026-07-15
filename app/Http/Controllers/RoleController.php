@@ -44,22 +44,26 @@ class RoleController extends Controller
                         ->select(['name', 'id', 'is_default', 'business_id']);
 
             return DataTables::of($roles)
-                ->addColumn('action', function ($row) {
-                    if (! $row->is_default || $row->name == 'Cashier#'.$row->business_id) {
-                        $action = '';
-                        if (auth()->user()->can('roles.update')) {
-                            $action .= '<a href="'.action([\App\Http\Controllers\RoleController::class, 'edit'], [$row->id]).'" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline tw-dw-btn-primary"><i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</a>';
-                        }
-                        if (auth()->user()->can('roles.delete')) {
-                            $action .= '&nbsp
-                                <button data-href="'.action([\App\Http\Controllers\RoleController::class, 'destroy'], [$row->id]).'" class="tw-dw-btn tw-dw-btn-outline tw-dw-btn-xs tw-dw-btn-error delete_role_button"><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
-                        }
+              ->addColumn('action', function ($row) {
+    $role_name = str_replace('#'.$row->business_id, '', $row->name);
 
-                        return $action;
-                    } else {
-                        return '';
-                    }
-                })
+    if ($role_name == 'Tailor Master') {
+        return '';
+    }
+    if (! $row->is_default || $row->name == 'Cashier#'.$row->business_id) {
+        $action = '';
+        if (auth()->user()->can('roles.update')) {
+            $action .= '<a href="'.action([\App\Http\Controllers\RoleController::class, 'edit'], [$row->id]).'" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline tw-dw-btn-primary"><i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</a>';
+        }
+        if (auth()->user()->can('roles.delete')) {
+            $action .= '&nbsp
+                <button data-href="'.action([\App\Http\Controllers\RoleController::class, 'destroy'], [$row->id]).'" class="tw-dw-btn tw-dw-btn-outline tw-dw-btn-xs tw-dw-btn-error delete_role_button"><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
+        }
+
+        return $action;
+    }
+    return '';
+})
                 ->editColumn('name', function ($row) use ($business_id) {
                     $role_name = str_replace('#'.$business_id, '', $row->name);
                     if (in_array($role_name, ['Admin', 'Cashier'])) {

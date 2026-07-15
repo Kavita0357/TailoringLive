@@ -127,7 +127,7 @@ class DataController extends Controller
                 $sub->url(
                     action([\Modules\Superadmin\Http\Controllers\SubscriptionController::class, 'index']),
                     __('superadmin::lang.subscription'),
-                    ['icon' => 'fa fas fa-sync', 'active' => request()->segment(1) == 'subscription']
+                    ['active' => request()->segment(1) == 'subscription']
                 );
             });
         }

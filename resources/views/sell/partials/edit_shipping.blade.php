@@ -502,23 +502,60 @@
     $(document).ready(function() {
         var $commonTailoringMaster = $('#common_tailoring_master');
 
-        function toggleTailoringMasters() {
+        function updateDisabledStates() {
             var commonValue = $commonTailoringMaster.val();
             var $innerTailoringMasters = $(".assignment-tailor-select");
 
+            // Check if any individual tailor master is assigned
+            var hasIndividualAssignments = false;
+            $innerTailoringMasters.each(function() {
+                if ($(this).val()) {
+                    hasIndividualAssignments = true;
+                    return false; // break
+                }
+            });
+
+            // If top-level is assigned, disable all individual ones
             if (commonValue) {
-                $innerTailoringMasters.each(function () {
-                    $(this)
-                        .val(commonValue)
-                        .trigger('change');
+                $innerTailoringMasters.each(function() {
+                    $(this).prop('disabled', true).trigger('change.select2');
                 });
+                // Also set all individual values to the common value
+                $innerTailoringMasters.each(function() {
+                    $(this).val(commonValue).trigger('change');
+                });
+            } else {
+                // If any individual assignment exists, disable top-level
+                if (hasIndividualAssignments) {
+                    $commonTailoringMaster.prop('disabled', true).trigger('change.select2');
+                    $innerTailoringMasters.prop('disabled', false).trigger('change.select2');
+                } else {
+                    // Both can be enabled
+                    $commonTailoringMaster.prop('disabled', false).trigger('change.select2');
+                    $innerTailoringMasters.prop('disabled', false).trigger('change.select2');
+                }
             }
-            $innerTailoringMasters.prop('disabled', false);
-            $innerTailoringMasters.trigger('change.select2');
+        }
+
+        function toggleTailoringMasters() {
+            updateDisabledStates();
         }
 
         $commonTailoringMaster.on('change', function() {
-            toggleTailoringMasters();
+            // Clear all individual selections if top-level is being assigned
+            var commonValue = $commonTailoringMaster.val();
+            if (commonValue) {
+                var $innerTailoringMasters = $(".assignment-tailor-select");
+                $innerTailoringMasters.each(function() {
+                    $(this).val(commonValue).trigger('change');
+                });
+            }
+            updateDisabledStates();
+        });
+
+        // Listen to changes on individual tailor selects
+        $(document).on('change', '.assignment-tailor-select', function() {
+            updateDisabledStates();
         });
 
         var tailor_options_html = "";
@@ -575,6 +612,7 @@
         }
 
         initSelect2($(".assignment-tailor-select"));
+        updateDisabledStates();
 
         $(document).on('click', '.add-assignment-row-btn', function() {
             var $row = $(this).closest('tr');
@@ -654,6 +692,7 @@
 
             reindexRows($qtyContainer, true);
             reindexRows($tailorContainer, false);
+            updateDisabledStates();
             updateRemoveButtonsVisibility($tailorContainer);
             validateAssignedQuantities();
         });

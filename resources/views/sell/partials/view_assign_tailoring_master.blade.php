@@ -198,24 +198,48 @@
     $(document).ready(function() {
 
         var $commonTailoringMaster = $('#common_tailoring_master');
+        var isUpdatingFromCommon = false;
 
         function toggleTailoringMasters() {
             var commonValue = $commonTailoringMaster.val();
             var $innerTailoringMasters = $(".assignment-tailor-select");
 
             if (commonValue) {
+                isUpdatingFromCommon = true;
                 $innerTailoringMasters.each(function () {
                     $(this)
                         .val(commonValue)
                         .trigger('change');
                 });
+                isUpdatingFromCommon = false;
+                $innerTailoringMasters.prop('disabled', true);
+            } else {
+                $innerTailoringMasters.prop('disabled', false);
             }
-            $innerTailoringMasters.prop('disabled', false);
             $innerTailoringMasters.trigger('change.select2');
+        }
+
+        function updateCommonSelectDisabledState() {
+            var anyIndividualHasValue = false;
+            $(".assignment-tailor-select").each(function() {
+                if ($(this).val()) {
+                    anyIndividualHasValue = true;
+                    return false;
+                }
+            });
+            $commonTailoringMaster.prop('disabled', anyIndividualHasValue);
+            if (anyIndividualHasValue) {
+                $commonTailoringMaster.trigger('change.select2');
+            }
         }
 
         $commonTailoringMaster.on('change', function() {
             toggleTailoringMasters();
+        });
+
+        $(document).on('change', '.assignment-tailor-select', function() {
+            if (isUpdatingFromCommon) return;
+            updateCommonSelectDisabledState();
         });
 
         var tailor_options_html = "";
@@ -419,7 +443,13 @@
             }
         });
 
-        // toggleTailoringMasters();
+        // Initial state check
+        updateCommonSelectDisabledState();
+        // If common already has a value, disable individual selects
+        if ($commonTailoringMaster.val()) {
+            toggleTailoringMasters();
+        }
+
         validateAssignedQuantities();
     });
 </script>
