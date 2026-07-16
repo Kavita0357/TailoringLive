@@ -1781,7 +1781,9 @@ function pos_product_row(variation_id = null, purchase_line_id = null, weighing_
                 type: 'GET',
                 success: function (result) {
                     if (result.success) {
-                        add_cloth_row(result.data, true);
+                        // Cloth cards belong in the tailoring order table on the
+                        // cloth POS screen, while regular POS keeps its old flow.
+                        add_cloth_row(result.data, $('#sale_type').val() !== 'order');
                     } else {
                         alert('Error fetching cloth details.');
                     }
@@ -1910,6 +1912,7 @@ function pos_product_row(variation_id = null, purchase_line_id = null, weighing_
                         var this_row = $('table#pos_table tbody')
                             .find('tr')
                             .last();
+                        style_cloth_pos_product_row(this_row);
                         pos_each_row(this_row);
 
                         //For initial discount if present
@@ -2026,6 +2029,18 @@ function pos_total_row() {
     });
 
     calculate_billing_details(price_total + cloth_total);
+}
+
+function style_cloth_pos_product_row(row) {
+    if ($('#sale_type').val() !== 'order' || !row.length || row.hasClass('cloth-pos-fabric-row')) {
+        return;
+    }
+
+    row.addClass('cloth-pos-fabric-row');
+    const cells = row.children('td');
+    const priceCell = cells.eq(2);
+    priceCell.addClass('fabric-making-charge').append('<span class="fabric-na">N/A</span>');
+    $('<td class="text-center fabric-tailor">N/A</td>').insertBefore(cells.last());
 }
 
 function get_subtotal() {
@@ -3553,6 +3568,10 @@ function add_cloth_row(data, is_pos = false) {
         $('table#pos_table tbody').append(html);
     } else {
         $('#pos_cloth_table tbody').append(html);
+        // Keep the tailoring-order row aligned with its six-column POS header.
+        const clothRow = $('#pos_cloth_table tbody tr').last();
+        const tailorCell = clothRow.children('td').eq(5).detach();
+        tailorCell.insertBefore(clothRow.children('td').last());
         $('#cloth_price span.total_quantity').html(__currency_trans_from_en(1, false));
         $('#cloth_price span.price_total').html(__currency_trans_from_en(data.cloth.making_charge || 0, false));
         $('#cloth_row_count').val(rowIndex + 1);
@@ -3594,6 +3613,8 @@ $('table#pos_cloth_table tbody').on('change', 'input.pos_quantity', function () 
     });
     pos_total_row();
 });
+
+
 
 //If change in unit price update price including tax and line total
 $('table#pos_cloth_table tbody').on('change', 'input.pos_unit_price', function () {

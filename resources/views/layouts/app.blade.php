@@ -110,7 +110,7 @@
 
         .pos-sub-footer {
             padding: 15px 30px 10px 30px;
-            margin: 0 15px;
+            /* margin: 0 15px; */
             width: auto;
         }
 

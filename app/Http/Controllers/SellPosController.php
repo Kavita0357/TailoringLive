@@ -275,7 +275,14 @@ class SellPosController extends Controller
         //Added check because $users is of no use if enable_contact_assign if false
         $users = config('constants.enable_contact_assign') ? User::forDropdown($business_id, false, false, false, true) : [];
 
-        return view('sale_pos.create')->with(compact('edit_discount', 'edit_price', 'business_locations', 'bl_attributes', 'business_details', 'taxes', 'payment_types', 'walk_in_customer', 'payment_lines', 'default_location', 'shortcuts', 'commission_agent', 'categories', 'brands', 'pos_settings', 'change_return', 'types', 'customer_groups', 'accounts', 'price_groups', 'types_of_service', 'default_price_group_id', 'shipping_statuses', 'default_datetime', 'featured_products', 'sub_type', 'pos_module_data', 'invoice_schemes', 'default_invoice_schemes', 'invoice_layouts', 'users'));
+        $cloths = request()->segment(1) === 'cloth-pos'
+            ? Cloth::where('business_id', $business_id)->orderBy('cloth_name')->pluck('cloth_name', 'id')
+            : [];
+        $tailor_masters = request()->segment(1) === 'cloth-pos'
+            ? User::tailorMasters($business_id)
+            : [];
+
+        return view('sale_pos.create')->with(compact('edit_discount', 'edit_price', 'business_locations', 'bl_attributes', 'business_details', 'taxes', 'payment_types', 'walk_in_customer', 'payment_lines', 'default_location', 'shortcuts', 'commission_agent', 'categories', 'brands', 'pos_settings', 'change_return', 'types', 'customer_groups', 'accounts', 'price_groups', 'types_of_service', 'default_price_group_id', 'shipping_statuses', 'default_datetime', 'featured_products', 'sub_type', 'pos_module_data', 'invoice_schemes', 'default_invoice_schemes', 'invoice_layouts', 'users', 'cloths', 'tailor_masters'));
     }
 
     /**

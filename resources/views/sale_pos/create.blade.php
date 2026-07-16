@@ -22,64 +22,22 @@
             'method' => 'post',
             'id' => 'add_pos_sell_form',
         ]) !!}
-        <div class="row mb-12">
-            <div class="col-md-12 tw-pt-0 tw-mb-14">
-                <div
-                    class="row tw-flex lg:tw-flex-row md:tw-flex-col sm:tw-flex-col tw-flex-col tw-items-start md:tw-gap-4">
-                    @if ($pos_type == 'order')
-                        @if (empty($pos_settings['hide_product_suggestion']) && !isMobile())
-                            <div class="md:tw-no-padding tw-w-full lg:tw-w-[40%] tw-px-5">
-                                @include('sale_pos.partials.pos_sidebar')
-                            </div>
-                        @endif
-                    @endif
-                    {{-- <div class="@if (empty($pos_settings['hide_product_suggestion'])) col-md-7 @else col-md-10 col-md-offset-1 @endif no-padding pr-12"> --}}
-                    <div
-                        class="tw-px-3 tw-w-full  lg:tw-px-0 lg:tw-pr-0 @if (empty($pos_settings['hide_product_suggestion'])) lg:tw-w-[60%]  @else lg:tw-w-[100%] @endif">
+        <input type="hidden" id="sale_type" name="type" value="{{ $pos_type }}">
+        @if ($pos_type == 'order')
+            @include('sale_pos.partials.cloth_pos_workspace')
+        @else
+            @include('sale_pos.partials.standard_pos_workspace')
+        @endif
 
-                        <div
-                            class="tw-shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px] tw-rounded-2xl tw-bg-white tw-mb-2 md:tw-mb-8 tw-p-2">
+        @include('sale_pos.partials.payment_modal')
 
-                            {{-- <div class="box box-solid mb-12 @if (!isMobile()) mb-40 @endif"> --}}
-                            <div class="box-body pb-0">
-                                {!! Form::hidden('location_id', $default_location->id ?? null, [
-                                    'id' => 'location_id',
-                                    'data-receipt_printer_type' => !empty($default_location->receipt_printer_type)
-                                        ? $default_location->receipt_printer_type
-                                        : 'browser',
-                                    'data-default_payment_accounts' => $default_location->default_payment_accounts ?? '',
-                                ]) !!}
-                                <!-- sub_type -->
-                                {!! Form::hidden('sub_type', isset($sub_type) ? $sub_type : null) !!}
-                                <input type="hidden" id="item_addition_method"
-                                    value="{{ $business_details->item_addition_method }}">
-                                @include('sale_pos.partials.pos_form')
+        @if (empty($pos_settings['disable_suspend']))
+            @include('sale_pos.partials.suspend_note_modal')
+        @endif
 
-                                @include('sale_pos.partials.pos_form_totals')
-
-                                @include('sale_pos.partials.payment_modal')
-
-                                @if (empty($pos_settings['disable_suspend']))
-                                    @include('sale_pos.partials.suspend_note_modal')
-                                @endif
-
-                                @if (empty($pos_settings['disable_recurring_invoice']))
-                                    @include('sale_pos.partials.recurring_invoice_modal')
-                                @endif
-                            </div>
-                            {{-- </div> --}}
-                        </div>
-                    </div>
-                    @if ($pos_type == 'sell')
-                        @if (empty($pos_settings['hide_product_suggestion']) && !isMobile())
-                            <div class="md:tw-no-padding tw-w-full lg:tw-w-[40%] tw-px-5">
-                                @include('sale_pos.partials.pos_sidebar')
-                            </div>
-                        @endif
-                    @endif
-                </div>
-            </div>
-        </div>
+        @if (empty($pos_settings['disable_recurring_invoice']))
+            @include('sale_pos.partials.recurring_invoice_modal')
+        @endif
         @include('sale_pos.partials.pos_form_actions')
         {!! Form::close() !!}
     </section>
@@ -115,6 +73,85 @@
 
 @stop
 @section('css')
+    @if ($pos_type == 'order')
+        <style>
+            #cloth-pos-workspace { display: flex; align-items: stretch; gap: 14px; margin: 0; }
+            #cloth-pos-workspace .cloth-pos-sidebar { width: 41%; min-width: 320px; padding: 0 2px; }
+            #cloth-pos-workspace .cloth-pos-order-panel { width: 59%; min-width: 0; }
+            #cloth-pos-workspace .cloth-pos-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 15px; box-shadow: 0 2px 9px rgba(15, 23, 42, .10); padding: 14px 18px 0; }
+            #cloth-pos-workspace .cloth-pos-toolbar { display: flex; margin: 0 -5px 12px; }
+            #cloth-pos-workspace .cloth-pos-toolbar > div { padding: 0 5px; }
+            #cloth-pos-workspace .input-group-addon, #cloth-pos-workspace .form-control, #cloth-pos-workspace .select2-selection { border-color: #d9e3ef; background: #fbfdff; }
+            #cloth-pos-workspace .form-control, #cloth-pos-workspace .select2-selection { height: 37px; border-radius: 5px; }
+            #cloth-pos-workspace .select2-container .select2-selection--single { height: 37px; }
+            #cloth-pos-workspace .select2-selection__rendered { line-height: 35px; color: #64748b; }
+            #cloth-pos-workspace .select2-selection__arrow { height: 24px; }
+            #cloth-pos-workspace .cloth-pos-table-wrap { min-height: 270px; max-height: 470px; overflow-x: auto; overflow-y: auto; border-top: 1px solid #eaf0f6; }
+            #cloth-pos-workspace .table { margin: 0; table-layout: fixed; min-width: 750px; }
+            #cloth-pos-workspace .table > thead > tr > th { border: 0; border-bottom: 1px solid #e7edf4; color: #334155; font-size: 13px; font-weight: 700; padding: 10px 8px; white-space: nowrap; }
+            #cloth-pos-workspace .table > tbody > tr > td { border-top: 0; border-bottom: 10px solid #fff; background: #fbfdff; box-shadow: inset 0 0 0 1px #edf2f7; color: #334155; padding: 11px 9px; vertical-align: middle; }
+            #cloth-pos-workspace .table > tbody > tr > td:first-child { border-radius: 6px 0 0 6px; font-weight: 600; }
+            #cloth-pos-workspace .table > tbody > tr > td:last-child { border-radius: 0 6px 6px 0; }
+            #cloth-pos-workspace .table .form-control { height: 31px; min-width: 65px; padding: 4px 7px; }
+            #cloth-pos-workspace .table .input-number { display: flex; align-items: center; justify-content: center; gap: 6px; min-width: 0; width: 100%; }
+            #cloth-pos-workspace .table .input-number .input-group-btn { display: block; width: auto; }
+            #cloth-pos-workspace .table .input-number .btn { width: 28px !important; height: 28px !important; border-radius: 50% !important; padding: 0 !important; background: #f4f7fb !important; border: none !important; display: flex !important; align-items: center !important; justify-content: center !important; }
+            #cloth-pos-workspace .table .input-number .btn i { color: #475569 !important; font-size: 11px; }
+            #cloth-pos-workspace .table .input-number .form-control { width: 42px !important; min-width: 0 !important; height: 28px !important; border-radius: 4px !important; border: 1px solid #e2e8f0 !important; text-align: center; padding: 0 !important; font-weight: 600; color: #334155; display: flex; align-items: center; justify-content: center; }
+            #cloth-pos-workspace #pos_cloth_table th:nth-child(1), #cloth-pos-workspace #pos_cloth_table td:nth-child(1), #cloth-pos-workspace #pos_table td:nth-child(1) { width: 25%; }
+            #cloth-pos-workspace #pos_cloth_table th:nth-child(2), #cloth-pos-workspace #pos_cloth_table td:nth-child(2), #cloth-pos-workspace #pos_table td:nth-child(2) { width: 14%; }
+            #cloth-pos-workspace #pos_cloth_table th:nth-child(3), #cloth-pos-workspace #pos_cloth_table td:nth-child(4), #cloth-pos-workspace #pos_table td:nth-child(3) { width: 15%; }
+            #cloth-pos-workspace #pos_cloth_table th:nth-child(4), #cloth-pos-workspace #pos_cloth_table td:nth-child(6), #cloth-pos-workspace #pos_table td:nth-child(4) { width: 17%; }
+            #cloth-pos-workspace #pos_cloth_table th:nth-child(5), #cloth-pos-workspace #pos_cloth_table td:nth-child(7), #cloth-pos-workspace #pos_table td:nth-child(5) { width: 23%; }
+            #cloth-pos-workspace #pos_cloth_table th:nth-child(6), #cloth-pos-workspace #pos_cloth_table td:nth-child(8), #cloth-pos-workspace #pos_table td:nth-child(6) { width: 6%; }
+            #cloth-pos-workspace #pos_cloth_table td:nth-child(3), #cloth-pos-workspace #pos_cloth_table td:nth-child(5) { display: none; }
+            #cloth-pos-workspace #pos_cloth_table td:first-child .style_measurement_btn { display: block; width: fit-content; height: 21px; margin-top: 6px; padding: 2px 14px; background: #20b979; border-color: #20b979; border-radius: 5px; color: #fff; font-size: 10px; font-weight: 600; }
+            #cloth-pos-workspace #pos_cloth_table td:nth-child(4) .pos_unit_price { border: 0; background: transparent; box-shadow: none; font-weight: 700; text-align: center; }
+            #cloth-pos-workspace #pos_cloth_table td:nth-child(6) .pos_line_total_text { font-size: 15px; font-weight: 700; }
+            #cloth-pos-workspace #pos_cloth_table td:nth-child(7) .select2-container { width: 100% !important; }
+            #cloth-pos-workspace #pos_cloth_table td:nth-child(7) .select2-selection { height: 31px; }
+            #cloth-pos-workspace #pos_cloth_table td:nth-child(7) .select2-selection__rendered { line-height: 29px; }
+            #cloth-pos-workspace .cloth-custom-input-group { background: #fbfdff; border: 1px solid #d9e3ef; border-radius: 5px; display: flex; align-items: center; padding: 0 8px; height: 37px; }
+            #cloth-pos-workspace .cloth-custom-input-group .select2-container { flex: 1; min-width: 0; }
+            #cloth-pos-workspace .cloth-custom-input-group .select2-selection { border: none !important; background: transparent !important; box-shadow: none !important; height: 35px !important; display: flex; align-items: center; }
+            #cloth-pos-workspace .cloth-custom-input-group .select2-selection__rendered { display: flex !important; align-items: center !important; height: 100% !important; margin: 0 !important; line-height: normal !important; padding-left: 4px; color: #1e293b !important; width: 100%; }
+            #cloth-pos-workspace .cloth-custom-input-group .select2-selection__arrow { height: 35px !important; top: 0 !important; display: flex; align-items: center; justify-content: center; }
+            #cloth-pos-workspace .cloth-custom-input-group .select2-selection__arrow b { position: static !important; margin: 0 !important; }
+            #cloth-pos-workspace .cloth-custom-input-group .select2-selection__clear { display: none !important; }
+            #cloth-pos-workspace .cloth-custom-input-group .form-control { border: none !important; background: transparent !important; box-shadow: none !important; padding-left: 4px; height: 100%; flex: 1; min-width: 0; }
+            #cloth-pos-workspace .cloth-custom-input-group .input-icon { color: #94a3b8; font-size: 14px; }
+            #cloth-pos-workspace .cloth-custom-input-group .add-btn { background: transparent; border: none; color: #3b82f6; font-size: 20px; font-weight: 400; padding: 0 2px 2px 2px; outline: none; line-height: 1; }
+            #cloth-pos-workspace .cloth-custom-input-group .add-btn:hover { color: #2563eb; }
+            #cloth-pos-workspace #pos_table .fabric-making-charge input { display: none; }
+            #cloth-pos-workspace #pos_table .fabric-making-charge .fabric-na { display: block; text-align: center; font-weight: 700; }
+            #cloth-pos-workspace #pos_table .fabric-tailor { font-weight: 700; }
+            #cloth-pos-workspace #pos_table thead { display: none; }
+            #cloth-pos-workspace #pos_table tbody:empty { display: none; }
+            #cloth-pos-workspace .cloth-pos-summary { position: relative; border-top: 1px solid #edf2f7; margin-top: 8px; padding-top: 9px; overflow-x: auto; }
+            #cloth-pos-workspace .cloth-pos-summary .pos_form_totals { margin: 0; }
+            #cloth-pos-workspace .cloth-pos-summary .table { min-width: 700px; margin-bottom: 0; }
+            #cloth-pos-workspace .cloth-pos-summary .table > tbody > tr > td { background: transparent; box-shadow: none; border-bottom: 1px solid #f1f5f9; padding: 7px 5px; }
+            #cloth-pos-workspace .cloth-pos-summary .table > tbody > tr:last-child > td { border-bottom: 0; }
+            #cloth-pos-workspace .cloth-pos-summary .table > tbody > tr:first-child > td { width: 33.333%; }
+            #cloth-pos-workspace .cloth-pos-delivery { display: flex; align-items: center; }
+            #cloth-pos-workspace .cloth-date-pill { background: #6366f1; border-radius: 6px; display: flex; align-items: center; padding: 0 12px; height: 36px; color: #fff; cursor: pointer; }
+            #cloth-pos-workspace .cloth-date-pill .icon { font-size: 15px; margin-right: 8px; color: #fff; }
+            #cloth-pos-workspace .cloth-date-pill .form-control { background: transparent !important; border: none !important; box-shadow: none !important; color: #fff !important; font-weight: 700; font-size: 15px; padding: 0; width: 130px; cursor: pointer; height: auto; text-align: center; }
+            #cloth-pos-workspace .cloth-date-pill .form-control:focus { box-shadow: none; }
+            #cloth-pos-workspace .cloth-pos-sidebar > .row:first-child { margin: 0 -4px 11px; display: flex; }
+            #cloth-pos-workspace .cloth-pos-sidebar #cloth_list_div, #cloth-pos-workspace .cloth-pos-sidebar #product_list_div { width: 50%; padding: 0 4px !important; }
+            #cloth-pos-workspace .cloth-pos-sidebar label[for='cloth-list-btn'], #cloth-pos-workspace .cloth-pos-sidebar label[for='product-list-btn'] { background: #fff !important; border: 1px solid #d7dde6; color: #1f2937 !important; box-shadow: none; border-radius: 5px; height: 47px; font-size: 14px; }
+            #cloth-pos-workspace .cloth-pos-sidebar label[for='product-list-btn'] { background: #ed1261 !important; border-color: #ed1261; color: #fff !important; }
+            #cloth-pos-workspace .cloth-pos-sidebar #cloth_list_body, #cloth-pos-workspace .cloth-pos-sidebar #product_list_body { max-height: calc(100vh - 210px); overflow-y: auto; padding: 0 3px; }
+            #cloth-pos-workspace .cloth-pos-sidebar .product_list { width: 33.333%; padding: 5px; }
+            #cloth-pos-workspace .cloth-pos-sidebar .product_box { height: 132px; border: 1px solid #e3eaf2; border-radius: 5px; box-shadow: 0 1px 3px rgba(15, 23, 42, .12); background: #fff; padding: 10px 6px; }
+            #cloth-pos-workspace .cloth-pos-sidebar .image-container { height: 55px !important; width: 55px; margin: 0 auto 6px; border-radius: 6px; }
+            #cloth-pos-workspace .cloth-pos-sidebar .text_div { text-align: center; line-height: 17px; }
+            #cloth-pos-workspace .cloth-pos-sidebar .text_div small { display: block; font-size: 12px; font-weight: 600; }
+            @media (max-width: 991px) { #cloth-pos-workspace { display: block; } #cloth-pos-workspace .cloth-pos-sidebar, #cloth-pos-workspace .cloth-pos-order-panel { width: 100%; min-width: 0; } #cloth-pos-workspace .cloth-pos-sidebar { margin-bottom: 12px; } }
+            @media (max-width: 600px) { #cloth-pos-workspace .cloth-pos-toolbar { display: block; } #cloth-pos-workspace .cloth-pos-toolbar > div { margin-bottom: 8px; } #cloth-pos-workspace .cloth-pos-sidebar .product_list { width: 50%; } #cloth-pos-workspace .cloth-pos-card { padding: 10px; } #cloth-pos-workspace .cloth-pos-delivery { position: static; justify-content: flex-start; margin: 0 0 6px 5px; } }
+        </style>
+    @endif
     <!-- include module css -->
     @if (!empty($pos_module_data))
         @foreach ($pos_module_data as $key => $value)

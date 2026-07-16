@@ -8,6 +8,17 @@
 					<b class="tw-text-base md:tw-text-lg tw-font-bold">@lang('sale.total'):</b> &nbsp;
 					<span class="price_total tw-text-base md:tw-text-lg tw-font-semibold">0</span>
 				</td>
+				@if (request()->segment(1) == 'cloth-pos')
+					<td>
+						<div class="cloth-pos-delivery" style="display: flex; align-items: center;">
+							<label for="delivery_date" class="tw-text-base md:tw-text-lg tw-font-bold" style="margin-right: 8px; margin-bottom: 0; color: #334155;">@lang('tailoring.delivery_date'):</label>
+							<div class="cloth-date-pill">
+								<span class="icon"><i class="fa fa-calendar"></i></span>
+								{!! Form::text('delivery_date', $default_datetime ?? \Carbon\Carbon::now()->format('m/d/Y H:i'), ['class' => 'form-control', 'readonly', 'required']) !!}
+							</div>
+						</div>
+					</td>
+				@endif
 			</tr>
 			<tr>
 				

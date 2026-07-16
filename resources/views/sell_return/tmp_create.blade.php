@@ -80,7 +80,17 @@
 	<div class="box box-solid"><!--box start-->
 		<div class="box-body">
 			<div class="row">
-				<div class="col-sm-8 col-sm-offset-2">
+				<div class="col-sm-6">
+					<div class="form-group">
+						<div class="input-group">
+							<span class="input-group-addon">
+								<i class="fa fa-search"></i>
+							</span>
+							{!! Form::select('search_cloth', isset($cloths) ? $cloths : [], null, ['id' => 'search_cloth', 'class' => 'form-control select2', 'placeholder' => __('tailoring.select_cloths')]) !!}
+						</div>
+					</div>
+				</div>
+				<div class="col-sm-6">
 					<div class="form-group">
 						<div class="input-group">
 							<span class="input-group-addon">
@@ -115,6 +125,9 @@
 										@lang('sale.qty')
 									</th>
 									<th class="text-center">
+										@lang('tailoring.making_charge')
+									</th>
+									<th class="text-center">
 										@lang('sale.unit_price')
 									</th>
 									<th class="text-center {{$hide_tax}}">
@@ -139,6 +152,9 @@
 										</th>
 									@endif
 
+									<th class="text-center">
+										@lang('tailoring.assign_to_tailoring_master')
+									</th>
 									<th class="text-center"><i class="fa fa-trash" aria-hidden="true"></i></th>
 								</tr>
 							</thead>
@@ -198,7 +214,15 @@
 						</td>
 					</tr>
 					<tr>
-						<td>&nbsp;</td>
+						<td class="col-md-3">
+							<div class="form-group">
+								{!! Form::label('delivery_date', __('tailoring.delivery_date') . ':') !!}
+								<div class="input-group">
+									<span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+									{!! Form::text('delivery_date', @format_datetime('now'), ['class' => 'form-control', 'readonly', 'required']) !!}
+								</div>
+							</div>
+						</td>
 						<td>&nbsp;</td>
 						<td>&nbsp;</td>
 						<td>
