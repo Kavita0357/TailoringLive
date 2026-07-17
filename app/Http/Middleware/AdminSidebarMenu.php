@@ -354,7 +354,7 @@ class AdminSidebarMenu
                 )->order(50);
 
                 $menu->dropdown(
-                    __('tailoring.cloths_order'),
+                    __('tailoring.tailoring_orders'),
                     function ($sub) use ($common_settings) {
 
                         $sub->url(

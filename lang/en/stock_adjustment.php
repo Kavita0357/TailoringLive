@@ -13,7 +13,7 @@ return [
 
     'stock_adjustment' => 'Stock Adjustment',
     'stock_adjustments' => 'Stock Adjustments',
-    'list' => 'List Stock Adjustments',
+    'list' => 'Stock Adjustments',
     'add' => 'Add Stock Adjustment',
     'all_stock_adjustments' => 'All stock adjustments',
     'search_product' => 'Search products for stock adjustment',

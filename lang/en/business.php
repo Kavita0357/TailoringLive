@@ -92,7 +92,7 @@ return [
     'mobile' => 'Mobile',
     'alternate_number' => 'Alternate contact number',
     'email' => 'Email',
-    'settings' => 'Settings',
+    'settings' => 'General Setting',
     'transaction_edit_days' => 'Transaction Edit Days',
     'dashboard' => 'Dashboard',
     'view_stock_expiry_alert_for' => 'View Stock Expiry Alert For',
