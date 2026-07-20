@@ -86,7 +86,17 @@
             @endif
         </div>
         <div class="modal-footer">
-            <button type="submit" class="tw-dw-btn tw-dw-btn-primary tw-text-white">@lang('messages.update')</button>
+            @if(!$has_tailoring_master)
+                <div style="width: 100%; text-align: right; margin-bottom: 8px;">
+                    <span style="color: #e3342f; font-weight: 600; font-size: 13px;">
+                        <i class="fas fa-exclamation-circle" aria-hidden="true"></i>
+                        @lang('tailoring.assign_tailormaster_first')
+                    </span>
+                </div>
+                <button type="submit" class="tw-dw-btn tw-dw-btn-primary tw-text-white" disabled style="opacity:0.5; cursor:not-allowed;">@lang('messages.update')</button>
+            @else
+                <button type="submit" class="tw-dw-btn tw-dw-btn-primary tw-text-white">@lang('messages.update')</button>
+            @endif
             <button type="button" class="tw-dw-btn tw-dw-btn-neutral tw-text-white"
                 data-dismiss="modal">@lang('messages.cancel')</button>
         </div>

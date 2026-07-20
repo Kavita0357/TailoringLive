@@ -296,6 +296,10 @@ class TransactionUtil extends Util
                 } elseif ($new_delivery_status == 'delivered') {
                     $completed = $line->quantity;
                     $delivered = $line->quantity;
+                } elseif ($new_delivery_status == 'partially_delivered') {
+                    // Keep existing completed/delivered quantities
+                    $completed = $line->completed_quantity;
+                    $delivered = $line->delivered_quantity;
                 } else {
                     $completed = 0;
                     $delivered = 0;

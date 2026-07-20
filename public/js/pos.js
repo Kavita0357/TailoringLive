@@ -3487,7 +3487,7 @@ function add_cloth_row(data, is_pos = false) {
 
     let html = `
     <tr class="product_row" data-row_index="${rowIndex}" id="cloth_row_${data.cloth.id}" data-base_price="${base_charge}">
-        <td>
+        <td class="v-center">
             ${data.cloth.cloth_name}<br>
             <!-- ${business_name || ''}<br>
             <img src="${data.cloth.cloth_image ? `/storage/${data.cloth.cloth_image}` : '/img/default.png'}" alt="product-img" loading="lazy"
@@ -3499,7 +3499,7 @@ function add_cloth_row(data, is_pos = false) {
                 >${LANG.style_measurement}</button>
         </td>
 
-        <td>
+        <td class="v-center">
             <input type="hidden" name="cloths[${rowIndex}][cloth_id]" value="${data.cloth.id}" class="cloth_id">
             <input type="hidden" name="cloths[${rowIndex}][wages]" value="${data.cloth.wages || 0}" class="wages">
 
@@ -3533,20 +3533,19 @@ function add_cloth_row(data, is_pos = false) {
             tailorOptions += `<option value="${id}"${selected}>${name}</option>`;
         });
 
-        html += `<td>
+        html += `<td class="v-center">
             <input type="text" name="cloths[${rowIndex}][unit_price]" class="form-control pos_unit_price input_number" value="${data.cloth.making_charge || 0}">
             <input type="text" name="cloths[${rowIndex}][unit_price_inc_tax]" class="form-control hide pos_unit_price_inc_tax input_number" value="${data.cloth.making_charge || 0}">
         </td>
 
-        <td>
+        <td class="v-center">
             <input class="form-control input_number row_discount_amount" name="cloths[${rowIndex}][line_discount_amount]" type="text" value="0.00"><br>
             <select class="form-control row_discount_type" name="cloths[${rowIndex}][line_discount_type]">
                 <option value="fixed" selected>Fixed</option>
                 <option value="percentage">Percentage</option>
             </select>
         </td>
-        <td>
-            <select name="cloths[${rowIndex}][tailoring_master]"
+        <td class="text-center v-center">            <select name="cloths[${rowIndex}][tailoring_master]"
                     class="form-control select2"${tailoringMasterDisabled}>
                 ${tailorOptions}
             </select>
@@ -3554,13 +3553,13 @@ function add_cloth_row(data, is_pos = false) {
         </td>`;
     }
 
-    html += `<td class="text-center">
+    html += `<td class="text-center v-center"">
             <input type="hidden" class="form-control pos_line_total" value="${initial_charge}">
             <span class="display_currency pos_line_total_text" data-currency_symbol="true">৳ ${__currency_trans_from_en(initial_charge, false)}</span>
         </td>
 
         <td class="text-center v-center">
-            <i class="fa fa-times text-danger pos_remove_row cursor-pointer" aria-hidden="true"></i>
+            <i class="fa fa-times text-danger pos_remove_row cursor-pointer" aria-hidden="true" style="font-size:12px"></i>
         </td>
     </tr >
         `;

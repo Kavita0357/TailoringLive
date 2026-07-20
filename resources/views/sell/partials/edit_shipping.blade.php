@@ -31,6 +31,7 @@
                                 $delivery_statuses,
                                 !empty($transaction->delivery_status) ? $transaction->delivery_status : null,
                                 ['class' => 'form-control', 'id' => 'delivery_status', 'placeholder' => __('messages.please_select')],
+                                ['partially_delivered' => ['disabled' => true]]
                             ) !!}
                         </div>
                     </div>

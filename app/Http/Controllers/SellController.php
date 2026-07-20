@@ -1817,6 +1817,8 @@ class SellController extends Controller
                                 'delivered_quantity' => 0,
                                 'updated_at' => now(),
                             ]);
+                    } elseif ($transaction->delivery_status == 'partially_delivered') {
+                        // DO NOTHING to the completed/delivered quantities, keep them as is!
                     } else {
                         // mark all as not completed and not delivered
                         DB::table('transaction_sell_lines')
@@ -2079,13 +2081,19 @@ class SellController extends Controller
                 'transaction_sell_lines.quantity as quantity_ordered',
                 'transaction_sell_lines.completed_quantity',
                 'transaction_sell_lines.delivered_quantity',
+                'transaction_sell_lines.tailoring_master_id',
             ])
             ->get();
+
+        // Check if any sell line with a cloth has a tailoring master assigned
+        $has_tailoring_master = $sell_details->filter(function ($line) {
+            return !empty($line->cloth_name) && !empty($line->tailoring_master_id);
+        })->isNotEmpty();
 
         $delivery_statuses = Transaction::delivery_statuses();
 
         return view('sell.partials.view_partial_delivery')
-            ->with(compact('transaction', 'delivery_statuses', 'sell_details'));
+            ->with(compact('transaction', 'delivery_statuses', 'sell_details', 'has_tailoring_master'));
     }
 
     public function updatePartialDelivery(Request $request, $id)
@@ -2128,11 +2136,23 @@ class SellController extends Controller
                         ->whereRaw('completed_quantity < quantity')
                         ->doesntExist();
 
+                    $anyDelivered = \DB::table('transaction_sell_lines')
+                        ->where('transaction_id', $id)
+                        ->where('delivered_quantity', '>', 0)
+                        ->exists();
+
                     if ($allDelivered) {
                         \DB::table('transactions')
                             ->where('id', $id)
                             ->update([
                                 'delivery_status' => 'delivered',
+                                'updated_at' => now(),
+                            ]);
+                    } elseif ($anyDelivered) {
+                        \DB::table('transactions')
+                            ->where('id', $id)
+                            ->update([
+                                'delivery_status' => 'partially_delivered',
                                 'updated_at' => now(),
                             ]);
                     } elseif ($allCompleted) {
@@ -2143,18 +2163,10 @@ class SellController extends Controller
                                 'updated_at' => now(),
                             ]);
                     } else {
-                        $anyCompletedOrDelivered = \DB::table('transaction_sell_lines')
-                            ->where('transaction_id', $id)
-                            ->where(function ($query) {
-                                $query->where('completed_quantity', '>', 0)
-                                    ->orWhere('delivered_quantity', '>', 0);
-                            })
-                            ->exists();
-
                         \DB::table('transactions')
                             ->where('id', $id)
                             ->update([
-                                'delivery_status' => $anyCompletedOrDelivered ? 'partially_delivered' : 'preparing',
+                                'delivery_status' => 'preparing',
                                 'updated_at' => now(),
                             ]);
                     }

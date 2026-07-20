@@ -78,10 +78,10 @@
                         <a href="#payments_tab" data-toggle="tab" aria-expanded="true"><i class="fas fa-money-bill-alt"
                                 aria-hidden="true"></i> @lang('sale.payments')</a>
                     </li>
-                    <li>
+                    <!-- <li>
                         <a href="#activities_tab" data-toggle="tab" aria-expanded="true"><i class="fas fa-pen-square"
                                 aria-hidden="true"></i> @lang('lang_v1.activities')</a>
-                    </li>
+                    </li> -->
                 </ul>
 
                 <div class="tab-content">

@@ -1,5 +1,5 @@
 @forelse($cloths as $cloth)
-    <div class="col-md-3 col-xs-4 product_list no-print">
+    <div class="col-md-3 col-xs-3 product_list no-print">
         <!-- <div class="product_box hover:tw-shadow-lg hover:tw-animate-pulse" data-cloth_id="{{ $cloth->id }}" data-is_cloth="yes"
                         title="{{ $cloth->cloth_name }}@lang('lang_v1.default') - @format_currency($cloth->wages)"> -->
         <div class="product_box hover:tw-shadow-lg hover:tw-animate-pulse" data-cloth_id="{{ $cloth->id }}"

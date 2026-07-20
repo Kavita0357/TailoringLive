@@ -335,7 +335,7 @@
                                     'id' => 'delivery_status',
                                     'placeholder' => __('messages.please_select'),
                                     'required',
-                                ]) !!}
+                                ], ['partially_delivered' => ['disabled' => true]]) !!}
                                 <p id="delivery_status_subtitle" style="color: #c9302c; font-weight: bold; margin-top: 5px; display: none;"></p>
                             </div>
                         </div>

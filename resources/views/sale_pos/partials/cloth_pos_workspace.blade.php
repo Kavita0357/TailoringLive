@@ -37,28 +37,30 @@
                 <div class="col-md-4">
                     <div class="cloth-custom-input-group">
                         <span class="input-icon"><i class="fa fa-search"></i></span>
-                        {!! Form::text('search_product', null, ['class' => 'form-control', 'id' => 'search_product', 'placeholder' => __('lang_v1.search_product_placeholder'), 'disabled' => is_null($default_location), 'autofocus' => !is_null($default_location)]) !!}
-                        <button type="button" class="add-btn pos_add_quick_product" data-href="{{ action([\App\Http\Controllers\ProductController::class, 'quickAdd']) }}" data-container=".quick_add_product_modal" style="padding: 0 4px; font-size: 18px;">
-                            <i class="fa fa-plus-circle"></i>
-                        </button>
+                        {!! Form::text('search_product', null, ['class' => 'form-control', 'id' => 'search_product', 'placeholder' => __('lang_v1.search_product_placeholder'), 'disabled' => is_null($default_location), 'autofocus' => !is_null($default_location), 
+                         'style' => 'font-size:12px; font-weight: 500',
+                        ]) !!}
+                        <button type="button" class="add_new_customer add-btn" data-href="{{ action([\App\Http\Controllers\ProductController::class, 'quickAdd']) }}" data-container=".quick_add_product_modal">
+                            +
+                     </button>
                     </div>
                 </div>
             </div>
 
             <div class="cloth-pos-table-wrap">
-                <table class="table" id="pos_cloth_table">
-                    <thead>
-                        <tr>
-                            <th>@lang('tailoring.cloth_product')</th>
-                            <th class="text-center">@lang('sale.qty')</th>
-                            <th class="text-center">@lang('tailoring.making_charge')</th>
-                            <th class="text-center">@lang('sale.subtotal')</th>
-                            <th class="text-center">@lang('tailoring.assign_to_tailoring_master')</th>
-                            <th class="text-center"><i class="fas fa-times"></i></th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
+                    <table class="table" id="pos_cloth_table">
+                    <thead style="font-size:12px;">
+        <tr>
+            <th>@lang('tailoring.cloth_product')</th>
+            <th class="text-center">@lang('sale.qty')</th>
+            <th class="text-center">@lang('tailoring.making_charge')</th>
+            <th class="text-center">@lang('sale.subtotal')</th>
+            <th class="text-center">@lang('tailoring.assign_to_tailoring_master')</th>
+            <th class="text-center" style="height:30px;  vertical-align:middle;"><i class="fas fa-times" style="font-size:12px"></i></th>
+        </tr>
+    </thead>
+                        <tbody></tbody>
+                    </table>
                 <input type="hidden" id="cloth_row_count" value="0">
 
                 <table class="table" id="pos_table">

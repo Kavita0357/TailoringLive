@@ -122,7 +122,7 @@
     @if ($pos_type == 'order')
         <div class="col-sm-6 !tw-px-2" id="cloth_list_div">
             <div class="tw-dw-drawer tw-dw-drawer-end">
-                <input id="cloth-list-btn" type="checkbox" class="tw-dw-drawer-toggle">
+                <input id="cloth-list-btn" type="checkbox" class="tw-dw-drawer-toggle" checked>
                 <div class="tw-dw-drawer-content">
                     <label for="cloth-list-btn"
                         class="tw-bg-gradient-to-r tw-from-indigo-600 tw-to-blue-500 hover:tw-from-indigo-600 hover:tw-to-blue-600 focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-blue-500 focus:tw-ring-offset-2 active:tw-from-indigo-700 active:tw-to-blue-700 lg:tw-w-[98%] tw-w-full tw-flex tw-items-center tw-justify-center tw-gap-1 tw-text-base md:tw-text-lg tw-text-white tw-font-semibold tw-rounded-xl tw-h-12 tw-cursor-pointer">
@@ -136,7 +136,7 @@
                 <input id="product-list-btn" type="checkbox" class="tw-dw-drawer-toggle">
                 <div class="tw-dw-drawer-content">
                     <label for="product-list-btn"
-                        class="tw-bg-gradient-to-r tw-from-indigo-600 tw-to-blue-500 hover:tw-from-indigo-600 hover:tw-to-blue-600 focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-blue-500 focus:tw-ring-offset-2 active:tw-from-indigo-700 active:tw-to-blue-700 lg:tw-w-[98%] tw-w-full tw-flex tw-items-center tw-justify-center tw-gap-1 tw-text-base md:tw-text-lg tw-text-white tw-font-semibold tw-rounded-xl tw-h-12 tw-cursor-pointer">
+                        class="tw-bg-gradient-to-r tw-from-indigo-600 hover:tw-from-indigo-600 hover:tw-to-blue-600 focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-blue-500 focus:tw-ring-offset-2 active:tw-from-indigo-700 active:tw-to-blue-700 lg:tw-w-[98%] tw-w-full tw-flex tw-items-center tw-justify-center tw-gap-1 tw-text-base md:tw-text-lg tw-text-white tw-font-semibold tw-rounded-md tw-h-12 tw-cursor-pointer">
                         @lang('tailoring.products')
                     </label>
                 </div>

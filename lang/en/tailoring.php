@@ -214,5 +214,6 @@ return [
     'payment_status' => 'Payment Status',
     'total_paid' => 'Total Paid',
     'total_due' => 'Total Due',
-    'tailor_masters_list_description' => 'List of all tailor masters with their wage and payment details'
+    'tailor_masters_list_description' => 'List of all tailor masters with their wage and payment details',
+    'assign_tailormaster_first' => 'Assign Tailormaster First',
 ];

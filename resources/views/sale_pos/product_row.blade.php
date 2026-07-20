@@ -102,7 +102,7 @@
                 {{ @num_format($product->quantity_ordered * $unit_price_inc_tax) }}
             </span>
         </td>
-
+        
         <td class="text-center v-center">
             <i class="fa fa-times text-danger pos_remove_row cursor-pointer" aria-hidden="true"></i>
         </td>
