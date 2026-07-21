@@ -258,34 +258,26 @@ $(document).ready(function () {
         '.input-number .quantity-up, .input-number .quantity-down',
         function () {
             var input = $(this).closest('.input-number').find('input');
-            var qty = __read_number(input);
-            var step = 1;
-            if (input.data('step')) {
-                step = input.data('step');
-            }
-            var min = parseFloat(input.data('min'));
-            var max = parseFloat(input.data('max'));
+            var qty = parseInt(__read_number(input), 10) || 0;
+            var step = parseInt(input.data('step')) || 1;
+            var min = parseInt(input.data('min'));
+            var max = parseInt(input.data('max'));
 
             if ($(this).hasClass('quantity-up')) {
-                //if max reached return false
-                if (typeof max != 'undefined' && qty + step > max) {
+                if (!isNaN(max) && qty + step > max) {
                     return false;
                 }
 
-                __write_number(input, qty + step);
-                input.change();
-            } else if ($(this).hasClass('quantity-down')) {
-                //if max reached return false
-                if (typeof min != 'undefined' && qty - step < min) {
+                input.val(qty + step).change();
+            } else {
+                if (!isNaN(min) && qty - step < min) {
                     return false;
                 }
 
-                __write_number(input, qty - step);
-                input.change();
+                input.val(qty - step).change();
             }
         }
     );
-
     $('div.pos-tab-menu>div.list-group>a').click(function (e) {
         e.preventDefault();
         $(this).siblings('a.active').removeClass('active');
@@ -359,7 +351,7 @@ $(document).on('keypress', 'input.input_number', function (event) {
     }
 
     // Check for no negative values
-    if(is_decimal == 'no_neg'){
+    if (is_decimal == 'no_neg') {
         var regex = new RegExp(/^[0-9.,]+$/);
     }
 

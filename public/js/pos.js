@@ -1,7 +1,6 @@
 var global_brand_id = null;
 var global_p_category_id = null;
 $(document).ready(function () {
-    __currency_precision = 0;
     customer_set = false;
     //Prevent enter key function except texarea
     $('form').on('keyup keypress', function (e) {
@@ -3517,14 +3516,14 @@ function add_cloth_row(data, is_pos = false) {
             <div class="input-group input-number">
                 <span class="input-group-btn">
                     <button type="button" class="btn btn-default btn-flat quantity-down">
-                        <i class="fa fa-minus text-danger"></i>
+                        <i class="fa fa-minus"></i>
                     </button>
                 </span>
-                <input type="text" class="form-control" name="cloths[${rowIndex}]"
+                <input type="text" class="form-control pos_quantity" name="cloths[${rowIndex}]"
                     value="1" data-min="1" data-rule-required="true">
                 <span class="input-group-btn">
                     <button type="button" class="btn btn-default btn-flat quantity-up">
-                        <i class="fa fa-plus text-success"></i>
+                        <i class="fa fa-plus"></i>
                     </button>
                 </span>
             </div>
