@@ -80,17 +80,38 @@
             align-items: stretch;
             gap: 14px;
             margin: 0;
+            height: calc(100vh - 200px);
+            overflow: hidden;
         }
 
         #cloth-pos-workspace .cloth-pos-sidebar {
             width: 41%;
             min-width: 320px;
             padding: 0 2px;
+            display: flex;
+            flex-direction: column;
+            max-height: 100%;
+        }
+
+        #cloth-pos-workspace .cloth-pos-sidebar > .row:first-child {
+            flex-shrink: 0;
+        }
+
+        #cloth-pos-workspace .cloth-pos-sidebar > .row:last-child {
+            flex: 1;
+            min-height: 0;
+            overflow-y: auto;
+            overflow-x: hidden;
+            margin-right: 5px;
         }
 
         #cloth-pos-workspace .cloth-pos-order-panel {
             width: 59%;
             min-width: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            overflow: hidden;
         }
 
         #pos_cloth_table {
@@ -104,9 +125,32 @@
             display:block;
             padding:0px 8px 0px 8px;
             background-color:#F8FAFC;
-            height: calc(80vh - 280px);
-            overflow-y: auto;
+            height: auto;
+            max-height: none;
+            overflow-y: visible;
             border-radius:8px;
+        }
+
+        #pos_cloth_table tbody:empty {
+            min-height: 350px;
+        }
+
+        #cloth-pos-workspace .cloth-pos-product-details,
+        #cloth-pos-workspace .cloth-pos-product-details .text-link {
+            color: #1f2937 !important;
+            font-weight: 600;
+        }
+
+
+        #cloth-pos-workspace .stock-status {
+            display: inline-block;
+            margin-top: 5px;
+            padding: 3px 8px;
+            border-radius: 999px;
+            background: #dcfce7;
+            color: #15803d;
+            font-size: 11px;
+            font-weight: 700;
         }
 
         #cloth-pos-workspace .cloth-pos-card {
@@ -114,7 +158,12 @@
             border: 1px solid #e2e8f0;
             border-radius: 15px;
             box-shadow: 0 2px 9px rgba(15, 23, 42, .10);
-            padding: 14px 18px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            min-height: 0;
+            overflow: hidden;
         }
 
         #cloth-pos-workspace .cloth-pos-toolbar {
@@ -153,10 +202,17 @@
         }
 
         #cloth-pos-workspace .cloth-pos-table-wrap {
-            height: 62vh;
+            flex: 1;
+            min-height: 0;
             overflow-x: auto;
             overflow-y: auto;
+            scrollbar-gutter: stable;
         }
+
+        #cloth-pos-workspace .cloth-pos-table-wrap::-webkit-scrollbar {
+            width: 10px;
+        }
+        
 
         #cloth-pos-workspace .table {
             margin: 0;
@@ -168,10 +224,14 @@
             border: 0;
             border-bottom: 1px solid #e7edf4;
             color: #334155;
-            font-size: 13x;
+            font-size: 13px;
             font-weight: 700;
             padding: 10px 8px;
             white-space: nowrap;
+            position: sticky;
+            top: 0;
+            background: #fff;
+            z-index: 10;
         }
 
         #pos_cloth_table {
@@ -208,6 +268,20 @@
         #pos_cloth_table>tbody>tr>td:last-child {
             border-right: 1px solid #e2e8f0;
             border-radius: 0 8px 8px 0;
+        }
+
+        #pos_table>tbody>tr>td {
+            border-top: 1px solid #e2e8f0;
+            border-bottom: 1px solid #e2e8f0;
+            background: #fff;
+        }
+
+        #pos_table>tbody>tr>td:first-child {
+            border-left: 1px solid #e2e8f0;
+        }
+
+        #pos_table>tbody>tr>td:last-child {
+            border-right: 1px solid #e2e8f0;
         }
 
         #cloth-pos-workspace .table>tbody>tr>td:first-child {
@@ -273,36 +347,42 @@
 
         #cloth-pos-workspace #pos_cloth_table th:nth-child(1),
         #cloth-pos-workspace #pos_cloth_table td:nth-child(1),
+        #cloth-pos-workspace #pos_table th:nth-child(1),
         #cloth-pos-workspace #pos_table td:nth-child(1) {
             width: 25%;
         }
 
         #cloth-pos-workspace #pos_cloth_table th:nth-child(2),
         #cloth-pos-workspace #pos_cloth_table td:nth-child(2),
+        #cloth-pos-workspace #pos_table th:nth-child(2),
         #cloth-pos-workspace #pos_table td:nth-child(2) {
             width: 14%;
         }
 
         #cloth-pos-workspace #pos_cloth_table th:nth-child(3),
         #cloth-pos-workspace #pos_cloth_table td:nth-child(4),
+        #cloth-pos-workspace #pos_table th:nth-child(3),
         #cloth-pos-workspace #pos_table td:nth-child(3) {
             width: 15%;
         }
 
         #cloth-pos-workspace #pos_cloth_table th:nth-child(4),
         #cloth-pos-workspace #pos_cloth_table td:nth-child(6),
+        #cloth-pos-workspace #pos_table th:nth-child(4),
         #cloth-pos-workspace #pos_table td:nth-child(4) {
             width: 17%;
         }
 
         #cloth-pos-workspace #pos_cloth_table th:nth-child(5),
         #cloth-pos-workspace #pos_cloth_table td:nth-child(7),
+        #cloth-pos-workspace #pos_table th:nth-child(5),
         #cloth-pos-workspace #pos_table td:nth-child(5) {
             width: 23%;
         }
 
         #cloth-pos-workspace #pos_cloth_table th:nth-child(6),
         #cloth-pos-workspace #pos_cloth_table td:nth-child(8),
+        #cloth-pos-workspace #pos_table th:nth-child(6),
         #cloth-pos-workspace #pos_table td:nth-child(6) {
             width: 6%;
         }
@@ -310,6 +390,29 @@
         #cloth-pos-workspace #pos_cloth_table td:nth-child(3),
         #cloth-pos-workspace #pos_cloth_table td:nth-child(5) {
             display: none;
+        }
+
+        #cloth-pos-workspace #pos_cloth_table tr.cloth-pos-fabric-row td:nth-child(3){
+              display: table-cell !important;
+            text-align: center;
+            vertical-align: middle;
+            width:121px;
+        }
+        #cloth-pos-workspace #pos_cloth_table tr.cloth-pos-fabric-row td:nth-child(4){
+              display: table-cell !important;
+            text-align: center;
+            vertical-align: middle;
+        }
+        #cloth-pos-workspace #pos_cloth_table tr.cloth-pos-fabric-row td:nth-child(5) {
+            display: table-cell !important;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        #cloth-pos-workspace #pos_cloth_table tr.cloth-pos-fabric-row td:nth-child(6) {
+            text-align: center;
+            vertical-align: middle;
+            width:6%;
         }
 
         #cloth-pos-workspace #pos_cloth_table td:first-child .style_measurement_btn {
@@ -433,18 +536,22 @@
             color: #2563eb;
         }
 
-        #cloth-pos-workspace #pos_table .fabric-making-charge input {
+        #cloth-pos-workspace #pos_table .fabric-making-charge input,
+        #cloth-pos-workspace #pos_cloth_table .cloth-pos-fabric-row .fabric-making-charge input {
             display: none;
         }
 
-        #cloth-pos-workspace #pos_table .fabric-making-charge .fabric-na {
+        #cloth-pos-workspace #pos_table .fabric-making-charge .fabric-na,
+        #cloth-pos-workspace #pos_cloth_table .cloth-pos-fabric-row .fabric-making-charge .fabric-na {
             display: block;
             text-align: center;
             font-weight: 700;
         }
 
-        #cloth-pos-workspace #pos_table .fabric-tailor {
+        #cloth-pos-workspace #pos_table .fabric-tailor,
+        #cloth-pos-workspace #pos_cloth_table .cloth-pos-fabric-row .fabric-tailor {
             font-weight: 700;
+            text-align: center;
         }
 
         #cloth-pos-workspace #pos_table thead {
@@ -558,8 +665,8 @@
 
         #cloth-pos-workspace .cloth-pos-sidebar #cloth_list_body,
         #cloth-pos-workspace .cloth-pos-sidebar #product_list_body {
-            max-height: calc(100vh - 230px);
-            overflow-y: auto;
+            max-height: auto;
+            overflow-y: visible;
             padding: 0 3px;
         }
 
@@ -634,8 +741,25 @@
             bottom: 0;
             left: 0;
             right: 0;
+            width: 100%;
             z-index: 1000;
-            margin-top: 20px;
+        }
+
+        .pos-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
+            z-index: 1000;
+            /* padding: 15px; */
+        }
+
+        .content.no-print {
+            padding-top: 100px;
+            padding-bottom: 78px;
+            height: 100vh;
+            overflow: hidden;
         }
     </style>
 @endif

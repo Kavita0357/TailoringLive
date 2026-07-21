@@ -1,6 +1,7 @@
 var global_brand_id = null;
 var global_p_category_id = null;
 $(document).ready(function () {
+    __currency_precision = 0;
     customer_set = false;
     //Prevent enter key function except texarea
     $('form').on('keyup keypress', function (e) {
@@ -303,7 +304,7 @@ $(document).ready(function () {
     }
 
     //Update line total and check for quantity not greater than max quantity
-    $('table#pos_table tbody').on('change', 'input.pos_quantity', function () {
+    $('table#pos_table tbody, table#pos_cloth_table tbody').on('change', 'tr:not([id^="cloth_row_"]) input.pos_quantity', function () {
         /*  if (sell_form_validator) {
              sell_form.valid();
          }
@@ -335,7 +336,7 @@ $(document).ready(function () {
     });
 
     //If change in unit price update price including tax and line total
-    $('table#pos_table tbody').on('change', 'input.pos_unit_price', function () {
+    $('table#pos_table tbody, table#pos_cloth_table tbody').on('change', 'tr:not([id^="cloth_row_"]) input.pos_unit_price', function () {
         var unit_price = __read_number($(this));
         var tr = $(this).parents('tr');
 
@@ -360,7 +361,7 @@ $(document).ready(function () {
     });
 
     //If change in tax rate then update unit price according to it.
-    $('table#pos_table tbody').on('change', 'select.tax_id', function () {
+    $('table#pos_table tbody, table#pos_cloth_table tbody').on('change', 'tr:not([id^="cloth_row_"]) select.tax_id', function () {
         var tr = $(this).parents('tr');
 
         var tax_rate = tr
@@ -376,7 +377,7 @@ $(document).ready(function () {
     });
 
     //If change in unit price including tax, update unit price
-    $('table#pos_table tbody').on('change', 'input.pos_unit_price_inc_tax', function () {
+    $('table#pos_table tbody, table#pos_cloth_table tbody').on('change', 'tr:not([id^="cloth_row_"]) input.pos_unit_price_inc_tax', function () {
         var unit_price_inc_tax = __read_number($(this));
 
         if (iraqi_selling_price_adjustment) {
@@ -405,7 +406,7 @@ $(document).ready(function () {
     });
 
     //Change max quantity rule if lot number changes
-    $('table#pos_table tbody').on('change', 'select.lot_number', function () {
+    $('table#pos_table tbody, table#pos_cloth_table tbody').on('change', 'tr:not([id^="cloth_row_"]) select.lot_number', function () {
         var qty_element = $(this)
             .closest('tr')
             .find('input.pos_quantity');
@@ -468,9 +469,9 @@ $(document).ready(function () {
     });
 
     //Change in row discount type or discount amount
-    $('table#pos_table tbody').on(
+    $('table#pos_table tbody, table#pos_cloth_table tbody').on(
         'change',
-        'select.row_discount_type, input.row_discount_amount',
+        'tr:not([id^="cloth_row_"]) select.row_discount_type, tr:not([id^="cloth_row_"]) input.row_discount_amount',
         function () {
             var tr = $(this).parents('tr');
 
@@ -1804,7 +1805,7 @@ function pos_product_row(variation_id = null, purchase_line_id = null, weighing_
             var is_added = false;
 
             //Search for variation id in each row of pos table
-            $('#pos_table tbody')
+            product_row_table_body()
                 .find('tr')
                 .each(function () {
                     var row_v_id = $(this)
@@ -1904,12 +1905,13 @@ function pos_product_row(variation_id = null, purchase_line_id = null, weighing_
                 dataType: 'json',
                 success: function (result) {
                     if (result.success) {
-                        $('table#pos_table tbody')
+                        var productTableBody = product_row_table_body();
+                        productTableBody
                             .append(result.html_content)
                             .find('input.pos_quantity');
                         //increment row count
                         $('input#product_row_count').val(parseInt(product_row) + 1);
-                        var this_row = $('table#pos_table tbody')
+                        var this_row = productTableBody
                             .find('tr')
                             .last();
                         style_cloth_pos_product_row(this_row);
@@ -1927,7 +1929,7 @@ function pos_product_row(variation_id = null, purchase_line_id = null, weighing_
                         }
 
                         if (result.enable_sr_no == '1') {
-                            var new_row = $('table#pos_table tbody')
+                            var new_row = productTableBody
                                 .find('tr')
                                 .last();
                             new_row.find('.row_edit_product_price_model').modal('show');
@@ -1942,7 +1944,7 @@ function pos_product_row(variation_id = null, purchase_line_id = null, weighing_
 
                         //Used in restaurant module
                         if (result.html_modifier) {
-                            $('table#pos_table tbody')
+                            productTableBody
                                 .find('tr')
                                 .last()
                                 .find('td:first')
@@ -1995,11 +1997,11 @@ function pos_total_row() {
     var total_quantity = total_cloth_quantity = 0;
     var price_total = get_subtotal();
     var cloth_total = get_cloth_subtotal();
-    $('table#pos_table tbody tr').each(function () {
+    product_row_table_body().find('tr:not([id^="cloth_row_"])').each(function () {
         total_quantity = total_quantity + __read_number($(this).find('input.pos_quantity'));
     });
 
-    $('table#pos_cloth_table tbody tr').each(function () {
+    $('table#pos_cloth_table tbody tr[id^="cloth_row_"]').each(function () {
         total_cloth_quantity = total_cloth_quantity + __read_number($(this).find('input.pos_quantity'));
     });
 
@@ -2039,14 +2041,23 @@ function style_cloth_pos_product_row(row) {
     row.addClass('cloth-pos-fabric-row');
     const cells = row.children('td');
     const priceCell = cells.eq(2);
-    priceCell.addClass('fabric-making-charge').append('<span class="fabric-na">N/A</span>');
-    $('<td class="text-center fabric-tailor">N/A</td>').insertBefore(cells.last());
+    priceCell
+        .removeClass('hide')
+        .addClass('fabric-making-charge')
+        .append('<span class="fabric-na">-</span>');
+    $('<td class="text-center fabric-tailor">-</td>').insertBefore(cells.last());
+}
+
+function product_row_table_body() {
+    return $('#sale_type').val() === 'order'
+        ? $('table#pos_cloth_table tbody')
+        : $('table#pos_table tbody');
 }
 
 function get_subtotal() {
     var price_total = 0;
 
-    $('table#pos_table tbody tr').each(function () {
+    product_row_table_body().find('tr:not([id^="cloth_row_"])').each(function () {
         price_total = price_total + __read_number($(this).find('input.pos_line_total'));
     });
     //Go through the modifier prices.
@@ -2063,7 +2074,7 @@ function get_subtotal() {
 function get_cloth_subtotal() {
     var price_total = 0;
 
-    $('table#pos_cloth_table tbody tr').each(function () {
+    $('table#pos_cloth_table tbody tr[id^="cloth_row_"]').each(function () {
         price_total = price_total + __read_number($(this).find('input.pos_line_total'));
     });
     return price_total;
@@ -3509,8 +3520,8 @@ function add_cloth_row(data, is_pos = false) {
                         <i class="fa fa-minus text-danger"></i>
                     </button>
                 </span>
-                <input type="text" class="form-control pos_quantity input_number input_quantity" name="cloths[${rowIndex}][quantity]"
-                    value="1.00" data-min="1" data-rule-required="true">
+                <input type="text" class="form-control" name="cloths[${rowIndex}]"
+                    value="1" data-min="1" data-rule-required="true">
                 <span class="input-group-btn">
                     <button type="button" class="btn btn-default btn-flat quantity-up">
                         <i class="fa fa-plus text-success"></i>
@@ -3534,12 +3545,12 @@ function add_cloth_row(data, is_pos = false) {
         });
 
         html += `<td class="v-center">
-            <input type="text" name="cloths[${rowIndex}][unit_price]" class="form-control pos_unit_price input_number" value="${data.cloth.making_charge || 0}">
+                <input type="text" name="cloths[${rowIndex}][unit_price]" class="form-control pos_unit_price input_number" value=" ৳ ${data.cloth.making_charge || 0}">
             <input type="text" name="cloths[${rowIndex}][unit_price_inc_tax]" class="form-control hide pos_unit_price_inc_tax input_number" value="${data.cloth.making_charge || 0}">
         </td>
 
         <td class="v-center">
-            <input class="form-control input_number row_discount_amount" name="cloths[${rowIndex}][line_discount_amount]" type="text" value="0.00"><br>
+<input class="form-control input_number row_discount_amount" name="cloths[${rowIndex}][line_discount_amount]" type="text" value="0"><br>
             <select class="form-control row_discount_type" name="cloths[${rowIndex}][line_discount_type]">
                 <option value="fixed" selected>Fixed</option>
                 <option value="percentage">Percentage</option>
@@ -3579,7 +3590,7 @@ function add_cloth_row(data, is_pos = false) {
 }
 
 //Update line total and check for quantity not greater than max quantity
-$('table#pos_cloth_table tbody').on('change', 'input.pos_quantity', function () {
+$('table#pos_cloth_table tbody').on('change', 'tr[id^="cloth_row_"] input.pos_quantity', function () {
 
     /* if (sell_form_validator) {
         sell_form.valid();
@@ -3616,7 +3627,7 @@ $('table#pos_cloth_table tbody').on('change', 'input.pos_quantity', function () 
 
 
 //If change in unit price update price including tax and line total
-$('table#pos_cloth_table tbody').on('change', 'input.pos_unit_price', function () {
+$('table#pos_cloth_table tbody').on('change', 'tr[id^="cloth_row_"] input.pos_unit_price', function () {
     var unit_price = __read_number($(this));
     var tr = $(this).parents('tr');
 
@@ -3643,7 +3654,7 @@ $('table#pos_cloth_table tbody').on('change', 'input.pos_unit_price', function (
 //Change in row discount type or discount amount
 $('table#pos_cloth_table tbody').on(
     'change',
-    'select.row_discount_type, input.row_discount_amount',
+    'tr[id^="cloth_row_"] select.row_discount_type, tr[id^="cloth_row_"] input.row_discount_amount',
     function () {
         var tr = $(this).parents('tr');
 

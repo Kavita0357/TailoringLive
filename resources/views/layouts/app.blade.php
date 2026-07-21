@@ -109,7 +109,7 @@
         }
 
         .pos-sub-footer {
-            padding: 15px 30px 10px 30px;
+            padding: 14px;
             /* margin: 0 15px; */
             width: auto;
         }
@@ -192,7 +192,7 @@
             <div id="app">
                 @yield('vue')
             </div>
-            <div class="tw-flex-1 tw-overflow-y-auto tw-h-screen" id="scrollable-container">
+            <div class="tw-flex-1 tw-overflow-y-auto @if(!$pos_layout) tw-h-screen @endif" id="scrollable-container">
                 @yield('content')
                 @if (!$pos_layout)
 

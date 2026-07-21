@@ -160,7 +160,7 @@
     </div> --}}
     
     <div
-        class="tw-flex tw-flex-col md:tw-flex-row tw-items-center tw-justify-between tw-shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px] tw-mx-0 tw-mt-1 tw-mb-0 md:tw-mb-0 tw-p-3 ">
+        class="tw-flex tw-flex-col md:tw-flex-row tw-items-center tw-justify-between tw-shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px] tw-mx-0 tw-mt-1 tw-mb-0 md:tw-mb-0 tw-w-full" style="padding: 15px;">
         <div class="tw-w-full md:tw-w-1/3">
             <div class="tw-flex tw-items-center tw-gap-2">
                 <p class="tw-text-white"><strong>@lang('sale.location'): &nbsp;</strong></p>

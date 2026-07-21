@@ -2,11 +2,11 @@
     $pos_type = request()->segment(1) == 'cloth-pos' ? 'order' : 'sell';
 @endphp
 
-<div class="row" id="featured_products_box" style="display: none;">
+{{-- <div class="row" id="featured_products_box" style="display: none;">
     @if (!empty($featured_products))
         @include('sale_pos.partials.featured_products')
     @endif
-</div>
+</div> --}}
 <div class="row tw-mb-1">
     @if (!empty($categories))
         <div class="col-md-6 !tw-px-2" id="product_category_div">
