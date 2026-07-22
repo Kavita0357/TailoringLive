@@ -517,12 +517,20 @@ $(document).ready(function () {
         });
     });
 
-    //Save invoice as draft
+    //Save invoice as draft.
     $('button#pos-draft').click(function () {
         //Check if product is present or not.
-        if ($('table#pos_table tbody').find('.product_row').length <= 0) {
-            toastr.warning(LANG.no_products_added);
-            return false;
+        var is_cloth_pos = $('#cloth-pos-workspace').length > 0;
+        if (is_cloth_pos) {
+            if ($('table#pos_cloth_table tbody tr[id^="cloth_row_"]').length <= 0) {
+                toastr.warning(LANG.no_cloths_added || 'No cloths added');
+                return false;
+            }
+        } else {
+            if ($('table#pos_table tbody').find('.product_row').length <= 0) {
+                toastr.warning(LANG.no_products_added);
+                return false;
+            }
         }
 
         var is_valid = isValidPosForm();
@@ -555,9 +563,17 @@ $(document).ready(function () {
     //Save invoice as Quotation
     $('button#pos-quotation').click(function () {
         //Check if product is present or not.
-        if ($('table#pos_table tbody').find('.product_row').length <= 0) {
-            toastr.warning(LANG.no_products_added);
-            return false;
+        var is_cloth_pos = $('#cloth-pos-workspace').length > 0;
+        if (is_cloth_pos) {
+            if ($('table#pos_cloth_table tbody tr[id^="cloth_row_"]').length <= 0) {
+                toastr.warning(LANG.no_cloths_added || 'No cloths added');
+                return false;
+            }
+        } else {
+            if ($('table#pos_table tbody').find('.product_row').length <= 0) {
+                toastr.warning(LANG.no_products_added);
+                return false;
+            }
         }
 
         var is_valid = isValidPosForm();
@@ -595,9 +611,17 @@ $(document).ready(function () {
     //Finalize invoice, open payment modal
     $('button#pos-finalize').click(function () {
         //Check if product is present or not.
-        if ($('table#pos_table tbody').find('.product_row').length <= 0) {
-            toastr.warning(LANG.no_products_added);
-            return false;
+        var is_cloth_pos = $('#cloth-pos-workspace').length > 0;
+        if (is_cloth_pos) {
+            if ($('table#pos_cloth_table tbody tr[id^="cloth_row_"]').length <= 0) {
+                toastr.warning(LANG.no_cloths_added || 'No cloths added');
+                return false;
+            }
+        } else {
+            if ($('table#pos_table tbody').find('.product_row').length <= 0) {
+                toastr.warning(LANG.no_products_added);
+                return false;
+            }
         }
 
         if ($('#reward_point_enabled').length) {
@@ -626,9 +650,17 @@ $(document).ready(function () {
     $('button.pos-express-finalize').click(function () {
 
         //Check if product is present or not.
-        if ($('table#pos_table tbody').find('.product_row').length <= 0) {
-            toastr.warning(LANG.no_products_added);
-            return false;
+        var is_cloth_pos = $('#cloth-pos-workspace').length > 0;
+        if (is_cloth_pos) {
+            if ($('table#pos_cloth_table tbody tr[id^="cloth_row_"]').length <= 0) {
+                toastr.warning(LANG.no_cloths_added || 'No cloths added');
+                return false;
+            }
+        } else {
+            if ($('table#pos_table tbody').find('.product_row').length <= 0) {
+                toastr.warning(LANG.no_products_added);
+                return false;
+            }
         }
 
         if ($('#reward_point_enabled').length) {
@@ -3519,7 +3551,7 @@ function add_cloth_row(data, is_pos = false) {
                         <i class="fa fa-minus"></i>
                     </button>
                 </span>
-                <input type="text" class="form-control pos_quantity" name="cloths[${rowIndex}]"
+                <input type="text" class="form-control pos_quantity" name="cloths[${rowIndex}][quantity]"
                     value="1" data-min="1" data-rule-required="true">
                 <span class="input-group-btn">
                     <button type="button" class="btn btn-default btn-flat quantity-up">

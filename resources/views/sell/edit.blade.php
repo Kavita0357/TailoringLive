@@ -1509,7 +1509,37 @@
 
             updateSubtitle();
 
+            var previous_delivery_status = $('#delivery_status').val();
+            $(document).on('focus click', '#delivery_status', function() {
+                previous_delivery_status = $(this).val();
+            });
+
             $(document).on('change', '#delivery_status', function() {
+                var status = $(this).val();
+                
+                if (status === 'ready_to_deliver') {
+                    var allAssigned = true;
+                    var commonValue = $('#common_tailoring_master').val();
+                    
+                    if (!commonValue) {
+                        var hasItems = false;
+                        $(".pos_cloth_div select[name*='[tailoring_master]']").each(function() {
+                            hasItems = true;
+                            if (!$(this).val()) {
+                                allAssigned = false;
+                                return false; // break
+                            }
+                        });
+                        
+                        if (hasItems && !allAssigned) {
+                            toastr.error("Cannot select 'Ready to Deliver' until all Tailormasters are assigned.");
+                            $(this).val(previous_delivery_status || 'preparing');
+                            status = $(this).val(); // reset status for subtitle update
+                        }
+                    }
+                }
+                
+                previous_delivery_status = status;
                 updateSubtitle();
             });
         });

@@ -717,7 +717,7 @@
 
         $('#edit_shipping_form').on('submit', function(e) {
             var status = $('#edit_shipping_form #delivery_status').val();
-            if (status !== 'preparing') {
+            if (status !== 'preparing' && status !== 'ready_to_deliver') {
                 return true;
             }
 
@@ -740,6 +740,14 @@
                 if (assigned_sum > total_qty) {
                     toastr.error(
                         `Total assigned quantity for "${cloth_name}" cannot exceed ${total_qty} (currently ${assigned_sum}).`
+                    );
+                    isValid = false;
+                    return false;
+                }
+
+                if (status === 'ready_to_deliver' && assigned_sum < total_qty) {
+                    toastr.error(
+                        `Total assigned quantity for "${cloth_name}" must be equal to ${total_qty} for Ready to Deliver.`
                     );
                     isValid = false;
                     return false;
@@ -791,8 +799,52 @@
 
         updateSubtitle();
 
+        var previous_delivery_status = $('#edit_shipping_form #delivery_status').val();
+        $(document).on('focus click', '#edit_shipping_form #delivery_status', function() {
+            previous_delivery_status = $(this).val();
+        });
+
         $(document).on('change', '#edit_shipping_form #delivery_status', function() {
             var status = $(this).val();
+            
+            if (status === 'ready_to_deliver') {
+                var allAssigned = true;
+                var commonValue = $('#common_tailoring_master').val();
+                
+                $('.assigned-qty-container').each(function() {
+                    var cloth_index = $(this).attr('data-cloth-index');
+                    var $row = $(this).closest('tr');
+                    var total_qty = parseInt($row.find('td').eq(2).text().trim()) || 0;
+                    
+                    var assigned_sum = 0;
+                    $(this).find('.assigned-qty-input').each(function() {
+                        assigned_sum += parseInt($(this).val()) || 0;
+                    });
+                    
+                    if (assigned_sum < total_qty) {
+                        allAssigned = false;
+                        return false;
+                    }
+                    
+                    if (!commonValue) {
+                        var $tailorContainer = $(`.tailor-select-container[data-cloth-index="${cloth_index}"]`);
+                        $tailorContainer.find('.assignment-tailor-select').each(function() {
+                            if (!$(this).val()) {
+                                allAssigned = false;
+                                return false;
+                            }
+                        });
+                    }
+                });
+
+                if (!allAssigned) {
+                    toastr.error("Cannot select 'Ready to Deliver' until all quantities are assigned to a Tailor Master.");
+                    $(this).val(previous_delivery_status || 'preparing');
+                    status = $(this).val(); // update status so subtitle and UI updates correctly
+                }
+            }
+
+            previous_delivery_status = status;
             updateSubtitle();
 
             if (status === 'delivered') {

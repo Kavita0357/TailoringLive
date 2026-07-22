@@ -119,19 +119,22 @@
                 <input type="hidden" name="products[{{ $row_count }}][so_line_id]" value="{{ $so_line->id }}">
             @endif
             @php
-                $productName = trim($product->product_name ?? '') ?: '-';
-                $productSku = trim($product->sub_sku ?? '') ?: '-';
-                $product_name = e($productName) . '<br/>' . e($productSku);
-                if (!empty($product->brand)) {
-                    $product_name .= ' ' . e($product->brand);
-                }
+    $productName = trim($product->product_name ?? '') ?: '-';
+    $productSku = trim($product->sub_sku ?? '') ?: '-';
+    $product_name = e($productName) . '<br/>' . e($productSku); 
+    if (!empty($product->brand)) {
+        $product_name .= ' ' . e($product->brand);
+    }
 
-                $availableQuantity = $product->qty_available ?? null;
-                $availableQuantity = $availableQuantity === null || $availableQuantity === ''
-                    ? '-'
-                    : @num_format($availableQuantity);
-                $productUnit = trim($product->unit ?? '') ?: '-';
-            @endphp
+    $availableQuantity = $product->qty_available ?? null;
+    if ($availableQuantity === null || $availableQuantity === '') {
+        $availableQuantity = '-';
+    } else {
+        $availableQuantity = rtrim(rtrim(number_format((float) $availableQuantity, 2, '.', ''), '0'), '.');
+    }
+
+    $productUnit = trim($product->unit ?? '') ?: '-';
+@endphp
 
             <div class="cloth-pos-product-details">
                 @if (($edit_price || $edit_discount) && empty($is_direct_sell))
