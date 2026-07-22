@@ -5,7 +5,6 @@
 
     <!-- Content Header (Page header) -->
     <section class="content-header">
-        <br>
         <h1 class="tw-text-xl md:tw-text-3xl tw-font-bold tw-text-black">@lang('stock_adjustment.add')</h1>
         <!-- <ol class="breadcrumb">
             <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>

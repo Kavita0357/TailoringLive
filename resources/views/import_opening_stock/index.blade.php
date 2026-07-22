@@ -2,7 +2,6 @@
 @section('title', __('lang_v1.import_opening_stock'))
 
 @section('content')
-<br/>
 <!-- Content Header (Page header) -->
 <section class="content-header">
     <h1 class="tw-text-xl md:tw-text-3xl tw-font-bold tw-text-black">@lang('lang_v1.import_opening_stock')</h1>

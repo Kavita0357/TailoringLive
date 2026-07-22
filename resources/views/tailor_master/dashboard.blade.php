@@ -2,27 +2,24 @@
 @section('title', __('tailoring.tailor_master_dashboard'))
 
 @section('content')
-    <section class="content">
         <div
             class="tw-pb-6 tw-bg-gradient-to-r tw-from-@if (!empty(session('business.theme_color'))) {{ session('business.theme_color') }}@else{{ 'primary' }} @endif-800 tw-to-@if (!empty(session('business.theme_color'))) {{ session('business.theme_color') }}@else{{ 'primary' }} @endif-900 xl:tw-pb-0 ">
-            <div class="tw-pt-3 tw-mb-4">
-                <div class="tw-flex tw-items-center tw-justify-between tw-gap-3">
-                    <div class="filter-box">
-                        <h1 class="tw-text-xl md:tw-text-3xl tw-font-bold tw-text-black">
+            <div class="tw-mb-4">
+                        <div class="tw-flex tw-items-center tw-justify-between tw-gap-3 content-header">
+                        <h1 class="tw-text-xl md:tw-text-3xl tw-font-bold tw-text-black ">
                             @lang('tailoring.tailor_master_dashboard')</h1>
-                    </div>
-                    <div class="filter-box" style="width: 250px;">
-                        {!! Form::select('location_id', $business_locations, $location_id, [
-                            'class' => 'form-control select2',
-                            'placeholder' => __('lang_v1.select_location'),
-                            'id' => 'location_id',
-                            'style' => 'width: 100%;'
-                        ]) !!}
-                    </div>
-                </div>
+                            <div class="filter-box" style="width: 250px;">
+                                {!! Form::select('location_id', $business_locations, $location_id, [
+                                    'class' => 'form-control select2',
+                                    'placeholder' => __('lang_v1.select_location'),
+                                    'id' => 'location_id',
+                                    'style' => 'width: 100%;'
+                                ]) !!}
+                            </div>
+                        </div>
 
                 @can('user.view')
-                    <div class="tw-grid tw-grid-cols-1 tw-gap-4 tw-mt-6 sm:tw-grid-cols-2 xl:tw-grid-cols-4 sm:tw-gap-5">
+                    <div class="tw-grid tw-grid-cols-1 tw-gap-4 sm:tw-grid-cols-2 xl:tw-grid-cols-4 sm:tw-gap-5" style="padding:15px">
                         <div
                             class="tw-transition-all tw-duration-200 tw-bg-white tw-shadow-sm hover:tw-shadow-md tw-rounded-xl hover:tw-translate-y-0.5 tw-ring-1 tw-ring-gray-200">
                             <div class="tw-p-4 sm:tw-p-5">
@@ -113,6 +110,9 @@
                 @endcan
             </div>
         </div>
+
+
+    <section class="content">
 
         @can('user.view')
             <div
