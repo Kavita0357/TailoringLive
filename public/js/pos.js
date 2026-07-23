@@ -3561,8 +3561,10 @@ function add_cloth_row(data, is_pos = false) {
             </div>
         </td>
         <td class="hide">
+            ${is_pos ? `
                <input type="text" name="cloths[${rowIndex}][unit_price_inc_tax]" class="form-control pos_unit_price_inc_tax input_number" value="${initial_charge}">
                <input type="hidden" name="cloths[${rowIndex}][unit_price]" class="form-control pos_unit_price input_number" value="${initial_charge}">
+            ` : ''}
         </td>`;
 
     if (!is_pos) {
@@ -3576,7 +3578,7 @@ function add_cloth_row(data, is_pos = false) {
         });
 
         html += `<td class="v-center">
-                <input type="text" name="cloths[${rowIndex}][unit_price]" class="form-control pos_unit_price input_number" value=" ৳ ${data.cloth.making_charge || 0}">
+                <input type="text" name="cloths[${rowIndex}][unit_price]" class="form-control pos_unit_price input_number" value="${data.cloth.making_charge || 0}">
             <input type="text" name="cloths[${rowIndex}][unit_price_inc_tax]" class="form-control hide pos_unit_price_inc_tax input_number" value="${data.cloth.making_charge || 0}">
         </td>
 
@@ -3609,10 +3611,12 @@ function add_cloth_row(data, is_pos = false) {
         $('table#pos_table tbody').append(html);
     } else {
         $('#pos_cloth_table tbody').append(html);
-        // Keep the tailoring-order row aligned with its six-column POS header.
-        const clothRow = $('#pos_cloth_table tbody tr').last();
-        const tailorCell = clothRow.children('td').eq(5).detach();
-        tailorCell.insertBefore(clothRow.children('td').last());
+        if ($('#cloth-pos-workspace').length > 0) {
+            // Keep the tailoring-order row aligned with its six-column POS header.
+            const clothRow = $('#pos_cloth_table tbody tr').last();
+            const tailorCell = clothRow.children('td').eq(5).detach();
+            tailorCell.insertBefore(clothRow.children('td').last());
+        }
         $('#cloth_price span.total_quantity').html(__currency_trans_from_en(1, false));
         $('#cloth_price span.price_total').html(__currency_trans_from_en(data.cloth.making_charge || 0, false));
         $('#cloth_row_count').val(rowIndex + 1);

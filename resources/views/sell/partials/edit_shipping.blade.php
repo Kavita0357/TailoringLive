@@ -387,6 +387,7 @@
                                                                     [
                                                                         'class' => 'form-control select2 assignment-tailor-select',
                                                                         'required' => 'required',
+                                                                        'placeholder' => __('tailoring.select_tailoring_master')
                                                                     ],
                                                                 ) !!}
                                                             </div>
@@ -410,6 +411,7 @@
                                                                         [
                                                                             'class' => 'form-control select2 assignment-tailor-select',
                                                                             'required' => 'required',
+                                                                            'placeholder' => __('tailoring.select_tailoring_master')
                                                                         ],
                                                                     ) !!}
                                                                 </div>
@@ -561,7 +563,7 @@
 
         var tailor_options_html = "";
         if ($commonTailoringMaster.length) {
-            var $options = $commonTailoringMaster.find('option').not('[value=""]').clone();
+            var $options = $commonTailoringMaster.find('option').clone();
             $options.removeAttr('selected');
             var tempDiv = $('<div>').append($options);
             tailor_options_html = tempDiv.html();
@@ -857,6 +859,7 @@
                 $('#tailorMasterAssignmentSection').show();
                 initSelect2($(".assignment-tailor-select"));
                 initSelect2($("#common_tailoring_master"));
+                updateDisabledStates();
             } else {
                 $('#deliveryPerson').hide();
                 $('#tailoringMaster').hide();
