@@ -17,6 +17,7 @@
             <th>@lang('tailoring.order_due')</th>
             <th>@lang('tailoring.delivery_date')</th>
             <th>@lang('tailoring.delivery_status')</th>
+            <th>@lang('tailoring.work_status')</th>
             <th>@lang('lang_v1.sell_return_due')</th>
             <th>@lang('lang_v1.shipping_status')</th>
             <th>@lang('lang_v1.total_items')</th>
@@ -39,7 +40,7 @@
             <td class="footer_total_paid"></td>
             <td class="footer_total_remaining"></td>
             <td class="footer_total_sell_return_due"></td>
-            <td colspan="2"></td>
+            <td colspan="3"></td>
             <td class="service_type_count"></td>
             <td colspan="7"></td>
         </tr>

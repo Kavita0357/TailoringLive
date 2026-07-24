@@ -384,10 +384,18 @@ class SellController extends Controller
                 }
             }
 
-            //$business_details = $this->businessUtil->getDetails($business_id);
             if ($this->businessUtil->isModuleEnabled('subscription')) {
                 $sells->addSelect('transactions.is_recurring', 'transactions.recur_parent_id');
             }
+
+            if ($sale_type == 'order') {
+                $sells->addSelect(
+                    DB::raw('SUM(COALESCE(tsl.completed_quantity, 0)) as total_completed'),
+                    DB::raw('SUM(COALESCE(tsl.delivered_quantity, 0)) as total_delivered'),
+                    DB::raw('SUM(COALESCE(tsl.quantity, 0)) as total_items_qty')
+                );
+            }
+
             $sales_order_statuses = Transaction::sales_order_statuses();
             $datatable = Datatables::of($sells)
                 ->addColumn(
@@ -630,10 +638,50 @@ class SellController extends Controller
                 })
                 ->addColumn('conatct_name', '@if(!empty($supplier_business_name)) {{$supplier_business_name}}, <br> @endif {{$name}}')
                 ->editColumn('delivery_status', function ($row) use ($delivery_statuses) {
-                    $status_color = ! empty($this->delivery_status_colors[$row->delivery_status]) ? $this->delivery_status_colors[$row->delivery_status] : 'bg-gray';
-                    $status = ! empty($row->delivery_status) ? '<a href="#" class="btn-modal" data-href="' . action([\App\Http\Controllers\SellController::class, 'editShipping'], [$row->id]) . '" data-container=".view_modal"><span class="label ' . $status_color . '">' . $delivery_statuses[$row->delivery_status] . '</span></a>' : '';
+                    if ($row->type == 'order') {
+                        $total = (int)$row->total_items_qty;
+                        $delivered = (int)$row->total_delivered;
 
-                    return $status;
+                        if ($total > 0 && $delivered == $total) {
+                            $delivery_status = __('tailoring.delivered');
+                            $status_color = 'bg-green';
+                        } elseif ($delivered > 0) {
+                            $delivery_status = __('tailoring.partially_delivered');
+                            $status_color = 'bg-orange';
+                        } elseif ($row->delivery_status == 'received') {
+                            $delivery_status = __('tailoring.received');
+                            $status_color = 'bg-info';
+                        } else {
+                            $delivery_status = __('tailoring.preparing');
+                            $status_color = 'bg-yellow';
+                        }
+                        
+                        return '<span class="label ' . $status_color . '">' . $delivery_status . '</span>';
+                    } else {
+                        $status_color = ! empty($this->delivery_status_colors[$row->delivery_status]) ? $this->delivery_status_colors[$row->delivery_status] : 'bg-gray';
+                        $status = ! empty($row->delivery_status) ? '<a href="#" class="btn-modal" data-href="' . action([\App\Http\Controllers\SellController::class, 'editShipping'], [$row->id]) . '" data-container=".view_modal"><span class="label ' . $status_color . '">' . $delivery_statuses[$row->delivery_status] . '</span></a>' : '';
+
+                        return $status;
+                    }
+                })
+                ->addColumn('work_status', function ($row) {
+                    if ($row->type != 'order') {
+                        return '';
+                    }
+                    $total = (int)$row->total_items_qty;
+                    $completed = (int)$row->total_completed;
+                    $delivered = (int)$row->total_delivered;
+
+                    if ($total == 0 || $row->delivery_status == 'received') {
+                        return '<span class="label bg-info">Received</span>';
+                    }
+                    if ($total > 0 && $delivered == $total) {
+                        return '<span class="label bg-green">Completed</span>';
+                    }
+                    if ($total > 0 && $completed == $total) {
+                        return '<span class="label bg-navy">Ready for Delivery (' . $total . '/' . $total . ')</span>';
+                    }
+                    return '<span class="label bg-yellow">In Progress (' . $completed . '/' . $total . ')</span>';
                 })
                 ->editColumn('total_items', '{{@format_quantity($total_items)}}')
                 ->filterColumn('conatct_name', function ($query, $keyword) {
@@ -680,7 +728,7 @@ class SellController extends Controller
                     },
                 ]);
 
-            $rawColumns = ['final_total', 'action', 'total_paid', 'total_remaining', 'payment_status', 'invoice_no', 'discount_amount', 'tax_amount', 'total_before_tax', 'shipping_status', 'delivery_status', 'types_of_service_name', 'payment_methods', 'return_due', 'conatct_name', 'status'];
+            $rawColumns = ['final_total', 'action', 'total_paid', 'total_remaining', 'payment_status', 'invoice_no', 'discount_amount', 'tax_amount', 'total_before_tax', 'shipping_status', 'delivery_status', 'work_status', 'types_of_service_name', 'payment_methods', 'return_due', 'conatct_name', 'status'];
 
             return $datatable->rawColumns($rawColumns)
                 ->make(true);

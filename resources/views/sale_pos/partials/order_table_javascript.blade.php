@@ -133,6 +133,12 @@
                     name: 'delivery_status'
                 },
                 {
+                    data: 'work_status',
+                    name: 'work_status',
+                    searchable: false,
+                    orderable: false
+                },
+                {
                     data: 'return_due',
                     orderable: false,
                     "searchable": false,
