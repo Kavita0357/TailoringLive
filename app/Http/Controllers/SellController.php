@@ -644,19 +644,19 @@ class SellController extends Controller
 
                         if ($total > 0 && $delivered == $total) {
                             $delivery_status = __('tailoring.delivered');
-                            $status_color = 'bg-green';
+                            $status_color = 'bg-red';
                         } elseif ($delivered > 0) {
                             $delivery_status = __('tailoring.partially_delivered');
-                            $status_color = 'bg-orange';
+                            $status_color = 'bg-green';
                         } elseif ($row->delivery_status == 'received') {
                             $delivery_status = __('tailoring.received');
                             $status_color = 'bg-info';
                         } else {
                             $delivery_status = __('tailoring.preparing');
-                            $status_color = 'bg-yellow';
+                            $status_color = '#9ccf73';
                         }
                         
-                        return '<span class="label ' . $status_color . '">' . $delivery_status . '</span>';
+                        return '<span class="label ' . $status_color . '" style="background-color: ' . $status_color . '">' . $delivery_status . '</span>';
                     } else {
                         $status_color = ! empty($this->delivery_status_colors[$row->delivery_status]) ? $this->delivery_status_colors[$row->delivery_status] : 'bg-gray';
                         $status = ! empty($row->delivery_status) ? '<a href="#" class="btn-modal" data-href="' . action([\App\Http\Controllers\SellController::class, 'editShipping'], [$row->id]) . '" data-container=".view_modal"><span class="label ' . $status_color . '">' . $delivery_statuses[$row->delivery_status] . '</span></a>' : '';
@@ -676,12 +676,12 @@ class SellController extends Controller
                         return '<span class="label bg-info">Received</span>';
                     }
                     if ($total > 0 && $delivered == $total) {
-                        return '<span class="label bg-green">Completed</span>';
+                        return '<span class="label bg-red">Completed</span>';
                     }
                     if ($total > 0 && $completed == $total) {
-                        return '<span class="label bg-navy">Ready for Delivery (' . $total . '/' . $total . ')</span>';
+                        return '<span class="label bg-green">Ready for Delivery (' . $total . '/' . $total . ')</span>';
                     }
-                    return '<span class="label bg-yellow">In Progress (' . $completed . '/' . $total . ')</span>';
+                    return '<span class="label" style="background-color: #9CCF73">In Progress (' . $completed . '/' . $total . ')</span>';
                 })
                 ->editColumn('total_items', '{{@format_quantity($total_items)}}')
                 ->filterColumn('conatct_name', function ($query, $keyword) {
