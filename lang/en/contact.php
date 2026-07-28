@@ -11,7 +11,7 @@ return [
     |
     */
 
-    'contacts' => 'Contacts & Supplier',
+    'contacts' => 'Customers & Suppliers',
     'name' => 'Name',
     'contact' => 'Contact',
     'manage_your_contact' => 'Manage your :contacts',

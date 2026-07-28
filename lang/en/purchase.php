@@ -14,7 +14,7 @@ return [
     'supplier' => 'Supplier',
     'ref_no' => 'Reference No',
     'business_location' => 'Business Location',
-    'purchases' => 'Purchases',
+    'purchases' => 'Product Purchases',
     'add_payment' => 'Add payment',
     'edit_payment' => 'Edit payment',
     'view_payments' => 'View payments',

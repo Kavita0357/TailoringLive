@@ -11,7 +11,7 @@ return [
     |
     */
 
-    'sale' => 'Sells',
+    'sale' => 'Product Sells',
     'sells' => 'Sales',
     'list_sale' => 'List Sales',
     'add_sale' => 'Add Sale',
