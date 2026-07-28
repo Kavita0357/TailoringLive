@@ -89,6 +89,7 @@
                     <th>@lang('sale.total_paid')</th>
                     <th>@lang($sale_type == 'order' ? 'tailoring.order_due' : 'lang_v1.sell_due')</th>
                     <th style="color:red">@lang('tailoring.delivery_date')</th>
+                    <th>@lang('tailoring.work_status')</th>
                     <th>@lang('tailoring.delivery_status')</th>
                     <th>@lang('lang_v1.sell_return_due')</th>
                     <th>@lang('lang_v1.shipping_status')</th>
@@ -279,7 +280,11 @@
                     @if ($sale_type != 'order')
                         visible: false,
                     @endif
-                        },
+            },
+                          {
+                data: 'work_status',
+                name: 'work_status',
+            },
                 {
                     data: 'delivery_status',
                     name: 'delivery_status',

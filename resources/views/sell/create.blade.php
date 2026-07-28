@@ -350,7 +350,9 @@
                     @endif
 
                     @if ($sale_type == 'order')
-                        <div
+                                            <input type="hidden" name="delivery_status" id="delivery_status" value="pending">
+
+                        {{-- <div
                             class="delivery_status @if (in_array($status, ['draft', 'quotation'])) hide @endif @if (!empty($commission_agent)) col-sm-3 @else col-sm-4 @endif">
                             <div class="form-group">
                                 {!! Form::label('delivery_status', __('tailoring.delivery_status') . ':*') !!}
@@ -362,7 +364,7 @@
                                 ], ['partially_delivered' => ['disabled' => true]]) !!}
                                 <p id="delivery_status_subtitle" style="color: #c9302c; font-weight: bold; margin-top: 5px; display: none;"></p>
                             </div>
-                        </div>
+                        </div> --}}
                         <div class="tailoring_master @if (!empty($commission_agent)) col-sm-3 @else col-sm-4 @endif">
                             <div class="form-group">
                                 {!! Form::label('tailoring_master', __('tailoring.assign_to_tailoring_master') . ':') !!}

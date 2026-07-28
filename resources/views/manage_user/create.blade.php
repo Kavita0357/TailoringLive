@@ -120,12 +120,12 @@
             {!! Form::select('role', $roles, null, ['class' => 'form-control select2', 'id' => 'role']); !!}
         </div>
       </div>
-      <div class="col-md-6" id="tailor_wages_field" style="display: none;">
+      {{-- <div class="col-md-6" id="tailor_wages_field" style="display: none;">
         <div class="form-group">
           {!! Form::label('wages', __('tailoring.wages') . ':') !!}
           {!! Form::text('wages', null, ['class' => 'form-control input_number', 'placeholder' => __('tailoring.wages')]); !!}
         </div>
-      </div>
+      </div> --}}
       <div class="clearfix"></div>
       <div class="col-md-3">
           <h4>@lang( 'role.access_locations' ) @show_tooltip(__('tooltip.access_locations_permission'))</h4>
