@@ -122,7 +122,7 @@ class SellController extends Controller
 
         $label = __('tailoring.preparing');
         $status_class = '';
-        $style = 'background-color: #9ccf73;';
+        $style = '#9ccf73;';
 
         if ($total_qty > 0 && $delivered_qty >= $total_qty) {
             $label = __('tailoring.delivered');

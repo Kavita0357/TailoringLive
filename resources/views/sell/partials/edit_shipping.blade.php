@@ -23,23 +23,18 @@
         <div class="modal-body">
             <div class="row">
                 @if ($transaction->type == 'order')
-                   <div class="col-md-6">
-    <div class="form-group" style="margin-bottom:0;">
-        {!! Form::label('delivery_status', __('tailoring.delivery_status') . ':', ['style' => 'margin-right:8px;']) !!}
+                    <div class="col-md-6">
+                        <div class="form-group" style="margin-bottom:0;">
+                            {!! Form::label('delivery_status', __('tailoring.delivery_status') . ':', ['style' => 'margin-right:8px;']) !!}
+                            <span class="label {{ $delivery_status_display['class'] }}"
+                                @if (!empty($delivery_status_display['style'])) style="font-size: 12px; padding: 3px 10px;background-color: {{ $delivery_status_display['style'] }};" @endif>
+                                {{ $delivery_status_display['label'] }}
+                            </span>
 
-        <span class="label {{ $delivery_status_display['class'] }}"
-        style="font-size: 12px; padding: 3px 10px;"    @if (!empty($delivery_status_display['style']))
-                style="{{ $delivery_status_display['style'] }}"
-            @endif>
-            {{ $delivery_status_display['label'] }}
-        </span>
-
-        <input type="hidden"
-               name="delivery_status"
-               id="delivery_status"
-               value="{{ $delivery_status_display['delivery_status'] }}">
-    </div>
-</div>
+                            <input type="hidden" name="delivery_status" id="delivery_status"
+                                value="{{ $delivery_status_display['delivery_status'] }}">
+                        </div>
+                    </div>
                     <div class="col-md-12">
                         <p id="delivery_status_subtitle"
                             style="color: #c9302c; font-weight: bold; margin-bottom: 10px; display: none;"></p>
