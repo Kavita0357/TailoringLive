@@ -23,11 +23,11 @@
         <div class="modal-body">
             <div class="row">
                 @if ($transaction->type == 'order')
-                    <div class="col-md-6">
+                    <div class="{{ $delivery_status_display['cloth_count'] > 1 ? 'col-md-12' : 'col-md-6' }}">
                         <div class="form-group" style="margin-bottom:0;">
                             {!! Form::label('delivery_status', __('tailoring.delivery_status') . ':', ['style' => 'margin-right:8px;']) !!}
                             <span class="label {{ $delivery_status_display['class'] }}"
-                                @if (!empty($delivery_status_display['style'])) style="font-size: 12px; padding: 3px 10px;background-color: {{ $delivery_status_display['style'] }};" @endif>
+                                @if (!empty($delivery_status_display['style'])) style="font-size: 12px; padding: 3px 10px; background-color: {{ $delivery_status_display['style'] }};" @endif>
                                 {{ $delivery_status_display['label'] }}
                             </span>
 
@@ -428,6 +428,33 @@
                                         @php
                                             $index++;
                                         @endphp
+                                    @endif
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-md-12" style="margin-top: 20px;">
+                        <table class="table table-condensed table-bordered table-striped table-responsive">
+                            <thead>
+                                <tr>
+                                    <th class="col-md-1">#</th>
+                                    <th class="col-md-4">@lang('tailoring.cloth')</th>
+                                    <th class="col-md-2">@lang('tailoring.order_qty')</th>
+                                    <th class="col-md-2">@lang('tailoring.completed')</th>
+                                    <th class="col-md-2">@lang('tailoring.delivered')</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @php $detail_index = 1; @endphp
+                                @foreach ($sell_details as $sell_line)
+                                    @if ($sell_line->cloth_name)
+                                        <tr>
+                                            <td>{{ $detail_index++ }}</td>
+                                            <td>{{ $sell_line->cloth_name }}</td>
+                                            <td>{{ intval($sell_line->quantity_ordered) }}</td>
+                                            <td>{{ intval($sell_line->completed_quantity) }}</td>
+                                            <td>{{ intval($sell_line->delivered_quantity) }}</td>
+                                        </tr>
                                     @endif
                                 @endforeach
                             </tbody>

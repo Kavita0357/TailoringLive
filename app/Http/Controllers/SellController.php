@@ -114,11 +114,18 @@ class SellController extends Controller
         $delivery_status = ! empty($transaction->delivery_status) ? $transaction->delivery_status : null;
         $total_qty = 0;
         $delivered_qty = 0;
+        $cloth_count = 0;
+        $cloth_ids = [];
 
         foreach ($sell_details as $detail) {
             $total_qty += (int) ($detail->quantity_ordered ?? 0);
             $delivered_qty += (int) ($detail->delivered_quantity ?? 0);
+            if (! empty($detail->cloth_id) && ! in_array($detail->cloth_id, $cloth_ids)) {
+                $cloth_ids[] = $detail->cloth_id;
+            }
         }
+
+        $cloth_count = count($cloth_ids);
 
         $label = __('tailoring.preparing');
         $status_class = '';
@@ -136,6 +143,9 @@ class SellController extends Controller
             $label = __('tailoring.received');
             $status_class = 'bg-info';
             $style = '';
+        } elseif ($delivery_status == 'preparing' && $cloth_count > 1) {
+            $status_class = 'bg-green';
+            $style = '';
         }
 
         return [
@@ -143,6 +153,7 @@ class SellController extends Controller
             'label' => $label,
             'class' => $status_class,
             'style' => $style,
+            'cloth_count' => $cloth_count,
         ];
     }
 
@@ -1824,6 +1835,7 @@ class SellController extends Controller
                 'transaction_sell_lines.secondary_unit_quantity',
                 'transaction_sell_lines.id as sell_line_id',
                 'transaction_sell_lines.quantity as quantity_ordered',
+                'transaction_sell_lines.completed_quantity',
                 'transaction_sell_lines.delivered_quantity',
                 'transaction_sell_lines.tailoring_master_id',
                 'transaction_sell_lines.assigned_quantity',
