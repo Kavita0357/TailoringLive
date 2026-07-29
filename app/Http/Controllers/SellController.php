@@ -655,7 +655,7 @@ class SellController extends Controller
                             $delivery_status = __('tailoring.preparing');
                             $status_color = '#9ccf73';
                         }
-                        
+
                         return '<span class="label ' . $status_color . '" style="background-color: ' . $status_color . '">' . $delivery_status . '</span>';
                     } else {
                         $status_color = ! empty($this->delivery_status_colors[$row->delivery_status]) ? $this->delivery_status_colors[$row->delivery_status] : 'bg-gray';
@@ -1946,12 +1946,12 @@ class SellController extends Controller
                             }
 
                             if ($assigned_sum < $qty) {
-                                    $processed_assignments[] = [
-                                        'sell_line_id' => null,
-                                        'quantity' => $qty - $assigned_sum,
-                                        'assigned_quantity' => null,
-                                        'tailoring_master_id' => null,
-                                    ];
+                                $processed_assignments[] = [
+                                    'sell_line_id' => null,
+                                    'quantity' => $qty - $assigned_sum,
+                                    'assigned_quantity' => null,
+                                    'tailoring_master_id' => null,
+                                ];
                             }
 
                             $assignments_with_id = [];

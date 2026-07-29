@@ -31,7 +31,7 @@
                                 $delivery_statuses,
                                 !empty($transaction->delivery_status) ? $transaction->delivery_status : null,
                                 ['class' => 'form-control', 'id' => 'delivery_status', 'placeholder' => __('messages.please_select')],
-                                ['partially_delivered' => ['disabled' => true]]
+                                ['partially_delivered' => ['disabled' => true]],
                             ) !!}
                         </div>
                     </div>
@@ -47,16 +47,16 @@
                         @if (empty($transaction->delivery_status) || $transaction->delivery_status != 'preparing') style="display: none;" @endif>
                         <div class="form-group">
                             {!! Form::label('tailoring_master', __('tailoring.assign_to_tailoring_master') . ':') !!}
-                            {!! Form::select(
-                                'tailoring_master',
-                                $tailor_masters,
-                                $transaction->tailoring_master_id ?? null,
-                                ['class' => 'form-control select2', 'id' => 'common_tailoring_master', 'placeholder' => __('messages.please_select')],
-                            ) !!}
+                            {!! Form::select('tailoring_master', $tailor_masters, $transaction->tailoring_master_id ?? null, [
+                                'class' => 'form-control select2',
+                                'id' => 'common_tailoring_master',
+                                'placeholder' => __('messages.please_select'),
+                            ]) !!}
                         </div>
                     </div>
                     <div class="col-md-12">
-                        <p id="delivery_status_subtitle" style="color: #c9302c; font-weight: bold; margin-bottom: 10px; display: none;"></p>
+                        <p id="delivery_status_subtitle"
+                            style="color: #c9302c; font-weight: bold; margin-bottom: 10px; display: none;"></p>
                     </div>
                 @else
                     <div class="col-md-6">
@@ -286,12 +286,15 @@
                     </div>
                 @endif
                 @if ($transaction->type == 'order')
-                    <div id="tailorMasterAssignmentSection" class="col-md-12" @if(empty($transaction->delivery_status) || !in_array($transaction->delivery_status, ['preparing', 'partially_delivered'])) style="display: none;" @endif>
+                    <div id="tailorMasterAssignmentSection" class="col-md-12"
+                        @if (empty($transaction->delivery_status) ||
+                                !in_array($transaction->delivery_status, ['preparing', 'partially_delivered'])) style="display: none;" @endif>
                         @php
                             $grouped_sell_details = $sell_details->groupBy('cloth_id');
                             $index = 0;
                         @endphp
-                        <table class="table table-condensed table-bordered table-striped table-responsive" id="pos_table">
+                        <table class="table table-condensed table-bordered table-striped table-responsive"
+                            id="pos_table">
                             <thead>
                                 <tr>
                                     <th class="col-md-1">#</th>
@@ -331,12 +334,14 @@
                                             <td>{{ $first_line->cloth_name }}</td>
                                             <td>{{ intval($total_qty) }}</td>
                                             <td>
-                                                <div class="assigned-qty-container" data-cloth-index="{{ $index }}">
+                                                <div class="assigned-qty-container"
+                                                    data-cloth-index="{{ $index }}">
                                                     @php
                                                         $row_i = 0;
                                                     @endphp
                                                     @foreach ($valid_assignments as $sell_line)
-                                                        <div class="assignment-qty-row form-group" style="margin-bottom: 10px;">
+                                                        <div class="assignment-qty-row form-group"
+                                                            style="margin-bottom: 10px;">
                                                             <input type="hidden"
                                                                 name="cloths[{{ $index }}][assignments][{{ $row_i }}][sell_line_id]"
                                                                 value="{{ $sell_line->sell_line_id }}">
@@ -344,7 +349,8 @@
                                                                 class="form-control input_number row_discount_amount assigned-qty-input"
                                                                 name="cloths[{{ $index }}][assignments][{{ $row_i }}][assigned_qty]"
                                                                 type="number" min="1"
-                                                                value="{{ intval($sell_line->assigned_quantity) }}" required>
+                                                                value="{{ intval($sell_line->assigned_quantity) }}"
+                                                                required>
                                                         </div>
                                                         @php
                                                             $row_i++;
@@ -352,14 +358,17 @@
                                                     @endforeach
                                                     @if ($assigned_sum == 0)
                                                         @for ($r = 0; $r < $remaining_qty; $r++)
-                                                            <div class="assignment-qty-row form-group" style="margin-bottom: 10px;">
+                                                            <div class="assignment-qty-row form-group"
+                                                                style="margin-bottom: 10px;">
                                                                 <input type="hidden"
                                                                     name="cloths[{{ $index }}][assignments][{{ $row_i }}][sell_line_id]"
                                                                     value="{{ $row_i == 0 ? $first_line->sell_line_id : '' }}">
                                                                 <input
                                                                     class="form-control input_number row_discount_amount assigned-qty-input"
                                                                     name="cloths[{{ $index }}][assignments][{{ $row_i }}][assigned_qty]"
-                                                                    type="number" min="1" max="{{ intval($total_qty) }}" value="1" required>
+                                                                    type="number" min="1"
+                                                                    max="{{ intval($total_qty) }}" value="1"
+                                                                    required>
                                                             </div>
                                                             @php
                                                                 $row_i++;
@@ -371,7 +380,8 @@
                                                     style="display: none; font-size: 11px; font-weight: bold; margin-top: 5px; display: block;"></span>
                                             </td>
                                             <td>
-                                                <div class="tailor-select-container" data-cloth-index="{{ $index }}"
+                                                <div class="tailor-select-container"
+                                                    data-cloth-index="{{ $index }}"
                                                     data-total-qty="{{ intval($total_qty) }}">
                                                     @php
                                                         $row_i = 0;
@@ -387,13 +397,14 @@
                                                                     [
                                                                         'class' => 'form-control select2 assignment-tailor-select',
                                                                         'required' => 'required',
-                                                                        'placeholder' => __('tailoring.select_tailoring_master')
+                                                                        'placeholder' => __('tailoring.select_tailoring_master'),
                                                                     ],
                                                                 ) !!}
                                                             </div>
                                                             <button type="button"
                                                                 class="btn btn-xs btn-danger remove-assignment-row-btn"
-                                                                style="height: 34px;"><i class="fa fa-times"></i></button>
+                                                                style="height: 34px;"><i
+                                                                    class="fa fa-times"></i></button>
                                                         </div>
                                                         @php
                                                             $row_i++;
@@ -411,13 +422,14 @@
                                                                         [
                                                                             'class' => 'form-control select2 assignment-tailor-select',
                                                                             'required' => 'required',
-                                                                            'placeholder' => __('tailoring.select_tailoring_master')
+                                                                            'placeholder' => __('tailoring.select_tailoring_master'),
                                                                         ],
                                                                     ) !!}
                                                                 </div>
                                                                 <button type="button"
                                                                     class="btn btn-xs btn-danger remove-assignment-row-btn"
-                                                                    style="height: 34px;"><i class="fa fa-times"></i></button>
+                                                                    style="height: 34px;"><i
+                                                                        class="fa fa-times"></i></button>
                                                             </div>
                                                             @php
                                                                 $row_i++;
@@ -427,8 +439,9 @@
                                                 </div>
                                             </td>
                                             <td style="vertical-align: bottom; padding-bottom: 10px;">
-                                                <button type="button" class="btn btn-primary btn-sm add-assignment-row-btn" style="margin-bottom: 10px;"><i
-                                                        class="fa fa-plus"></i></button>
+                                                <button type="button"
+                                                    class="btn btn-primary btn-sm add-assignment-row-btn"
+                                                    style="margin-bottom: 10px;"><i class="fa fa-plus"></i></button>
                                             </td>
                                         </tr>
                                         @php
@@ -470,7 +483,8 @@
                             </label>
                             <div class="dropzone" id="shipping_documents_dropzone"></div>
                             {{-- params for media upload --}}
-                            <input type="hidden" id="media_upload_url" value="{{ route('attach.medias.to.model') }}">
+                            <input type="hidden" id="media_upload_url"
+                                value="{{ route('attach.medias.to.model') }}">
                             <input type="hidden" id="model_id" value="{{ $transaction->id }}">
                             <input type="hidden" id="model_type" value="App\Transaction">
                             <input type="hidden" id="model_media_type" value="shipping_document">
@@ -808,28 +822,29 @@
 
         $(document).on('change', '#edit_shipping_form #delivery_status', function() {
             var status = $(this).val();
-            
+
             if (status === 'ready_to_deliver') {
                 var allAssigned = true;
                 var commonValue = $('#common_tailoring_master').val();
-                
+
                 $('.assigned-qty-container').each(function() {
                     var cloth_index = $(this).attr('data-cloth-index');
                     var $row = $(this).closest('tr');
                     var total_qty = parseInt($row.find('td').eq(2).text().trim()) || 0;
-                    
+
                     var assigned_sum = 0;
                     $(this).find('.assigned-qty-input').each(function() {
                         assigned_sum += parseInt($(this).val()) || 0;
                     });
-                    
+
                     if (assigned_sum < total_qty) {
                         allAssigned = false;
                         return false;
                     }
-                    
+
                     if (!commonValue) {
-                        var $tailorContainer = $(`.tailor-select-container[data-cloth-index="${cloth_index}"]`);
+                        var $tailorContainer = $(
+                            `.tailor-select-container[data-cloth-index="${cloth_index}"]`);
                         $tailorContainer.find('.assignment-tailor-select').each(function() {
                             if (!$(this).val()) {
                                 allAssigned = false;
@@ -840,7 +855,9 @@
                 });
 
                 if (!allAssigned) {
-                    toastr.error("Cannot select 'Ready to Deliver' until all quantities are assigned to a Tailor Master.");
+                    toastr.error(
+                        "Cannot select 'Ready to Deliver' until all quantities are assigned to a Tailor Master."
+                        );
                     $(this).val(previous_delivery_status || 'preparing');
                     status = $(this).val(); // update status so subtitle and UI updates correctly
                 }
