@@ -279,11 +279,10 @@
                             <thead>
                                 <tr>
                                     <th class="col-md-1">#</th>
-                                    <th class="col-md-3">@lang('tailoring.cloth') </th>
+                                    <th class="col-md-3">@lang('tailoring.cloth')</th>
                                     <th class="col-md-1">@lang('tailoring.qty') </th>
                                     <th class="col-md-2">@lang('tailoring.assigned_qty') </th>
                                     <th class="col-md-4">@lang('tailoring.assign_to_tailoring_master') </th>
-                                    <th class="col-md-1">&nbsp;</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -291,140 +290,44 @@
                                     @php
                                         $first_line = $group->first();
                                     @endphp
+
                                     @if ($first_line && $first_line->cloth_name)
                                         @php
                                             $total_qty = $group->sum('quantity_ordered');
                                             $valid_assignments = [];
-                                            $assigned_sum = 0;
+
                                             foreach ($group as $sell_line) {
                                                 if (!empty($sell_line->tailoring_master_id)) {
                                                     $valid_assignments[] = $sell_line;
-                                                    $assigned_sum += intval($sell_line->assigned_quantity);
                                                 }
                                             }
-                                            $remaining_qty = intval($total_qty) - $assigned_sum;
                                         @endphp
+
                                         <tr>
-                                            <td>
-                                                {{ $index + 1 }}
-                                                <input type="hidden" name="cloths[{{ $index }}][cloth_id]"
-                                                    value="{{ $first_line->cloth_id }}">
-                                                <input type="hidden" name="cloths[{{ $index }}][qty]"
-                                                    value="{{ intval($total_qty) }}">
-                                            </td>
+                                            <td>{{ $index + 1 }}</td>
                                             <td>{{ $first_line->cloth_name }}</td>
                                             <td>{{ intval($total_qty) }}</td>
+
+                                            {{-- Assigned Qty --}}
                                             <td>
-                                                <div class="assigned-qty-container"
-                                                    data-cloth-index="{{ $index }}">
-                                                    @php
-                                                        $row_i = 0;
-                                                    @endphp
-                                                    @foreach ($valid_assignments as $sell_line)
-                                                        <div class="assignment-qty-row form-group"
-                                                            style="margin-bottom: 10px;">
-                                                            <input type="hidden"
-                                                                name="cloths[{{ $index }}][assignments][{{ $row_i }}][sell_line_id]"
-                                                                value="{{ $sell_line->sell_line_id }}">
-                                                            <input
-                                                                class="form-control input_number row_discount_amount assigned-qty-input"
-                                                                name="cloths[{{ $index }}][assignments][{{ $row_i }}][assigned_qty]"
-                                                                type="number" min="1"
-                                                                value="{{ intval($sell_line->assigned_quantity) }}"
-                                                                required>
-                                                        </div>
-                                                        @php
-                                                            $row_i++;
-                                                        @endphp
-                                                    @endforeach
-                                                    @if ($assigned_sum == 0)
-                                                        @for ($r = 0; $r < $remaining_qty; $r++)
-                                                            <div class="assignment-qty-row form-group"
-                                                                style="margin-bottom: 10px;">
-                                                                <input type="hidden"
-                                                                    name="cloths[{{ $index }}][assignments][{{ $row_i }}][sell_line_id]"
-                                                                    value="{{ $row_i == 0 ? $first_line->sell_line_id : '' }}">
-                                                                <input
-                                                                    class="form-control input_number row_discount_amount assigned-qty-input"
-                                                                    name="cloths[{{ $index }}][assignments][{{ $row_i }}][assigned_qty]"
-                                                                    type="number" min="1"
-                                                                    max="{{ intval($total_qty) }}" value="1"
-                                                                    required>
-                                                            </div>
-                                                            @php
-                                                                $row_i++;
-                                                            @endphp
-                                                        @endfor
-                                                    @endif
-                                                </div>
-                                                <span class="text-danger error-msg"
-                                                    style="display: none; font-size: 11px; font-weight: bold; margin-top: 5px; display: block;"></span>
+                                                @foreach ($valid_assignments as $sell_line)
+                                                    <div style="margin-bottom:10px; font-weight: bold;">
+                                                        {{ intval($sell_line->assigned_quantity) }}
+                                                    </div>
+                                                @endforeach
                                             </td>
+
+                                            {{-- Tailor Name --}}
                                             <td>
-                                                <div class="tailor-select-container"
-                                                    data-cloth-index="{{ $index }}"
-                                                    data-total-qty="{{ intval($total_qty) }}">
-                                                    @php
-                                                        $row_i = 0;
-                                                    @endphp
-                                                    @foreach ($valid_assignments as $sell_line)
-                                                        <div class="assignment-tailor-row form-group"
-                                                            style="margin-bottom: 10px; display: flex; align-items: center; gap: 5px;">
-                                                            <div style="flex-grow: 1;">
-                                                                {!! Form::select(
-                                                                    'cloths[' . $index . '][assignments][' . $row_i . '][tailoring_master]',
-                                                                    $tailor_masters,
-                                                                    $sell_line->tailoring_master_id,
-                                                                    [
-                                                                        'class' => 'form-control select2 assignment-tailor-select',
-                                                                        'required' => 'required',
-                                                                        'placeholder' => __('tailoring.select_tailoring_master'),
-                                                                    ],
-                                                                ) !!}
-                                                            </div>
-                                                            <button type="button"
-                                                                class="btn btn-xs btn-danger remove-assignment-row-btn"
-                                                                style="height: 34px;"><i
-                                                                    class="fa fa-times"></i></button>
-                                                        </div>
-                                                        @php
-                                                            $row_i++;
-                                                        @endphp
-                                                    @endforeach
-                                                    @if ($assigned_sum == 0)
-                                                        @for ($r = 0; $r < $remaining_qty; $r++)
-                                                            <div class="assignment-tailor-row form-group"
-                                                                style="margin-bottom: 10px; display: flex; align-items: center; gap: 5px;">
-                                                                <div style="flex-grow: 1;">
-                                                                    {!! Form::select(
-                                                                        'cloths[' . $index . '][assignments][' . $row_i . '][tailoring_master]',
-                                                                        $tailor_masters,
-                                                                        null,
-                                                                        [
-                                                                            'class' => 'form-control select2 assignment-tailor-select',
-                                                                            'required' => 'required',
-                                                                            'placeholder' => __('tailoring.select_tailoring_master'),
-                                                                        ],
-                                                                    ) !!}
-                                                                </div>
-                                                                <button type="button"
-                                                                    class="btn btn-xs btn-danger remove-assignment-row-btn"
-                                                                    style="height: 34px;"><i
-                                                                        class="fa fa-times"></i></button>
-                                                            </div>
-                                                            @php
-                                                                $row_i++;
-                                                            @endphp
-                                                        @endfor
-                                                    @endif
-                                                </div>
+                                                @foreach ($valid_assignments as $sell_line)
+                                                    <div style="margin-bottom:10px; font-weight: bold;">
+                                                        {{ $tailor_masters[$sell_line->tailoring_master_id] ?? '-' }}
+                                                    </div>
+                                                @endforeach
                                             </td>
-                                            <td style="vertical-align: bottom; padding-bottom: 10px;">
-                                                <button type="button"
-                                                    class="btn btn-primary btn-sm add-assignment-row-btn"
-                                                    style="margin-bottom: 10px;"><i class="fa fa-plus"></i></button>
-                                            </td>
+
                                         </tr>
+
                                         @php
                                             $index++;
                                         @endphp
@@ -438,8 +341,8 @@
                             <thead>
                                 <tr>
                                     <th class="col-md-1">#</th>
-                                    <th class="col-md-4">@lang('tailoring.cloth')</th>
-                                    <th class="col-md-2">@lang('tailoring.order_qty')</th>
+                                    <th class="col-md-3">@lang('tailoring.cloth')</th>
+                                    <th class="col-md-3">@lang('tailoring.order_qty')</th>
                                     <th class="col-md-2">@lang('tailoring.completed')</th>
                                     <th class="col-md-2">@lang('tailoring.delivered')</th>
                                 </tr>
@@ -452,8 +355,10 @@
                                             <td>{{ $detail_index++ }}</td>
                                             <td>{{ $sell_line->cloth_name }}</td>
                                             <td>{{ intval($sell_line->quantity_ordered) }}</td>
-                                            <td>{{ intval($sell_line->completed_quantity) }}</td>
-                                            <td>{{ intval($sell_line->delivered_quantity) }}</td>
+                                            <td style="font-weight: bold;">{{ intval($sell_line->completed_quantity) }}
+                                            </td>
+                                            <td style="font-weight: bold;">{{ intval($sell_line->delivered_quantity) }}
+                                            </td>
                                         </tr>
                                     @endif
                                 @endforeach
@@ -491,8 +396,7 @@
                             </label>
                             <div class="dropzone" id="shipping_documents_dropzone"></div>
                             {{-- params for media upload --}}
-                            <input type="hidden" id="media_upload_url"
-                                value="{{ route('attach.medias.to.model') }}">
+                            <input type="hidden" id="media_upload_url" value="{{ route('attach.medias.to.model') }}">
                             <input type="hidden" id="model_id" value="{{ $transaction->id }}">
                             <input type="hidden" id="model_type" value="App\Transaction">
                             <input type="hidden" id="model_media_type" value="shipping_document">
