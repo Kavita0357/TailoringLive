@@ -336,6 +336,7 @@
                             </tbody>
                         </table>
                     </div>
+                    @if($transaction->delivery_status != 'partially_delivered')
                     <div class="col-md-12" style="margin-top: 20px;">
                         <table class="table table-condensed table-bordered table-striped table-responsive">
                             <thead>
@@ -365,6 +366,7 @@
                             </tbody>
                         </table>
                     </div>
+                    @endif
                 @endif
                 <div class="clearfix"></div>
                 @if ($transaction->type == 'order')
