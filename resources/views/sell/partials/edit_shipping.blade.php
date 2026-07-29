@@ -266,7 +266,7 @@
                         </div>
                     </div>
                 @endif
-                @if ($transaction->type == 'order')
+                @if ($transaction->delivery_status != 'received')
                     <div id="tailorMasterAssignmentSection" class="col-md-12"
                         @if (empty($transaction->delivery_status) ||
                                 !in_array($transaction->delivery_status, ['preparing', 'partially_delivered'])) style="display: none;" @endif>

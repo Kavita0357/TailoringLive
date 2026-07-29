@@ -124,7 +124,7 @@ return [
     'order_note' => 'Order note',
     'delivery_date' => 'Delivery Date',
     'delivery_note' => 'Delivery Note',
-    'received' => 'Pending',
+    'pending' => 'Pending',
     'preparing' => 'In Production',
     'work_status' => 'Work Status',
     'partially_delivered' => 'Partially Delivered',

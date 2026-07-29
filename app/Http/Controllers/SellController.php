@@ -140,7 +140,7 @@ class SellController extends Controller
             $status_class = 'bg-green';
             $style = '';
         } elseif ($delivery_status == 'received') {
-            $label = __('tailoring.received');
+            $label = __('tailoring.pending');
             $status_class = 'bg-info';
             $style = '';
         } elseif ($delivery_status == 'preparing' && $cloth_count > 1) {
@@ -704,7 +704,7 @@ class SellController extends Controller
                             $delivery_status = __('tailoring.partially_delivered');
                             $status_color = 'bg-green';
                         } elseif ($row->delivery_status == 'received') {
-                            $delivery_status = __('tailoring.received');
+                            $delivery_status = __('tailoring.pending');
                             $status_color = 'bg-info';
                         } else {
                             $delivery_status = __('tailoring.preparing');
