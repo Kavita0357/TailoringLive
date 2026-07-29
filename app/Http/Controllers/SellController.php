@@ -103,6 +103,50 @@ class SellController extends Controller
     }
 
     /**
+     * Prepare delivery status display values for the shipping modal.
+     *
+     * @param  mixed  $transaction
+     * @param  mixed  $sell_details
+     * @return array
+     */
+    private function getDeliveryStatusDisplayData($transaction, $sell_details)
+    {
+        $delivery_status = ! empty($transaction->delivery_status) ? $transaction->delivery_status : null;
+        $total_qty = 0;
+        $delivered_qty = 0;
+
+        foreach ($sell_details as $detail) {
+            $total_qty += (int) ($detail->quantity_ordered ?? 0);
+            $delivered_qty += (int) ($detail->delivered_quantity ?? 0);
+        }
+
+        $label = __('tailoring.preparing');
+        $status_class = '';
+        $style = 'background-color: #9ccf73;';
+
+        if ($total_qty > 0 && $delivered_qty >= $total_qty) {
+            $label = __('tailoring.delivered');
+            $status_class = 'bg-red';
+            $style = '';
+        } elseif ($delivered_qty > 0) {
+            $label = __('tailoring.partially_delivered');
+            $status_class = 'bg-green';
+            $style = '';
+        } elseif ($delivery_status == 'received') {
+            $label = __('tailoring.received');
+            $status_class = 'bg-info';
+            $style = '';
+        }
+
+        return [
+            'delivery_status' => $delivery_status,
+            'label' => $label,
+            'class' => $status_class,
+            'style' => $style,
+        ];
+    }
+
+    /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
@@ -1780,13 +1824,16 @@ class SellController extends Controller
                 'transaction_sell_lines.secondary_unit_quantity',
                 'transaction_sell_lines.id as sell_line_id',
                 'transaction_sell_lines.quantity as quantity_ordered',
+                'transaction_sell_lines.delivered_quantity',
                 'transaction_sell_lines.tailoring_master_id',
                 'transaction_sell_lines.assigned_quantity',
             ])
             ->get();
 
+        $delivery_status_display = $this->getDeliveryStatusDisplayData($transaction, $sell_details);
+
         return view('sell.partials.edit_shipping')
-            ->with(compact('transaction', 'shipping_statuses', 'delivery_statuses', 'activities', 'users', 'tailor_masters', 'sell_details'));
+            ->with(compact('transaction', 'shipping_statuses', 'delivery_statuses', 'activities', 'users', 'tailor_masters', 'sell_details', 'delivery_status_display'));
     }
 
     /**

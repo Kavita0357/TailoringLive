@@ -23,35 +23,15 @@
         <div class="modal-body">
             <div class="row">
                 @if ($transaction->type == 'order')
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         <div class="form-group" style="margin-bottom:10px;">
                             {!! Form::label('delivery_status', __('tailoring.delivery_status') . ':') !!}
-                            {!! Form::select(
-                                'delivery_status',
-                                $delivery_statuses,
-                                !empty($transaction->delivery_status) ? $transaction->delivery_status : null,
-                                ['class' => 'form-control', 'id' => 'delivery_status', 'placeholder' => __('messages.please_select')],
-                                ['partially_delivered' => ['disabled' => true]],
-                            ) !!}
-                        </div>
-                    </div>
-                    <div class="col-md-4" id="deliveryPerson"
-                        @if (empty($transaction->delivery_status) || $transaction->delivery_status != 'delivered') style="display: none;" @endif>
-                        <div class="form-group">
-                            {!! Form::label('delivery_person', __('lang_v1.delivery_person') . ':') !!}
-                            <p class="form-control-static">
-                                {{ auth()->user()->first_name . ' ' . auth()->user()->last_name }}</p>
-                        </div>
-                    </div>
-                    <div class="col-md-4" id="tailoringMaster"
-                        @if (empty($transaction->delivery_status) || $transaction->delivery_status != 'preparing') style="display: none;" @endif>
-                        <div class="form-group">
-                            {!! Form::label('tailoring_master', __('tailoring.assign_to_tailoring_master') . ':') !!}
-                            {!! Form::select('tailoring_master', $tailor_masters, $transaction->tailoring_master_id ?? null, [
-                                'class' => 'form-control select2',
-                                'id' => 'common_tailoring_master',
-                                'placeholder' => __('messages.please_select'),
-                            ]) !!}
+                            <div class="form-control-static">
+                                <span class="label {{ $delivery_status_display['class'] }}"
+                                    @if (!empty($delivery_status_display['style'])) style="{{ $delivery_status_display['style'] }}" @endif>{{ $delivery_status_display['label'] }}</span>
+                            </div>
+                            <input type="hidden" name="delivery_status" id="delivery_status"
+                                value="{{ $delivery_status_display['delivery_status'] }}">
                         </div>
                     </div>
                     <div class="col-md-12">
@@ -813,57 +793,8 @@
             }
         }
 
-        updateSubtitle();
-
-        var previous_delivery_status = $('#edit_shipping_form #delivery_status').val();
-        $(document).on('focus click', '#edit_shipping_form #delivery_status', function() {
-            previous_delivery_status = $(this).val();
-        });
-
-        $(document).on('change', '#edit_shipping_form #delivery_status', function() {
-            var status = $(this).val();
-
-            if (status === 'ready_to_deliver') {
-                var allAssigned = true;
-                var commonValue = $('#common_tailoring_master').val();
-
-                $('.assigned-qty-container').each(function() {
-                    var cloth_index = $(this).attr('data-cloth-index');
-                    var $row = $(this).closest('tr');
-                    var total_qty = parseInt($row.find('td').eq(2).text().trim()) || 0;
-
-                    var assigned_sum = 0;
-                    $(this).find('.assigned-qty-input').each(function() {
-                        assigned_sum += parseInt($(this).val()) || 0;
-                    });
-
-                    if (assigned_sum < total_qty) {
-                        allAssigned = false;
-                        return false;
-                    }
-
-                    if (!commonValue) {
-                        var $tailorContainer = $(
-                            `.tailor-select-container[data-cloth-index="${cloth_index}"]`);
-                        $tailorContainer.find('.assignment-tailor-select').each(function() {
-                            if (!$(this).val()) {
-                                allAssigned = false;
-                                return false;
-                            }
-                        });
-                    }
-                });
-
-                if (!allAssigned) {
-                    toastr.error(
-                        "Cannot select 'Ready to Deliver' until all quantities are assigned to a Tailor Master."
-                        );
-                    $(this).val(previous_delivery_status || 'preparing');
-                    status = $(this).val(); // update status so subtitle and UI updates correctly
-                }
-            }
-
-            previous_delivery_status = status;
+        function syncDeliveryStatusUi() {
+            var status = $('#edit_shipping_form #delivery_status').val();
             updateSubtitle();
 
             if (status === 'delivered') {
@@ -882,6 +813,8 @@
                 $('#tailoringMaster').hide();
                 $('#tailorMasterAssignmentSection').hide();
             }
-        });
+        }
+
+        syncDeliveryStatusUi();
     });
 </script>
