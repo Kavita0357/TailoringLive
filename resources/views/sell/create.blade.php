@@ -1565,12 +1565,25 @@
                 }
             }
 
+            function updateDeliveryStatusByTailorMaster() {
+                var commonValue = $commonTailoringMaster.val();
+                var hasAnyTailor = !!commonValue;
+                if (!hasAnyTailor) {
+                    $(".pos_cloth_div select[name*='[tailoring_master]']").each(function() {
+                        if ($(this).val()) { hasAnyTailor = true; return false; }
+                    });
+                }
+                $('#delivery_status').val(hasAnyTailor ? 'preparing' : 'pending');
+            }
+
             $('#common_tailoring_master').on('change', function() {
                 updateTailoringMasterDisabledStates();
+                updateDeliveryStatusByTailorMaster();
             });
 
             $(document).on('change', ".pos_cloth_div select[name*='[tailoring_master]']", function() {
                 updateTailoringMasterDisabledStates();
+                updateDeliveryStatusByTailorMaster();
             });
 
             updateTailoringMasterDisabledStates();

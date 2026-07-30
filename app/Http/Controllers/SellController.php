@@ -447,7 +447,8 @@ class SellController extends Controller
                 $sells->addSelect(
                     DB::raw('SUM(COALESCE(tsl.completed_quantity, 0)) as total_completed'),
                     DB::raw('SUM(COALESCE(tsl.delivered_quantity, 0)) as total_delivered'),
-                    DB::raw('SUM(COALESCE(tsl.quantity, 0)) as total_items_qty')
+                    DB::raw('SUM(COALESCE(tsl.quantity, 0)) as total_items_qty'),
+                    DB::raw('MAX(CASE WHEN tsl.tailoring_master_id IS NOT NULL THEN 1 ELSE 0 END) as has_tailor_assigned')
                 );
             }
 
@@ -696,6 +697,7 @@ class SellController extends Controller
                     if ($row->type == 'order') {
                         $total = (int)$row->total_items_qty;
                         $delivered = (int)$row->total_delivered;
+                        $has_tailor = !empty($row->has_tailor_assigned);
 
                         if ($total > 0 && $delivered == $total) {
                             $delivery_status = __('tailoring.delivered');
@@ -703,6 +705,9 @@ class SellController extends Controller
                         } elseif ($delivered > 0) {
                             $delivery_status = __('tailoring.partially_delivered');
                             $status_color = 'bg-green';
+                        } elseif ($has_tailor) {
+                            $delivery_status = __('tailoring.preparing');
+                            $status_color = '#9ccf73';
                         } elseif ($row->delivery_status == 'received') {
                             $delivery_status = __('tailoring.pending');
                             $status_color = 'bg-info';
@@ -726,17 +731,18 @@ class SellController extends Controller
                     $total = (int)$row->total_items_qty;
                     $completed = (int)$row->total_completed;
                     $delivered = (int)$row->total_delivered;
+                    $has_tailor = !empty($row->has_tailor_assigned);
 
-                    if ($total == 0 || $row->delivery_status == 'received') {
-                        return '<span class="label bg-info">Received</span>';
-                    }
                     if ($total > 0 && $delivered == $total) {
                         return '<span class="label bg-red">Completed</span>';
                     }
                     if ($total > 0 && $completed == $total) {
                         return '<span class="label bg-green">Ready for Delivery (' . $total . '/' . $total . ')</span>';
                     }
-                    return '<span class="label" style="background-color: #9CCF73">In Progress (' . $completed . '/' . $total . ')</span>';
+                    if ($has_tailor || $completed > 0) {
+                        return '<span class="label" style="background-color: #9CCF73">In Progress (' . $completed . '/' . $total . ')</span>';
+                    }
+                    return '<span class="label bg-info">Received</span>';
                 })
                 ->editColumn('total_items', '{{@format_quantity($total_items)}}')
                 ->filterColumn('conatct_name', function ($query, $keyword) {
