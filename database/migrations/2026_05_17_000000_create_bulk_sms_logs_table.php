@@ -10,6 +10,7 @@ return new class extends Migration {
      */
     public function up(): void
     {
+        Schema::dropIfExists('bulk_sms_logs');
         Schema::create('bulk_sms_logs', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('sms_log_id')->nullable();

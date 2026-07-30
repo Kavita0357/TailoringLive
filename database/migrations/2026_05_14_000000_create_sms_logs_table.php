@@ -10,6 +10,7 @@ return new class extends Migration {
      */
     public function up(): void
     {
+        Schema::dropIfExists('sms_logs');
         Schema::create('sms_logs', function (Blueprint $table) {
             $table->id();
             $table->unsignedInteger('business_id');

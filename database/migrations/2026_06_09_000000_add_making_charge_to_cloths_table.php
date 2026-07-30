@@ -13,9 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('cloths', function (Blueprint $table) {
-            $table->decimal('making_charge', 8, 2)->nullable()->after('serial_no');
-        });
+        if (!Schema::hasColumn('cloths', 'making_charge')) {
+            Schema::table('cloths', function (Blueprint $table) {
+                $table->decimal('making_charge', 8, 2)->nullable()->after('serial_no');
+            });
+        }
     }
 
     /**

@@ -13,9 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('transaction_sell_lines', function (Blueprint $table) {
-            $table->decimal('making_charge', 22, 4)->nullable()->after('unit_price_inc_tax');
-        });
+        if (!Schema::hasColumn('transaction_sell_lines', 'making_charge')) {
+            Schema::table('transaction_sell_lines', function (Blueprint $table) {
+                $table->decimal('making_charge', 22, 4)->nullable()->after('unit_price_inc_tax');
+            });
+        }
     }
 
     /**
