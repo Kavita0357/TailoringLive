@@ -367,6 +367,11 @@ class AdminSidebarMenu
                             __('tailoring.add_order'),
                             ['icon' => '', 'active' => request()->segment(1) == 'cloth-orders' && request()->segment(2) == 'create' && empty(request()->get('status'))]
                         );
+                        $sub->url(
+                            route('cloth_pos.index'),
+                            __('tailoring.cloth_pos'),
+                            ['icon' => '', 'active' => request()->segment(1) == 'cloth-pos']
+                        );
                         /* $sub->url(
                             route('cloth_orders.create', ['status' => 'draft']),
                             __('lang_v1.add_draft'),

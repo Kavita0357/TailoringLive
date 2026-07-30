@@ -217,4 +217,5 @@ return [
     'total_due' => 'Total Due',
     'tailor_masters_list_description' => 'List of all tailor masters with their wage and payment details',
     'assign_tailormaster_first' => 'Assign Tailormaster First',
+    'cloth_pos' => 'Cloth POS',
 ];
