@@ -2065,7 +2065,8 @@ function pos_total_row() {
 }
 
 function style_cloth_pos_product_row(row) {
-    if ($('#sale_type').val() !== 'order' || !row.length || row.hasClass('cloth-pos-fabric-row')) {
+    // Only applies to the cloth POS workspace (pos_cloth_table), not the direct sell fabric table
+    if (!$('#cloth-pos-workspace').length || !row.length || row.hasClass('cloth-pos-fabric-row')) {
         return;
     }
 
@@ -2080,9 +2081,7 @@ function style_cloth_pos_product_row(row) {
 }
 
 function product_row_table_body() {
-    return $('#sale_type').val() === 'order'
-        ? $('table#pos_cloth_table tbody')
-        : $('table#pos_table tbody');
+    return $('table#pos_table tbody');
 }
 
 function get_subtotal() {
