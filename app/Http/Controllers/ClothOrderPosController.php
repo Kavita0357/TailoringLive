@@ -501,7 +501,7 @@ class ClothOrderPosController extends Controller
 
                 //Upload Shipping documents
                 Media::uploadMedia($business_id, $transaction, $request, 'shipping_documents', false, 'shipping_document');
-                
+
                 $this->clothorderUtil->createOrUpdateSellLines($transaction, $input['products'], $input['location_id']);
 
                 $change_return['amount'] = $input['change_return'] ?? 0;

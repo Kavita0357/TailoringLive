@@ -3,7 +3,8 @@
 @endphp
 <div class="row">
     <div class="tw-shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px] pos-footer">
-        <div class="tw-bg-white tw-flex tw-items-center tw-justify-between tw-flex-col sm:tw-flex-row md:tw-flex-row lg:tw-flex-row xl:tw-flex-row tw-gap-2 tw-px-1 tw-py-0 tw-overflow-x-auto tw-w-full pos-sub-footer ">
+        <div
+            class="tw-bg-white tw-flex tw-items-center tw-justify-between tw-flex-col sm:tw-flex-row md:tw-flex-row lg:tw-flex-row xl:tw-flex-row tw-gap-2 tw-px-1 tw-py-0 tw-overflow-x-auto tw-w-full pos-sub-footer ">
 
             <div class="md:!tw-w-none !tw-flex md:!tw-hidden !tw-flex-row !tw-items-center !tw-gap-3">
                 <div class="tw-pos-total tw-flex tw-items-center tw-gap-3">
@@ -31,15 +32,17 @@
                             aria-hidden="true"></i> @lang('lang_v1.express_checkout_cash')</button>
                 @endif
                 @if (empty($edit))
-                    <button type="button" class="tw-font-bold tw-text-white tw-cursor-pointer tw-text-xs md:tw-text-sm tw-bg-red-600 tw-p-2 tw-rounded-md tw-w-[5.5rem] tw-flex tw-flex-row tw-items-center tw-justify-center tw-gap-1" id="pos-cancel"> <i
-                            class="fas fa-window-close"></i> @lang('sale.cancel')</button>
+                    <button type="button"
+                        class="tw-font-bold tw-text-white tw-cursor-pointer tw-text-xs md:tw-text-sm tw-bg-red-600 tw-p-2 tw-rounded-md tw-w-[5.5rem] tw-flex tw-flex-row tw-items-center tw-justify-center tw-gap-1"
+                        id="pos-cancel"> <i class="fas fa-window-close"></i> @lang('sale.cancel')</button>
                 @else
                     <button type="button" class="btn-danger tw-dw-btn hide tw-dw-btn-xs" id="pos-delete"
                         @if (!empty($only_payment)) disabled @endif> <i class="fas fa-trash-alt"></i>
                         @lang('messages.delete')</button>
                 @endif
             </div>
-            <div class="tw-w-full md:tw-w-fit tw-flex tw-flex-col tw-items-end tw-gap-3 tw-hidden md:tw-block  tw-cursor-pointer">
+            <div
+                class="tw-w-full md:tw-w-fit tw-flex tw-flex-col tw-items-end tw-gap-3 tw-hidden md:tw-block  tw-cursor-pointer">
                 @if (!isset($pos_settings['hide_recent_trans']) || $pos_settings['hide_recent_trans'] == 0)
                     <button type="button"
                         class="tw-font-bold tw-bg-[#646EE4] hover:tw-bg-[#414aac] tw-rounded-full tw-text-white tw-w-full md:tw-w-fit tw-px-5 tw-h-11 tw-cursor-pointer tw-text-xs md:tw-text-sm"
@@ -47,7 +50,7 @@
                             class="fas fa-clock"></i> @lang('lang_v1.recent_transactions')</button>
                 @endif
             </div>
-            
+
             <div class="tw-flex tw-items-center tw-gap-4 tw-flex-row tw-overflow-x-auto">
                 @if (!$is_mobile)
                     {{-- <div class="bg-navy pos-total text-white ">
@@ -93,7 +96,7 @@
 
             </div>
 
-            
+
         </div>
     </div>
 </div>
