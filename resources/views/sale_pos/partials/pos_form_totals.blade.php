@@ -60,15 +60,10 @@
     </div>
 
     <!-- Right -->
-    <div class="col-md-4 text-right">
-        <div style="font-size:20px;font-weight:700;">
-            <b>@lang('sale.total'):</b>
-            <span class="price_total">0</span>
-        </div>
-<!-- 
-        @if(request()->segment(1) == 'cloth-pos')
+    <div class="col-md-4">
+          @if(request()->segment(1) == 'cloth-pos')
             <div class="mt-3 cloth-pos-delivery d-flex justify-content-end align-items-center">
-                <label class="mr-2 mb-0">
+                <label class="mr-5 mb-0">
                     @lang('tailoring.delivery_date'):
                 </label>
 
@@ -84,8 +79,13 @@
                     ]) !!}
                 </div>
             </div>
-        @endif -->
+        @endif
+        <div style="font-size:20px;font-weight:700;">
+            <b>@lang('sale.total'):</b>
+            <span class="price_total">0</span>
+        </div>
 
+      
     </div>
 
 </div>
