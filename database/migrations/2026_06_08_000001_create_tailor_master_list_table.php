@@ -11,7 +11,6 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::dropIfExists('tailor_master_list');
         Schema::create('tailor_master_list', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('user_id');

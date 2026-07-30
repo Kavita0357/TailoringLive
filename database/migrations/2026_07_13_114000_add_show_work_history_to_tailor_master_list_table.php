@@ -11,11 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        if (!Schema::hasColumn('tailor_master_list', 'show_work_history')) {
-            Schema::table('tailor_master_list', function (Blueprint $table) {
-                $table->boolean('show_work_history')->default(1)->after('mobile');
-            });
-        }
+        Schema::table('tailor_master_list', function (Blueprint $table) {
+            $table->boolean('show_work_history')->default(1)->after('mobile');
+        });
     }
 
     /**
