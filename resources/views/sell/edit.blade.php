@@ -330,13 +330,20 @@
                              @if (!empty($commission_agent)) col-sm-3 @else col-sm-4 @endif">
                             <div class="form-group">
                                 {!! Form::label('delivery_status', __('tailoring.delivery_status') . ':*') !!}
-                                {!! Form::select('delivery_status', $delivery_statuses, $transaction->delivery_status, [
-                                    'class' => 'form-control',
-                                    'id' => 'delivery_status',
-                                    'placeholder' => __('messages.please_select'),
-                                    'required',
-                                ], ['partially_delivered' => ['disabled' => true]]) !!}
-                                <p id="delivery_status_subtitle" style="color: #c9302c; font-weight: bold; margin-top: 5px; display: none;"></p>
+                                {!! Form::select(
+                                    'delivery_status',
+                                    $delivery_statuses,
+                                    $transaction->delivery_status,
+                                    [
+                                        'class' => 'form-control',
+                                        'id' => 'delivery_status',
+                                        'placeholder' => __('messages.please_select'),
+                                        'required',
+                                    ],
+                                    ['partially_delivered' => ['disabled' => true]],
+                                ) !!}
+                                <p id="delivery_status_subtitle"
+                                    style="color: #c9302c; font-weight: bold; margin-top: 5px; display: none;"></p>
                             </div>
                         </div>
                         <div class="tailoring_master @if (!empty($commission_agent)) col-sm-3 @else col-sm-4 @endif">
@@ -1516,11 +1523,11 @@
 
             $(document).on('change', '#delivery_status', function() {
                 var status = $(this).val();
-                
+
                 if (status === 'ready_to_deliver') {
                     var allAssigned = true;
                     var commonValue = $('#common_tailoring_master').val();
-                    
+
                     if (!commonValue) {
                         var hasItems = false;
                         $(".pos_cloth_div select[name*='[tailoring_master]']").each(function() {
@@ -1530,15 +1537,17 @@
                                 return false; // break
                             }
                         });
-                        
+
                         if (hasItems && !allAssigned) {
-                            toastr.error("Cannot select 'Ready to Deliver' until all Tailormasters are assigned.");
+                            toastr.error(
+                                "Cannot select 'Ready to Deliver' until all Tailormasters are assigned."
+                                );
                             $(this).val(previous_delivery_status || 'preparing');
                             status = $(this).val(); // reset status for subtitle update
                         }
                     }
                 }
-                
+
                 previous_delivery_status = status;
                 updateSubtitle();
             });
