@@ -1482,19 +1482,50 @@
             var $commonTailoringMaster = $('#common_tailoring_master');
             var $innerTailoringMasters = $(".pos_cloth_div select[name*='[tailoring_master]']");
 
-            $('#common_tailoring_master').on('change', function() {
-                var commonValue = $('#common_tailoring_master').val();
+            function updateTailoringMasterDisabledStates() {
+                var commonValue = $commonTailoringMaster.val();
+                var $innerTailoringMasters = $(".pos_cloth_div select[name*='[tailoring_master]']");
+
+                var hasIndividualAssignments = false;
+                $innerTailoringMasters.each(function() {
+                    if ($(this).val()) {
+                        hasIndividualAssignments = true;
+                        return false; 
+                    }
+                });
+
                 if (commonValue) {
-                    $(document).find(".pos_cloth_div select[name*='[tailoring_master]']").each(function() {
+                    $innerTailoringMasters.each(function() {
+                        $(this).prop('disabled', true).trigger('change.select2');
+                    });
+                    $innerTailoringMasters.each(function() {
                         $(this).val(commonValue).trigger('change');
                     });
-                    $(document).find(".pos_cloth_div select[name*='[tailoring_master]']").prop('disabled',
-                        true);
                 } else {
-                    $(document).find(".pos_cloth_div select[name*='[tailoring_master]']").prop('disabled',
-                        false);
+                    if (hasIndividualAssignments) {
+                        $commonTailoringMaster.prop('disabled', true).trigger('change.select2');
+                        $innerTailoringMasters.prop('disabled', false).trigger('change.select2');
+                    } else {
+                        $commonTailoringMaster.prop('disabled', false).trigger('change.select2');
+                        $innerTailoringMasters.prop('disabled', false).trigger('change.select2');
+                    }
                 }
+            }
+
+            $('#common_tailoring_master').on('change', function() {
+                updateTailoringMasterDisabledStates();
             });
+
+            $(document).on('change', ".pos_cloth_div select[name*='[tailoring_master]']", function() {
+                updateTailoringMasterDisabledStates();
+            });
+
+            updateTailoringMasterDisabledStates();
+
+            $('form#edit_pos_sell_form').on('submit', function() {
+                $(".pos_cloth_div select[name*='[tailoring_master]']").prop('disabled', false);
+            });
+
 
             var statusSubtitles = {
                 'received': "{{ __('tailoring.received_subtitle') }}",

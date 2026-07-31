@@ -372,7 +372,7 @@ class Transaction extends Model
     public static function delivery_statuses()
     {
         return [
-            'received' => __('tailoring.received'),
+            'received' => __('tailoring.pending'),
             'preparing' => __('tailoring.preparing'),
             'partially_delivered' => __('tailoring.partially_delivered'),
             'ready_to_deliver' => __('tailoring.ready_to_deliver'),
