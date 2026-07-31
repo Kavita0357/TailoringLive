@@ -687,19 +687,6 @@
                     return false;
                 }
 
-                if (!commonValue) {
-                    var $tailorContainer = $(
-                        `.tailor-select-container[data-cloth-index="${cloth_index}"]`);
-                    $tailorContainer.find('.assignment-tailor-select').each(function() {
-                        if (!$(this).val()) {
-                            toastr.error(
-                                `Please select a Tailor Master for "${cloth_name}".`
-                            );
-                            isValid = false;
-                            return false;
-                        }
-                    });
-                }
 
                 if (!isValid) return false;
             });

@@ -127,7 +127,6 @@
                                                         $sell_line->tailoring_master_id,
                                                         [
                                                             'class' => 'form-control select2 assignment-tailor-select',
-                                                            'required' => 'required',
                                                             'placeholder' => __('tailoring.select_tailoring_master')
                                                         ],
                                                     ) !!}
@@ -151,7 +150,6 @@
                                                             null,
                                                             [
                                                                 'class' => 'form-control select2 assignment-tailor-select',
-                                                                'required' => 'required',
                                                                 'placeholder' => __('tailoring.select_tailoring_master')
                                                             ],
                                                         ) !!}
@@ -420,20 +418,6 @@
                     );
                     isValid = false;
                     return false;
-                }
-
-                if (!commonValue) {
-                    var $tailorContainer = $(
-                        `.tailor-select-container[data-cloth-index="${cloth_index}"]`);
-                    $tailorContainer.find('.assignment-tailor-select').each(function() {
-                        if (!$(this).val()) {
-                            toastr.error(
-                                `Please select a Tailor Master for "${cloth_name}".`
-                            );
-                            isValid = false;
-                            return false;
-                        }
-                    });
                 }
 
                 if (!isValid) return false;
