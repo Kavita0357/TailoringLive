@@ -50,7 +50,7 @@
                     </button>
                 </span>
                 <input type="text" class="form-control pos_quantity input_number input_quantity text-center"
-                    name="cloths[{{ $row_count }}][quantity]" value="{{ (int)$product->quantity_ordered }}"
+                    name="cloths[{{ $row_count }}][quantity]" value="{{ (int) $product->quantity_ordered }}"
                     data-min="1" data-decimal="0">
                 <span class="input-group-btn">
                     <button type="button" class="btn btn-default btn-flat quantity-up">
@@ -61,7 +61,7 @@
         </td>
         <td>
             <div class="input-group">
-final-total                <!-- <span class="input-group-addon" style="padding: 6px 8px; background: transparent; border: none; font-weight: bold;">{{ session('currency')['symbol'] ?? '৳' }}</span> -->
+                {{-- <!-- <span class="input-group-addon" style="padding: 6px 8px; background: transparent; border: none; font-weight: bold;">{{ session('currency')['symbol'] ?? '৳' }}</span> --> --}}
                 <input type="text" name="cloths[{{ $row_count }}][unit_price]"
                     class="form-control pos_unit_price input_number text-center"
                     value="{{ @num_format($product->unit_price_before_discount) }}"
@@ -106,9 +106,10 @@ final-total                <!-- <span class="input-group-addon" style="padding: 
                 {{ @num_format($product->quantity_ordered * $unit_price_inc_tax) }}
             </span>
         </td>
-        
+
         <td class="text-center v-center">
-            <i class="fa fa-times text-danger pos_remove_row cursor-pointer"  style="font-size: 12px" aria-hidden="true"></i>
+            <i class="fa fa-times text-danger pos_remove_row cursor-pointer" style="font-size: 12px"
+                aria-hidden="true"></i>
         </td>
     </tr>
 @else
@@ -119,22 +120,22 @@ final-total                <!-- <span class="input-group-addon" style="padding: 
                 <input type="hidden" name="products[{{ $row_count }}][so_line_id]" value="{{ $so_line->id }}">
             @endif
             @php
-    $productName = trim($product->product_name ?? '') ?: '-';
-    $productSku = trim($product->sub_sku ?? '') ?: '-';
-    $product_name = e($productName) . '<br/>' . e($productSku); 
-    if (!empty($product->brand)) {
-        $product_name .= ' ' . e($product->brand);
-    }
+                $productName = trim($product->product_name ?? '') ?: '-';
+                $productSku = trim($product->sub_sku ?? '') ?: '-';
+                $product_name = e($productName) . '<br/>' . e($productSku);
+                if (!empty($product->brand)) {
+                    $product_name .= ' ' . e($product->brand);
+                }
 
-    $availableQuantity = $product->qty_available ?? null;
-    if ($availableQuantity === null || $availableQuantity === '') {
-        $availableQuantity = '-';
-    } else {
-        $availableQuantity = rtrim(rtrim(number_format((float) $availableQuantity, 2, '.', ''), '0'), '.');
-    }
+                $availableQuantity = $product->qty_available ?? null;
+                if ($availableQuantity === null || $availableQuantity === '') {
+                    $availableQuantity = '-';
+                } else {
+                    $availableQuantity = rtrim(rtrim(number_format((float) $availableQuantity, 2, '.', ''), '0'), '.');
+                }
 
-    $productUnit = trim($product->unit ?? '') ?: '-';
-@endphp
+                $productUnit = trim($product->unit ?? '') ?: '-';
+            @endphp
 
             <div class="cloth-pos-product-details">
                 @if (($edit_price || $edit_discount) && empty($is_direct_sell))
@@ -405,8 +406,7 @@ final-total                <!-- <span class="input-group-addon" style="padding: 
                             class="fa fa-minus text-danger"></i></button></span>
                 <input type="text" data-min="1"
                     class="form-control pos_quantity input_number mousetrap input_quantity"
-                    value="{{ (int)$product->quantity_ordered }}"
-                    name="products[{{ $row_count }}][quantity]"
+                    value="{{ (int) $product->quantity_ordered }}" name="products[{{ $row_count }}][quantity]"
                     data-allow-overselling="@if (empty($pos_settings['allow_overselling'])) {{ 'false' }}@else{{ 'true' }} @endif"
                     @if ($allow_decimal) data-decimal=1 
 			@else 
@@ -616,15 +616,14 @@ final-total                <!-- <span class="input-group-addon" style="padding: 
             <input type="{{ $subtotal_type }}"
                 class="form-control pos_line_total @if (!empty($pos_settings['is_pos_subtotal_editable'])) input_number @endif"
                 value="{{ @num_format($product->quantity_ordered * $unit_price_inc_tax) }}">
-           <span
-    class="display_currency pos_line_total_text @if (!empty($pos_settings['is_pos_subtotal_editable'])) hide @endif"
-    data-currency_symbol="true"
-    style="font-weight:700;">
-    {{ $product->quantity_ordered * $unit_price_inc_tax }}
-</span>
+            <span class="display_currency pos_line_total_text @if (!empty($pos_settings['is_pos_subtotal_editable'])) hide @endif"
+                data-currency_symbol="true" style="font-weight:700;">
+                {{ $product->quantity_ordered * $unit_price_inc_tax }}
+            </span>
         </td>
         <td class="text-center v-center">
-            <i class="fa fa-times text-danger pos_remove_row cursor-pointer"  style="font-size: 12px" aria-hidden="true"></i>
+            <i class="fa fa-times text-danger pos_remove_row cursor-pointer" style="font-size: 12px"
+                aria-hidden="true"></i>
         </td>
     </tr>
 @endif
