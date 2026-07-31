@@ -3550,7 +3550,7 @@ function add_cloth_row(data, is_pos = false) {
                         <i class="fa fa-minus text-danger"></i>
                     </button>
                 </span>
-                <input type="text" class="form-control pos_quantity" name="cloths[${rowIndex}][quantity]"
+                <input type="text" class="form-control pos_quantity input_number input_quantity text-center" name="cloths[${rowIndex}][quantity]"
                     value="1" data-min="1" data-rule-required="true">
                 <span class="input-group-btn">
                     <button type="button" class="btn btn-default btn-flat quantity-up">

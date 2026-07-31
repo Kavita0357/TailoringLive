@@ -398,7 +398,7 @@
                         class="btn btn-default btn-flat quantity-down"><i
                             class="fa fa-minus text-danger"></i></button></span>
                 <input type="text" data-min="1"
-                    class="form-control pos_quantity input_number mousetrap input_quantity"
+                    class="form-control pos_quantity input_number mousetrap input_quantity text-center"
                     value="{{ (int) $product->quantity_ordered }}" name="products[{{ $row_count }}][quantity]"
                     data-allow-overselling="@if (empty($pos_settings['allow_overselling'])) {{ 'false' }}@else{{ 'true' }} @endif"
                     @if ($allow_decimal) data-decimal=1 

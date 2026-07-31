@@ -723,6 +723,11 @@ tr.details td.details-control {
     padding: 6px 9px;
 }
 
+.input-number input,
+.pos_quantity {
+    text-align: center !important;
+}
+
 .width-50{
     width: 50% !important;
 }
