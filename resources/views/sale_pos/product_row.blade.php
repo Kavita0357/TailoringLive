@@ -64,8 +64,7 @@
                 {{-- <!-- <span class="input-group-addon" style="padding: 6px 8px; background: transparent; border: none; font-weight: bold;">{{ session('currency')['symbol'] ?? '৳' }}</span> --> --}}
                 <input type="text" name="cloths[{{ $row_count }}][unit_price]"
                     class="form-control pos_unit_price input_number text-center"
-                    value="{{ @num_format($product->unit_price_before_discount) }}"
-                    style="border: none; background: transparent; box-shadow: none;">
+                    value="{{ @num_format($product->unit_price_before_discount) }}">
             </div>
 
             <input type="text" name="cloths[{{ $row_count }}][unit_price_inc_tax]"
@@ -84,19 +83,13 @@
         </td>
 
         @php
-            $tailoringMasterValue = $transaction->tailoring_master_id ?? ($product->tailoring_master_id ?? null);
-            $tailoringMasterDisabled = !empty($transaction->tailoring_master_id);
+            $tailoringMasterValue = $product->tailoring_master_id ?? ($transaction->tailoring_master_id ?? null);
         @endphp
         <td>
             {!! Form::select('cloths[' . $row_count . '][tailoring_master]', $tailor_masters, $tailoringMasterValue, [
                 'class' => 'form-control',
-                'placeholder' => __('tailoring.select'),
-                $tailoringMasterDisabled ? 'disabled' : '' => $tailoringMasterDisabled,
+                'placeholder' => __('messages.please_select'),
             ]) !!}
-            @if ($tailoringMasterDisabled)
-                <input type="hidden" name="cloths[{{ $row_count }}][tailoring_master]"
-                    value="{{ $tailoringMasterValue }}">
-            @endif
         </td>
 
         <td class="text-center v-center">

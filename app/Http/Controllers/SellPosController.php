@@ -1483,13 +1483,13 @@ class SellPosController extends Controller
                         ->with('status', $output);
                 }
             } else {
-                if (!empty($transaction->sub_type) && $transaction->sub_type == 'repair') {
+                if (!empty($transaction_before->sub_type) && $transaction_before->sub_type == 'repair') {
                     return redirect()
                         ->action([\Modules\Repair\Http\Controllers\RepairController::class, 'index'])
                         ->with('status', $output);
                 }
 
-                if ($transaction->type == 'sales_order') {
+                if ($transaction_before->type == 'sales_order') {
                     return redirect()
                         ->action([\App\Http\Controllers\SalesOrderController::class, 'index'])
                         ->with('status', $output);

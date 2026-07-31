@@ -1576,6 +1576,10 @@
                 previous_delivery_status = status;
                 updateSubtitle();
             });
+
+            $('form#add_sell_form, form#edit_sell_form').on('submit', function() {
+                $(this).find(':disabled').prop('disabled', false);
+            });
         });
     </script>
 @endsection

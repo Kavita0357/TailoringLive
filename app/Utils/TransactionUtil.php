@@ -74,7 +74,7 @@ class TransactionUtil extends Util
             'source' => ! empty($input['source']) ? $input['source'] : null,
             'total_before_tax' => $invoice_total['total_before_tax'],
             'transaction_date' => $input['transaction_date'],
-            'delivery_date' => $input['delivery_date'],
+            'delivery_date' => ! empty($input['delivery_date']) ? $input['delivery_date'] : null,
             'tax_id' => ! empty($input['tax_rate_id']) ? $input['tax_rate_id'] : null,
             'discount_type' => ! empty($input['discount_type']) ? $input['discount_type'] : null,
             'discount_amount' => $uf_data ? $this->num_uf($input['discount_amount']) : $input['discount_amount'],
@@ -200,8 +200,9 @@ class TransactionUtil extends Util
             'total_before_tax' => $invoice_total['total_before_tax'],
             'tax_id' => $input['tax_rate_id'],
             'discount_type' => $input['discount_type'],
-            'delivery_date' => $input['delivery_date'],
-            'delivery_status' => $input['delivery_status'],
+            'delivery_date' => ! empty($input['delivery_date']) ? $input['delivery_date'] : $transaction->delivery_date,
+            'delivery_status' => ! empty($input['delivery_status']) ? $input['delivery_status'] : $transaction->delivery_status,
+            'tailoring_master_id' => ! empty($input['tailoring_master']) ? $input['tailoring_master'] : null,
             'discount_amount' => $uf_data ? $this->num_uf($input['discount_amount']) : $input['discount_amount'],
             'tax_amount' => $invoice_total['tax'],
             'final_total' => $final_total,
@@ -625,9 +626,9 @@ class TransactionUtil extends Util
                     $delivered = $uf_quantity * $multiplier;
                 }
 
-                $tailorMasterId = $transaction->tailoring_master_id
-                    ?? $cloth['tailoring_master']
-                    ?? null;
+                $tailorMasterId = !empty($cloth['tailoring_master'])
+                    ? $cloth['tailoring_master']
+                    : ($transaction->tailoring_master_id ?? null);
 
                 if ($tailorMasterId) {
 
@@ -961,7 +962,9 @@ class TransactionUtil extends Util
             }
         }
 
-        $tailorMasterId = $cloth['tailoring_master'] ?? null;
+        $tailorMasterId = !empty($cloth['tailoring_master'])
+            ? $cloth['tailoring_master']
+            : ($transaction->tailoring_master_id ?? null);
 
         $uf_quantity = $uf_data
             ? $this->num_uf($cloth['quantity']) * $multiplier

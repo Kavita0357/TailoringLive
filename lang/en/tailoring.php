@@ -44,7 +44,7 @@ return [
     'wages' => 'Wages',
     'assign_to_tailoring_master' => 'Assign TailorMaster',
     'assigned_qty' => 'Assigned Qty',
-    'select' => 'Select',
+    'select' => 'Please Select',
     'select_tailoring_master' => 'Select TailorMaster',
     'qty' => 'Quantity',
 
