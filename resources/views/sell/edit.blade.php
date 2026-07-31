@@ -1461,21 +1461,62 @@
 
             var $commonTailoringMaster = $('#common_tailoring_master');
             var $innerTailoringMasters = $(".pos_cloth_div select[name*='[tailoring_master]']");
+            var isUpdatingTailoringMaster = false;
+
+            function updateTailoringMasterDisabledStates() {
+                if (isUpdatingTailoringMaster) return;
+                isUpdatingTailoringMaster = true;
+
+                var commonValue = $commonTailoringMaster.val();
+                var $innerTailoringMasters = $(".pos_cloth_div select[name*='[tailoring_master]']");
+
+                var hasIndividualAssignments = false;
+                $innerTailoringMasters.each(function() {
+                    if ($(this).val()) {
+                        hasIndividualAssignments = true;
+                        return false; 
+                    }
+                });
+
+                if (commonValue) {
+                    $innerTailoringMasters.each(function() {
+                        $(this).val(commonValue).prop('disabled', true).trigger('change.select2');
+                    });
+                } else {
+                    if (hasIndividualAssignments) {
+                        $commonTailoringMaster.prop('disabled', true).trigger('change.select2');
+                        $innerTailoringMasters.prop('disabled', false).trigger('change.select2');
+                    } else {
+                        $commonTailoringMaster.prop('disabled', false).trigger('change.select2');
+                        $innerTailoringMasters.prop('disabled', false).trigger('change.select2');
+                    }
+                }
+
+                isUpdatingTailoringMaster = false;
+            }
+
+            function updateDeliveryStatusByTailorMaster() {
+                var commonValue = $commonTailoringMaster.val();
+                var hasAnyTailor = !!commonValue;
+                if (!hasAnyTailor) {
+                    $(".pos_cloth_div select[name*='[tailoring_master]']").each(function() {
+                        if ($(this).val()) { hasAnyTailor = true; return false; }
+                    });
+                }
+                $('#delivery_status').val(hasAnyTailor ? 'preparing' : 'pending');
+            }
 
             $('#common_tailoring_master').on('change', function() {
-                var commonValue = $('#common_tailoring_master').val();
-                if (commonValue) {
-                    $(document).find(".pos_cloth_div select[name*='[tailoring_master]']").each(function() {
-
-                        $(this).val(commonValue).trigger('change');
-                    });
-                    $(document).find(".pos_cloth_div select[name*='[tailoring_master]']").prop('disabled',
-                        false);
-                } else {
-                    $(document).find(".pos_cloth_div select[name*='[tailoring_master]']").prop('disabled',
-                        true);
-                }
+                updateTailoringMasterDisabledStates();
+                updateDeliveryStatusByTailorMaster();
             });
+
+            $(document).on('change', ".pos_cloth_div select[name*='[tailoring_master]']", function() {
+                updateTailoringMasterDisabledStates();
+                updateDeliveryStatusByTailorMaster();
+            });
+
+            updateTailoringMasterDisabledStates();
 
             var statusSubtitles = {
                 'received': "{{ __('tailoring.received_subtitle') }}",
