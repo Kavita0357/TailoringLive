@@ -325,27 +325,6 @@
                         </div>
                     @endif
                     @if ($transaction->type == 'order')
-                        <div
-                            class="delivery_status @if ($transaction->status == 'draft') hide @endif
-                             @if (!empty($commission_agent)) col-sm-3 @else col-sm-4 @endif">
-                            <div class="form-group">
-                                {!! Form::label('delivery_status', __('tailoring.delivery_status') . ':*') !!}
-                                {!! Form::select(
-                                    'delivery_status',
-                                    $delivery_statuses,
-                                    $transaction->delivery_status,
-                                    [
-                                        'class' => 'form-control',
-                                        'id' => 'delivery_status',
-                                        'placeholder' => __('messages.please_select'),
-                                        'required',
-                                    ],
-                                    ['partially_delivered' => ['disabled' => true]],
-                                ) !!}
-                                <p id="delivery_status_subtitle"
-                                    style="color: #c9302c; font-weight: bold; margin-top: 5px; display: none;"></p>
-                            </div>
-                        </div>
                         <div class="tailoring_master @if (!empty($commission_agent)) col-sm-3 @else col-sm-4 @endif">
                             <div class="form-group">
                                 {!! Form::label('tailoring_master', __('tailoring.assign_to_tailoring_master') . ':') !!}
