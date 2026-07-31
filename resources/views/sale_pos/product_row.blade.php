@@ -15,7 +15,7 @@
 @if (isset($line_type) && $line_type == 'cloth')
     @php
         $wages = $product->unit_price ?? ($product->wages ?? 0);
-        $discount = $product->line_discount_amount ?? 0;
+        $discount = isset($product->line_discount_amount) ? (float) $product->line_discount_amount : 0;
         $discount_type = $product->line_discount_type ?? 'fixed';
         $total_discount = $discount * $product->quantity_ordered;
         $unit_price_inc_tax = $product->sell_price_inc_tax;
@@ -63,7 +63,7 @@
             <div class="input-group">
                 {{-- <!-- <span class="input-group-addon" style="padding: 6px 8px; background: transparent; border: none; font-weight: bold;">{{ session('currency')['symbol'] ?? '৳' }}</span> --> --}}
                 <input type="text" name="cloths[{{ $row_count }}][unit_price]"
-                    class="form-control pos_unit_price input_number text-center"
+                    class="form-control pos_unit_price input_number text-left"
                     value="{{ @num_format($product->unit_price_before_discount) }}">
             </div>
 
@@ -179,7 +179,7 @@
                 }
 
                 $discount_type = !empty($product->line_discount_type) ? $product->line_discount_type : 'fixed';
-                $discount_amount = !empty($product->line_discount_amount) ? $product->line_discount_amount : 0;
+                $discount_amount = !empty($product->line_discount_amount) ? (float) $product->line_discount_amount : 0;
 
                 if (!empty($discount)) {
                     $discount_type = $discount->discount_type;
@@ -524,7 +524,7 @@
                 @endif
             </td>
             <td @if (!$edit_discount) class="hide" @endif>
-                {!! Form::text("products[$row_count][line_discount_amount]", @num_format($discount_amount), [
+                {!! Form::text("products[$row_count][line_discount_amount]", !empty((float) $discount_amount) ? @num_format($discount_amount) : 0, [
                     'class' => 'form-control input_number row_discount_amount',
                 ]) !!}<br>
                 {!! Form::select(

@@ -434,7 +434,7 @@
             background: transparent;
             box-shadow: none;
             font-weight: 700;
-            text-align: center;
+            text-align: left;
         }
 
         #cloth-pos-workspace #pos_cloth_table td:nth-child(6) .pos_line_total_text {
