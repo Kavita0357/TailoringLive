@@ -276,6 +276,7 @@
                             $grouped_sell_details = $sell_details->groupBy('cloth_id');
                             $index = 0;
                         @endphp
+                    @if ($transaction->delivery_status != 'partially_delivered')
                         <table class="table table-condensed table-bordered table-striped table-responsive"
                             id="pos_table">
                             <thead>
@@ -337,8 +338,8 @@
                                 @endforeach
                             </tbody>
                         </table>
+                    @endif
                     </div>
-                    @if ($transaction->delivery_status != 'partially_delivered')
                         <div class="col-md-12" style="margin-top: 20px;">
                             <table class="table table-condensed table-bordered table-striped table-responsive">
                                 <thead>
@@ -370,7 +371,6 @@
                                 </tbody>
                             </table>
                         </div>
-                    @endif
                 @endif
                 <div class="clearfix"></div>
                 @if ($transaction->type == 'order')
@@ -703,7 +703,7 @@
         var statusSubtitles = {
             'received': "{{ __('tailoring.received_subtitle') }}",
             'preparing': "{{ __('tailoring.preparing_subtitle') }}",
-            'partially_delivered': "{{ __('tailoring.partially_delivered_subtitle') }}",
+            'partially_delivered': "{{ __('tailoring.preparing_subtitle') }}",
             'ready_to_deliver': "{{ __('tailoring.ready_to_deliver_subtitle') }}",
             'delivered': "{{ __('tailoring.delivered_subtitle') }}"
         };
