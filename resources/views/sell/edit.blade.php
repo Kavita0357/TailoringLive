@@ -1523,7 +1523,7 @@
                 'preparing': "{{ __('tailoring.preparing_subtitle') }}",
                 'partially_delivered': "{{ __('tailoring.preparing_subtitle') }}",
                 'ready_to_deliver': "{{ __('tailoring.ready_to_deliver_subtitle') }}",
-                'delivered': "{{ __('tailoring.delivered_subtitle') }}"
+                'delivered': "{{ __('tailoring.preparing_subtitle') }}"
             };
 
             function updateSubtitle() {
