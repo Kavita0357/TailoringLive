@@ -2487,6 +2487,11 @@ class SellController extends Controller
                         foreach ($assignments as $asn) {
                             $a_qty = (int)($asn['assigned_qty'] ?? 0);
                             $a_tailor = $asn['tailoring_master'] ?? "";
+
+                            if ($a_tailor === '' && $common_tailoring_master !== '') {
+                                $a_tailor = $common_tailoring_master;
+                            }
+
                             if ($a_qty > 0 && $a_tailor != "") {
                                 $processed_assignments[] = [
                                     'sell_line_id' => $asn['sell_line_id'] ?? null,

@@ -100,7 +100,8 @@
                                                     <input
                                                         class="form-control input_number row_discount_amount assigned-qty-input"
                                                         name="cloths[{{ $index }}][assignments][{{ $row_i }}][assigned_qty]"
-                                                        type="number" min="1" max="{{ intval($total_qty) }}" value="1" required>
+                                                        type="number" min="1" max="{{ intval($total_qty) }}"
+                                                        value="1" required>
                                                 </div>
                                                 @php
                                                     $row_i++;
@@ -127,7 +128,7 @@
                                                         $sell_line->tailoring_master_id,
                                                         [
                                                             'class' => 'form-control select2 assignment-tailor-select',
-                                                            'placeholder' => __('tailoring.select_tailoring_master')
+                                                            'placeholder' => __('tailoring.select_tailoring_master'),
                                                         ],
                                                     ) !!}
                                                 </div>
@@ -150,7 +151,7 @@
                                                             null,
                                                             [
                                                                 'class' => 'form-control select2 assignment-tailor-select',
-                                                                'placeholder' => __('tailoring.select_tailoring_master')
+                                                                'placeholder' => __('tailoring.select_tailoring_master'),
                                                             ],
                                                         ) !!}
                                                     </div>
@@ -166,8 +167,8 @@
                                     </div>
                                 </td>
                                 <td style="vertical-align: bottom; padding-bottom: 10px;">
-                                    <button type="button" class="btn btn-primary btn-sm add-assignment-row-btn" style="margin-bottom: 10px;"><i
-                                            class="fa fa-plus"></i></button>
+                                    <button type="button" class="btn btn-primary btn-sm add-assignment-row-btn"
+                                        style="margin-bottom: 10px;"><i class="fa fa-plus"></i></button>
                                 </td>
                             </tr>
                             @php
@@ -206,15 +207,16 @@
 
             if (commonValue) {
                 isUpdatingFromCommon = true;
-                $innerTailoringMasters.each(function () {
+                $innerTailoringMasters.each(function() {
                     $(this)
                         .val(commonValue)
+                        .data('set-by-common', true)
                         .trigger('change');
                 });
                 isUpdatingFromCommon = false;
                 $innerTailoringMasters.prop('disabled', true);
             } else {
-                $innerTailoringMasters.prop('disabled', false);
+                $innerTailoringMasters.prop('disabled', false).data('set-by-common', false);
             }
             $innerTailoringMasters.trigger('change.select2');
         }
@@ -222,7 +224,9 @@
         function updateCommonSelectDisabledState() {
             var anyIndividualHasValue = false;
             $(".assignment-tailor-select").each(function() {
-                if ($(this).val()) {
+                // Only consider selects that were set by the user (not by the common selector)
+                var setByCommon = $(this).data('set-by-common');
+                if (!setByCommon && $(this).val()) {
                     anyIndividualHasValue = true;
                     return false;
                 }
@@ -239,6 +243,8 @@
 
         $(document).on('change', '.assignment-tailor-select', function() {
             if (isUpdatingFromCommon) return;
+            // mark this select as user-set so common select gets disabled
+            $(this).data('set-by-common', false);
             updateCommonSelectDisabledState();
         });
 
@@ -353,7 +359,7 @@
             var $newSelect = $tailorContainer.find('.assignment-tailor-row').last().find('select');
             var commonValue = $commonTailoringMaster.val();
             if (commonValue) {
-                $newSelect.val(commonValue);
+                $newSelect.val(commonValue).data('set-by-common', true);
             }
 
             initSelect2($newSelect);
@@ -396,6 +402,19 @@
         });
 
         $('#assign_tailoring_master_form').on('submit', function(e) {
+            // Ensure any disabled selects (populated by common selector) are enabled
+            // so their values are included in the POST payload.
+            $('.assignment-tailor-select').each(function() {
+                if ($(this).prop('disabled')) {
+                    $(this).prop('disabled', false);
+                }
+            });
+
+            // Also ensure common select enabled so its value is available server-side
+            if ($commonTailoringMaster.prop('disabled')) {
+                $commonTailoringMaster.prop('disabled', false);
+            }
+
             validateAssignedQuantities();
 
             var isValid = true;
@@ -430,11 +449,13 @@
         });
 
         // Initial state check
-        updateCommonSelectDisabledState();
-        // If common already has a value, disable individual selects
+        // If common already has a value, first apply it to inner selects
         if ($commonTailoringMaster.val()) {
             toggleTailoringMasters();
         }
+        // Then evaluate whether common should be disabled (this ensures server-rendered individual selects
+        // that have values won't incorrectly disable the common selector when they were just populated by it)
+        updateCommonSelectDisabledState();
 
         validateAssignedQuantities();
     });
