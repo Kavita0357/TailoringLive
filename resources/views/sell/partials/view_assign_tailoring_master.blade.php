@@ -199,53 +199,40 @@
     $(document).ready(function() {
 
         var $commonTailoringMaster = $('#common_tailoring_master');
-        var isUpdatingFromCommon = false;
 
-        function toggleTailoringMasters() {
+        function updateTailoringMasterDisabledStates() {
             var commonValue = $commonTailoringMaster.val();
             var $innerTailoringMasters = $(".assignment-tailor-select");
 
-            if (commonValue) {
-                isUpdatingFromCommon = true;
-                $innerTailoringMasters.each(function() {
-                    $(this)
-                        .val(commonValue)
-                        .data('set-by-common', true)
-                        .trigger('change');
-                });
-                isUpdatingFromCommon = false;
-                $innerTailoringMasters.prop('disabled', true);
-            } else {
-                $innerTailoringMasters.prop('disabled', false).data('set-by-common', false);
-            }
-            $innerTailoringMasters.trigger('change.select2');
-        }
-
-        function updateCommonSelectDisabledState() {
-            var anyIndividualHasValue = false;
-            $(".assignment-tailor-select").each(function() {
-                // Only consider selects that were set by the user (not by the common selector)
-                var setByCommon = $(this).data('set-by-common');
-                if (!setByCommon && $(this).val()) {
-                    anyIndividualHasValue = true;
+            var hasIndividualAssignment = false;
+            $innerTailoringMasters.each(function() {
+                if ($(this).val()) {
+                    hasIndividualAssignment = true;
                     return false;
                 }
             });
-            $commonTailoringMaster.prop('disabled', anyIndividualHasValue);
-            if (anyIndividualHasValue) {
-                $commonTailoringMaster.trigger('change.select2');
+
+            if (commonValue) {
+                $innerTailoringMasters.each(function() {
+                    $(this).val(commonValue).prop('disabled', true).trigger('change.select2');
+                });
+                $commonTailoringMaster.prop('disabled', false).trigger('change.select2');
+            } else {
+                if (hasIndividualAssignment) {
+                    $commonTailoringMaster.prop('disabled', true).trigger('change.select2');
+                } else {
+                    $commonTailoringMaster.prop('disabled', false).trigger('change.select2');
+                }
+                $innerTailoringMasters.prop('disabled', false).trigger('change.select2');
             }
         }
 
         $commonTailoringMaster.on('change', function() {
-            toggleTailoringMasters();
+            updateTailoringMasterDisabledStates();
         });
 
         $(document).on('change', '.assignment-tailor-select', function() {
-            if (isUpdatingFromCommon) return;
-            // mark this select as user-set so common select gets disabled
-            $(this).data('set-by-common', false);
-            updateCommonSelectDisabledState();
+            updateTailoringMasterDisabledStates();
         });
 
         var tailor_options_html = "";
@@ -359,11 +346,11 @@
             var $newSelect = $tailorContainer.find('.assignment-tailor-row').last().find('select');
             var commonValue = $commonTailoringMaster.val();
             if (commonValue) {
-                $newSelect.val(commonValue).data('set-by-common', true);
+                $newSelect.val(commonValue);
             }
 
             initSelect2($newSelect);
-            toggleTailoringMasters();
+            updateTailoringMasterDisabledStates();
             updateRemoveButtonsVisibility($tailorContainer);
             validateAssignedQuantities();
         });
@@ -449,14 +436,12 @@
         });
 
         // Initial state check
-        // If common already has a value, first apply it to inner selects
-        if ($commonTailoringMaster.val()) {
-            toggleTailoringMasters();
-        }
-        // Then evaluate whether common should be disabled (this ensures server-rendered individual selects
-        // that have values won't incorrectly disable the common selector when they were just populated by it)
-        updateCommonSelectDisabledState();
-
+        updateTailoringMasterDisabledStates();
         validateAssignedQuantities();
+
+        var $assignTailoringMasterModal = $('#assign_tailoring_master_form').closest('.modal');
+        $assignTailoringMasterModal.on('shown.bs.modal', function() {
+            updateTailoringMasterDisabledStates();
+        });
     });
 </script>

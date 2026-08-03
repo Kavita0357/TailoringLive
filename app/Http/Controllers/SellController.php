@@ -2452,6 +2452,13 @@ class SellController extends Controller
                             'tailoring_master_id' => $common_tailoring_master,
                             'updated_at' => now(),
                         ]);
+                } else {
+                    \DB::table('transactions')
+                        ->where('id', $id)
+                        ->update([
+                            'tailoring_master_id' => null,
+                            'updated_at' => now(),
+                        ]);
                 }
 
                 foreach ($cloths as $cloth) {
