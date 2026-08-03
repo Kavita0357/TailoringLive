@@ -2459,6 +2459,25 @@ class SellController extends Controller
                             'tailoring_master_id' => null,
                             'updated_at' => now(),
                         ]);
+
+                    $hasAssignedTailoringMaster = false;
+                    foreach ($cloths as $cloth) {
+                        foreach ($cloth['assignments'] ?? [] as $assignment) {
+                            if (!empty($assignment['tailoring_master'])) {
+                                $hasAssignedTailoringMaster = true;
+                                break 2;
+                            }
+                        }
+                    }
+
+                    if (!$hasAssignedTailoringMaster) {
+                        \DB::table('transactions')
+                            ->where('id', $id)
+                            ->update([
+                                'delivery_status' => 'received',
+                                'updated_at' => now(),
+                            ]);
+                    }
                 }
 
                 foreach ($cloths as $cloth) {
