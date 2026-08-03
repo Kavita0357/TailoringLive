@@ -178,7 +178,6 @@ return [
     'total_wages_paid' => 'Total Wages Paid',
     'total_wages_due' => 'Total Wages Due',
     'total_tailor_masters' => 'Total Tailor Masters',
-    'total_completed_orders' => 'Total Completed Orders',
     'all_tailor_masters' => 'All Tailor Masters',
     'completed_orders' => 'Completed Orders',
     'designs' => 'Designs',

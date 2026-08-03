@@ -556,7 +556,7 @@ class ManageUserController extends Controller
                 $order_wages = 0;
                 foreach ($order->sell_lines as $line) {
                     if (!empty($line->tailoring_master_id) && !empty($line->cloth)) {
-                        $quantity = $line->completed_quantity;
+                        $quantity = !empty($line->assigned_quantity) ? $line->assigned_quantity : $line->quantity;
                         $order_wages += ($line->cloth->wages ?? 0) * $quantity;
                         $total_completed_orders += $quantity;
                     }
@@ -591,9 +591,9 @@ class ManageUserController extends Controller
     public function getAllTailorMasters()
     {
         $tailoring_master_id = request()->input('tailoring_master_id');
-        $is_querying_self = !empty($tailoring_master_id) && 
-                            request()->input('is_dashboard') === 'true' && 
-                            (int) auth()->user()->id === (int) $tailoring_master_id;
+        $is_querying_self = !empty($tailoring_master_id) &&
+            request()->input('is_dashboard') === 'true' &&
+            (int) auth()->user()->id === (int) $tailoring_master_id;
 
         if (!auth()->user()->can('user.view') && !auth()->user()->can('user.create') && !$is_querying_self) {
             abort(403, 'Unauthorized action.');
@@ -640,7 +640,7 @@ class ManageUserController extends Controller
                             if (!empty($tailoring_master_id) && $line->tailoring_master_id != $tailoring_master_id) {
                                 continue;
                             }
-                            $quantity = $line->completed_quantity;
+                            $quantity = !empty($line->assigned_quantity) ? $line->assigned_quantity : $line->quantity;
                             $order_wages += ($line->cloth->wages ?? 0) * $quantity;
                             $total_completed_orders += $quantity;
                         }
@@ -689,7 +689,7 @@ class ManageUserController extends Controller
                                 if (!empty($filter_tailor_id) && $line->tailoring_master_id != $filter_tailor_id) {
                                     continue;
                                 }
-                                $quantity = $line->completed_quantity;
+                                $quantity = !empty($line->assigned_quantity) ? $line->assigned_quantity : $line->quantity;
                                 $particulars[] = $line->cloth->cloth_name . ' ' . (int) $quantity . 'pc(s)';
                             }
                         }
@@ -703,7 +703,7 @@ class ManageUserController extends Controller
                                 if (!empty($filter_tailor_id) && $line->tailoring_master_id != $filter_tailor_id) {
                                     continue;
                                 }
-                                $quantity = $line->completed_quantity;
+                                $quantity = !empty($line->assigned_quantity) ? $line->assigned_quantity : $line->quantity;
                                 $wages += ($line->cloth->wages ?? 0) * $quantity;
                             }
                         }
@@ -767,17 +767,17 @@ class ManageUserController extends Controller
                         $q->where('name', $tailor_master_role_name);
                     });
             })->select([
-                        'id',
-                        'user_id',
-                        'name',
-                        'mobile',
-                        'added_on',
-                        'is_active',
-                        'total_completed_orders',
-                        'total_wages',
-                        'total_wages_paid',
-                        'total_wages_due',
-                    ]);
+                'id',
+                'user_id',
+                'name',
+                'mobile',
+                'added_on',
+                'is_active',
+                'total_completed_orders',
+                'total_wages',
+                'total_wages_paid',
+                'total_wages_due',
+            ]);
 
             return DataTables::of($tailor_masters)
                 ->editColumn('added_on', '{{@format_date($added_on)}}')
@@ -799,7 +799,7 @@ class ManageUserController extends Controller
                     $particulars = [];
                     foreach ($sell_lines as $line) {
                         if (!empty($line->cloth)) {
-                            $quantity = $line->completed_quantity;
+                            $quantity = !empty($line->assigned_quantity) ? $line->assigned_quantity : $line->quantity;
                             $particulars[] = $line->cloth->cloth_name . ' ' . (int) $quantity . 'pc(s)';
                         }
                     }
@@ -902,8 +902,8 @@ class ManageUserController extends Controller
 
             \Log::error(
                 'File:' . $e->getFile() .
-                ' Line:' . $e->getLine() .
-                ' Message:' . $e->getMessage()
+                    ' Line:' . $e->getLine() .
+                    ' Message:' . $e->getMessage()
             );
 
             $output = [
@@ -972,8 +972,8 @@ class ManageUserController extends Controller
         } catch (\Exception $e) {
             \Log::error(
                 'File:' . $e->getFile() .
-                ' Line:' . $e->getLine() .
-                ' Message:' . $e->getMessage()
+                    ' Line:' . $e->getLine() .
+                    ' Message:' . $e->getMessage()
             );
 
             $output = [
@@ -1013,8 +1013,8 @@ class ManageUserController extends Controller
             } catch (\Exception $e) {
                 \Log::error(
                     'File:' . $e->getFile() .
-                    ' Line:' . $e->getLine() .
-                    ' Message:' . $e->getMessage()
+                        ' Line:' . $e->getLine() .
+                        ' Message:' . $e->getMessage()
                 );
 
                 $output = [
@@ -1252,7 +1252,7 @@ class ManageUserController extends Controller
                 ->editColumn('method', function ($row) {
                     $transactionUtil = new \App\Utils\TransactionUtil();
                     $payment_types = $transactionUtil->payment_types(null, true, request()->session()->get('user.business_id'));
-                    
+
                     $method = !empty($payment_types[$row->method]) ? $payment_types[$row->method] : '';
                     if ($row->method == 'cheque') {
                         $method .= '<br>(' . __('lang_v1.cheque_no') . ': ' . $row->cheque_number . ')';
