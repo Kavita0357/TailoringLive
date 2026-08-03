@@ -557,7 +557,7 @@ class ManageUserController extends Controller
                 foreach ($order->sell_lines as $line) {
                     if (!empty($line->tailoring_master_id) && !empty($line->cloth)) {
                         $quantity = !empty($line->assigned_quantity) ? $line->assigned_quantity : $line->quantity;
-                        $order_wages += ($line->cloth->wages ?? 0) * $quantity;
+                        $order_wages += ($line->making_charge ?? 0) * $quantity;
                         $total_completed_orders += $quantity;
                     }
                 }
@@ -641,7 +641,7 @@ class ManageUserController extends Controller
                                 continue;
                             }
                             $quantity = !empty($line->assigned_quantity) ? $line->assigned_quantity : $line->quantity;
-                            $order_wages += ($line->cloth->wages ?? 0) * $quantity;
+                            $order_wages += ($line->making_charge ?? 0) * $quantity;
                             $total_completed_orders += $quantity;
                         }
                     }
@@ -704,7 +704,7 @@ class ManageUserController extends Controller
                                     continue;
                                 }
                                 $quantity = !empty($line->assigned_quantity) ? $line->assigned_quantity : $line->quantity;
-                                $wages += ($line->cloth->wages ?? 0) * $quantity;
+                                $wages += ($line->making_charge ?? 0) * $quantity;
                             }
                         }
                         return $wages;

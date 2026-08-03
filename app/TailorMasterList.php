@@ -37,7 +37,7 @@ class TailorMasterList extends Model
             ->where('transactions.status', '!=', 'draft')
             ->select([
                 'transaction_sell_lines.completed_quantity',
-                'cloths.wages'
+                'transaction_sell_lines.making_charge'
             ])
             ->get();
 
@@ -46,7 +46,7 @@ class TailorMasterList extends Model
 
         foreach ($sell_lines as $line) {
             $completed = (int)$line->completed_quantity;
-            $wages = (float)($line->wages ?? 0);
+            $wages = (float)($line->making_charge ?? 0);
             
             $total_completed += $completed;
             $total_wages += ($completed * $wages);
