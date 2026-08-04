@@ -597,6 +597,7 @@
         #cloth-pos-workspace .cloth-pos-delivery {
             display: flex;
             align-items: center;
+            gap:20px;
         }
 
         #cloth-pos-workspace .cloth-date-pill {
@@ -605,13 +606,13 @@
             display: flex;
             align-items: center;
             padding: 0 12px;
-            height: 36px;
+            height: 30px;
             color: #fff;
             cursor: pointer;
         }
 
         #cloth-pos-workspace .cloth-date-pill .icon {
-            font-size: 15px;
+            font-size: 13px;
             margin-right: 8px;
             color: #fff;
         }
@@ -622,7 +623,7 @@
             box-shadow: none !important;
             color: #fff !important;
             font-weight: 700;
-            font-size: 15px;
+            font-size: 13px;
             padding: 0;
             width: 130px;
             cursor: pointer;

@@ -3,7 +3,7 @@
         <div class="row align-items-start">
 
             <!-- Left -->
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <div class="tw-mb-2">
                     <b>@lang('sale.item'):</b>
                     <span class="total_quantity">0</span>
@@ -28,7 +28,7 @@
             </div>
 
             <!-- Center -->
-            <div class="col-md-4">
+            <div class="col-md-3">
 
                 <div class="@if ($pos_settings['disable_order_tax'] != 0) hide @endif tw-mb-2">
                     <b class=" ";>@lang('sale.order_tax')(+): @show_tooltip(__('tooltip.sale_tax'))</b>
@@ -81,7 +81,7 @@
             </div>
 
             <!-- Right -->
-            <div class="col-md-4">
+            <div class="col-md-6">
                 @if (request()->segment(1) == 'cloth-pos')
                     <div class="mt-3 cloth-pos-delivery d-flex justify-content-end align-items-center">
                         <label class="mr-5 mb-0">
