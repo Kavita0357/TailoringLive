@@ -375,7 +375,6 @@ class Transaction extends Model
             'received' => __('tailoring.pending'),
             'preparing' => __('tailoring.preparing'),
             'partially_delivered' => __('tailoring.partially_delivered'),
-            'ready_to_deliver' => __('tailoring.ready_to_deliver'),
             'delivered' => __('tailoring.delivered'),
         ];
     }
