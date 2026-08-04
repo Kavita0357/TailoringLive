@@ -61,7 +61,9 @@
         </td>
         <td>
             <div class="input-group">
-                {{-- <!-- <span class="input-group-addon" style="padding: 6px 8px; background: transparent; border: none; font-weight: bold;">{{ session('currency')['symbol'] ?? '৳' }}</span> --> --}}
+                <span class="input-group-addon" style="padding: 6px 8px; background: transparent; border: none; font-weight: bold;">
+                    {{ session('currency')['symbol'] ?? '৳' }}
+                </span>
                 <input type="text" name="cloths[{{ $row_count }}][unit_price]"
                     class="form-control pos_unit_price input_number text-left"
                     value="{{ @num_format($product->unit_price_before_discount) }}">
@@ -524,9 +526,13 @@
                 @endif
             </td>
             <td @if (!$edit_discount) class="hide" @endif>
-                {!! Form::text("products[$row_count][line_discount_amount]", !empty((float) $discount_amount) ? @num_format($discount_amount) : 0, [
-                    'class' => 'form-control input_number row_discount_amount',
-                ]) !!}<br>
+                {!! Form::text(
+                    "products[$row_count][line_discount_amount]",
+                    !empty((float) $discount_amount) ? @num_format($discount_amount) : 0,
+                    [
+                        'class' => 'form-control input_number row_discount_amount',
+                    ],
+                ) !!}<br>
                 {!! Form::select(
                     "products[$row_count][line_discount_type]",
                     ['fixed' => __('lang_v1.fixed'), 'percentage' => __('lang_v1.percentage')],
