@@ -2034,8 +2034,8 @@ class SellPosController extends Controller
             foreach ($price_groups as $key => $value) {
                 if (
                     auth()
-                        ->user()
-                        ->can('selling_price_group.' . $key)
+                    ->user()
+                    ->can('selling_price_group.' . $key)
                 ) {
                     $allowed_group_prices[$key] = $value;
                 }
@@ -2089,7 +2089,7 @@ class SellPosController extends Controller
 
             foreach ($variation_ids as $variation_id) {
                 $product = $this->productUtil->getDetailsFromVariation($variation_id, $business_id, $location_id, false);
-                
+
                 // Automatic customer group or price group adjustment
                 $percent = 0;
                 if (!empty($price_group)) {
