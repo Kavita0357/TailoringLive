@@ -302,7 +302,7 @@
                 assigned_sum += parseInt($(this).val()) || 0;
             });
 
-            if (assigned_sum >= total_qty) {
+            if (assigned_sum > total_qty) {
                 toastr.error("Cannot add more rows. All quantities are already assigned (" +
                     assigned_sum + "/" + total_qty + ").");
                 return;
