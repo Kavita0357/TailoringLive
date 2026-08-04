@@ -30,6 +30,7 @@ return [
     'prefix' => 'Prefix',
     'prefix_placeholder' => 'Mr / Mrs / Miss',
     'first_name' => 'First Name',
+    'full_name' => 'Full Name',
     'last_name' => 'Last Name',
     'username' => 'Username',
     'email' => 'Email',

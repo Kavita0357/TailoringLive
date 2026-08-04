@@ -60,11 +60,11 @@
                                 <i class="fa fa-user"></i>
                             </span>
                             {!! Form::select('type', $types, $type, [
-    'class' => 'form-control',
-    'id' => 'contact_type',
-    'placeholder' => __('messages.please_select'),
-    'required',
-]) !!}
+                                'class' => 'form-control',
+                                'id' => 'contact_type',
+                                'placeholder' => __('messages.please_select'),
+                                'required',
+                            ]) !!}
                         </div>
                     </div>
                 </div>
@@ -89,20 +89,20 @@
                                 <i class="fa fa-briefcase"></i>
                             </span>
                             {!! Form::text('supplier_business_name', null, [
-    'class' => 'form-control',
-    'placeholder' => __('business.business_name'),
-]) !!}
+                                'class' => 'form-control',
+                                'placeholder' => __('business.business_name'),
+                            ]) !!}
                         </div>
                     </div>
                 </div>
                 <div class="col-md-6 individual" style="display: none;">
                     <div class="form-group">
-                        {!! Form::label('first_name', __('business.first_name') . ':*') !!}
+                        {!! Form::label('first_name', __('business.full_name') . ':*') !!}
                         {!! Form::text('first_name', null, [
-    'class' => 'form-control',
-    'required',
-    'placeholder' => __('business.first_name'),
-]) !!}
+                            'class' => 'form-control',
+                            'required',
+                            'placeholder' => __('business.full_name'),
+                        ]) !!}
                     </div>
                 </div>
                 <div class="col-md-6">
@@ -112,7 +112,13 @@
                             <span class="input-group-addon">
                                 <i class="fa fa-mobile"></i>
                             </span>
-                            {!! Form::text('mobile', null, ['class' => 'form-control', 'required', 'maxlength' => 11, 'pattern' => '[0-9]{11}', 'placeholder' => __('contact.mobile')]) !!}
+                            {!! Form::text('mobile', null, [
+                                'class' => 'form-control',
+                                'required',
+                                'maxlength' => 11,
+                                'pattern' => '[0-9]{11}',
+                                'placeholder' => __('contact.mobile'),
+                            ]) !!}
                         </div>
                     </div>
                 </div>
@@ -120,10 +126,10 @@
                     <div class="form-group">
                         {!! Form::label('address_line_1', __('tailoring.address') . ':') !!}
                         {!! Form::text('address_line_1', null, [
-    'class' => 'form-control',
-    'placeholder' => __('tailoring.address'),
-    'rows' => 3,
-]) !!}
+                            'class' => 'form-control',
+                            'placeholder' => __('tailoring.address'),
+                            'rows' => 3,
+                        ]) !!}
                     </div>
                 </div>
                 <div class="col-md-6 lead_additional_div">
@@ -134,34 +140,34 @@
                                 <i class="fa fa-user"></i>
                             </span>
                             {!! Form::select('user_id[]', $users ?? [], null, [
-    'class' => 'form-control select2',
-    'id' => 'user_id',
-    'multiple',
-    'required',
-    'style' => 'width: 100%;',
-]) !!}
+                                'class' => 'form-control select2',
+                                'id' => 'user_id',
+                                'multiple',
+                                'required',
+                                'style' => 'width: 100%;',
+                            ]) !!}
                         </div>
                     </div>
                 </div>
 
                 <!-- User in create customer & supplier -->
                 @if (config('constants.enable_contact_assign') && $type !== 'lead')
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        {!! Form::label('assigned_to_users', __('lang_v1.assigned_to') . ':') !!}
-                                        <div class="input-group">
-                                            <span class="input-group-addon">
-                                                <i class="fa fa-user"></i>
-                                            </span>
-                                            {!! Form::select('assigned_to_users[]', $users ?? [], null, [
-                        'class' => 'form-control select2',
-                        'id' => 'assigned_to_users',
-                        'multiple',
-                        'style' => 'width: 100%;',
-                    ]) !!}
-                                        </div>
-                                    </div>
-                                </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            {!! Form::label('assigned_to_users', __('lang_v1.assigned_to') . ':') !!}
+                            <div class="input-group">
+                                <span class="input-group-addon">
+                                    <i class="fa fa-user"></i>
+                                </span>
+                                {!! Form::select('assigned_to_users[]', $users ?? [], null, [
+                                    'class' => 'form-control select2',
+                                    'id' => 'assigned_to_users',
+                                    'multiple',
+                                    'style' => 'width: 100%;',
+                                ]) !!}
+                            </div>
+                        </div>
+                    </div>
                 @endif
 
 
@@ -330,14 +336,14 @@
                                 @show_tooltip(__('tooltip.pay_term'))
                                 <br />
                                 {!! Form::number('pay_term_number', null, [
-    'class' => 'form-control width-40 pull-left',
-    'placeholder' => __('contact.pay_term'),
-]) !!}
+                                    'class' => 'form-control width-40 pull-left',
+                                    'placeholder' => __('contact.pay_term'),
+                                ]) !!}
 
                                 {!! Form::select('pay_term_type', ['months' => __('lang_v1.months'), 'days' => __('lang_v1.days')], '', [
-    'class' => 'form-control width-60 pull-left',
-    'placeholder' => __('messages.please_select'),
-]) !!}
+                                    'class' => 'form-control width-60 pull-left',
+                                    'placeholder' => __('messages.please_select'),
+                                ]) !!}
                             </div>
                         </div>
                     </div>
@@ -568,8 +574,7 @@
                     : '';
                     @endphp
 
-                    @if (!empty($custom_labels['shipping']['is_custom_field_1_contact_default']) &&
-                    !empty($shipping_custom_label_1))
+                    @if (!empty($custom_labels['shipping']['is_custom_field_1_contact_default']) && !empty($shipping_custom_label_1))
                     @php
                     $label_1 = $shipping_custom_label_1 . ':';
                     @endphp
@@ -584,8 +589,7 @@
                         </div>
                     </div>
                     @endif
-                    @if (!empty($custom_labels['shipping']['is_custom_field_2_contact_default']) &&
-                    !empty($shipping_custom_label_2))
+                    @if (!empty($custom_labels['shipping']['is_custom_field_2_contact_default']) && !empty($shipping_custom_label_2))
                     @php
                     $label_2 = $shipping_custom_label_2 . ':';
                     @endphp
@@ -600,8 +604,7 @@
                         </div>
                     </div>
                     @endif
-                    @if (!empty($custom_labels['shipping']['is_custom_field_3_contact_default']) &&
-                    !empty($shipping_custom_label_3))
+                    @if (!empty($custom_labels['shipping']['is_custom_field_3_contact_default']) && !empty($shipping_custom_label_3))
                     @php
                     $label_3 = $shipping_custom_label_3 . ':';
                     @endphp
@@ -616,8 +619,7 @@
                         </div>
                     </div>
                     @endif
-                    @if (!empty($custom_labels['shipping']['is_custom_field_4_contact_default']) &&
-                    !empty($shipping_custom_label_4))
+                    @if (!empty($custom_labels['shipping']['is_custom_field_4_contact_default']) && !empty($shipping_custom_label_4))
                     @php
                     $label_4 = $shipping_custom_label_4 . ':';
                     @endphp
@@ -632,8 +634,7 @@
                         </div>
                     </div>
                     @endif
-                    @if (!empty($custom_labels['shipping']['is_custom_field_5_contact_default']) &&
-                    !empty($shipping_custom_label_5))
+                    @if (!empty($custom_labels['shipping']['is_custom_field_5_contact_default']) && !empty($shipping_custom_label_5))
                     @php
                     $label_5 = $shipping_custom_label_5 . ':';
                     @endphp
@@ -670,18 +671,18 @@
                 </div>
                 @endfor
                 @endif --}}
+                </div>
             </div>
+            @include('layouts.partials.module_form_part')
         </div>
-        @include('layouts.partials.module_form_part')
-    </div>
 
-    <div class="modal-footer">
-        <button type="submit" class="tw-dw-btn tw-dw-btn-primary tw-text-white">@lang('messages.save')</button>
-        <button type="button" class="tw-dw-btn tw-dw-btn-neutral tw-text-white"
-            data-dismiss="modal">@lang('messages.close')</button>
-    </div>
+        <div class="modal-footer">
+            <button type="submit" class="tw-dw-btn tw-dw-btn-primary tw-text-white">@lang('messages.save')</button>
+            <button type="button" class="tw-dw-btn tw-dw-btn-neutral tw-text-white"
+                data-dismiss="modal">@lang('messages.close')</button>
+        </div>
 
-    {!! Form::close() !!}
+        {!! Form::close() !!}
 
-</div><!-- /.modal-content -->
+    </div><!-- /.modal-content -->
 </div><!-- /.modal-dialog -->
