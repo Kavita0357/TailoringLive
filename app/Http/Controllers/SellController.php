@@ -129,7 +129,7 @@ class SellController extends Controller
 
         $label = __('tailoring.preparing');
         $status_class = '';
-        $style = '#9ccf73;';
+        $style = '#9CCF73 !important';
 
         if ($total_qty > 0 && $delivered_qty >= $total_qty) {
             $label = __('tailoring.delivered');
@@ -144,8 +144,8 @@ class SellController extends Controller
             $status_class = 'bg-info';
             $style = '';
         } elseif ($delivery_status == 'preparing' && $cloth_count > 1) {
-            $status_class = 'bg-green';
-            $style = '';
+            $status_class = '';
+            $style = '#9CCF73 !important';
         }
 
         return [
@@ -707,16 +707,16 @@ class SellController extends Controller
                             $status_color = 'bg-green';
                         } elseif ($has_tailor) {
                             $delivery_status = __('tailoring.preparing');
-                            $status_color = '#9ccf73';
+                            $status_color = '#9CCF73 !important';
                         } elseif ($row->delivery_status == 'received') {
                             $delivery_status = __('tailoring.pending');
                             $status_color = 'bg-info';
                         } else {
                             $delivery_status = __('tailoring.preparing');
-                            $status_color = '#9ccf73';
+                            $status_color = '#9CCF73 !important';
                         }
 
-                        return '<span class="label ' . $status_color . '" style="background-color: ' . $status_color . '">' . $delivery_status . '</span>';
+                        return '<a href="#" class="btn-modal" data-href="' . action([\App\Http\Controllers\SellController::class, 'editShipping'], [$row->id]) . '" data-container=".view_modal"><span class="label ' . $status_color . '" style="background-color: ' . $status_color . '">' . $delivery_status . '</span></a>';
                     } else {
                         $status_color = ! empty($this->delivery_status_colors[$row->delivery_status]) ? $this->delivery_status_colors[$row->delivery_status] : 'bg-gray';
                         $status = ! empty($row->delivery_status) ? '<a href="#" class="btn-modal" data-href="' . action([\App\Http\Controllers\SellController::class, 'editShipping'], [$row->id]) . '" data-container=".view_modal"><span class="label ' . $status_color . '">' . $delivery_statuses[$row->delivery_status] . '</span></a>' : '';
@@ -740,7 +740,7 @@ class SellController extends Controller
                         return '<span class="label bg-green">Ready for Delivery (' . $total . '/' . $total . ')</span>';
                     }
                     if ($has_tailor || $completed > 0) {
-                        return '<span class="label" style="background-color: #9CCF73">In Progress (' . $completed . '/' . $total . ')</span>';
+                        return '<span class="label" style="background-color: #9CCF73 !important;">In Progress (' . $completed . '/' . $total . ')</span>';
                     }
                     return '<span class="label bg-info">Received</span>';
                 })
