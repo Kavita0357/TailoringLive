@@ -142,9 +142,10 @@
                                     <tr>
                                         {{-- <th>@lang('messages.action')</th> --}}
                                         <th>@lang('tailoring.date')</th>
+                                        <th>@lang('tailoring.order_id')</th>
+                                        <th>@lang('tailoring.tailor_master')</th>
                                         <th>@lang('tailoring.particulars')</th>
                                         <th>@lang('tailoring.wages')</th>
-                                        <th>@lang('tailoring.tailor_master')</th>
                                         <th>@lang('tailoring.payment_status')</th>
                                         <th>@lang('tailoring.total_paid')</th>
                                         <th>@lang('tailoring.total_due')</th>
@@ -209,6 +210,18 @@
                             name: 'transaction_date'
                         },
                         {
+                            data: 'order_id',
+                            name: 'invoice_no',
+                            orderable: false,
+                            searchable: false
+                        },
+                        {
+                            data: 'tailor_master',
+                            name: 'tailor_master',
+                            orderable: false,
+                            searchable: false
+                        },
+                        {
                             data: 'particulars',
                             name: 'particulars',
                             orderable: false,
@@ -218,12 +231,6 @@
                             data: 'total_wages',
                             name: 'total_wages',
                             render: $.fn.dataTable.render.number(',', '.', 2, ''),
-                            orderable: false,
-                            searchable: false
-                        },
-                        {
-                            data: 'tailor_master',
-                            name: 'tailor_master',
                             orderable: false,
                             searchable: false
                         },

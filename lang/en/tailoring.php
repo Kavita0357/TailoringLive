@@ -15,6 +15,7 @@ return [
     'serial_no' => 'Serial No.',
     'new_order' => 'New Order',
     'order_no' => 'Order No.',
+    'order_id' => 'Order ID',
     'need_to_assign' => 'Need to assign',
     'delivery_status' => 'Delivery status',
     'style_measurement' => 'MEASUREMENT & STYLE',

@@ -681,6 +681,9 @@ class ManageUserController extends Controller
                     ->editColumn('added_on', function ($row) {
                         return \Carbon::parse($row->transaction_date)->format(session('business.date_format') . ' H:i');
                     })
+                    ->addColumn('order_id', function ($row) {
+                        return '<a href="#" class="btn-modal" data-container=".view_modal" data-href="' . action([\App\Http\Controllers\SellController::class, 'show'], [$row->id]) . '">' . $row->invoice_no . '</a>';
+                    })
                     ->addColumn('particulars', function ($row) {
                         $particulars = [];
                         $filter_tailor_id = request()->input('tailoring_master_id');
@@ -746,7 +749,7 @@ class ManageUserController extends Controller
                         $total_paid = $row->payment_lines->sum('amount');
                         return max(0, $row->final_total - $total_paid);
                     })
-                    ->rawColumns(['payment_status', 'invoice_no'])
+                    ->rawColumns(['payment_status', 'invoice_no', 'order_id'])
                     ->with([
                         'totals' => [
                             'total_tailor_masters' => $total_tailor_masters,
