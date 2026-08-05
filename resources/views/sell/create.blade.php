@@ -350,31 +350,7 @@
                     @endif
 
                     @if ($sale_type == 'order')
-                                            <input type="hidden" name="delivery_status" id="delivery_status" value="pending">
-
-                        {{-- <div
-                            class="delivery_status @if (in_array($status, ['draft', 'quotation'])) hide @endif @if (!empty($commission_agent)) col-sm-3 @else col-sm-4 @endif">
-                            <div class="form-group">
-                                {!! Form::label('delivery_status', __('tailoring.delivery_status') . ':*') !!}
-                                {!! Form::select('delivery_status', $delivery_statuses, null, [
-                                    'class' => 'form-control',
-                                    'id' => 'delivery_status',
-                                    'placeholder' => __('messages.please_select'),
-                                    'required',
-                                ], ['partially_delivered' => ['disabled' => true]]) !!}
-                                <p id="delivery_status_subtitle" style="color: #c9302c; font-weight: bold; margin-top: 5px; display: none;"></p>
-                            </div>
-                        </div> --}}
-                        <div class="tailoring_master @if (!empty($commission_agent)) col-sm-3 @else col-sm-4 @endif">
-                            <div class="form-group">
-                                {!! Form::label('tailoring_master', __('tailoring.assign_to_tailoring_master') . ':') !!}
-                                {!! Form::select('tailoring_master', $tailor_masters, null, [
-                                    'class' => 'form-control',
-                                    'id' => 'common_tailoring_master',
-                                    'placeholder' => __('messages.please_select'),
-                                ]) !!}
-                            </div>
-                        </div>
+                        <input type="hidden" name="delivery_status" id="delivery_status" value="pending">
                     @endif
                     @if ($sale_type != 'sales_order' && $sale_type != 'order')
                         <div class="col-sm-3">
@@ -1543,7 +1519,7 @@
                 $innerTailoringMasters.each(function() {
                     if ($(this).val()) {
                         hasIndividualAssignments = true;
-                        return false; 
+                        return false;
                     }
                 });
 
@@ -1570,7 +1546,10 @@
                 var hasAnyTailor = !!commonValue;
                 if (!hasAnyTailor) {
                     $(".pos_cloth_div select[name*='[tailoring_master]']").each(function() {
-                        if ($(this).val()) { hasAnyTailor = true; return false; }
+                        if ($(this).val()) {
+                            hasAnyTailor = true;
+                            return false;
+                        }
                     });
                 }
                 $('#delivery_status').val(hasAnyTailor ? 'preparing' : 'pending');
@@ -1615,11 +1594,11 @@
 
             $(document).on('change', '#delivery_status', function() {
                 var status = $(this).val();
-                
+
                 if (status === 'ready_to_deliver') {
                     var allAssigned = true;
                     var commonValue = $('#common_tailoring_master').val();
-                    
+
                     if (!commonValue) {
                         var hasItems = false;
                         $(".pos_cloth_div select[name*='[tailoring_master]']").each(function() {
@@ -1629,17 +1608,19 @@
                                 return false; // break
                             }
                         });
-                        
+
                         // If no items, we still allow or disallow? Usually, an order needs items. 
                         // But let's just base it on items present.
                         if (hasItems && !allAssigned) {
-                            toastr.error("Cannot select 'Ready to Deliver' until all Tailormasters are assigned.");
+                            toastr.error(
+                                "Cannot select 'Ready to Deliver' until all Tailormasters are assigned."
+                                );
                             $(this).val(previous_delivery_status || 'preparing');
                             status = $(this).val(); // reset status for subtitle update
                         }
                     }
                 }
-                
+
                 previous_delivery_status = status;
                 updateSubtitle();
             });

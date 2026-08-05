@@ -18,15 +18,6 @@
                 <div class="col">
                     <h4 class="modal-title">@lang('tailoring.assign_to_tailoring_master') </h4>
                 </div>
-                <div class="col">
-                    <div class="form-group">
-                        {!! Form::select('tailoring_master', $tailor_masters, $transaction->tailoring_master_id ?? null, [
-                            'id' => 'common_tailoring_master',
-                            'class' => 'form-control select2',
-                            'placeholder' => __('tailoring.select_tailoring_master'),
-                        ]) !!}
-                    </div>
-                </div>
             </div>
         </div>@php
             $grouped_sell_details = $sell_details->groupBy('cloth_id');
@@ -178,7 +169,8 @@
                     @endforeach
                 </tbody>
             </table>
-            <div id="assign_tailor_error" class="text-danger" style="display: none; font-weight: bold; margin-top: 10px;"></div>
+            <div id="assign_tailor_error" class="text-danger"
+                style="display: none; font-weight: bold; margin-top: 10px;"></div>
             @if (isset($activities) && !empty($activities))
                 <div class="row">
                     <div class="col-md-12">
@@ -440,9 +432,10 @@
                 $(this).find('.assigned-qty-input').each(function(idx) {
                     var currentQty = parseInt($(this).val()) || 0;
                     assigned_sum += currentQty;
-                    
+
                     if (currentQty > 0) {
-                        var tailorVal = $row.find('.assignment-tailor-select').eq(idx).val();
+                        var tailorVal = $row.find('.assignment-tailor-select').eq(idx)
+                            .val();
                         if (!tailorVal && !commonValue) {
                             missingTailor = true;
                         }
@@ -450,13 +443,16 @@
                 });
 
                 if (assigned_sum > total_qty) {
-                    $('#assign_tailor_error').text(`Total assigned quantity for "${cloth_name}" cannot exceed ${total_qty} (currently ${assigned_sum}).`).show();
+                    $('#assign_tailor_error').text(
+                        `Total assigned quantity for "${cloth_name}" cannot exceed ${total_qty} (currently ${assigned_sum}).`
+                        ).show();
                     isValid = false;
                     return false;
                 }
-                
+
                 if (missingTailor) {
-                    $('#assign_tailor_error').text(`Please select a TailorMaster for "${cloth_name}".`).show();
+                    $('#assign_tailor_error').text(
+                        `Please select a TailorMaster for "${cloth_name}".`).show();
                     isValid = false;
                     return false;
                 }

@@ -324,19 +324,6 @@
                             </div>
                         </div>
                     @endif
-                    @if ($transaction->type == 'order')
-                        <div class="tailoring_master @if (!empty($commission_agent)) col-sm-3 @else col-sm-4 @endif">
-                            <div class="form-group">
-                                {!! Form::label('tailoring_master', __('tailoring.assign_to_tailoring_master') . ':') !!}
-
-                                {!! Form::select('tailoring_master', $tailor_masters, $transaction->tailoring_master_id ?? null, [
-                                    'class' => 'form-control select2',
-                                    'id' => 'common_tailoring_master',
-                                    'placeholder' => __('messages.please_select'),
-                                ]) !!}
-                            </div>
-                        </div>
-                    @endif
                     @if ($transaction->type != 'order' && $transaction->status == 'draft')
                         <div class="col-sm-3">
                             <div class="form-group">
@@ -1474,7 +1461,7 @@
                 $innerTailoringMasters.each(function() {
                     if ($(this).val()) {
                         hasIndividualAssignments = true;
-                        return false; 
+                        return false;
                     }
                 });
 
@@ -1500,7 +1487,10 @@
                 var hasAnyTailor = !!commonValue;
                 if (!hasAnyTailor) {
                     $(".pos_cloth_div select[name*='[tailoring_master]']").each(function() {
-                        if ($(this).val()) { hasAnyTailor = true; return false; }
+                        if ($(this).val()) {
+                            hasAnyTailor = true;
+                            return false;
+                        }
                     });
                 }
                 $('#delivery_status').val(hasAnyTailor ? 'preparing' : 'pending');
