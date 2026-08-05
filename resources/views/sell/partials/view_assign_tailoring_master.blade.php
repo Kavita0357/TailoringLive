@@ -18,7 +18,15 @@
                 <div class="col">
                     <h4 class="modal-title">@lang('tailoring.assign_to_tailoring_master') </h4>
                 </div>
-                {{-- Top common tailoring master selector removed; per-cloth assignment remains. --}}
+                <div class="col">
+                    <div class="form-group">
+                        {!! Form::select('tailoring_master', $tailor_masters, $transaction->tailoring_master_id ?? null, [
+                            'id' => 'common_tailoring_master',
+                            'class' => 'form-control select2',
+                            'placeholder' => __('tailoring.select_tailoring_master'),
+                        ]) !!}
+                    </div>
+                </div>
             </div>
         </div>@php
             $grouped_sell_details = $sell_details->groupBy('cloth_id');
@@ -170,8 +178,7 @@
                     @endforeach
                 </tbody>
             </table>
-            <div id="assign_tailor_error" class="text-danger"
-                style="display: none; font-weight: bold; margin-top: 10px;"></div>
+            <div id="assign_tailor_error" class="text-danger" style="display: none; font-weight: bold; margin-top: 10px;"></div>
             @if (isset($activities) && !empty($activities))
                 <div class="row">
                     <div class="col-md-12">
@@ -192,27 +199,65 @@
 <script>
     $(document).ready(function() {
 
+        var $commonTailoringMaster = $('#common_tailoring_master');
+
         var isSyncing = false;
 
-        function updateTailoringMasterDisabledStates() {
+        function updateTailoringMasterDisabledStates(isFromCommon) {
             if (isSyncing) return;
             isSyncing = true;
 
+            var commonValue = $commonTailoringMaster.val();
             var $innerTailoringMasters = $(".assignment-tailor-select");
-            // ensure per-cloth selects are enabled and not auto-overridden
-            $innerTailoringMasters.prop('disabled', false).trigger('change.select2');
+
+            if (isFromCommon) {
+                if (commonValue) {
+                    $innerTailoringMasters.each(function() {
+                        $(this).val(commonValue).prop('disabled', true).trigger('change.select2');
+                    });
+                } else {
+                    $innerTailoringMasters.each(function() {
+                        $(this).val('').prop('disabled', false).trigger('change.select2');
+                    });
+                }
+            } else {
+                var hasIndividualAssignment = false;
+                $innerTailoringMasters.each(function() {
+                    if ($(this).val()) {
+                        hasIndividualAssignment = true;
+                        return false;
+                    }
+                });
+
+                if (commonValue) {
+                    $innerTailoringMasters.each(function() {
+                        $(this).val(commonValue).prop('disabled', true).trigger('change.select2');
+                    });
+                    $commonTailoringMaster.prop('disabled', false).trigger('change.select2');
+                } else {
+                    if (hasIndividualAssignment) {
+                        $commonTailoringMaster.prop('disabled', true).trigger('change.select2');
+                    } else {
+                        $commonTailoringMaster.prop('disabled', false).trigger('change.select2');
+                    }
+                    $innerTailoringMasters.prop('disabled', false).trigger('change.select2');
+                }
+            }
 
             isSyncing = false;
         }
 
+        $commonTailoringMaster.on('change', function() {
+            updateTailoringMasterDisabledStates(true);
+        });
+
         $(document).on('change', '.assignment-tailor-select', function() {
-            updateTailoringMasterDisabledStates();
+            updateTailoringMasterDisabledStates(false);
         });
 
         var tailor_options_html = "";
-        var $firstAssignSelect = $(".assignment-tailor-select").first();
-        if ($firstAssignSelect.length) {
-            var $options = $firstAssignSelect.find('option').clone();
+        if ($commonTailoringMaster.length) {
+            var $options = $commonTailoringMaster.find('option').clone();
             $options.removeAttr('selected');
             var tempDiv = $('<div>').append($options);
             tailor_options_html = tempDiv.html();
@@ -319,6 +364,10 @@
             $tailorContainer.append(select_html);
 
             var $newSelect = $tailorContainer.find('.assignment-tailor-row').last().find('select');
+            var commonValue = $commonTailoringMaster.val();
+            if (commonValue) {
+                $newSelect.val(commonValue);
+            }
 
             initSelect2($newSelect);
             updateTailoringMasterDisabledStates();
@@ -369,9 +418,15 @@
                 }
             });
 
+            // Also ensure common select enabled so its value is available server-side
+            if ($commonTailoringMaster.prop('disabled')) {
+                $commonTailoringMaster.prop('disabled', false);
+            }
+
             validateAssignedQuantities();
 
             var isValid = true;
+            var commonValue = $commonTailoringMaster.val();
 
             $('.assigned-qty-container').each(function() {
                 var cloth_index = $(this).attr('data-cloth-index');
@@ -385,27 +440,23 @@
                 $(this).find('.assigned-qty-input').each(function(idx) {
                     var currentQty = parseInt($(this).val()) || 0;
                     assigned_sum += currentQty;
-
+                    
                     if (currentQty > 0) {
-                        var tailorVal = $row.find('.assignment-tailor-select').eq(idx)
-                            .val();
-                        if (!tailorVal) {
+                        var tailorVal = $row.find('.assignment-tailor-select').eq(idx).val();
+                        if (!tailorVal && !commonValue) {
                             missingTailor = true;
                         }
                     }
                 });
 
                 if (assigned_sum > total_qty) {
-                    $('#assign_tailor_error').text(
-                        `Total assigned quantity for "${cloth_name}" cannot exceed ${total_qty} (currently ${assigned_sum}).`
-                    ).show();
+                    $('#assign_tailor_error').text(`Total assigned quantity for "${cloth_name}" cannot exceed ${total_qty} (currently ${assigned_sum}).`).show();
                     isValid = false;
                     return false;
                 }
-
+                
                 if (missingTailor) {
-                    $('#assign_tailor_error').text(
-                        `Please select a TailorMaster for "${cloth_name}".`).show();
+                    $('#assign_tailor_error').text(`Please select a TailorMaster for "${cloth_name}".`).show();
                     isValid = false;
                     return false;
                 }

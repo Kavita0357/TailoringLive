@@ -350,9 +350,31 @@
                     @endif
 
                     @if ($sale_type == 'order')
-                        <input type="hidden" name="delivery_status" id="delivery_status" value="pending">
+                                            <input type="hidden" name="delivery_status" id="delivery_status" value="pending">
 
-                        {{-- Top common tailoring master selector removed per request; per-cloth assignment remains. --}}
+                        {{-- <div
+                            class="delivery_status @if (in_array($status, ['draft', 'quotation'])) hide @endif @if (!empty($commission_agent)) col-sm-3 @else col-sm-4 @endif">
+                            <div class="form-group">
+                                {!! Form::label('delivery_status', __('tailoring.delivery_status') . ':*') !!}
+                                {!! Form::select('delivery_status', $delivery_statuses, null, [
+                                    'class' => 'form-control',
+                                    'id' => 'delivery_status',
+                                    'placeholder' => __('messages.please_select'),
+                                    'required',
+                                ], ['partially_delivered' => ['disabled' => true]]) !!}
+                                <p id="delivery_status_subtitle" style="color: #c9302c; font-weight: bold; margin-top: 5px; display: none;"></p>
+                            </div>
+                        </div> --}}
+                        <div class="tailoring_master @if (!empty($commission_agent)) col-sm-3 @else col-sm-4 @endif">
+                            <div class="form-group">
+                                {!! Form::label('tailoring_master', __('tailoring.assign_to_tailoring_master') . ':') !!}
+                                {!! Form::select('tailoring_master', $tailor_masters, null, [
+                                    'class' => 'form-control',
+                                    'id' => 'common_tailoring_master',
+                                    'placeholder' => __('messages.please_select'),
+                                ]) !!}
+                            </div>
+                        </div>
                     @endif
                     @if ($sale_type != 'sales_order' && $sale_type != 'order')
                         <div class="col-sm-3">
@@ -1510,12 +1532,37 @@
                 });
             });
 
-            // common_tailoring_master removed
+            var $commonTailoringMaster = $('#common_tailoring_master');
             var $innerTailoringMasters = $(".pos_cloth_div select[name*='[tailoring_master]']");
 
             function updateTailoringMasterDisabledStates() {
-                // No global/common selector — ensure per-cloth selects remain enabled.
-                $innerTailoringMasters.prop('disabled', false).trigger('change.select2');
+                var commonValue = $commonTailoringMaster.val();
+                var $innerTailoringMasters = $(".pos_cloth_div select[name*='[tailoring_master]']");
+
+                var hasIndividualAssignments = false;
+                $innerTailoringMasters.each(function() {
+                    if ($(this).val()) {
+                        hasIndividualAssignments = true;
+                        return false; 
+                    }
+                });
+
+                if (commonValue) {
+                    $innerTailoringMasters.each(function() {
+                        $(this).prop('disabled', true).trigger('change.select2');
+                    });
+                    $innerTailoringMasters.each(function() {
+                        $(this).val(commonValue).trigger('change');
+                    });
+                } else {
+                    if (hasIndividualAssignments) {
+                        $commonTailoringMaster.prop('disabled', true).trigger('change.select2');
+                        $innerTailoringMasters.prop('disabled', false).trigger('change.select2');
+                    } else {
+                        $commonTailoringMaster.prop('disabled', false).trigger('change.select2');
+                        $innerTailoringMasters.prop('disabled', false).trigger('change.select2');
+                    }
+                }
             }
 
             function updateDeliveryStatusByTailorMaster() {
@@ -1523,14 +1570,16 @@
                 var hasAnyTailor = !!commonValue;
                 if (!hasAnyTailor) {
                     $(".pos_cloth_div select[name*='[tailoring_master]']").each(function() {
-                        if ($(this).val()) {
-                            hasAnyTailor = true;
-                            return false;
-                        }
+                        if ($(this).val()) { hasAnyTailor = true; return false; }
                     });
                 }
                 $('#delivery_status').val(hasAnyTailor ? 'preparing' : 'pending');
             }
+
+            $('#common_tailoring_master').on('change', function() {
+                updateTailoringMasterDisabledStates();
+                updateDeliveryStatusByTailorMaster();
+            });
 
             $(document).on('change', ".pos_cloth_div select[name*='[tailoring_master]']", function() {
                 updateTailoringMasterDisabledStates();
@@ -1566,26 +1615,31 @@
 
             $(document).on('change', '#delivery_status', function() {
                 var status = $(this).val();
-
+                
                 if (status === 'ready_to_deliver') {
                     var allAssigned = true;
-                    var hasItems = false;
-                    $(".pos_cloth_div select[name*='[tailoring_master]']").each(function() {
-                        hasItems = true;
-                        if (!$(this).val()) {
-                            allAssigned = false;
-                            return false; // break
+                    var commonValue = $('#common_tailoring_master').val();
+                    
+                    if (!commonValue) {
+                        var hasItems = false;
+                        $(".pos_cloth_div select[name*='[tailoring_master]']").each(function() {
+                            hasItems = true;
+                            if (!$(this).val()) {
+                                allAssigned = false;
+                                return false; // break
+                            }
+                        });
+                        
+                        // If no items, we still allow or disallow? Usually, an order needs items. 
+                        // But let's just base it on items present.
+                        if (hasItems && !allAssigned) {
+                            toastr.error("Cannot select 'Ready to Deliver' until all Tailormasters are assigned.");
+                            $(this).val(previous_delivery_status || 'preparing');
+                            status = $(this).val(); // reset status for subtitle update
                         }
-                    });
-
-                    if (hasItems && !allAssigned) {
-                        toastr.error(
-                            "Cannot select 'Ready to Deliver' until all Tailormasters are assigned.");
-                        $(this).val(previous_delivery_status || 'preparing');
-                        status = $(this).val(); // reset status for subtitle update
                     }
                 }
-
+                
                 previous_delivery_status = status;
                 updateSubtitle();
             });

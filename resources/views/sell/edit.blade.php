@@ -324,7 +324,19 @@
                             </div>
                         </div>
                     @endif
-                    {{-- Top Assign TailorMaster removed as requested --}}
+                    @if ($transaction->type == 'order')
+                        <div class="tailoring_master @if (!empty($commission_agent)) col-sm-3 @else col-sm-4 @endif">
+                            <div class="form-group">
+                                {!! Form::label('tailoring_master', __('tailoring.assign_to_tailoring_master') . ':') !!}
+
+                                {!! Form::select('tailoring_master', $tailor_masters, $transaction->tailoring_master_id ?? null, [
+                                    'class' => 'form-control select2',
+                                    'id' => 'common_tailoring_master',
+                                    'placeholder' => __('messages.please_select'),
+                                ]) !!}
+                            </div>
+                        </div>
+                    @endif
                     @if ($transaction->type != 'order' && $transaction->status == 'draft')
                         <div class="col-sm-3">
                             <div class="form-group">
@@ -1447,7 +1459,64 @@
                 });
             });
 
-            // Tailoring master assignment logic removed from this edit view.
+            var $commonTailoringMaster = $('#common_tailoring_master');
+            var $innerTailoringMasters = $(".pos_cloth_div select[name*='[tailoring_master]']");
+            var isUpdatingTailoringMaster = false;
+
+            function updateTailoringMasterDisabledStates() {
+                if (isUpdatingTailoringMaster) return;
+                isUpdatingTailoringMaster = true;
+
+                var commonValue = $commonTailoringMaster.val();
+                var $innerTailoringMasters = $(".pos_cloth_div select[name*='[tailoring_master]']");
+
+                var hasIndividualAssignments = false;
+                $innerTailoringMasters.each(function() {
+                    if ($(this).val()) {
+                        hasIndividualAssignments = true;
+                        return false; 
+                    }
+                });
+
+                if (commonValue) {
+                    $innerTailoringMasters.each(function() {
+                        $(this).val(commonValue).prop('disabled', true).trigger('change.select2');
+                    });
+                } else {
+                    if (hasIndividualAssignments) {
+                        $commonTailoringMaster.prop('disabled', true).trigger('change.select2');
+                        $innerTailoringMasters.prop('disabled', false).trigger('change.select2');
+                    } else {
+                        $commonTailoringMaster.prop('disabled', false).trigger('change.select2');
+                        $innerTailoringMasters.prop('disabled', false).trigger('change.select2');
+                    }
+                }
+
+                isUpdatingTailoringMaster = false;
+            }
+
+            function updateDeliveryStatusByTailorMaster() {
+                var commonValue = $commonTailoringMaster.val();
+                var hasAnyTailor = !!commonValue;
+                if (!hasAnyTailor) {
+                    $(".pos_cloth_div select[name*='[tailoring_master]']").each(function() {
+                        if ($(this).val()) { hasAnyTailor = true; return false; }
+                    });
+                }
+                $('#delivery_status').val(hasAnyTailor ? 'preparing' : 'pending');
+            }
+
+            $('#common_tailoring_master').on('change', function() {
+                updateTailoringMasterDisabledStates();
+                updateDeliveryStatusByTailorMaster();
+            });
+
+            $(document).on('change', ".pos_cloth_div select[name*='[tailoring_master]']", function() {
+                updateTailoringMasterDisabledStates();
+                updateDeliveryStatusByTailorMaster();
+            });
+
+            updateTailoringMasterDisabledStates();
 
             var statusSubtitles = {
                 'received': "{{ __('tailoring.received_subtitle') }}",
@@ -1479,7 +1548,30 @@
             $(document).on('change', '#delivery_status', function() {
                 var status = $(this).val();
 
-                // Tailoring master assignment validation removed for this view.
+                if (status === 'ready_to_deliver') {
+                    var allAssigned = true;
+                    var commonValue = $('#common_tailoring_master').val();
+
+                    if (!commonValue) {
+                        var hasItems = false;
+                        $(".pos_cloth_div select[name*='[tailoring_master]']").each(
+                            function() {
+                                hasItems = true;
+                                if (!$(this).val()) {
+                                    allAssigned = false;
+                                    return false; // break
+                                }
+                            });
+
+                        if (hasItems && !allAssigned) {
+                            toastr.error(
+                                "Cannot select 'Ready to Deliver' until all Tailormasters are assigned."
+                            );
+                            $(this).val(previous_delivery_status || 'preparing');
+                            status = $(this).val(); // reset status for subtitle update
+                        }
+                    }
+                }
 
                 previous_delivery_status = status;
                 updateSubtitle();
