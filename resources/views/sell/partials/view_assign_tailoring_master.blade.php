@@ -50,7 +50,6 @@
                                         $assigned_sum += intval($sell_line->assigned_quantity);
                                     }
                                 }
-                                $remaining_qty = intval($total_qty) - $assigned_sum;
                             @endphp
                             <tr>
                                 <td>
@@ -67,37 +66,32 @@
                                         @php
                                             $row_i = 0;
                                         @endphp
-                                        @foreach ($valid_assignments as $sell_line)
-                                            <div class="assignment-qty-row form-group" style="margin-bottom: 10px;">
-                                                <input type="hidden"
-                                                    name="cloths[{{ $index }}][assignments][{{ $row_i }}][sell_line_id]"
-                                                    value="{{ $sell_line->sell_line_id }}">
-                                                <input
-                                                    class="form-control input_number row_discount_amount assigned-qty-input"
-                                                    name="cloths[{{ $index }}][assignments][{{ $row_i }}][assigned_qty]"
-                                                    type="number" min="1"
-                                                    value="{{ intval($sell_line->assigned_quantity) }}" required>
-                                            </div>
-                                            @php
-                                                $row_i++;
-                                            @endphp
-                                        @endforeach
-                                        @if ($assigned_sum == 0)
-                                            @for ($r = 0; $r < $remaining_qty; $r++)
+                                        @if (count($valid_assignments) > 0)
+                                            @foreach ($valid_assignments as $sell_line)
                                                 <div class="assignment-qty-row form-group" style="margin-bottom: 10px;">
                                                     <input type="hidden"
                                                         name="cloths[{{ $index }}][assignments][{{ $row_i }}][sell_line_id]"
-                                                        value="{{ $row_i == 0 ? $first_line->sell_line_id : '' }}">
+                                                        value="{{ $sell_line->sell_line_id }}">
                                                     <input
                                                         class="form-control input_number row_discount_amount assigned-qty-input"
                                                         name="cloths[{{ $index }}][assignments][{{ $row_i }}][assigned_qty]"
-                                                        type="number" min="1" max="{{ intval($total_qty) }}"
-                                                        value="1" required>
+                                                        type="number" min="1"
+                                                        value="{{ intval($sell_line->assigned_quantity) }}" required>
                                                 </div>
                                                 @php
                                                     $row_i++;
                                                 @endphp
-                                            @endfor
+                                            @endforeach
+                                        @else
+                                            <div class="assignment-qty-row form-group" style="margin-bottom: 10px;">
+                                                <input type="hidden"
+                                                    name="cloths[{{ $index }}][assignments][0][sell_line_id]"
+                                                    value="{{ $first_line->sell_line_id }}">
+                                                <input
+                                                    class="form-control input_number row_discount_amount assigned-qty-input"
+                                                    name="cloths[{{ $index }}][assignments][0][assigned_qty]"
+                                                    type="number" min="1" value="1" required>
+                                            </div>
                                         @endif
                                     </div>
                                     <span class="text-danger error-msg"
@@ -109,37 +103,15 @@
                                         @php
                                             $row_i = 0;
                                         @endphp
-                                        @foreach ($valid_assignments as $sell_line)
-                                            <div class="assignment-tailor-row form-group"
-                                                style="margin-bottom: 10px; display: flex; align-items: center; gap: 5px;">
-                                                <div style="flex-grow: 1;">
-                                                    {!! Form::select(
-                                                        'cloths[' . $index . '][assignments][' . $row_i . '][tailoring_master]',
-                                                        $tailor_masters,
-                                                        $sell_line->tailoring_master_id,
-                                                        [
-                                                            'class' => 'form-control select2 assignment-tailor-select',
-                                                            'placeholder' => __('tailoring.select_tailoring_master'),
-                                                        ],
-                                                    ) !!}
-                                                </div>
-                                                <button type="button"
-                                                    class="btn btn-xs btn-danger remove-assignment-row-btn"
-                                                    style="height: 34px;"><i class="fa fa-times"></i></button>
-                                            </div>
-                                            @php
-                                                $row_i++;
-                                            @endphp
-                                        @endforeach
-                                        @if ($assigned_sum == 0)
-                                            @for ($r = 0; $r < $remaining_qty; $r++)
+                                        @if (count($valid_assignments) > 0)
+                                            @foreach ($valid_assignments as $sell_line)
                                                 <div class="assignment-tailor-row form-group"
                                                     style="margin-bottom: 10px; display: flex; align-items: center; gap: 5px;">
                                                     <div style="flex-grow: 1;">
                                                         {!! Form::select(
                                                             'cloths[' . $index . '][assignments][' . $row_i . '][tailoring_master]',
                                                             $tailor_masters,
-                                                            null,
+                                                            $sell_line->tailoring_master_id,
                                                             [
                                                                 'class' => 'form-control select2 assignment-tailor-select',
                                                                 'placeholder' => __('tailoring.select_tailoring_master'),
@@ -153,7 +125,20 @@
                                                 @php
                                                     $row_i++;
                                                 @endphp
-                                            @endfor
+                                            @endforeach
+                                        @else
+                                            <div class="assignment-tailor-row form-group"
+                                                style="margin-bottom: 10px; display: flex; align-items: center; gap: 5px;">
+                                                <div style="flex-grow: 1;">
+                                                    {!! Form::select('cloths[' . $index . '][assignments][0][tailoring_master]', $tailor_masters, null, [
+                                                        'class' => 'form-control select2 assignment-tailor-select',
+                                                        'placeholder' => __('tailoring.select_tailoring_master'),
+                                                    ]) !!}
+                                                </div>
+                                                <button type="button"
+                                                    class="btn btn-xs btn-danger remove-assignment-row-btn"
+                                                    style="height: 34px;"><i class="fa fa-times"></i></button>
+                                            </div>
                                         @endif
                                     </div>
                                 </td>
@@ -188,6 +173,12 @@
     <!-- /.modal-content -->{!! Form::close() !!}
 </div>
 <!-- /.modal-dialog -->
+<select id="assignment_tailor_select_template" class="d-none">
+    <option value="">@lang('tailoring.select_tailoring_master')</option>
+    @foreach ($tailor_masters as $key => $value)
+        <option value="{{ $key }}">{{ $value }}</option>
+    @endforeach
+</select>
 <script>
     $(document).ready(function() {
 
@@ -247,12 +238,21 @@
             updateTailoringMasterDisabledStates(false);
         });
 
-        var tailor_options_html = "";
-        if ($commonTailoringMaster.length) {
+        var tailor_options_html = $('#assignment_tailor_select_template').html() || "";
+        if (!tailor_options_html && $commonTailoringMaster.length) {
             var $options = $commonTailoringMaster.find('option').clone();
             $options.removeAttr('selected');
             var tempDiv = $('<div>').append($options);
             tailor_options_html = tempDiv.html();
+        }
+        if (!tailor_options_html) {
+            var $firstAssignSelect = $(".assignment-tailor-select").first();
+            if ($firstAssignSelect.length) {
+                var $options = $firstAssignSelect.find('option').clone();
+                $options.removeAttr('selected');
+                var tempDiv = $('<div>').append($options);
+                tailor_options_html = tempDiv.html();
+            }
         }
 
         function reindexRows($rowContainer, isQty) {
@@ -445,7 +445,7 @@
                 if (assigned_sum > total_qty) {
                     $('#assign_tailor_error').text(
                         `Total assigned quantity for "${cloth_name}" cannot exceed ${total_qty} (currently ${assigned_sum}).`
-                        ).show();
+                    ).show();
                     isValid = false;
                     return false;
                 }
