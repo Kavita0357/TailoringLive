@@ -2195,6 +2195,7 @@ class SellController extends Controller
                 'transaction_sell_lines.completed_quantity',
                 'transaction_sell_lines.delivered_quantity',
                 'transaction_sell_lines.tailoring_master_id',
+                'transaction_sell_lines.assigned_quantity',
             ])
             ->get();
 

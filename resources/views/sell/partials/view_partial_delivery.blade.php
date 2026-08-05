@@ -38,19 +38,16 @@
                 </thead>
                 <tbody>
                     @foreach ($sell_details as $sell_line)
-                        <tr>
-                            @if($sell_line->cloth_name)
-                                @php
-                                    $completed = $sell_line->completed_quantity;
-                                    $delivered = $sell_line->delivered_quantity;
-                                    /* if ($transaction['delivery_status'] == 'ready_to_deliver') {
-                                        $completed = $sell_line->quantity_ordered;
-                                        // $delivered = $sell_line->delivered_quantity;
-                                    }else if ($transaction['delivery_status'] == 'delivered') {
-                                        $completed = $sell_line->quantity_ordered;
-                                        $delivered = $sell_line->quantity_ordered;
-                                    } */
-                                @endphp
+                        @php
+                            // Use assigned_quantity to determine how many items are assigned to tailor masters.
+                            $assigned_qty = isset($sell_line->assigned_quantity)
+                                ? intval($sell_line->assigned_quantity)
+                                : 0;
+                            $completed = $sell_line->completed_quantity;
+                            $delivered = $sell_line->delivered_quantity;
+                        @endphp
+                        <tr data-assigned-qty="{{ $assigned_qty }}">
+                            @if ($sell_line->cloth_name)
                                 <td>{{ $index + 1 }}</td>
                                 <td>{{ $sell_line->cloth_name }}</td>
                                 <td>{{ intval($sell_line->quantity_ordered) }}</td>
@@ -59,14 +56,16 @@
                                         value={{ $sell_line->sell_line_id }} />
                                     <input type="hidden" name="cloths[{{ $index }}][qty]"
                                         value={{ $sell_line->quantity_ordered }} />
-                                    <input class="form-control input_number row_discount_amount"
+                                    <input class="form-control input_number row_discount_amount assigned-aware"
                                         name="cloths[{{ $index }}][completed]" type="text"
-                                        value="{{ intval($completed) }}" required @if(!$has_tailoring_master) readonly @endif>
+                                        value="{{ intval($completed) }}" required
+                                        @if ($assigned_qty <= 0) readonly @endif>
                                 </td>
                                 <td>
-                                    <input class="form-control input_number row_discount_amount"
+                                    <input class="form-control input_number row_discount_amount assigned-aware"
                                         name="cloths[{{ $index }}][delivered]" type="text"
-                                        value="{{ intval($delivered) }}" required>
+                                        value="{{ intval($delivered) }}" required
+                                        @if ($assigned_qty <= 0) readonly @endif>
                                 </td>
                                 @php
                                     $index++;
@@ -84,8 +83,8 @@
                     </div>
                 </div>
             @endif
-            
-            @if(!$has_tailoring_master)
+
+            @if (!$has_tailoring_master)
                 <div class="row" style="margin-top: 10px;">
                     <div class="col-md-12">
                         <span style="color: #e3342f; font-weight: 600; font-size: 13px;">
@@ -99,6 +98,20 @@
                 <div class="col-md-12">
                     <span style="color: #e3342f; font-size: 13px;">
                         @lang('tailoring.qty_exceeded')
+                    </span>
+                </div>
+            </div>
+            <div class="row" style="margin-top: 10px; display: none;" id="partial_delivery_unassigned_error">
+                <div class="col-md-12">
+                    <span style="color: #e3342f; font-size: 13px;">
+                        @lang('tailoring.has_unassigned')
+                    </span>
+                </div>
+            </div>
+            <div class="row" style="margin-top: 10px; display: none;" id="partial_delivery_assigned_exceeded_error">
+                <div class="col-md-12">
+                    <span style="color: #e3342f; font-size: 13px;">
+                        @lang('tailoring.has_assigned_exceeded')
                     </span>
                 </div>
             </div>
@@ -120,21 +133,65 @@
                 let qtyInput = $(this).find('input[name$="[qty]"]');
                 if (qtyInput.length > 0) {
                     let qty = parseFloat(qtyInput.val()) || 0;
-                    let completed = parseFloat($(this).find('input[name$="[completed]"]').val()) || 0;
-                    let delivered = parseFloat($(this).find('input[name$="[delivered]"]').val()) || 0;
-                    
+                    let completed = parseFloat($(this).find('input[name$="[completed]"]')
+                        .val()) || 0;
+                    let delivered = parseFloat($(this).find('input[name$="[delivered]"]')
+                        .val()) || 0;
+
+                    // General quantity checks
                     if (completed > qty || delivered > qty || delivered > completed) {
                         isValid = false;
                         return false; // Break out of each loop
+                    }
+
+                    // Per-row assigned quantity checks
+                    let assignedQty = parseFloat($(this).data('assigned-qty')) || 0;
+
+                    // If nothing is assigned, user should not mark completed/delivered
+                    if (assignedQty <= 0 && (completed > 0 || delivered > 0)) {
+                        isValid = false;
+                        $(this).data('unassigned-error', 1);
+                        return false; // Break out of each loop
+                    }
+
+                    // If only part of the items are assigned, completed/delivered cannot exceed assignedQty
+                    if (assignedQty > 0 && assignedQty < qty && (completed > assignedQty ||
+                            delivered > assignedQty)) {
+                        isValid = false;
+                        $(this).data('assigned-exceeded-error', 1);
+                        return false;
                     }
                 }
             });
 
             if (!isValid) {
                 e.preventDefault();
-                $('#partial_delivery_error').show();
+                // If specific errors were set on any row, show corresponding messages
+                let hasUnassigned = $(this).find('tbody tr').filter(function() {
+                    return $(this).data('unassigned-error') == 1;
+                }).length > 0;
+                let hasAssignedExceeded = $(this).find('tbody tr').filter(function() {
+                    return $(this).data('assigned-exceeded-error') == 1;
+                }).length > 0;
+
+                if (hasUnassigned) {
+                    $('#partial_delivery_unassigned_error').show();
+                    $('#partial_delivery_error').hide();
+                    $('#partial_delivery_assigned_exceeded_error').hide();
+                } else if (hasAssignedExceeded) {
+                    $('#partial_delivery_assigned_exceeded_error').show();
+                    $('#partial_delivery_error').hide();
+                    $('#partial_delivery_unassigned_error').hide();
+                } else {
+                    $('#partial_delivery_error').show();
+                    $('#partial_delivery_unassigned_error').hide();
+                    $('#partial_delivery_assigned_exceeded_error').hide();
+                }
+                // Scroll to top of modal body to ensure message is visible
+                $('.modal-body').scrollTop(0);
             } else {
                 $('#partial_delivery_error').hide();
+                $('#partial_delivery_unassigned_error').hide();
             }
         });
     });

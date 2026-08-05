@@ -1321,6 +1321,33 @@ class ClothOrderPosController extends Controller
                 }
                 $only_payment = !$is_direct_sale && !auth()->user()->can('sell.update') && auth()->user()->can('edit_pos_payment');
 
+                // Prevent completing/delivering an order if any cloth is not assigned to a tailor master
+                $trying_to_complete_or_deliver = (isset($input['status']) && $input['status'] == 'completed') ||
+                    (isset($input['delivery_status']) && $input['delivery_status'] == 'delivered') ||
+                    (isset($input['shipping_status']) && $input['shipping_status'] == 'delivered');
+
+                if ($trying_to_complete_or_deliver) {
+                    $unassigned_count = ClothOrderLine::where('transaction_id', $id)
+                        ->whereNull('tailoring_master_id')
+                        ->whereNull('parent_sell_line_id')
+                        ->count();
+
+                    if ($unassigned_count > 0) {
+                        $output = [
+                            'success' => 0,
+                            'msg' => trans('tailoring.assign_tailormaster_first'),
+                        ];
+
+                        if (!$is_direct_sale) {
+                            return $output;
+                        } else {
+                            return redirect()
+                                ->action([\App\Http\Controllers\ClothOrderController::class, 'index'])
+                                ->with('status', $output);
+                        }
+                    }
+                }
+
                 //if edit pos not allowed and only edit payment allowed
                 if ($only_payment) {
                     DB::beginTransaction();

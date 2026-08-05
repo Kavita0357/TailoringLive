@@ -164,6 +164,8 @@ return [
     'assigned_qty_exceeded' => 'Assigned quantity cannot exceed order quantity.',
     'no_cloth' => 'No cloth data found!',
     'qty_exceeded' => 'Completed + Delivered quantity cannot exceed total quantity.',
+    'has_unassigned' => 'Some cloth items are not assigned to a Tailor Master; they cannot be marked completed or delivered.',
+    'has_assigned_exceeded' => 'Completed or delivered quantity cannot exceed the assigned quantity for a cloth item.',
     'tooltip_order_payment_dues' => "Pending payment for Orders. <br/><small class='text-muted'>Based on invoice pay term. <br/> Showing payments to be received in 7 days or less.</small>",
     "tailor_management" => "Tailor Management",
     "dashboard" => "Dashboard",
