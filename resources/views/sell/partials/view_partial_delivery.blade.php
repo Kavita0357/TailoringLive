@@ -94,6 +94,14 @@
                     </div>
                 </div>
             @endif
+
+            <div class="row" style="margin-top: 10px; display: none;" id="partial_delivery_error">
+                <div class="col-md-12">
+                    <span style="color: #e3342f; font-size: 13px;">
+                        @lang('tailoring.qty_exceeded')
+                    </span>
+                </div>
+            </div>
         </div>
         <div class="modal-footer">
             <button type="submit" class="tw-dw-btn tw-dw-btn-primary tw-text-white">@lang('messages.update')</button>
@@ -103,3 +111,31 @@
     </div><!-- /.modal-content -->
     {!! Form::close() !!}
 </div><!-- /.modal-dialog -->
+
+<script>
+    $(document).ready(function() {
+        $('#edit_partial_delivery_form').on('submit', function(e) {
+            let isValid = true;
+            $(this).find('tbody tr').each(function() {
+                let qtyInput = $(this).find('input[name$="[qty]"]');
+                if (qtyInput.length > 0) {
+                    let qty = parseFloat(qtyInput.val()) || 0;
+                    let completed = parseFloat($(this).find('input[name$="[completed]"]').val()) || 0;
+                    let delivered = parseFloat($(this).find('input[name$="[delivered]"]').val()) || 0;
+                    
+                    if (completed > qty || delivered > qty || delivered > completed) {
+                        isValid = false;
+                        return false; // Break out of each loop
+                    }
+                }
+            });
+
+            if (!isValid) {
+                e.preventDefault();
+                $('#partial_delivery_error').show();
+            } else {
+                $('#partial_delivery_error').hide();
+            }
+        });
+    });
+</script>

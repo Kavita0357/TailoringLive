@@ -178,6 +178,7 @@
                     @endforeach
                 </tbody>
             </table>
+            <div id="assign_tailor_error" class="text-danger" style="display: none; font-weight: bold; margin-top: 10px;"></div>
             @if (isset($activities) && !empty($activities))
                 <div class="row">
                     <div class="col-md-12">
@@ -379,6 +380,7 @@
 
                 $errorMsg.hide().text('');
             });
+            $('#assign_tailor_error').hide().text('');
 
             var $submitBtn = $('#assign_tailoring_master_form').find('button[type="submit"]');
             $submitBtn.prop('disabled', false);
@@ -414,14 +416,28 @@
                 var total_qty = parseInt($row.find('td').eq(2).text().trim()) || 0;
 
                 var assigned_sum = 0;
-                $(this).find('.assigned-qty-input').each(function() {
-                    assigned_sum += parseInt($(this).val()) || 0;
+                var missingTailor = false;
+
+                $(this).find('.assigned-qty-input').each(function(idx) {
+                    var currentQty = parseInt($(this).val()) || 0;
+                    assigned_sum += currentQty;
+                    
+                    if (currentQty > 0) {
+                        var tailorVal = $row.find('.assignment-tailor-select').eq(idx).val();
+                        if (!tailorVal && !commonValue) {
+                            missingTailor = true;
+                        }
+                    }
                 });
 
                 if (assigned_sum > total_qty) {
-                    toastr.error(
-                        `Total assigned quantity for "${cloth_name}" cannot exceed ${total_qty} (currently ${assigned_sum}).`
-                    );
+                    $('#assign_tailor_error').text(`Total assigned quantity for "${cloth_name}" cannot exceed ${total_qty} (currently ${assigned_sum}).`).show();
+                    isValid = false;
+                    return false;
+                }
+                
+                if (missingTailor) {
+                    $('#assign_tailor_error').text(`Please select a TailorMaster for "${cloth_name}".`).show();
                     isValid = false;
                     return false;
                 }
