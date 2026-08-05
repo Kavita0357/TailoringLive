@@ -201,39 +201,58 @@
 
         var $commonTailoringMaster = $('#common_tailoring_master');
 
-        function updateTailoringMasterDisabledStates() {
+        var isSyncing = false;
+
+        function updateTailoringMasterDisabledStates(isFromCommon) {
+            if (isSyncing) return;
+            isSyncing = true;
+
             var commonValue = $commonTailoringMaster.val();
             var $innerTailoringMasters = $(".assignment-tailor-select");
 
-            var hasIndividualAssignment = false;
-            $innerTailoringMasters.each(function() {
-                if ($(this).val()) {
-                    hasIndividualAssignment = true;
-                    return false;
-                }
-            });
-
-            if (commonValue) {
-                $innerTailoringMasters.each(function() {
-                    $(this).val(commonValue).prop('disabled', true).trigger('change.select2');
-                });
-                $commonTailoringMaster.prop('disabled', false).trigger('change.select2');
-            } else {
-                if (hasIndividualAssignment) {
-                    $commonTailoringMaster.prop('disabled', true).trigger('change.select2');
+            if (isFromCommon) {
+                if (commonValue) {
+                    $innerTailoringMasters.each(function() {
+                        $(this).val(commonValue).prop('disabled', true).trigger('change.select2');
+                    });
                 } else {
-                    $commonTailoringMaster.prop('disabled', false).trigger('change.select2');
+                    $innerTailoringMasters.each(function() {
+                        $(this).val('').prop('disabled', false).trigger('change.select2');
+                    });
                 }
-                $innerTailoringMasters.prop('disabled', false).trigger('change.select2');
+            } else {
+                var hasIndividualAssignment = false;
+                $innerTailoringMasters.each(function() {
+                    if ($(this).val()) {
+                        hasIndividualAssignment = true;
+                        return false;
+                    }
+                });
+
+                if (commonValue) {
+                    $innerTailoringMasters.each(function() {
+                        $(this).val(commonValue).prop('disabled', true).trigger('change.select2');
+                    });
+                    $commonTailoringMaster.prop('disabled', false).trigger('change.select2');
+                } else {
+                    if (hasIndividualAssignment) {
+                        $commonTailoringMaster.prop('disabled', true).trigger('change.select2');
+                    } else {
+                        $commonTailoringMaster.prop('disabled', false).trigger('change.select2');
+                    }
+                    $innerTailoringMasters.prop('disabled', false).trigger('change.select2');
+                }
             }
+
+            isSyncing = false;
         }
 
         $commonTailoringMaster.on('change', function() {
-            updateTailoringMasterDisabledStates();
+            updateTailoringMasterDisabledStates(true);
         });
 
         $(document).on('change', '.assignment-tailor-select', function() {
-            updateTailoringMasterDisabledStates();
+            updateTailoringMasterDisabledStates(false);
         });
 
         var tailor_options_html = "";
