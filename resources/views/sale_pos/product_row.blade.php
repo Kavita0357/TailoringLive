@@ -61,9 +61,6 @@
         </td>
         <td>
             <div class="input-group">
-                <span class="input-group-addon" style="padding: 6px 8px; background: transparent; border: none; font-weight: bold;">
-                    {{ session('currency')['symbol'] ?? '৳' }}
-                </span>
                 <input type="text" name="cloths[{{ $row_count }}][unit_price]"
                     class="form-control pos_unit_price input_number text-left"
                     value="{{ @num_format($product->unit_price_before_discount) }}">

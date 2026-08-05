@@ -3578,7 +3578,6 @@ function add_cloth_row(data, is_pos = false) {
 
         html += `<td class="v-center">
                 <div class="input-group">
-                <span class="input-group-addon" style="padding: 6px 8px; background: transparent; border: none; font-weight: bold;">${__currency_symbol}</span>
                 <input type="text" name="cloths[${rowIndex}][unit_price]" class="form-control pos_unit_price input_number text-left" value="${data.cloth.making_charge || 0}">
             </div>
             <input type="text" name="cloths[${rowIndex}][unit_price_inc_tax]" class="form-control hide pos_unit_price_inc_tax input_number" value="${data.cloth.making_charge || 0}">
