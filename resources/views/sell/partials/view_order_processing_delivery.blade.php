@@ -2,8 +2,41 @@
     .col {
         width: 50%;
     }
+
+    .order-processing-modal .modal-dialog {
+        max-width: 1100px;
+        width: 100%;
+    }
+
+    .order-processing-modal .assigned-qty-input,
+    .order-processing-modal .assignment-tailor-select,
+    .order-processing-modal .completed-input,
+    .order-processing-modal .delivered-input {
+        min-width: 100px;
+        max-width: 170px;
+        width: 100%;
+    }
+
+    .order-processing-modal .assignment-qty-row,
+    .order-processing-modal .assignment-tailor-row {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        flex-wrap: wrap;
+        margin-bottom: 8px;
+    }
+
+    .order-processing-modal .assigned-qty-container,
+    .order-processing-modal .tailor-select-container {
+        width: 100%;
+    }
+
+    .order-processing-modal th,
+    .order-processing-modal td {
+        white-space: normal;
+    }
 </style>
-<div class="modal-dialog modal-xl" role="document">
+<div class="modal-dialog modal-lg order-processing-modal" role="document">
     {!! Form::open([
         'url' => action([\App\Http\Controllers\SellController::class, 'updateOrderProcessingDelivery'], [$transaction->id]),
         'method' => 'put',
