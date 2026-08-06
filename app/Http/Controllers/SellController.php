@@ -567,8 +567,6 @@ class SellController extends Controller
                         }
 
                         if ($row->type == 'order') {
-                            $html .= '<li><a href="#" class="btn-modal" data-container=".partial_modal" data-href="' . route('sell.viewPatialDelivery', [$row->id]) . '"><i class="fas fa-truck" aria-hidden="true"></i> ' . __('tailoring.partial_delivery') . '</a></li>';
-
                             if (auth()->user()->can('print_invoice')) {
                                 $html .= '<li><a href="#" class="print-invoice" data-href="' . route('sell.printInvoice', [$row->id]) . '"><i class="fas fa-print" aria-hidden="true"></i> ' . __('lang_v1.print_invoice') . '</a></li>';
 
@@ -579,7 +577,6 @@ class SellController extends Controller
                             if (auth()->user()->can('print_invoice')) {
                                 $html .= '<li><a href="#" class="btn-modal" data-container=".print_measurements_modal" data-href="' . route('sell.viewMeasurement', [$row->id]) . '"><i class="fas fa-print" aria-hidden="true"></i> ' . __('tailoring.print_measurements') . '</a></li>';
                             }
-                            $html .= '<li><a href="#" class="btn-modal" data-container=".assign_tailoring_master_modal" data-href="' . route('sell.viewAssignTailoringMaster', [$row->id]) . '"><i class="fas fa-tshirt" aria-hidden="true"></i> ' . __('tailoring.assign_to_tailoring_master') . '</a></li>';
                             $html .= '<li><a href="#" class="btn-modal" data-container=".order_processing_delivery_modal" data-href="' . route('sell.viewOrderProcessingDelivery', [$row->id]) . '"><i class="fas fa-tasks" aria-hidden="true"></i> ' . __('tailoring.order_processing_delivery') . '</a></li>';
                             $html .= '<li class="divider"></li>';
                             if (! $only_shipments) {
