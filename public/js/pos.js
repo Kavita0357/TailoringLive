@@ -1082,6 +1082,10 @@ $(document).ready(function () {
         format: moment_date_format + ' ' + moment_time_format,
         ignoreReadonly: true,
     });
+    $('.pos_delivery_date').datetimepicker({
+        format: moment_date_format + ' ' + moment_time_format,
+        ignoreReadonly: true,
+    });
     $('#delivery_date').datetimepicker({
         format: moment_date_format + ' ' + moment_time_format,
         ignoreReadonly: true,
