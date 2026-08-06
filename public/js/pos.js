@@ -1082,9 +1082,25 @@ $(document).ready(function () {
         format: moment_date_format + ' ' + moment_time_format,
         ignoreReadonly: true,
     });
+    if ($('#pos_transaction_date').length) {
+        $('#pos_transaction_date').datetimepicker({
+            format: moment_date_format + ' ' + moment_time_format,
+        });
+    }
     $('#delivery_date').datetimepicker({
         format: moment_date_format + ' ' + moment_time_format,
         ignoreReadonly: true,
+    });
+
+    $(document).on('dp.change change', '#pos_transaction_date', function () {
+        if ($('#transaction_date').length) {
+            $('#transaction_date').val($(this).val());
+        }
+    });
+    $(document).on('dp.change change', '#transaction_date', function () {
+        if ($('#pos_transaction_date').length) {
+            $('#pos_transaction_date').val($(this).val());
+        }
     });
 
     //Direct sell submit

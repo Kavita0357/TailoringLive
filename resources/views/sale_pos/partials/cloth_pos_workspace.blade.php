@@ -18,7 +18,10 @@
     <main class="cloth-pos-order-panel">
         <div class="cloth-pos-card">
             <div class="cloth-pos-toolbar row">
-                <div class="col-md-4">
+                @php
+                    $col_class = !empty($pos_settings['enable_transaction_date']) ? 'col-md-3' : 'col-md-4';
+                @endphp
+                <div class="{{ $col_class }}">
                     <div class="cloth-custom-input-group">
                         <span class="input-icon"><i class="fa fa-user"></i></span>
                         <input type="hidden" id="default_customer_id" value="{{ $walk_in_customer['id'] ?? '' }}">
@@ -39,7 +42,23 @@
                         </button>
                     </div>
                 </div>
-                <div class="col-md-4">
+                @if (!empty($pos_settings['enable_transaction_date']))
+                    <div class="{{ $col_class }}">
+                        <div class="cloth-custom-input-group">
+                            <span class="input-icon"><i class="fa fa-calendar"></i></span>
+                            {!! Form::text('transaction_date', $default_datetime ?? @format_datetime($transaction->transaction_date ?? now()), [
+                                'class' => 'form-control',
+                                'required',
+                                'id' => 'transaction_date',
+                                'placeholder' => __('sale.sale_date'),
+                                'style' => 'font-size:12px; font-weight: 500',
+                            ]) !!}
+                        </div>
+                    </div>
+                @else
+                    {!! Form::hidden('transaction_date', $default_datetime ?? @format_datetime($transaction->transaction_date ?? now()), ['id' => 'transaction_date']) !!}
+                @endif
+                <div class="{{ $col_class }}">
                     <div class="cloth-custom-input-group">
                         {!! Form::select('search_cloth', $cloths, null, [
                             'id' => 'search_cloth',
@@ -48,7 +67,7 @@
                         ]) !!}
                     </div>
                 </div>
-                <div class="col-md-4">
+                <div class="{{ $col_class }}">
                     <div class="cloth-custom-input-group">
                         <span class="input-icon"><i class="fa fa-search"></i></span>
                         {!! Form::text('search_product', null, [

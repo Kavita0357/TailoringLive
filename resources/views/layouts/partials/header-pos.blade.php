@@ -246,20 +246,25 @@
                     <span class="input-group-addon tw-bg-[#646EE4]">
                         <i class="fa fa-calendar tw-font-semibold text-white"></i>
                     </span>
-                    {!! Form::text('transaction_date', @format_datetime('now'), [
-                        'class' => 'form-control text-white tw-font-semibold"',
-                        'id' => 'pos_transaction_date',
-                        'readOnly',
-                        'required',
-                    ]) !!}
+                    @php
+                        $order_date_attr = [
+                            'class' => 'form-control text-white tw-font-semibold',
+                            'id' => 'pos_transaction_date',
+                            'required',
+                        ];
+                        if (empty($pos_settings['enable_transaction_date'])) {
+                            $order_date_attr['readonly'] = 'readonly';
+                        }
+                    @endphp
+                    {!! Form::text('transaction_date', $default_datetime ?? @format_datetime($transaction->transaction_date ?? 'now'), $order_date_attr) !!}
                 </div>
                 <p class="tw-text-white"><strong>@lang('tailoring.delivery_date'): &nbsp;</strong></p>
                 <div class="input-group pos-delivery-date tw-bg-[#646EE4] tw-py-1.5 tw-px-2 tw-rounded-md">
                     <span class="input-group-addon tw-bg-[#646EE4]">
                         <i class="fa fa-calendar tw-font-semibold text-white"></i>
                     </span>
-                    {!! Form::text('delivery_date', @format_datetime('now'), [
-                        'class' => 'form-control text-white tw-font-semibold"',
+                    {!! Form::text('delivery_date', $default_datetime ?? @format_datetime($transaction->delivery_date ?? 'now'), [
+                        'class' => 'form-control text-white tw-font-semibold',
                         'id' => 'delivery_date',
                         'required',
                     ]) !!}

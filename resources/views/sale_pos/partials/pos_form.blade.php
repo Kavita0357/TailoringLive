@@ -107,7 +107,6 @@
                     </span>
                     {!! Form::text('transaction_date', $default_datetime, [
                         'class' => 'form-control',
-                        'readonly',
                         'required',
                         'id' => 'transaction_date',
                     ]) !!}

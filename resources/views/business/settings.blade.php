@@ -42,7 +42,7 @@
                             <a href="#"
                                 class="list-group-item text-center tw-font-bold tw-text-sm md:tw-text-base">@lang('business.sale')</a>
                             <a href="#"
-                                class="list-group-item text-center tw-font-bold tw-text-sm md:tw-text-base">@lang('sale.pos_sale')</a>
+                                class="list-group-item text-center tw-font-bold tw-text-sm md:tw-text-base">@lang('tailoring.cloth_pos')</a>
                             <a href="#"
                                 class="list-group-item text-center tw-font-bold tw-text-sm md:tw-text-base">@lang('purchase.purchases')</a>
                             <a href="#"

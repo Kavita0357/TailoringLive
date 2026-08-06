@@ -60,7 +60,7 @@
 									<span class="input-group-addon">
 										<i class="fa fa-calendar"></i>
 									</span>
-									{!! Form::text('transaction_date', @format_datetime($transaction->transaction_date), ['class' => 'form-control', 'readonly', 'required']); !!}
+									{!! Form::text('transaction_date', @format_datetime($transaction->transaction_date), ['class' => 'form-control', 'required', 'id' => 'transaction_date']); !!}
 								</div>
 							</div>
 						</div>
