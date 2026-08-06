@@ -462,6 +462,11 @@
             text-align: center;
         }
 
+        #cloth-pos-workspace .cloth-pos-currency-symbol {
+            display: inline-block !important;
+            font-weight: 700;
+        }
+
         #cloth-pos-workspace #pos_cloth_table td:nth-child(6) .pos_line_total_text {
             font-size: 15px;
             font-weight: 700;

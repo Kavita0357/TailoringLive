@@ -30,6 +30,34 @@
         .search-box-fabric .input-group {
             width: 90%
         }
+
+        #pos_cloth_table td .input-number {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            width: auto !important;
+            margin: 0 auto !important;
+        }
+        #pos_cloth_table td .input-number .input-group-btn {
+            display: inline-block !important;
+            width: auto !important;
+            float: none !important;
+        }
+        #pos_cloth_table td .input-number .input-group-btn .btn {
+            height: 34px !important;
+            padding: 6px 10px !important;
+        }
+        #pos_cloth_table td .input-number .form-control {
+            width: 45px !important;
+            height: 34px !important;
+            padding: 2px 4px !important;
+            text-align: center !important;
+            float: none !important;
+            flex: none !important;
+        }
+        .cloth-pos-currency-symbol {
+            display: none !important;
+        }
     </style>
     <!-- Content Header (Page header) -->
     <section class="content-header">

@@ -61,7 +61,7 @@
         </td>
         <td class="text-center">
             <div class="input-group" style="display:inline-flex; align-items:center; justify-content:center;">
-                <span style="font-weight:700; margin-right:4px;">{{ session('currency')['symbol'] ?? '৳' }}</span>
+                <span class="cloth-pos-currency-symbol" style="font-weight:700; margin-right:2px;">{{ session('currency')['symbol'] ?? '৳' }}</span>
                 <input type="text" name="cloths[{{ $row_count }}][unit_price]"
                     class="form-control pos_unit_price input_number text-center"
                     value="{{ @num_format($product->unit_price_before_discount) }}">

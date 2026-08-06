@@ -3569,14 +3569,14 @@ function add_cloth_row(data, is_pos = false) {
             <div class="input-group input-number">
                 <span class="input-group-btn">
                     <button type="button" class="btn btn-default btn-flat quantity-down">
-                        <i class="fa fa-minus"></i>
+                        <i class="fa fa-minus text-danger"></i>
                     </button>
                 </span>
                 <input type="text" class="form-control pos_quantity" name="cloths[${rowIndex}][quantity]"
                     value="1" data-min="1" data-rule-required="true">
                 <span class="input-group-btn">
                     <button type="button" class="btn btn-default btn-flat quantity-up">
-                        <i class="fa fa-plus"></i>
+                        <i class="fa fa-plus text-success"></i>
                     </button>
                 </span>
             </div>
@@ -3587,7 +3587,7 @@ function add_cloth_row(data, is_pos = false) {
                <input type="hidden" name="cloths[${rowIndex}][unit_price]" class="form-control pos_unit_price input_number" value="${initial_charge}">
             ` : ''}
         </td>`;
-                
+
     if (!is_pos) {
         let tailorOptions = '<option value="">Please Select</option>';
         let commonTailorMaster = $('#common_tailoring_master').val();
@@ -3600,7 +3600,7 @@ function add_cloth_row(data, is_pos = false) {
 
         html += `<td class="v-center text-center">
             <div class="input-group" style="display:inline-flex; align-items:center; justify-content:center;">
-                <span style="font-weight:700; margin-right:4px;">${__currency_symbol || '৳'}</span>
+                <span class="cloth-pos-currency-symbol" style="font-weight:700; margin-right:2px;">${$('#currency_symbol').val() || '৳'}</span>
                 <input type="text" name="cloths[${rowIndex}][unit_price]" class="form-control pos_unit_price input_number text-center" value="${data.cloth.making_charge || 0}">
             </div>
             <input type="text" name="cloths[${rowIndex}][unit_price_inc_tax]" class="form-control hide pos_unit_price_inc_tax input_number" value="${data.cloth.making_charge || 0}">
