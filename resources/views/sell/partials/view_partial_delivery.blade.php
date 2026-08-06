@@ -59,13 +59,13 @@
                                     <input class="form-control input_number row_discount_amount assigned-aware"
                                         name="cloths[{{ $index }}][completed]" type="text"
                                         value="{{ intval($completed) }}" required
-                                        @if (!$has_tailoring_master || $assigned_qty <= 0) readonly disabled @endif>
+                                        @if (empty($sell_line->tailoring_master_id) || $assigned_qty <= 0) readonly disabled @endif>
                                 </td>
                                 <td>
                                     <input class="form-control input_number row_discount_amount assigned-aware"
                                         name="cloths[{{ $index }}][delivered]" type="text"
                                         value="{{ intval($delivered) }}" required
-                                        @if (!$has_tailoring_master || $assigned_qty <= 0) readonly disabled @endif>
+                                        @if (empty($sell_line->tailoring_master_id) || $assigned_qty <= 0) readonly disabled @endif>
                                 </td>
                                 @php
                                     $index++;
