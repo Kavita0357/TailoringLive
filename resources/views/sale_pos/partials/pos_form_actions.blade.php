@@ -22,24 +22,18 @@
                     <button type="button"
                         class=" tw-flex tw-flex-row tw-items-center tw-justify-center tw-gap-1 tw-font-bold tw-text-white tw-cursor-pointer tw-text-xs md:tw-text-sm tw-bg-[#001F3E] tw-rounded-md tw-p-2 tw-w-[8.5rem] @if (!$is_mobile)  @endif no-print @if ($pos_settings['disable_pay_checkout'] != 0) hide @endif"
                         id="pos-finalize" title="@lang('lang_v1.tooltip_checkout_multi_pay')"><i class="fas fa-money-check-alt"
-                            aria-hidden="true"></i> @lang('lang_v1.checkout_multi_pay') </button>
+                            aria-hidden="true"></i> @if(!empty($edit)) @lang('messages.update') @else @lang('lang_v1.checkout_multi_pay') @endif </button>
                 @endif
 
                 @if (!Gate::check('disable_express_checkout') || auth()->user()->can('superadmin') || auth()->user()->can('admin'))
                     <button type="button"
                         class="tw-font-bold tw-text-white tw-cursor-pointer tw-text-xs md:tw-text-sm tw-bg-[rgb(40,183,123)] tw-p-2 tw-rounded-md tw-w-[5.5rem] tw-flex tw-flex-row tw-items-center tw-justify-center tw-gap-1 @if (!$is_mobile)  @endif no-print @if ($pos_settings['disable_express_checkout'] != 0 || !array_key_exists('cash', $payment_types)) hide @endif pos-express-finalize @if ($is_mobile) col-xs-6 @endif"
                         data-pay_method="cash" title="@lang('tooltip.express_checkout')"> <i class="fas fa-money-bill-alt"
-                            aria-hidden="true"></i> @lang('lang_v1.express_checkout_cash')</button>
+                            aria-hidden="true"></i> @if(!empty($edit)) @lang('messages.update') @else @lang('lang_v1.express_checkout_cash') @endif</button>
                 @endif
-                @if (empty($edit))
-                    <button type="button"
-                        class="tw-font-bold tw-text-white tw-cursor-pointer tw-text-xs md:tw-text-sm tw-bg-red-600 tw-p-2 tw-rounded-md tw-w-[5.5rem] tw-flex tw-flex-row tw-items-center tw-justify-center tw-gap-1"
-                        id="pos-cancel"> <i class="fas fa-window-close"></i> @lang('sale.cancel')</button>
-                @else
-                    <button type="button" class="btn-danger tw-dw-btn hide tw-dw-btn-xs" id="pos-delete"
-                        @if (!empty($only_payment)) disabled @endif> <i class="fas fa-trash-alt"></i>
-                        @lang('messages.delete')</button>
-                @endif
+                <button type="button"
+                    class="tw-font-bold tw-text-white tw-cursor-pointer tw-text-xs md:tw-text-sm tw-bg-red-600 tw-p-2 tw-rounded-md tw-w-[5.5rem] tw-flex tw-flex-row tw-items-center tw-justify-center tw-gap-1"
+                    id="pos-cancel"> <i class="fas fa-window-close"></i> @lang('sale.cancel')</button>
             </div>
             <div
                 class="tw-w-full md:tw-w-fit tw-flex tw-flex-col tw-items-end tw-gap-3 tw-hidden md:tw-block  tw-cursor-pointer">
@@ -73,27 +67,19 @@
                     <button type="button"
                         class="tw-hidden md:tw-flex md:tw-flex-row md:tw-items-center md:tw-justify-center md:tw-gap-1 tw-font-bold tw-text-white tw-cursor-pointer tw-text-xs md:tw-text-sm tw-bg-[#001F3E] tw-rounded-md tw-p-2 tw-w-[8.5rem] @if (!$is_mobile)  @endif no-print @if ($pos_settings['disable_pay_checkout'] != 0) hide @endif"
                         id="pos-finalize" title="@lang('lang_v1.tooltip_checkout_multi_pay')"><i class="fas fa-money-check-alt"
-                            aria-hidden="true"></i> @lang('lang_v1.checkout_multi_pay') </button>
+                            aria-hidden="true"></i> @if(!empty($edit)) @lang('messages.update') @else @lang('lang_v1.checkout_multi_pay') @endif </button>
                 @endif
 
                 @if (!Gate::check('disable_express_checkout') || auth()->user()->can('superadmin') || auth()->user()->can('admin'))
                     <button type="button"
                         class="tw-font-bold tw-text-white tw-cursor-pointer tw-text-xs md:tw-text-sm tw-bg-[rgb(40,183,123)] tw-p-2 tw-rounded-md tw-w-[8.5rem] tw-hidden md:tw-flex lg:tw-flex lg:tw-flex-row lg:tw-items-center lg:tw-justify-center lg:tw-gap-1 @if (!$is_mobile)  @endif no-print @if ($pos_settings['disable_express_checkout'] != 0 || !array_key_exists('cash', $payment_types)) hide @endif pos-express-finalize"
                         data-pay_method="cash" title="@lang('tooltip.express_checkout')"> <i class="fas fa-money-bill-alt"
-                            aria-hidden="true"></i> @lang('lang_v1.express_checkout_cash')</button>
+                            aria-hidden="true"></i> @if(!empty($edit)) @lang('messages.update') @else @lang('lang_v1.express_checkout_cash') @endif</button>
                 @endif
 
-                @if (empty($edit))
-                    <button type="button"
-                        class="tw-font-bold tw-text-white tw-cursor-pointer tw-text-xs md:tw-text-sm tw-bg-red-600 tw-p-2 tw-rounded-md tw-w-[8.5rem] tw-hidden md:tw-flex lg:tw-flex lg:tw-flex-row lg:tw-items-center lg:tw-justify-center lg:tw-gap-1"
-                        id="pos-cancel"> <i class="fas fa-window-close"></i> @lang('sale.cancel')</button>
-                @else
-                    <button type="button"
-                        class="tw-font-bold tw-text-white tw-cursor-pointer tw-text-xs md:tw-text-sm tw-bg-red-600 tw-p-2 tw-rounded-md tw-w-[8.5rem] tw-hidden md:tw-flex lg:tw-flex lg:tw-flex-row lg:tw-items-center lg:tw-justify-center lg:tw-gap-1 hide"
-                        id="pos-delete" @if (!empty($only_payment)) disabled @endif> <i
-                            class="fas fa-trash-alt"></i> @lang('messages.delete')</button>
-                @endif
-
+                <button type="button"
+                    class="tw-font-bold tw-text-white tw-cursor-pointer tw-text-xs md:tw-text-sm tw-bg-red-600 tw-p-2 tw-rounded-md tw-w-[8.5rem] tw-hidden md:tw-flex lg:tw-flex lg:tw-flex-row lg:tw-items-center lg:tw-justify-center lg:tw-gap-1"
+                    id="pos-cancel"> <i class="fas fa-window-close"></i> @lang('sale.cancel')</button>
             </div>
 
 

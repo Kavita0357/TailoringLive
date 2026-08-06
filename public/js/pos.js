@@ -18,6 +18,12 @@ $(document).ready(function () {
     } else {
         pos_form_obj = $('form#add_pos_sell_form');
     }
+
+    if ($('#cloth-pos-workspace').length > 0) {
+        $('table#pos_table tbody tr').each(function () {
+            style_cloth_pos_product_row($(this));
+        });
+    }
     if ($('form#edit_pos_sell_form').length > 0 || $('form#add_pos_sell_form').length > 0) {
         initialize_printer();
     }
@@ -2054,7 +2060,7 @@ function pos_total_row() {
 
     //updating shipping charges
     $('span#shipping_charges_amount').text(
-        __currency_trans_from_en(__read_number($('input#shipping_charges_modal')), false)
+        __currency_trans_from_en(__read_number($('input#shipping_charges_modal')), true)
     );
 
     $('.pos_product_div span.total_quantity').each(function () {
@@ -2070,11 +2076,11 @@ function pos_total_row() {
     });
 
     //$('span.unit_price_total').html(unit_price_total);
-    $('.pos_product_div span.price_total').html(__currency_trans_from_en(price_total, false));
-    $('.pos_cloth_div span.price_total').html(__currency_trans_from_en(cloth_total, false));
+    $('.pos_product_div span.price_total').html(__currency_trans_from_en(price_total, true));
+    $('.pos_cloth_div span.price_total').html(__currency_trans_from_en(cloth_total, true));
 
     $('span.price_total').not('.pos_product_div span.price_total, .pos_cloth_div span.price_total').each(function () {
-        $(this).html(__currency_trans_from_en(price_total + cloth_total, false));
+        $(this).html(__currency_trans_from_en(price_total + cloth_total, true));
     });
 
     calculate_billing_details(price_total + cloth_total);
@@ -2134,7 +2140,7 @@ function calculate_billing_details(price_total) {
         discount = parseFloat(discount) + parseFloat(total_customer_reward);
 
         if ($('input[name="is_direct_sale"]').length <= 0) {
-            $('span#total_discount').text(__currency_trans_from_en(discount, false));
+            $('span#total_discount').text(__currency_trans_from_en(discount, true));
         }
     }
 
@@ -2165,7 +2171,7 @@ function calculate_billing_details(price_total) {
         packing_charge = __calculate_amount($('#packing_charge_type').val(),
             __read_number($('input#packing_charge')), price_total);
 
-        $('#packing_charge_text').text(__currency_trans_from_en(packing_charge, false));
+        $('#packing_charge_text').text(__currency_trans_from_en(packing_charge, true));
     }
 
     var total_payable = price_total + order_tax - discount + shipping_charges + packing_charge + additional_expense;
@@ -2176,9 +2182,9 @@ function calculate_billing_details(price_total) {
 
     var round_off_amount = round_off_data.diff;
     if (round_off_amount != 0) {
-        $('span#round_off_text').text(__currency_trans_from_en(round_off_amount, false));
+        $('span#round_off_text').text(__currency_trans_from_en(round_off_amount, true));
     } else {
-        $('span#round_off_text').text(0);
+        $('span#round_off_text').text(__currency_trans_from_en(0, true));
     }
     $('input#round_off_amount').val(round_off_amount);
 
@@ -2188,7 +2194,7 @@ function calculate_billing_details(price_total) {
         curr_exchange_rate = __read_number($('#exchange_rate'));
     }
     var shown_total = total_payable_rounded * curr_exchange_rate;
-    $('span#total_payable').text(__currency_trans_from_en(shown_total, false));
+    $('span#total_payable').text(__currency_trans_from_en(shown_total, true));
 
     $('span.total_payable_span').text(__currency_trans_from_en(total_payable_rounded, true));
 
@@ -2208,7 +2214,7 @@ function pos_discount(total_amount) {
 
     var discount = __calculate_amount(calculation_type, calculation_amount, total_amount);
 
-    $('span#total_discount').text(__currency_trans_from_en(discount, false));
+    $('span#total_discount').text(__currency_trans_from_en(discount, true));
 
     return discount;
 }
@@ -2225,7 +2231,7 @@ function pos_order_tax(price_total, discount) {
         var order_tax = 0;
     }
 
-    $('span#order_tax').text(__currency_trans_from_en(order_tax, false));
+    $('span#order_tax').text(__currency_trans_from_en(order_tax, true));
 
     return order_tax;
 }
@@ -3592,8 +3598,11 @@ function add_cloth_row(data, is_pos = false) {
             tailorOptions += `<option value="${id}"${selected}>${name}</option>`;
         });
 
-        html += `<td class="v-center">
-                <input type="text" name="cloths[${rowIndex}][unit_price]" class="form-control pos_unit_price input_number" value="${data.cloth.making_charge || 0}">
+        html += `<td class="v-center text-center">
+            <div class="input-group" style="display:inline-flex; align-items:center; justify-content:center;">
+                <span style="font-weight:700; margin-right:4px;">${__currency_symbol || '৳'}</span>
+                <input type="text" name="cloths[${rowIndex}][unit_price]" class="form-control pos_unit_price input_number text-center" value="${data.cloth.making_charge || 0}">
+            </div>
             <input type="text" name="cloths[${rowIndex}][unit_price_inc_tax]" class="form-control hide pos_unit_price_inc_tax input_number" value="${data.cloth.making_charge || 0}">
         </td>
 

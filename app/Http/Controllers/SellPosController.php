@@ -886,6 +886,9 @@ class SellPosController extends Controller
                 'transaction_sell_lines.res_service_staff_id',
                 'units.id as unit_id',
                 'transaction_sell_lines.sub_unit_id',
+                'transaction_sell_lines.cloth_id',
+                'transaction_sell_lines.making_charge',
+                'transaction_sell_lines.tailoring_master_id',
 
                 //qty_available not added when negative to avoid max quanity getting decreased in edit and showing error in max quantity validation
                 DB::raw('IF(vld.qty_available > 0, vld.qty_available + transaction_sell_lines.quantity, transaction_sell_lines.quantity) AS qty_available'),
@@ -1063,7 +1066,14 @@ class SellPosController extends Controller
         $users = config('constants.enable_contact_assign') ? User::forDropdown($business_id, false, false, false, true) : [];
         $only_payment = request()->segment(2) == 'payment';
 
-        return view('sale_pos.edit')->with(compact('business_details', 'taxes', 'payment_types', 'walk_in_customer', 'sell_details', 'transaction', 'payment_lines', 'location_printer_type', 'shortcuts', 'commission_agent', 'categories', 'pos_settings', 'change_return', 'types', 'customer_groups', 'brands', 'accounts', 'waiters', 'redeem_details', 'edit_price', 'edit_discount', 'shipping_statuses', 'warranties', 'sub_type', 'pos_module_data', 'invoice_schemes', 'default_invoice_schemes', 'invoice_layouts', 'featured_products', 'customer_due', 'users', 'only_payment'));
+        $cloths = request()->segment(1) === 'cloth-pos'
+            ? Cloth::where('business_id', $business_id)->orderBy('cloth_name')->pluck('cloth_name', 'id')
+            : [];
+        $tailor_masters = request()->segment(1) === 'cloth-pos'
+            ? User::tailorMasters($business_id)
+            : [];
+
+        return view('sale_pos.edit')->with(compact('business_details', 'taxes', 'payment_types', 'walk_in_customer', 'sell_details', 'transaction', 'payment_lines', 'location_printer_type', 'shortcuts', 'commission_agent', 'categories', 'pos_settings', 'change_return', 'types', 'customer_groups', 'brands', 'accounts', 'waiters', 'redeem_details', 'edit_price', 'edit_discount', 'shipping_statuses', 'warranties', 'sub_type', 'pos_module_data', 'invoice_schemes', 'default_invoice_schemes', 'invoice_layouts', 'featured_products', 'customer_due', 'users', 'only_payment', 'cloths', 'tailor_masters'));
     }
 
     /**

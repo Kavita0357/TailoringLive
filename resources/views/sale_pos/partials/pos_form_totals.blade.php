@@ -13,7 +13,7 @@
                     <b>@lang('sale.discount') @show_tooltip(__('tooltip.sale_discount')) (-):</b>
                     <i class="fas fa-edit cursor-pointer" id="pos-edit-discount" title="@lang('sale.edit_discount')"
                         aria-hidden="true" data-toggle="modal" data-target="#posEditDiscountModal"></i>
-                    <span id="total_discount">0</span>
+                    <span id="total_discount">@format_currency(0)</span>
                     <input type="hidden" name="discount_type" id="discount_type"
                         value="@if (empty($edit)) {{ 'percentage' }}@else{{ $transaction->discount_type }} @endif"
                         data-default="percentage">
@@ -34,7 +34,7 @@
                     <b class=" ";>@lang('sale.order_tax')(+): @show_tooltip(__('tooltip.sale_tax'))</b>
                     <i class="fas fa-edit cursor-pointer" title="@lang('sale.edit_order_tax')" aria-hidden="true"
                         data-toggle="modal" data-target="#posEditOrderTaxModal" id="pos-edit-tax"></i>
-                    <span id="order_tax">0</span>
+                    <span id="order_tax">@format_currency(0)</span>
                     <input type="hidden" name="tax_rate_id" id="tax_rate_id"
                         value="@if (empty($edit)) {{ $business_details->default_sales_tax }} @else {{ $transaction->tax_id }} @endif"
                         data-default="{{ $business_details->default_sales_tax }}">
@@ -47,7 +47,7 @@
                     <b>@lang('sale.shipping')(+): @show_tooltip(__('tooltip.shipping'))</b>
                     <i class="fas fa-edit cursor-pointer" title="@lang('sale.shipping')" aria-hidden="true"
                         data-toggle="modal" data-target="#posShippingModal"></i>
-                    <span id="shipping_charges_amount">0</span>
+                    <span id="shipping_charges_amount">@format_currency(0)</span>
                     <input type="hidden" name="shipping_details" id="shipping_details"
                         value="@if (empty($edit)) {{ '' }}@else{{ $transaction->shipping_details }} @endif"
                         data-default="">
@@ -67,14 +67,14 @@
                 @if (in_array('types_of_service', $enabled_modules))
                     <div>
                         <b>@lang('lang_v1.packing_charge'):</b>
-                        <span id="packing_charge_text">0</span>
+                        <span id="packing_charge_text">@format_currency(0)</span>
                     </div>
                 @endif
 
                 @if (!empty($pos_settings['amount_rounding_method']) && $pos_settings['amount_rounding_method'] > 0)
                     <div>
                         <b>@lang('lang_v1.round_off'):</b>
-                        <span id="round_off_text">0</span>
+                        <span id="round_off_text">@format_currency(0)</span>
                     </div>
                 @endif
 
@@ -103,7 +103,7 @@
                 @endif --}}
                 <div style="font-size:20px;font-weight:700;">
                     <b>@lang('sale.total'):</b>
-                    <span class="price_total">0</span>
+                    <span class="price_total">@format_currency(0)</span>
                 </div>
 
 

@@ -121,18 +121,14 @@
 
         #pos_cloth_table tbody {
             width: 100%;
-            border: 1px dashed #e2e8f0;
             display:block;
-            padding:0px 8px 0px 8px;
-            background-color:#F8FAFC;
             height: auto;
             max-height: none;
             overflow-y: visible;
-            border-radius:8px;
         }
 
         #pos_cloth_table tbody:empty {
-            min-height: 350px;
+            min-height: 0px;
         }
 
         #cloth-pos-workspace .cloth-pos-product-details,
@@ -158,7 +154,7 @@
             border: 1px solid #e2e8f0;
             border-radius: 15px;
             box-shadow: 0 2px 9px rgba(15, 23, 42, .10);
-            padding: 14px;
+            padding: 10px;
             display: flex;
             flex-direction: column;
             flex: 1;
@@ -207,12 +203,22 @@
             overflow-x: auto;
             overflow-y: auto;
             scrollbar-gutter: stable;
+            display: flex;
+            flex-direction: column;
         }
 
         #cloth-pos-workspace .cloth-pos-table-wrap::-webkit-scrollbar {
             width: 10px;
         }
         
+        .combined-table-container {
+            border: 1px dashed #e2e8f0;
+            padding: 4px 6px;
+            background-color: #F8FAFC;
+            border-radius: 8px;
+            flex: 1;
+            min-height: 180px;
+        }
 
         #cloth-pos-workspace .table {
             margin: 0;
@@ -226,7 +232,7 @@
             color: #334155;
             font-size: 13px;
             font-weight: 700;
-            padding: 10px 8px;
+            padding: 6px 8px;
             white-space: nowrap;
             position: sticky;
             top: 0;
@@ -234,15 +240,20 @@
             z-index: 10;
         }
 
-        #pos_cloth_table {
+        #pos_cloth_table, #pos_table {
             border-collapse: separate !important;
-            border-spacing: 0 10px !important;
+            border-spacing: 0 4px !important;
+        }
+        
+        #pos_header_table {
+            border-collapse: separate !important;
+            border-spacing: 0 !important;
         }
 
-        #pos_cloth_table thead tr {
+        #pos_header_table thead tr {
             border-top: none !important;
             background: transparent;
-            padding: 8px 12px;
+            padding: 4px 8px;
             display: table;
             width: 100%;
             table-layout: fixed;
@@ -258,6 +269,7 @@
             border-top: 1px solid #e2e8f0;
             border-bottom: 1px solid #e2e8f0;
             background: #fff;
+            vertical-align: middle !important;
         }
 
         #pos_cloth_table>tbody>tr>td:first-child {
@@ -270,18 +282,27 @@
             border-radius: 0 8px 8px 0;
         }
 
+        #pos_table>tbody>tr {
+            display: table;
+            width: 100%;
+            table-layout: fixed;
+        }
+
         #pos_table>tbody>tr>td {
             border-top: 1px solid #e2e8f0;
             border-bottom: 1px solid #e2e8f0;
             background: #fff;
+            vertical-align: middle !important;
         }
 
         #pos_table>tbody>tr>td:first-child {
             border-left: 1px solid #e2e8f0;
+            border-radius: 8px 0 0 8px;
         }
 
         #pos_table>tbody>tr>td:last-child {
             border-right: 1px solid #e2e8f0;
+            border-radius: 0 8px 8px 0;
         }
 
         #cloth-pos-workspace .table>tbody>tr>td:first-child {
@@ -429,12 +450,16 @@
             font-weight: 600;
         }
 
+        #cloth-pos-workspace #pos_cloth_table td:nth-child(4) {
+            text-align: center;
+        }
+
         #cloth-pos-workspace #pos_cloth_table td:nth-child(4) .pos_unit_price {
             border: 0;
             background: transparent;
             box-shadow: none;
             font-weight: 700;
-            text-align: left;
+            text-align: center;
         }
 
         #cloth-pos-workspace #pos_cloth_table td:nth-child(6) .pos_line_total_text {
@@ -546,12 +571,16 @@
             display: block;
             text-align: center;
             font-weight: 700;
+            margin: 0;
         }
 
+        #cloth-pos-workspace #pos_table .fabric-making-charge,
+        #cloth-pos-workspace #pos_cloth_table .cloth-pos-fabric-row .fabric-making-charge,
         #cloth-pos-workspace #pos_table .fabric-tailor,
         #cloth-pos-workspace #pos_cloth_table .cloth-pos-fabric-row .fabric-tailor {
             font-weight: 700;
             text-align: center;
+            vertical-align: middle !important;
         }
 
         #cloth-pos-workspace #pos_table thead {
@@ -565,8 +594,8 @@
         #cloth-pos-workspace .cloth-pos-summary {
             position: relative;
             border-top: 1px solid #edf2f7;
-            margin-top: 8px;
-            padding-top: 9px;
+            margin-top: 4px;
+            padding-top: 4px;
             overflow-x: auto;
         }
 
@@ -700,16 +729,28 @@
         @media (max-width: 991px) {
             #cloth-pos-workspace {
                 display: block;
+                height: auto;
+                overflow: visible;
             }
 
             #cloth-pos-workspace .cloth-pos-sidebar,
             #cloth-pos-workspace .cloth-pos-order-panel {
                 width: 100%;
                 min-width: 0;
+                height: auto;
+            }
+            
+            #cloth-pos-workspace .cloth-pos-sidebar .row:last-child {
+                overflow: visible;
             }
 
             #cloth-pos-workspace .cloth-pos-sidebar {
                 margin-bottom: 12px;
+            }
+            
+            .content.no-print {
+                height: auto !important;
+                overflow-y: auto !important;
             }
         }
 

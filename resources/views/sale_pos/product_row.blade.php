@@ -59,10 +59,11 @@
                 </span>
             </div>
         </td>
-        <td>
-            <div class="input-group">
+        <td class="text-center">
+            <div class="input-group" style="display:inline-flex; align-items:center; justify-content:center;">
+                <span style="font-weight:700; margin-right:4px;">{{ session('currency')['symbol'] ?? '৳' }}</span>
                 <input type="text" name="cloths[{{ $row_count }}][unit_price]"
-                    class="form-control pos_unit_price input_number text-left"
+                    class="form-control pos_unit_price input_number text-center"
                     value="{{ @num_format($product->unit_price_before_discount) }}">
             </div>
 
@@ -341,7 +342,7 @@
             @endif
         </td>
 
-        <td class="v-center">
+        <td class="v-center text-center">
             {{-- If edit then transaction sell lines will be present --}}
             @if (!empty($product->transaction_sell_lines_id))
                 <input type="hidden" name="products[{{ $row_count }}][transaction_sell_lines_id]"
@@ -569,7 +570,7 @@
             </td>
         @else
             @if (!empty($pos_settings['inline_service_staff']))
-                <td class="v-center">
+                <td class="v-center text-center">
                     <div class="form-group">
                         <div class="input-group">
                             {!! Form::select(
