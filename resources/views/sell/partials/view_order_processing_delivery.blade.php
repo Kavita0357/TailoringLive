@@ -46,7 +46,7 @@
         <div class="modal-header">
             <div class="tw-flex tw-items-start tw-justify-between tw-gap-6">
                 <div class="col">
-                    <h4 class="modal-title">@lang('tailoring.assign_to_tailoring_master')</h4>
+                    <h4 class="modal-title">@lang('tailoring.order_processing_delivery')</h4>
                 </div>
             </div>
         </div>
