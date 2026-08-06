@@ -1,14 +1,9 @@
-<style>
-    .bootstrap-datetimepicker-widget {
-        z-index: 999999 !important;
-    }
-</style>
 <div class="row pos_form_totals">
     <div class="col-md-12">
         <div class="row align-items-start">
 
             <!-- Left -->
-            <div class="col-md-3">
+            <div class="col-md-4">
                 <div class="tw-mb-2">
                     <b>@lang('sale.item'):</b>
                     <span class="total_quantity">0</span>
@@ -33,7 +28,7 @@
             </div>
 
             <!-- Center -->
-            <div class="col-md-3">
+            <div class="col-md-4">
 
                 <div class="@if ($pos_settings['disable_order_tax'] != 0) hide @endif tw-mb-2">
                     <b class=" ";>@lang('sale.order_tax')(+): @show_tooltip(__('tooltip.sale_tax'))</b>
@@ -86,29 +81,30 @@
             </div>
 
             <!-- Right -->
-            @if (request()->segment(1) == 'cloth-pos')
-                <div class="mt-3 cloth-pos-delivery d-flex justify-content-end align-items-center">
-                    <label class="mr-5 mb-0">
-                        @lang('tailoring.delivery_date'):
-                    </label>
+            <div class="col-md-4">
+                {{-- @if (request()->segment(1) == 'cloth-pos')
+                    <div class="mt-3 cloth-pos-delivery d-flex justify-content-end align-items-center">
+                        <label class="mr-5 mb-0">
+                            @lang('tailoring.delivery_date'):
+                        </label>
 
-                    <div class="cloth-date-pill">
-                        <span class="icon">
-                            <i class="fa fa-calendar"></i>
-                        </span>
+                        <div class="cloth-date-pill">
+                            <span class="icon">
+                                <i class="fa fa-calendar"></i>
+                            </span>
 
-                        {!! Form::text('delivery_date', $default_datetime ?? \Carbon\Carbon::now()->format('m/d/Y H:i'), [
-                            'class' => 'form-control pos_delivery_date',
-                            'required',
-                        ]) !!}
+                            {!! Form::text('delivery_date', $default_datetime ?? \Carbon\Carbon::now()->format('m/d/Y H:i'), [
+                                'class' => 'form-control',
+                                'readonly',
+                                'required',
+                            ]) !!}
+                        </div>
                     </div>
+                @endif --}}
+                <div style="font-size:20px;font-weight:700;">
+                    <b>@lang('sale.total'):</b>
+                    <span class="price_total">0</span>
                 </div>
-            @endif
-            <div style="font-size:20px;font-weight:700;">
-                <b>@lang('sale.total'):</b>
-                <span class="price_total">0</span>
-            </div>
-            <div class="col-md-6">
 
 
             </div>

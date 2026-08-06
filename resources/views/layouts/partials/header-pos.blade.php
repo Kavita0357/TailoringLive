@@ -29,9 +29,21 @@
         font-weight: 600;
         padding: 0 5px;
     }
-    .pos-delivery-date.input-group .form-control{
+
+    .pos-delivery-date.input-group .form-control {
         width: 125px;
         height: 18px;
+    }
+
+    .location {
+        width: 40%;
+    }
+
+    .order-dates {
+        width: 30%;
+        display: flex;
+        align-items: center;
+        gap: 10px;
     }
 </style>
 <input type="hidden" name="transaction_sub_type" id="transaction_sub_type" value="{{ $transaction_sub_type }}">
@@ -174,10 +186,10 @@
 
     <div class="tw-flex tw-flex-col md:tw-flex-row tw-items-center tw-justify-between tw-shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px] tw-mx-0 tw-mt-1 tw-mb-0 md:tw-mb-0 tw-w-full"
         style="padding: 15px;">
-        <div class="tw-w-full md:tw-w-1/3">
+        <div class="location">
             <div class="tw-flex tw-items-center tw-gap-2">
                 <p class="tw-text-white"><strong>@lang('sale.location'): &nbsp;</strong></p>
-                <div style="width: 36%">
+                <div class="location-wrap">
                     @if (empty($transaction->location_id))
                         @if (count($business_locations) > 1)
                             {!! Form::select(
@@ -200,25 +212,17 @@
                         {{ $transaction->location->name }}
                     @endif
                 </div>
-                {{-- <div
-                    class="tw-hidden md:tw-block tw-bg-[#646EE4] hover:tw-bg-[#414aac] tw-py-1.5 tw-px-2 tw-rounded-md">
-                    <i class="fa fa-calendar hover-q text-white" aria-hidden="true" data-container="body"
-                        data-toggle="popover" data-placement="bottom" data-content="@include('sale_pos.partials.keyboard_shortcuts_details')"
-                        data-html="true" data-trigger="hover" data-original-title="" title=""></i>
-                    &nbsp; <span class="curr_datetime text-white tw-font-semibold">{{ @format_datetime('now') }}</span>
-                </div> --}}
+                @if (request()->segment(1) == 'pos')
+                    <div
+                        class="tw-hidden md:tw-block tw-bg-[#646EE4] hover:tw-bg-[#414aac] tw-py-1.5 tw-px-2 tw-rounded-md">
+                        <i class="fa fa-calendar hover-q text-white" aria-hidden="true" data-container="body"
+                            data-toggle="popover" data-placement="bottom" data-content="@include('sale_pos.partials.keyboard_shortcuts_details')"
+                            data-html="true" data-trigger="hover" data-original-title="" title=""></i>
+                        &nbsp; <span
+                            class="curr_datetime text-white tw-font-semibold">{{ @format_datetime('now') }}</span>
+                    </div>
+                @endif
 
-                <div
-                    class="input-group pos-delivery-date tw-bg-[#646EE4] tw-py-1.5 tw-px-2 tw-rounded-md">
-                    <span class="input-group-addon tw-bg-[#646EE4]">
-                        <i class="fa fa-calendar tw-font-semibold text-white"></i>
-                    </span>
-                    {!! Form::text('pos_delivery_date_1', @format_datetime('now'), [
-                        'class' => 'pos_delivery_date form-control text-white tw-font-semibold"',
-                        'id' => 'pos_delivery_date_1',
-                        'required',
-                    ]) !!}
-                </div>
 
                 @if (empty($pos_settings['hide_product_suggestion']))
                     <button type="button" title="{{ __('lang_v1.view_products') }}" data-placement="bottom"
@@ -235,9 +239,37 @@
 
             </div>
         </div>
-        <div>
+        @if (request()->segment(1) == 'cloth-pos')
+            <div class="order-dates">
+                <p class="tw-text-white"><strong>@lang('tailoring.order_date'): &nbsp;</strong></p>
+                <div class="input-group pos-delivery-date tw-bg-[#646EE4] tw-py-1.5 tw-px-2 tw-rounded-md">
+                    <span class="input-group-addon tw-bg-[#646EE4]">
+                        <i class="fa fa-calendar tw-font-semibold text-white"></i>
+                    </span>
+                    {!! Form::text('transaction_date', @format_datetime('now'), [
+                        'class' => 'form-control text-white tw-font-semibold"',
+                        'id' => 'pos_transaction_date',
+                        'readOnly',
+                        'required',
+                    ]) !!}
+                </div>
+                <p class="tw-text-white"><strong>@lang('tailoring.delivery_date'): &nbsp;</strong></p>
+                <div class="input-group pos-delivery-date tw-bg-[#646EE4] tw-py-1.5 tw-px-2 tw-rounded-md">
+                    <span class="input-group-addon tw-bg-[#646EE4]">
+                        <i class="fa fa-calendar tw-font-semibold text-white"></i>
+                    </span>
+                    {!! Form::text('delivery_date', @format_datetime('now'), [
+                        'class' => 'form-control text-white tw-font-semibold"',
+                        'id' => 'delivery_date',
+                        'required',
+                    ]) !!}
+                </div>
+            </div>
+        @endif
+        <div class="header-buttons">
             <div class="tw-w-full md:tw-w-2/3 !tw-p-0 tw-flex tw-items-center tw-justify-between tw-gap-4 tw-flex-col md:tw-flex-row tw-hidden md:tw-flex"
                 id="pos_header_more_options">
+
                 <a href="{{ $go_back_url }}" title="{{ __('lang_v1.go_back') }}"
                     class="tw-bg-blue-500 tw-text-white tw-shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px]  tw-cursor-pointer tw-flex tw-items-center tw-justify-center tw-rounded-md md:tw-w-8 tw-w-auto tw-h-8 tw-text-gray-600 pull-right">
                     <strong class="!tw-m-3">

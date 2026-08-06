@@ -1082,10 +1082,6 @@ $(document).ready(function () {
         format: moment_date_format + ' ' + moment_time_format,
         ignoreReadonly: true,
     });
-    $('.pos_delivery_date').datetimepicker({
-        format: moment_date_format + ' ' + moment_time_format,
-        ignoreReadonly: true,
-    });
     $('#delivery_date').datetimepicker({
         format: moment_date_format + ' ' + moment_time_format,
         ignoreReadonly: true,
@@ -1347,7 +1343,7 @@ $(document).ready(function () {
         }
         var total_payable = __read_number($('input#final_total_input'));
         var shown_total = total_payable * curr_exchange_rate;
-        $('span#total_payable').text(__currency_trans_from_en(shown_total, true));
+        $('span#total_payable').text(__currency_trans_from_en(shown_total, false));
     });
 
     $('select#price_group').change(function () {
@@ -2042,7 +2038,7 @@ function pos_total_row() {
 
     //updating shipping charges
     $('span#shipping_charges_amount').text(
-        __currency_trans_from_en(__read_number($('input#shipping_charges_modal')), true)
+        __currency_trans_from_en(__read_number($('input#shipping_charges_modal')), false)
     );
 
     $('.pos_product_div span.total_quantity').each(function () {
@@ -2058,11 +2054,11 @@ function pos_total_row() {
     });
 
     //$('span.unit_price_total').html(unit_price_total);
-    $('.pos_product_div span.price_total').html(__currency_trans_from_en(price_total, true));
-    $('.pos_cloth_div span.price_total').html(__currency_trans_from_en(cloth_total, true));
+    $('.pos_product_div span.price_total').html(__currency_trans_from_en(price_total, false));
+    $('.pos_cloth_div span.price_total').html(__currency_trans_from_en(cloth_total, false));
 
     $('span.price_total').not('.pos_product_div span.price_total, .pos_cloth_div span.price_total').each(function () {
-        $(this).html(__currency_trans_from_en(price_total + cloth_total, true));
+        $(this).html(__currency_trans_from_en(price_total + cloth_total, false));
     });
 
     calculate_billing_details(price_total + cloth_total);
@@ -2122,7 +2118,7 @@ function calculate_billing_details(price_total) {
         discount = parseFloat(discount) + parseFloat(total_customer_reward);
 
         if ($('input[name="is_direct_sale"]').length <= 0) {
-            $('span#total_discount').text(__currency_trans_from_en(discount, true));
+            $('span#total_discount').text(__currency_trans_from_en(discount, false));
         }
     }
 
@@ -2153,7 +2149,7 @@ function calculate_billing_details(price_total) {
         packing_charge = __calculate_amount($('#packing_charge_type').val(),
             __read_number($('input#packing_charge')), price_total);
 
-        $('#packing_charge_text').text(__currency_trans_from_en(packing_charge, true));
+        $('#packing_charge_text').text(__currency_trans_from_en(packing_charge, false));
     }
 
     var total_payable = price_total + order_tax - discount + shipping_charges + packing_charge + additional_expense;
@@ -2164,7 +2160,7 @@ function calculate_billing_details(price_total) {
 
     var round_off_amount = round_off_data.diff;
     if (round_off_amount != 0) {
-        $('span#round_off_text').text(__currency_trans_from_en(round_off_amount, true));
+        $('span#round_off_text').text(__currency_trans_from_en(round_off_amount, false));
     } else {
         $('span#round_off_text').text(0);
     }
@@ -2176,7 +2172,7 @@ function calculate_billing_details(price_total) {
         curr_exchange_rate = __read_number($('#exchange_rate'));
     }
     var shown_total = total_payable_rounded * curr_exchange_rate;
-    $('span#total_payable').text(__currency_trans_from_en(shown_total, true));
+    $('span#total_payable').text(__currency_trans_from_en(shown_total, false));
 
     $('span.total_payable_span').text(__currency_trans_from_en(total_payable_rounded, true));
 
@@ -2196,7 +2192,7 @@ function pos_discount(total_amount) {
 
     var discount = __calculate_amount(calculation_type, calculation_amount, total_amount);
 
-    $('span#total_discount').text(__currency_trans_from_en(discount, true));
+    $('span#total_discount').text(__currency_trans_from_en(discount, false));
 
     return discount;
 }
@@ -2213,7 +2209,7 @@ function pos_order_tax(price_total, discount) {
         var order_tax = 0;
     }
 
-    $('span#order_tax').text(__currency_trans_from_en(order_tax, true));
+    $('span#order_tax').text(__currency_trans_from_en(order_tax, false));
 
     return order_tax;
 }
@@ -3551,14 +3547,14 @@ function add_cloth_row(data, is_pos = false) {
             <div class="input-group input-number">
                 <span class="input-group-btn">
                     <button type="button" class="btn btn-default btn-flat quantity-down">
-                        <i class="fa fa-minus text-danger"></i>
+                        <i class="fa fa-minus"></i>
                     </button>
                 </span>
-                <input type="text" class="form-control pos_quantity input_number input_quantity text-center" name="cloths[${rowIndex}][quantity]"
+                <input type="text" class="form-control pos_quantity" name="cloths[${rowIndex}][quantity]"
                     value="1" data-min="1" data-rule-required="true">
                 <span class="input-group-btn">
                     <button type="button" class="btn btn-default btn-flat quantity-up">
-                        <i class="fa fa-plus text-success"></i>
+                        <i class="fa fa-plus"></i>
                     </button>
                 </span>
             </div>
@@ -3569,7 +3565,7 @@ function add_cloth_row(data, is_pos = false) {
                <input type="hidden" name="cloths[${rowIndex}][unit_price]" class="form-control pos_unit_price input_number" value="${initial_charge}">
             ` : ''}
         </td>`;
-
+                
     if (!is_pos) {
         let tailorOptions = '<option value="">Please Select</option>';
         let commonTailorMaster = $('#common_tailoring_master').val();
@@ -3581,9 +3577,7 @@ function add_cloth_row(data, is_pos = false) {
         });
 
         html += `<td class="v-center">
-                <div class="input-group">
-                <input type="text" name="cloths[${rowIndex}][unit_price]" class="form-control pos_unit_price input_number text-left" value="${data.cloth.making_charge || 0}">
-            </div>
+                <input type="text" name="cloths[${rowIndex}][unit_price]" class="form-control pos_unit_price input_number" value="${data.cloth.making_charge || 0}">
             <input type="text" name="cloths[${rowIndex}][unit_price_inc_tax]" class="form-control hide pos_unit_price_inc_tax input_number" value="${data.cloth.making_charge || 0}">
         </td>
 
@@ -3604,7 +3598,7 @@ function add_cloth_row(data, is_pos = false) {
 
     html += `<td class="text-center v-center"">
             <input type="hidden" class="form-control pos_line_total" value="${initial_charge}">
-            <span class="display_currency pos_line_total_text" data-currency_symbol="true">${__currency_trans_from_en(initial_charge, true)}</span>
+            <span class="display_currency pos_line_total_text" data-currency_symbol="true">৳ ${__currency_trans_from_en(initial_charge, false)}</span>
         </td>
 
         <td class="text-center v-center">
@@ -3623,7 +3617,7 @@ function add_cloth_row(data, is_pos = false) {
             tailorCell.insertBefore(clothRow.children('td').last());
         }
         $('#cloth_price span.total_quantity').html(__currency_trans_from_en(1, false));
-        $('#cloth_price span.price_total').html(__currency_trans_from_en(data.cloth.making_charge || 0, true));
+        $('#cloth_price span.price_total').html(__currency_trans_from_en(data.cloth.making_charge || 0, false));
         $('#cloth_row_count').val(rowIndex + 1);
     }
     pos_total_row();
