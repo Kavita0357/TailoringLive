@@ -147,6 +147,10 @@
         aria-labelledby="gridSystemModalLabel">
     </div>
 
+    <div class="modal fade order_processing_delivery_modal" tabindex="-1" role="dialog"
+        aria-labelledby="gridSystemModalLabel">
+    </div>
+
     <!-- This will be printed -->
     <section class="invoice print_section" id="receipt_section">
     </section>

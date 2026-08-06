@@ -25,6 +25,8 @@ return [
     'sales_status' => 'Sales Status',
     'tailoring_settings' => 'Tailoring Setting',
     'partial_delivery' => 'Partial Delivery',
+    'order_processing_delivery' => 'Order Processing & Delivery',
+    'order_processing_delivery_updated' => 'Order processing and delivery updated successfully',
     'measurement_print' => 'Measurement Print',
     'tailor_copy' => 'Tailor Copy',
     'shop_copy' => 'Shop Copy',

@@ -514,7 +514,9 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
     Route::get('shipments', [SellController::class, 'shipments']);
     Route::get('/sells/{transaction_id}/view_partial', [SellController::class, 'viewPatialDelivery'])->name('sell.viewPatialDelivery');
     Route::get('/sells/{transaction_id}/view_assigned_tailoring_master', [SellController::class, 'viewAssignTailoringMaster'])->name('sell.viewAssignTailoringMaster');
+    Route::get('/sells/{transaction_id}/view_order_processing_delivery', [SellController::class, 'viewOrderProcessingDelivery'])->name('sell.viewOrderProcessingDelivery');
     Route::put('/sells/{transaction_id}/update_assigned_tailoring_master', [SellController::class, 'updateAssignedTailoringMaster'])->name('sell.updateAssignedTailoringMaster');
+    Route::put('/sells/{transaction_id}/update_order_processing_delivery', [SellController::class, 'updateOrderProcessingDelivery'])->name('sell.updateOrderProcessingDelivery');
     Route::put('/sells/update-partial-delivery/{id}', [SellController::class, 'updatePartialDelivery'])->name('sells.updatePartialDelivery');
     Route::get('/sells/{transaction_id}/view_measurement', [SellController::class, 'viewMeasurement'])->name('sell.viewMeasurement');
     Route::get('/sells/{transaction_id}/print_measurement/{cloth_id}', [SellController::class, 'printMeasurement'])->name('sell.printMeasurement');
