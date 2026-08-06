@@ -53,19 +53,19 @@
                                 <td>{{ intval($sell_line->quantity_ordered) }}</td>
                                 <td>
                                     <input type="hidden" name="cloths[{{ $index }}][sell_line_id]"
-                                        value={{ $sell_line->sell_line_id }} />
+                                        value="{{ $sell_line->sell_line_id }}" />
                                     <input type="hidden" name="cloths[{{ $index }}][qty]"
-                                        value={{ $sell_line->quantity_ordered }} />
+                                        value="{{ $sell_line->quantity_ordered }}" />
                                     <input class="form-control input_number row_discount_amount assigned-aware"
                                         name="cloths[{{ $index }}][completed]" type="text"
                                         value="{{ intval($completed) }}" required
-                                        @if (empty($sell_line->tailoring_master_id) || $assigned_qty <= 0) readonly disabled @endif>
+                                        @if (empty($sell_line->tailoring_master_id) || $assigned_qty <= 0) readonly @endif>
                                 </td>
                                 <td>
                                     <input class="form-control input_number row_discount_amount assigned-aware"
                                         name="cloths[{{ $index }}][delivered]" type="text"
                                         value="{{ intval($delivered) }}" required
-                                        @if (empty($sell_line->tailoring_master_id) || $assigned_qty <= 0) readonly disabled @endif>
+                                        @if (empty($sell_line->tailoring_master_id) || $assigned_qty <= 0) readonly @endif>
                                 </td>
                                 @php
                                     $index++;
