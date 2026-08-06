@@ -234,7 +234,9 @@
             updateTailoringMasterDisabledStates(true);
         });
 
-        $(document).on('change', '.assignment-tailor-select', function() {
+        var $assignForm = $('#assign_tailoring_master_form');
+
+        $assignForm.on('change', '.assignment-tailor-select', function() {
             updateTailoringMasterDisabledStates(false);
         });
 
@@ -302,7 +304,7 @@
 
         initSelect2($(".assignment-tailor-select"));
 
-        $(document).on('click', '.add-assignment-row-btn', function() {
+        $assignForm.on('click', '.add-assignment-row-btn', function() {
             var $row = $(this).closest('tr');
             var $tailorContainer = $row.find('.tailor-select-container');
             var cloth_index = $tailorContainer.attr('data-cloth-index');
@@ -366,7 +368,7 @@
             updateRemoveButtonsVisibility($tailorContainer);
             validateAssignedQuantities();
         });
-        $(document).on('click', '.remove-assignment-row-btn', function() {
+        $assignForm.on('click', '.remove-assignment-row-btn', function() {
             var $tailorContainer = $(this).closest('.tailor-select-container');
             var cloth_index = $tailorContainer.attr('data-cloth-index');
             var $qtyContainer = $(`.assigned-qty-container[data-cloth-index="${cloth_index}"]`);
@@ -397,7 +399,7 @@
             $submitBtn.prop('disabled', false);
         }
 
-        $(document).on('change keyup', '.assigned-qty-input', function() {
+        $assignForm.on('change keyup', '.assigned-qty-input', function() {
             validateAssignedQuantities();
         });
 
