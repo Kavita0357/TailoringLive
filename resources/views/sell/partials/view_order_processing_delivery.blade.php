@@ -161,7 +161,8 @@
                                                     </div>
                                                     <button type="button"
                                                         class="btn btn-xs btn-danger remove-assignment-row-btn"
-                                                        style="height: 34px;"><i class="fa fa-times"></i></button>
+                                                        style="height: 30px; width: 30px;"><i class="fa fa-times"
+                                                            style="font-size: 12px;"></i></button>
                                                 </div>
                                                 @php
                                                     $row_i++;
@@ -178,14 +179,15 @@
                                                 </div>
                                                 <button type="button"
                                                     class="btn btn-xs btn-danger remove-assignment-row-btn"
-                                                    style="height: 34px;"><i class="fa fa-times"></i></button>
+                                                    style="height: 30px; width: 30px;"><i class="fa fa-times"
+                                                        style="font-size: 12px;"></i></button>
                                             </div>
                                         @endif
                                     </div>
                                 </td>
                                 <td style="vertical-align: bottom; padding-bottom: 10px;">
                                     <button type="button" class="btn btn-primary btn-sm add-assignment-row-btn"
-                                        style="margin-bottom: 10px;"><i class="fa fa-plus"></i></button>
+                                        style="margin-bottom: 6px;"><i class="fa fa-plus"></i></button>
                                 </td>
                                 <td style="vertical-align: bottom; padding-bottom: 10px;">
                                     <input class="form-control input_number row_discount_amount completed-input"
@@ -497,7 +499,9 @@
                             ${tailor_options_html}
                         </select>
                     </div>
-                    <button type="button" class="btn btn-xs btn-danger remove-assignment-row-btn" style="height: 34px;"><i class="fa fa-times"></i></button>
+                    <button type="button" class="btn btn-xs btn-danger remove-assignment-row-btn" style="height: 30px; width: 30px;">
+                        <i class="fa fa-times" style="font-size: 12px;"></i>
+                        </button>
                 </div>
             `;
 
