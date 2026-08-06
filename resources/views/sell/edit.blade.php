@@ -71,6 +71,10 @@
         @if (!empty($transaction->type))
             <input type="hidden" id="sale_type" name="type" value="{{ $transaction->type }}">
         @endif
+        @if ($transaction->type == 'order')
+            <input type="hidden" name="delivery_status" id="delivery_status"
+                value="{{ $transaction->delivery_status ?? 'received' }}">
+        @endif
         <div class="row">
             <div class="col-md-12 col-sm-12">
                 @component('components.widget', ['class' => 'box-solid'])
@@ -1493,7 +1497,7 @@
                         }
                     });
                 }
-                $('#delivery_status').val(hasAnyTailor ? 'preparing' : 'pending');
+                $('#delivery_status').val(hasAnyTailor ? 'preparing' : 'received');
             }
 
             $('#common_tailoring_master').on('change', function() {

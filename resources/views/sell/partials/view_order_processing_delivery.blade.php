@@ -380,13 +380,18 @@
         if ($commonTailoringMaster.length) {
             $commonTailoringMaster.on('change', function() {
                 updateTailoringMasterDisabledStates(true);
-            });
-
-            $form.on('change', '.assignment-tailor-select', function() {
-                updateTailoringMasterDisabledStates(false);
-                updateDeliveryFieldsState($(this).closest('tr'));
+                $form.find('tbody tr').each(function() {
+                    updateDeliveryFieldsState($(this));
+                });
             });
         }
+
+        $form.on('change', '.assignment-tailor-select', function() {
+            if ($commonTailoringMaster.length) {
+                updateTailoringMasterDisabledStates(false);
+            }
+            updateDeliveryFieldsState($(this).closest('tr'));
+        });
 
         var tailor_options_html = $('#assignment_tailor_select_template').html() || "";
         if (!tailor_options_html && $commonTailoringMaster.length) {

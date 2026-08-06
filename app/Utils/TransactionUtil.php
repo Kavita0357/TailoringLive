@@ -626,8 +626,8 @@ class TransactionUtil extends Util
                     $delivered = $uf_quantity * $multiplier;
                 }
 
-                $tailorMasterId = !empty($cloth['tailoring_master'])
-                    ? $cloth['tailoring_master']
+                $tailorMasterId = isset($cloth['tailoring_master'])
+                    ? (!empty($cloth['tailoring_master']) ? $cloth['tailoring_master'] : null)
                     : ($transaction->tailoring_master_id ?? null);
 
                 if ($tailorMasterId) {
@@ -962,8 +962,8 @@ class TransactionUtil extends Util
             }
         }
 
-        $tailorMasterId = !empty($cloth['tailoring_master'])
-            ? $cloth['tailoring_master']
+        $tailorMasterId = isset($cloth['tailoring_master'])
+            ? (!empty($cloth['tailoring_master']) ? $cloth['tailoring_master'] : null)
             : ($transaction->tailoring_master_id ?? null);
 
         $uf_quantity = $uf_data

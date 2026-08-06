@@ -350,7 +350,7 @@
                     @endif
 
                     @if ($sale_type == 'order')
-                        <input type="hidden" name="delivery_status" id="delivery_status" value="pending">
+                        <input type="hidden" name="delivery_status" id="delivery_status" value="received">
                     @endif
                     @if ($sale_type != 'sales_order' && $sale_type != 'order')
                         <div class="col-sm-3">
@@ -1552,7 +1552,7 @@
                         }
                     });
                 }
-                $('#delivery_status').val(hasAnyTailor ? 'preparing' : 'pending');
+                $('#delivery_status').val(hasAnyTailor ? 'preparing' : 'received');
             }
 
             $('#common_tailoring_master').on('change', function() {
@@ -1614,7 +1614,7 @@
                         if (hasItems && !allAssigned) {
                             toastr.error(
                                 "Cannot select 'Ready to Deliver' until all Tailormasters are assigned."
-                                );
+                            );
                             $(this).val(previous_delivery_status || 'preparing');
                             status = $(this).val(); // reset status for subtitle update
                         }
