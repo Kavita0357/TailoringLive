@@ -18,7 +18,9 @@
     }
 
     .order-processing-modal .assignment-qty-row,
-    .order-processing-modal .assignment-tailor-row {
+    .order-processing-modal .assignment-tailor-row,
+    .order-processing-modal .assignment-completed-row,
+    .order-processing-modal .assignment-delivered-row {
         display: flex;
         align-items: center;
         gap: 5px;
@@ -27,7 +29,9 @@
     }
 
     .order-processing-modal .assigned-qty-container,
-    .order-processing-modal .tailor-select-container {
+    .order-processing-modal .tailor-select-container,
+    .order-processing-modal .completed-container,
+    .order-processing-modal .delivered-container {
         width: 100%;
     }
 
@@ -189,17 +193,77 @@
                                     <button type="button" class="btn btn-primary btn-sm add-assignment-row-btn"
                                         style="margin-bottom: 6px;"><i class="fa fa-plus"></i></button>
                                 </td>
-                                <td style="vertical-align: bottom; padding-bottom: 10px;">
-                                    <input class="form-control input_number row_discount_amount completed-input"
-                                        name="cloths[{{ $index }}][completed]" type="number" min="0"
-                                        value="{{ intval($completed) }}" required
-                                        @if (!$can_edit_delivery) readonly @endif>
+                                <td>
+                                    <div class="completed-container" data-cloth-index="{{ $index }}">
+                                        @php
+                                            $row_i = 0;
+                                        @endphp
+                                        @if (count($valid_assignments) > 0)
+                                            @foreach ($valid_assignments as $sell_line)
+                                                @php
+                                                    $has_tailor = !empty($sell_line->tailoring_master_id);
+                                                    $line_completed = $has_tailor
+                                                        ? intval($sell_line->completed_quantity)
+                                                        : 0;
+                                                @endphp
+                                                <div class="assignment-completed-row form-group"
+                                                    style="margin-bottom: 10px;">
+                                                    <input
+                                                        class="form-control input_number row_discount_amount completed-input"
+                                                        name="cloths[{{ $index }}][assignments][{{ $row_i }}][completed]"
+                                                        type="number" min="0" value="{{ $line_completed }}"
+                                                        required @if (!$has_tailor) readonly @endif>
+                                                </div>
+                                                @php
+                                                    $row_i++;
+                                                @endphp
+                                            @endforeach
+                                        @else
+                                            <div class="assignment-completed-row form-group"
+                                                style="margin-bottom: 10px;">
+                                                <input
+                                                    class="form-control input_number row_discount_amount completed-input"
+                                                    name="cloths[{{ $index }}][assignments][0][completed]"
+                                                    type="number" min="0" value="0" required readonly>
+                                            </div>
+                                        @endif
+                                    </div>
                                 </td>
-                                <td style="vertical-align: bottom; padding-bottom: 10px;">
-                                    <input class="form-control input_number row_discount_amount delivered-input"
-                                        name="cloths[{{ $index }}][delivered]" type="number" min="0"
-                                        value="{{ intval($delivered) }}" required
-                                        @if (!$can_edit_delivery) readonly @endif>
+                                <td>
+                                    <div class="delivered-container" data-cloth-index="{{ $index }}">
+                                        @php
+                                            $row_i = 0;
+                                        @endphp
+                                        @if (count($valid_assignments) > 0)
+                                            @foreach ($valid_assignments as $sell_line)
+                                                @php
+                                                    $has_tailor = !empty($sell_line->tailoring_master_id);
+                                                    $line_delivered = $has_tailor
+                                                        ? intval($sell_line->delivered_quantity)
+                                                        : 0;
+                                                @endphp
+                                                <div class="assignment-delivered-row form-group"
+                                                    style="margin-bottom: 10px;">
+                                                    <input
+                                                        class="form-control input_number row_discount_amount delivered-input"
+                                                        name="cloths[{{ $index }}][assignments][{{ $row_i }}][delivered]"
+                                                        type="number" min="0" value="{{ $line_delivered }}"
+                                                        required @if (!$has_tailor) readonly @endif>
+                                                </div>
+                                                @php
+                                                    $row_i++;
+                                                @endphp
+                                            @endforeach
+                                        @else
+                                            <div class="assignment-delivered-row form-group"
+                                                style="margin-bottom: 10px;">
+                                                <input
+                                                    class="form-control input_number row_discount_amount delivered-input"
+                                                    name="cloths[{{ $index }}][assignments][0][delivered]"
+                                                    type="number" min="0" value="0" required readonly>
+                                            </div>
+                                        @endif
+                                    </div>
                                 </td>
                             </tr>
                             @php
@@ -283,48 +347,77 @@
             var assigned_sum = getRowAssignedSum($row);
             $row.attr('data-assigned-qty', assigned_sum);
 
-            var $completed = $row.find('.completed-input');
-            var $delivered = $row.find('.delivered-input');
+            var $tailorSelects = $row.find('.assignment-tailor-select');
+            var $completedInputs = $row.find('.completed-input');
+            var $deliveredInputs = $row.find('.delivered-input');
 
-            if (assigned_sum <= 0) {
-                $completed.prop('readonly', true).val(0);
-                $delivered.prop('readonly', true).val(0);
-            } else {
-                $completed.prop('readonly', false);
-                $delivered.prop('readonly', false);
-            }
+            $tailorSelects.each(function(idx) {
+                var tailorVal = $(this).val();
+                var $completed = $completedInputs.eq(idx);
+                var $delivered = $deliveredInputs.eq(idx);
+
+                if (tailorVal) {
+                    $completed.prop('readonly', false);
+                    $delivered.prop('readonly', false);
+                } else {
+                    $completed.prop('readonly', true).val(0);
+                    $delivered.prop('readonly', true).val(0);
+                }
+            });
         }
 
         function validateDeliveryQuantities($row) {
             var total_qty = parseInt($row.attr('data-total-qty')) || 0;
-            var assigned_sum = getRowAssignedSum($row);
-            var completed = parseInt($row.find('.completed-input').val()) || 0;
-            var delivered = parseInt($row.find('.delivered-input').val()) || 0;
             var cloth_name = $row.find('td').eq(1).text().trim();
-            var maxAllowed = assigned_sum > 0 && assigned_sum < total_qty ? assigned_sum : total_qty;
+            var $tailorSelects = $row.find('.assignment-tailor-select');
+            var $qtyInputs = $row.find('.assigned-qty-input');
+            var $completedInputs = $row.find('.completed-input');
+            var $deliveredInputs = $row.find('.delivered-input');
 
-            if (assigned_sum <= 0 && (completed > 0 || delivered > 0)) {
-                return {
-                    valid: false,
-                    type: 'unassigned',
-                    message: null
-                };
+            var total_completed = 0;
+            var total_delivered = 0;
+            var total_assigned_sum = 0;
+
+            for (var idx = 0; idx < $tailorSelects.length; idx++) {
+                var tailorVal = $tailorSelects.eq(idx).val();
+                var assigned_qty = parseInt($qtyInputs.eq(idx).val()) || 0;
+                var completed = parseInt($completedInputs.eq(idx).val()) || 0;
+                var delivered = parseInt($deliveredInputs.eq(idx).val()) || 0;
+
+                if (!tailorVal) {
+                    if (completed > 0 || delivered > 0) {
+                        return {
+                            valid: false,
+                            type: 'unassigned',
+                            message: null
+                        };
+                    }
+                } else {
+                    total_assigned_sum += assigned_qty;
+                    if (completed > assigned_qty) {
+                        return {
+                            valid: false,
+                            type: 'qty_exceeded',
+                            message: `Completed quantity (${completed}) cannot exceed assigned quantity (${assigned_qty}) for "${cloth_name}".`
+                        };
+                    }
+                    if (delivered > completed) {
+                        return {
+                            valid: false,
+                            type: 'qty_exceeded',
+                            message: `Delivered quantity (${delivered}) cannot exceed completed quantity (${completed}) for "${cloth_name}".`
+                        };
+                    }
+                    total_completed += completed;
+                    total_delivered += delivered;
+                }
             }
 
-            if (assigned_sum > 0 && assigned_sum < total_qty && (completed > assigned_sum || delivered >
-                    assigned_sum)) {
+            if (total_assigned_sum > total_qty) {
                 return {
                     valid: false,
                     type: 'assigned_exceeded',
                     message: null
-                };
-            }
-
-            if (completed > maxAllowed || delivered > maxAllowed || delivered > completed) {
-                return {
-                    valid: false,
-                    type: 'qty_exceeded',
-                    message: `Invalid completed/delivered quantities for "${cloth_name}". Completed cannot exceed ${maxAllowed}, and delivered cannot exceed completed.`
                 };
             }
 
@@ -408,21 +501,27 @@
             }
         }
 
-        function reindexRows($rowContainer, isQty) {
-            var cloth_index = $rowContainer.attr('data-cloth-index');
-            if (isQty) {
-                $rowContainer.find('.assignment-qty-row').each(function(index) {
-                    $(this).find('input[name*="[sell_line_id]"]').attr('name',
-                        `cloths[${cloth_index}][assignments][${index}][sell_line_id]`);
-                    $(this).find('input[name*="[assigned_qty]"]').attr('name',
-                        `cloths[${cloth_index}][assignments][${index}][assigned_qty]`);
-                });
-            } else {
-                $rowContainer.find('.assignment-tailor-row').each(function(index) {
-                    $(this).find('select').attr('name',
-                        `cloths[${cloth_index}][assignments][${index}][tailoring_master]`);
-                });
-            }
+        function reindexRows($row) {
+            var cloth_index = $row.find('.assigned-qty-container').attr('data-cloth-index');
+
+            $row.find('.assignment-qty-row').each(function(index) {
+                $(this).find('input[name*="[sell_line_id]"]').attr('name',
+                    `cloths[${cloth_index}][assignments][${index}][sell_line_id]`);
+                $(this).find('input[name*="[assigned_qty]"]').attr('name',
+                    `cloths[${cloth_index}][assignments][${index}][assigned_qty]`);
+            });
+            $row.find('.assignment-tailor-row').each(function(index) {
+                $(this).find('select').attr('name',
+                    `cloths[${cloth_index}][assignments][${index}][tailoring_master]`);
+            });
+            $row.find('.assignment-completed-row').each(function(index) {
+                $(this).find('input').attr('name',
+                    `cloths[${cloth_index}][assignments][${index}][completed]`);
+            });
+            $row.find('.assignment-delivered-row').each(function(index) {
+                $(this).find('input').attr('name',
+                    `cloths[${cloth_index}][assignments][${index}][delivered]`);
+            });
         }
 
         function updateRemoveButtonsVisibility($tailorContainer) {
@@ -469,6 +568,8 @@
             var cloth_index = $tailorContainer.attr('data-cloth-index');
             var total_qty = parseInt($tailorContainer.attr('data-total-qty')) || 0;
             var $qtyContainer = $row.find('.assigned-qty-container');
+            var $completedContainer = $row.find('.completed-container');
+            var $deliveredContainer = $row.find('.delivered-container');
 
             var assigned_sum = 0;
             $qtyContainer.find('.assigned-qty-input').each(function() {
@@ -506,12 +607,30 @@
                     </div>
                     <button type="button" class="btn btn-xs btn-danger remove-assignment-row-btn" style="height: 30px; width: 30px;">
                         <i class="fa fa-times" style="font-size: 12px;"></i>
-                        </button>
+                    </button>
+                </div>
+            `;
+
+            var completed_html = `
+                <div class="assignment-completed-row form-group" style="margin-bottom: 10px;">
+                    <input class="form-control input_number row_discount_amount completed-input"
+                           name="cloths[${cloth_index}][assignments][${sub_index}][completed]"
+                           type="number" min="0" value="0" required readonly>
+                </div>
+            `;
+
+            var delivered_html = `
+                <div class="assignment-delivered-row form-group" style="margin-bottom: 10px;">
+                    <input class="form-control input_number row_discount_amount delivered-input"
+                           name="cloths[${cloth_index}][assignments][${sub_index}][delivered]"
+                           type="number" min="0" value="0" required readonly>
                 </div>
             `;
 
             $qtyContainer.append(qty_html);
             $tailorContainer.append(select_html);
+            $completedContainer.append(completed_html);
+            $deliveredContainer.append(delivered_html);
 
             var $newSelect = $tailorContainer.find('.assignment-tailor-row').last().find('select');
             var commonValue = $commonTailoringMaster.val();
@@ -528,18 +647,21 @@
 
         $form.on('click', '.remove-assignment-row-btn', function() {
             var $tailorContainer = $(this).closest('.tailor-select-container');
-            var cloth_index = $tailorContainer.attr('data-cloth-index');
             var $row = $tailorContainer.closest('tr');
-            var $qtyContainer = $(`.assigned-qty-container[data-cloth-index="${cloth_index}"]`);
+            var cloth_index = $tailorContainer.attr('data-cloth-index');
+            var $qtyContainer = $row.find('.assigned-qty-container');
+            var $completedContainer = $row.find('.completed-container');
+            var $deliveredContainer = $row.find('.delivered-container');
 
             var indexToRemove = $tailorContainer.find('.assignment-tailor-row').index($(this).closest(
                 '.assignment-tailor-row'));
 
             $qtyContainer.find('.assignment-qty-row').eq(indexToRemove).remove();
-            $(this).closest('.assignment-tailor-row').remove();
+            $tailorContainer.find('.assignment-tailor-row').eq(indexToRemove).remove();
+            $completedContainer.find('.assignment-completed-row').eq(indexToRemove).remove();
+            $deliveredContainer.find('.assignment-delivered-row').eq(indexToRemove).remove();
 
-            reindexRows($qtyContainer, true);
-            reindexRows($tailorContainer, false);
+            reindexRows($row);
             updateRemoveButtonsVisibility($tailorContainer);
             updateDeliveryFieldsState($row);
             validateAssignedQuantities();

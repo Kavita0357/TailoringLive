@@ -2401,86 +2401,109 @@ class SellController extends Controller
 
             $cloths = $request->input('cloths', []);
             foreach ($cloths as $cloth) {
-                $completed = (int) ($cloth['completed'] ?? 0);
-                $delivered = (int) ($cloth['delivered'] ?? 0);
+                $assignments = $cloth['assignments'] ?? [];
                 $qty = (int) ($cloth['qty'] ?? 0);
                 $cloth_id = $cloth['cloth_id'] ?? null;
 
-                if ($completed < 0 || $delivered < 0 || $completed > $qty || $delivered > $qty || $delivered > $completed) {
-                    DB::rollBack();
+                if (isset($cloth['completed'])) {
+                    $completed = (int) ($cloth['completed'] ?? 0);
+                    $delivered = (int) ($cloth['delivered'] ?? 0);
 
-                    return redirect()
-                        ->action([\App\Http\Controllers\SellController::class, 'index'])
-                        ->with('status', [
-                            'success' => 0,
-                            'msg' => __('tailoring.qty_exceeded'),
-                        ]);
-                }
+                    if ($completed < 0 || $delivered < 0 || $completed > $qty || $delivered > $qty || $delivered > $completed) {
+                        DB::rollBack();
 
-                $sellLines = DB::table('transaction_sell_lines')
-                    ->where('transaction_id', $id)
-                    ->where('cloth_id', $cloth_id)
-                    ->orderBy('id')
-                    ->get();
+                        return redirect()
+                            ->action([\App\Http\Controllers\SellController::class, 'index'])
+                            ->with('status', [
+                                'success' => 0,
+                                'msg' => __('tailoring.qty_exceeded'),
+                            ]);
+                    }
 
-                $assigned_sum = $sellLines->sum(function ($line) {
-                    return ! empty($line->tailoring_master_id) ? (int) $line->assigned_quantity : 0;
-                });
+                    $sellLines = DB::table('transaction_sell_lines')
+                        ->where('transaction_id', $id)
+                        ->where('cloth_id', $cloth_id)
+                        ->orderBy('id')
+                        ->get();
 
-                if ($assigned_sum <= 0 && ($completed > 0 || $delivered > 0)) {
-                    DB::rollBack();
+                    $assigned_sum = $sellLines->sum(function ($line) {
+                        return ! empty($line->tailoring_master_id) ? (int) $line->assigned_quantity : 0;
+                    });
 
-                    return redirect()
-                        ->action([\App\Http\Controllers\SellController::class, 'index'])
-                        ->with('status', [
-                            'success' => 0,
-                            'msg' => __('tailoring.has_unassigned'),
-                        ]);
-                }
+                    if ($assigned_sum <= 0 && ($completed > 0 || $delivered > 0)) {
+                        DB::rollBack();
 
-                if ($assigned_sum > 0 && $assigned_sum < $qty && ($completed > $assigned_sum || $delivered > $assigned_sum)) {
-                    DB::rollBack();
+                        return redirect()
+                            ->action([\App\Http\Controllers\SellController::class, 'index'])
+                            ->with('status', [
+                                'success' => 0,
+                                'msg' => __('tailoring.has_unassigned'),
+                            ]);
+                    }
 
-                    return redirect()
-                        ->action([\App\Http\Controllers\SellController::class, 'index'])
-                        ->with('status', [
-                            'success' => 0,
-                            'msg' => __('tailoring.has_assigned_exceeded'),
-                        ]);
-                }
+                    if ($assigned_sum > 0 && $assigned_sum < $qty && ($completed > $assigned_sum || $delivered > $assigned_sum)) {
+                        DB::rollBack();
 
-                $assignedLines = $sellLines->filter(function ($line) {
-                    return ! empty($line->tailoring_master_id) && (int) $line->assigned_quantity > 0;
-                })->values();
+                        return redirect()
+                            ->action([\App\Http\Controllers\SellController::class, 'index'])
+                            ->with('status', [
+                                'success' => 0,
+                                'msg' => __('tailoring.has_assigned_exceeded'),
+                            ]);
+                    }
 
-                $remaining_completed = $completed;
-                $remaining_delivered = $delivered;
+                    $assignedLines = $sellLines->filter(function ($line) {
+                        return ! empty($line->tailoring_master_id) && (int) $line->assigned_quantity > 0;
+                    })->values();
 
-                foreach ($assignedLines as $line) {
-                    $line_cap = (int) $line->assigned_quantity;
-                    $line_completed = min($remaining_completed, $line_cap);
-                    $line_delivered = min($remaining_delivered, $line_completed);
+                    $remaining_completed = $completed;
+                    $remaining_delivered = $delivered;
 
-                    DB::table('transaction_sell_lines')
-                        ->where('id', $line->id)
-                        ->update([
-                            'completed_quantity' => $line_completed,
-                            'delivered_quantity' => $line_delivered,
-                            'updated_at' => now(),
-                        ]);
+                    foreach ($assignedLines as $line) {
+                        $line_cap = (int) $line->assigned_quantity;
+                        $line_completed = min($remaining_completed, $line_cap);
+                        $line_delivered = min($remaining_delivered, $line_completed);
 
-                    $remaining_completed -= $line_completed;
-                    $remaining_delivered -= $line_delivered;
-                }
-
-                foreach ($sellLines as $line) {
-                    if (empty($line->tailoring_master_id) || (int) $line->assigned_quantity <= 0) {
                         DB::table('transaction_sell_lines')
                             ->where('id', $line->id)
                             ->update([
-                                'completed_quantity' => 0,
-                                'delivered_quantity' => 0,
+                                'completed_quantity' => $line_completed,
+                                'delivered_quantity' => $line_delivered,
                                 'updated_at' => now(),
+                            ]);
+
+                        $remaining_completed -= $line_completed;
+                        $remaining_delivered -= $line_delivered;
+                    }
+
+                    foreach ($sellLines as $line) {
+                        if (empty($line->tailoring_master_id) || (int) $line->assigned_quantity <= 0) {
+                            DB::table('transaction_sell_lines')
+                                ->where('id', $line->id)
+                                ->update([
+                                    'completed_quantity' => 0,
+                                    'delivered_quantity' => 0,
+                                    'updated_at' => now(),
+                                ]);
+                        }
+                    }
+                } else {
+                    $sellLines = DB::table('transaction_sell_lines')
+                        ->where('transaction_id', $id)
+                        ->where('cloth_id', $cloth_id)
+                        ->get();
+
+                    $total_completed = $sellLines->sum('completed_quantity');
+                    $total_delivered = $sellLines->sum('delivered_quantity');
+
+                    if ($total_completed > $qty || $total_delivered > $total_completed) {
+                        DB::rollBack();
+
+                        return redirect()
+                            ->action([\App\Http\Controllers\SellController::class, 'index'])
+                            ->with('status', [
+                                'success' => 0,
+                                'msg' => __('tailoring.qty_exceeded'),
                             ]);
                     }
                 }
@@ -2551,17 +2574,12 @@ class SellController extends Controller
                 ]);
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::emergency(
-                'File:' . $e->getFile() .
-                    ' Line:' . $e->getLine() .
-                    ' Message:' . $e->getMessage()
-            );
 
             return redirect()
                 ->action([\App\Http\Controllers\SellController::class, 'index'])
                 ->with('status', [
                     'success' => 0,
-                    'msg' => __('messages.something_went_wrong'),
+                    'msg' => $e->getMessage(),
                 ]);
         }
     }
@@ -2759,17 +2777,23 @@ class SellController extends Controller
             foreach ($assignments as $asn) {
                 $a_qty = (int)($asn['assigned_qty'] ?? 0);
                 $a_tailor = $asn['tailoring_master'] ?? "";
+                $a_completed = (int)($asn['completed'] ?? 0);
+                $a_delivered = (int)($asn['delivered'] ?? 0);
 
                 if ($a_tailor === '' && $common_tailoring_master !== '') {
                     $a_tailor = $common_tailoring_master;
                 }
 
                 if ($a_qty > 0 && $a_tailor != "") {
+                    $a_comp = min($a_completed, $a_qty);
+                    $a_deliv = min($a_delivered, $a_comp);
                     $processed_assignments[] = [
                         'sell_line_id' => $asn['sell_line_id'] ?? null,
                         'quantity' => $a_qty,
                         'assigned_quantity' => $a_qty,
                         'tailoring_master_id' => $a_tailor,
+                        'completed_quantity' => $a_comp,
+                        'delivered_quantity' => $a_deliv,
                     ];
                     $assigned_sum += $a_qty;
                 }
@@ -2781,6 +2805,8 @@ class SellController extends Controller
                     'quantity' => $qty - $assigned_sum,
                     'assigned_quantity' => null,
                     'tailoring_master_id' => null,
+                    'completed_quantity' => 0,
+                    'delivered_quantity' => 0,
                 ];
             }
 
@@ -2815,6 +2841,8 @@ class SellController extends Controller
                         'quantity' => $pa['quantity'],
                         'assigned_quantity' => $pa['assigned_quantity'],
                         'tailoring_master_id' => $pa['tailoring_master_id'],
+                        'completed_quantity' => $pa['completed_quantity'] ?? 0,
+                        'delivered_quantity' => $pa['delivered_quantity'] ?? 0,
                         'updated_at' => now(),
                     ]);
             };
@@ -2839,6 +2867,8 @@ class SellController extends Controller
                 $newSellLine->quantity = $pa['quantity'];
                 $newSellLine->assigned_quantity = $pa['assigned_quantity'];
                 $newSellLine->tailoring_master_id = $pa['tailoring_master_id'];
+                $newSellLine->completed_quantity = $pa['completed_quantity'] ?? 0;
+                $newSellLine->delivered_quantity = $pa['delivered_quantity'] ?? 0;
                 $newSellLine->save();
             }
 
