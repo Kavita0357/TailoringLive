@@ -3601,7 +3601,7 @@ function add_cloth_row(data, is_pos = false) {
         html += `<td class="v-center text-center">
             <div class="input-group" style="display:inline-flex; align-items:center; justify-content:center;">
                 <span class="cloth-pos-currency-symbol" style="font-weight:700; margin-right:2px;">${$('#currency_symbol').val() || '৳'}</span>
-                <input type="text" name="cloths[${rowIndex}][unit_price]" class="form-control pos_unit_price input_number text-center" value="${data.cloth.making_charge || 0}">
+                <input type="text" name="cloths[${rowIndex}][unit_price]" class="form-control pos_unit_price input_number" value="${data.cloth.making_charge || 0}">
             </div>
             <input type="text" name="cloths[${rowIndex}][unit_price_inc_tax]" class="form-control hide pos_unit_price_inc_tax input_number" value="${data.cloth.making_charge || 0}">
         </td>

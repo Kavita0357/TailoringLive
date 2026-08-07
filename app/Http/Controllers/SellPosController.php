@@ -157,7 +157,7 @@ class SellPosController extends Controller
 
         $shipping_statuses = $this->transactionUtil->shipping_statuses();
 
-        $sale_type = 'sell';
+        $sale_type = request()->segment(1) == 'cloth-pos' ? 'order' : 'sell';
 
         return view('sale_pos.index')->with(compact('business_locations', 'customers', 'sales_representative', 'is_cmsn_agent_enabled', 'commission_agents', 'service_staffs', 'is_tables_enabled', 'is_service_staff_enabled', 'is_types_service_enabled', 'shipping_statuses', 'sale_type'));
     }
@@ -512,7 +512,7 @@ class SellPosController extends Controller
 
                 //Check for final and do some processing.
                 if ($input['status'] == 'final') {
-                    if (!$is_direct_sale) {
+                    if (!$is_direct_sale && !empty($input['products'])) {
                         //set service staff timer
                         foreach ($input['products'] as $product_line) {
                             if (!empty($product_line['res_service_staff_id'])) {
@@ -834,7 +834,7 @@ class SellPosController extends Controller
         $taxes = TaxRate::forBusinessDropdown($business_id, true, true);
 
         $transaction = Transaction::where('business_id', $business_id)
-            ->where('type', 'sell')
+            ->whereIn('type', ['sell', 'order'])
             ->with(['price_group', 'types_of_service'])
             ->findorfail($id);
 
@@ -1290,7 +1290,7 @@ class SellPosController extends Controller
                 $transaction = $this->transactionUtil->updateSellTransaction($id, $business_id, $input, $invoice_total, $user_id);
 
                 //update service staff timer
-                if (!$is_direct_sale && $transaction->status == 'final') {
+                if (!$is_direct_sale && $transaction->status == 'final' && !empty($input['products'])) {
                     foreach ($input['products'] as $product_line) {
                         if (!empty($product_line['res_service_staff_id'])) {
                             $product = Product::find($product_line['product_id']);
@@ -1862,7 +1862,9 @@ class SellPosController extends Controller
 
         $register = $this->cashRegisterUtil->getCurrentCashRegister($user_id);
 
-        $query = Transaction::where('business_id', $business_id)->where('transactions.created_by', $user_id)->where('transactions.type', 'sell')->where('is_direct_sale', 0);
+        $sale_type = $request->get('type') ?? (request()->segment(1) == 'cloth-pos' ? 'order' : 'sell');
+
+        $query = Transaction::where('business_id', $business_id)->where('transactions.created_by', $user_id)->where('transactions.type', $sale_type)->where('is_direct_sale', 0);
 
         if ($transaction_status == 'final') {
             //Commented as credit sales not showing

@@ -28,7 +28,7 @@ sell_table = $('#sell_table').DataTable({
         scrollX:        true,
         scrollCollapse: true,
         "ajax": {
-            "url": "/sells",
+            "url": "{{ isset($sale_type) && $sale_type == 'order' ? '/cloth-orders' : '/sells' }}",
             "data": function ( d ) {
                 if($('#sell_list_filter_date_range').val()) {
                     var start = $('#sell_list_filter_date_range').data('daterangepicker').startDate.format('YYYY-MM-DD');
@@ -76,6 +76,8 @@ sell_table = $('#sell_table').DataTable({
             { data: 'conatct_name', name: 'conatct_name'},
             { data: 'mobile', name: 'contacts.mobile'},
             { data: 'business_location', name: 'bl.name'},
+            { data: 'work_status', name: 'work_status', searchable: false, orderable: false},
+            { data: 'delivery_status', name: 'delivery_status'},
             { data: 'payment_status', name: 'payment_status'},
             { data: 'payment_methods', orderable: false, "searchable": false},
             { data: 'final_total', name: 'final_total'},
@@ -118,7 +120,7 @@ sell_table = $('#sell_table').DataTable({
             $('.payment_method_count').html(__count_status(data, 'payment_methods'));
         },
         createdRow: function( row, data, dataIndex ) {
-            $( row ).find('td:eq(6)').attr('class', 'clickable_td');
+            $( row ).find('td:eq(8)').attr('class', 'clickable_td');
         }
     });
     
