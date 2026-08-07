@@ -1531,6 +1531,8 @@
                 }
                 if (hasAnyTailor && $('#delivery_status').val() === 'received') {
                     $('#delivery_status').val('preparing');
+                } else if (!hasAnyTailor) {
+                    $('#delivery_status').val('received');
                 }
             }
 

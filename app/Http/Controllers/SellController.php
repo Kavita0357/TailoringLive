@@ -697,19 +697,16 @@ class SellController extends Controller
                         $delivered = (int)$row->total_delivered;
                         $has_tailor = !empty($row->has_tailor_assigned);
 
-                        if ($total > 0 && $delivered == $total) {
+                        if (! $has_tailor) {
+                            $delivery_status = __('tailoring.pending');
+                            $status_color = 'bg-info';
+                        } elseif ($total > 0 && $delivered == $total) {
                             $delivery_status = __('tailoring.delivered');
                             $status_color = 'bg-red';
                         } elseif ($delivered > 0) {
                             $delivery_status = __('tailoring.partially_delivered');
                             $status_color = 'bg-green';
                         } elseif ($has_tailor) {
-                            $delivery_status = __('tailoring.preparing');
-                            $status_color = '#9CCF73 !important';
-                        } elseif ($row->delivery_status == 'received') {
-                            $delivery_status = __('tailoring.pending');
-                            $status_color = 'bg-info';
-                        } else {
                             $delivery_status = __('tailoring.preparing');
                             $status_color = '#9CCF73 !important';
                         }
