@@ -297,8 +297,7 @@ class TransactionUtil extends Util
                 } elseif ($new_delivery_status == 'delivered') {
                     $completed = $line->quantity;
                     $delivered = $line->quantity;
-                } elseif ($new_delivery_status == 'partially_delivered') {
-                    // Keep existing completed/delivered quantities
+                } elseif (in_array($new_delivery_status, ['preparing', 'partially_delivered'], true)) {
                     $completed = $line->completed_quantity;
                     $delivered = $line->delivered_quantity;
                 } else {
@@ -1022,7 +1021,10 @@ class TransactionUtil extends Util
 
         $completed_qty = $sell_line->completed_quantity;
         $delivered_qty = $sell_line->delivered_quantity;
-        if (!empty($transaction)) {
+        if (empty($tailorMasterId)) {
+            $completed_qty = 0;
+            $delivered_qty = 0;
+        } elseif (!empty($transaction)) {
             if ($transaction->delivery_status == 'ready_to_deliver') {
                 $completed_qty = $uf_quantity;
                 $delivered_qty = 0;

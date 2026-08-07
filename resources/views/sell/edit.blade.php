@@ -38,15 +38,18 @@
             width: auto !important;
             margin: 0 auto !important;
         }
+
         #pos_cloth_table td .input-number .input-group-btn {
             display: inline-block !important;
             width: auto !important;
             float: none !important;
         }
+
         #pos_cloth_table td .input-number .input-group-btn .btn {
             height: 34px !important;
             padding: 6px 10px !important;
         }
+
         #pos_cloth_table td .input-number .form-control {
             width: 45px !important;
             height: 34px !important;
@@ -55,6 +58,7 @@
             float: none !important;
             flex: none !important;
         }
+
         .cloth-pos-currency-symbol {
             display: none !important;
         }
@@ -1525,7 +1529,9 @@
                         }
                     });
                 }
-                $('#delivery_status').val(hasAnyTailor ? 'preparing' : 'received');
+                if (hasAnyTailor && $('#delivery_status').val() === 'received') {
+                    $('#delivery_status').val('preparing');
+                }
             }
 
             $('#common_tailoring_master').on('change', function() {
