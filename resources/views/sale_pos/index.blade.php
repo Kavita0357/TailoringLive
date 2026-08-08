@@ -50,6 +50,18 @@
     <div class="modal fade close_register_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
     </div>
 
+    <div class="modal fade partial_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
+    </div>
+
+    <div class="modal fade print_measurements_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
+    </div>
+
+    <div class="modal fade assign_tailoring_master_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
+    </div>
+
+    <div class="modal fade order_processing_delivery_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
+    </div>
+
     <!-- This will be printed -->
     <section class="invoice print_section" id="receipt_section">
     </section>

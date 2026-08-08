@@ -1,4 +1,5 @@
 <div class="row">
+	{!! Form::hidden('delivery_date', $default_datetime ?? @format_datetime($transaction->delivery_date ?? 'now'), ['id' => 'hidden_delivery_date']) !!}
 	<div class="col-md-12">
 		<p><strong>@lang('sale.invoice_no'):</strong> {{$transaction->invoice_no}}</p>
 	</div>

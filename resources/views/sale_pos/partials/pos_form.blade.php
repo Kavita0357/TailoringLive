@@ -1,4 +1,5 @@
 <div class="row">
+    {!! Form::hidden('delivery_date', $default_datetime ?? \Carbon\Carbon::now()->format('m/d/Y H:i'), ['id' => 'hidden_delivery_date']) !!}
     <div class="col-md-4">
         <div class="form-group">
             <div class="input-group">

@@ -59,7 +59,9 @@
                 </span>
             </div>
         </td>
-        <td class="text-center">
+        <td class="hide"></td>
+
+        <td class="text-center v-center">
             <div class="input-group" style="display:inline-flex; align-items:center; justify-content:center;">
                 <span class="cloth-pos-currency-symbol" style="font-weight:700; margin-right:2px;">{{ session('currency')['symbol'] ?? '৳' }}</span>
                 <input type="text" name="cloths[{{ $row_count }}][unit_price]"
@@ -72,7 +74,7 @@
                 value="{{ @num_format($unit_price_inc_tax) }}" @if (!$edit_price) readonly @endif />
         </td>
 
-        <td>
+        <td class="v-center">
             <input class="form-control input_number row_discount_amount"
                 name="cloths[{{ $row_count }}][line_discount_amount]" type="text"
                 value="{{ $discount }}"><br>
@@ -82,22 +84,22 @@
             </select>
         </td>
 
-        @php
-            $tailoringMasterValue = $product->tailoring_master_id ?? ($transaction->tailoring_master_id ?? null);
-        @endphp
-        <td>
-            {!! Form::select('cloths[' . $row_count . '][tailoring_master]', $tailor_masters, $tailoringMasterValue, [
-                'class' => 'form-control',
-                'placeholder' => __('messages.please_select'),
-            ]) !!}
-        </td>
-
         <td class="text-center v-center">
             <input type="hidden" class="form-control pos_line_total"
                 value="{{ @num_format($product->quantity_ordered * $unit_price_inc_tax) }}">
             <span class="display_currency pos_line_total_text" data-currency_symbol="true">
                 {{ @num_format($product->quantity_ordered * $unit_price_inc_tax) }}
             </span>
+        </td>
+
+        @php
+            $tailoringMasterValue = $product->tailoring_master_id ?? ($transaction->tailoring_master_id ?? null);
+        @endphp
+        <td class="text-center v-center">
+            {!! Form::select('cloths[' . $row_count . '][tailoring_master]', $tailor_masters, $tailoringMasterValue, [
+                'class' => 'form-control select2',
+                'placeholder' => __('messages.please_select'),
+            ]) !!}
         </td>
 
         <td class="text-center v-center">

@@ -2564,7 +2564,7 @@ class SellController extends Controller
             DB::commit();
 
             return redirect()
-                ->action([\App\Http\Controllers\SellController::class, 'index'])
+                ->back()
                 ->with('status', [
                     'success' => 1,
                     'msg' => __('tailoring.order_processing_delivery_updated'),
@@ -2573,7 +2573,7 @@ class SellController extends Controller
             DB::rollBack();
 
             return redirect()
-                ->action([\App\Http\Controllers\SellController::class, 'index'])
+                ->back()
                 ->with('status', [
                     'success' => 0,
                     'msg' => $e->getMessage(),

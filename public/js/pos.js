@@ -1098,6 +1098,12 @@ $(document).ready(function () {
         ignoreReadonly: true,
     });
 
+    $(document).on('dp.change change', '#delivery_date', function () {
+        if ($('#hidden_delivery_date').length) {
+            $('#hidden_delivery_date').val($(this).val());
+        }
+    });
+
     $(document).on('dp.change change', '#pos_transaction_date', function () {
         if ($('#transaction_date').length) {
             $('#transaction_date').val($(this).val());

@@ -9,6 +9,7 @@
         'data-default_payment_accounts' => $transaction->location->default_payment_accounts ?? ($default_location->default_payment_accounts ?? ''),
     ]) !!}
     {!! Form::hidden('sub_type', isset($sub_type) ? $sub_type : null) !!}
+    {!! Form::hidden('delivery_date', $default_datetime ?? @format_datetime($transaction->delivery_date ?? 'now'), ['id' => 'hidden_delivery_date']) !!}
     <input type="hidden" id="item_addition_method" value="{{ $business_details->item_addition_method }}">
 
     @if (empty($pos_settings['hide_product_suggestion']) && !isMobile())

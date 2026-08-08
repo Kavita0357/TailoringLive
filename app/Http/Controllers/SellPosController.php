@@ -391,7 +391,11 @@ class SellPosController extends Controller
                 if (empty($request->input('delivery_date'))) {
                     $input['delivery_date'] = \Carbon::now();
                 } else {
-                    $input['delivery_date'] = $this->productUtil->uf_date($request->input('delivery_date'), true);
+                    try {
+                        $input['delivery_date'] = $this->productUtil->uf_date($request->input('delivery_date'), true);
+                    } catch (\Exception $e) {
+                        $input['delivery_date'] = \Carbon::now();
+                    }
                 }
 
                 if ($is_direct_sale) {
@@ -1252,9 +1256,13 @@ class SellPosController extends Controller
                 }
 
                 if (empty($request->input('delivery_date'))) {
-                    $input['delivery_date'] = \Carbon::now();
+                    $input['delivery_date'] = !empty($transaction_before->delivery_date) ? $transaction_before->delivery_date : \Carbon::now();
                 } else {
-                    $input['delivery_date'] = $this->productUtil->uf_date($request->input('delivery_date'), true);
+                    try {
+                        $input['delivery_date'] = $this->productUtil->uf_date($request->input('delivery_date'), true);
+                    } catch (\Exception $e) {
+                        $input['delivery_date'] = !empty($transaction_before->delivery_date) ? $transaction_before->delivery_date : \Carbon::now();
+                    }
                 }
 
                 if ($request->input('additional_expense_value_1') != '') {
