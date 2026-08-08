@@ -842,9 +842,10 @@ class SellPosController extends Controller
         $business_location = BusinessLocation::find($location_id);
         $payment_types = $this->productUtil->payment_types($business_location, true);
         $location_printer_type = $business_location->receipt_printer_type;
-        $sell_details = TransactionSellLine::join('products AS p', 'transaction_sell_lines.product_id', '=', 'p.id')
-            ->join('variations AS variations', 'transaction_sell_lines.variation_id', '=', 'variations.id')
-            ->join('product_variations AS pv', 'variations.product_variation_id', '=', 'pv.id')
+        $sell_details = TransactionSellLine::leftjoin('products AS p', 'transaction_sell_lines.product_id', '=', 'p.id')
+            ->leftjoin('cloths AS c', 'transaction_sell_lines.cloth_id', '=', 'c.id')
+            ->leftjoin('variations AS variations', 'transaction_sell_lines.variation_id', '=', 'variations.id')
+            ->leftjoin('product_variations AS pv', 'variations.product_variation_id', '=', 'pv.id')
             ->leftjoin('variation_location_details AS vld', function ($join) use ($location_id) {
                 $join->on('variations.id', '=', 'vld.variation_id')->where('vld.location_id', '=', $location_id);
             })
@@ -853,7 +854,9 @@ class SellPosController extends Controller
             ->where('transaction_sell_lines.transaction_id', $id)
             ->with(['warranties'])
             ->select(
-                DB::raw("IF(pv.is_dummy = 0, CONCAT(p.name, ' (', pv.name, ':',variations.name, ')'), p.name) AS product_name"),
+                DB::raw("IFNULL(c.cloth_name, IF(pv.is_dummy = 0, CONCAT(p.name, ' (', pv.name, ':',variations.name, ')'), p.name)) AS product_name"),
+                'c.id as cloth_id',
+                'c.wages',
                 'p.id as product_id',
                 'p.enable_stock',
                 'p.image as product_image',
@@ -886,18 +889,23 @@ class SellPosController extends Controller
                 'transaction_sell_lines.res_service_staff_id',
                 'units.id as unit_id',
                 'transaction_sell_lines.sub_unit_id',
-                'transaction_sell_lines.cloth_id',
                 'transaction_sell_lines.making_charge',
                 'transaction_sell_lines.tailoring_master_id',
 
                 //qty_available not added when negative to avoid max quanity getting decreased in edit and showing error in max quantity validation
-                DB::raw('IF(vld.qty_available > 0, vld.qty_available + transaction_sell_lines.quantity, transaction_sell_lines.quantity) AS qty_available'),
+                DB::raw('IF(vld.qty_available > 0, vld.qty_available + transaction_sell_lines.quantity, transaction_sell_lines.quantity) AS qty_available')
             )
             ->get();
         if (!empty($sell_details)) {
             foreach ($sell_details as $key => $value) {
-                $variation = Variation::with('media')->findOrFail($value->variation_id);
-                $sell_details[$key]->media = $variation->media;
+                if (!empty($value->variation_id)) {
+                    $variation = Variation::with('media')->find($value->variation_id);
+                    if ($variation) {
+                        $sell_details[$key]->media = $variation->media;
+                    }
+                } else {
+                    $sell_details[$key]->media = [];
+                }
 
                 //If modifier or combo sell line then unset
                 if (!empty($sell_details[$key]->parent_sell_line_id)) {
@@ -913,7 +921,7 @@ class SellPosController extends Controller
 
                     //Add available lot numbers for dropdown to sell lines
                     $lot_numbers = [];
-                    if (request()->session()->get('business.enable_lot_number') == 1 || request()->session()->get('business.enable_product_expiry') == 1) {
+                    if (!empty($value->variation_id) && (request()->session()->get('business.enable_lot_number') == 1 || request()->session()->get('business.enable_product_expiry') == 1)) {
                         $lot_number_obj = $this->transactionUtil->getLotNumbersFromVariation($value->variation_id, $business_id, $location_id);
                         foreach ($lot_number_obj as $lot_number) {
                             //If lot number is selected added ordered quantity to lot quantity available
@@ -947,9 +955,11 @@ class SellPosController extends Controller
                         $sell_details[$key]->modifiers_ids = $modifiers_ids;
 
                         //add product modifier sets for edit
-                        $this_product = Product::find($sell_details[$key]->product_id);
-                        if (count($this_product->modifier_sets) > 0) {
-                            $sell_details[$key]->product_ms = $this_product->modifier_sets;
+                        if (!empty($sell_details[$key]->product_id)) {
+                            $this_product = Product::find($sell_details[$key]->product_id);
+                            if ($this_product && count($this_product->modifier_sets) > 0) {
+                                $sell_details[$key]->product_ms = $this_product->modifier_sets;
+                            }
                         }
                     }
 
@@ -1066,10 +1076,11 @@ class SellPosController extends Controller
         $users = config('constants.enable_contact_assign') ? User::forDropdown($business_id, false, false, false, true) : [];
         $only_payment = request()->segment(2) == 'payment';
 
-        $cloths = request()->segment(1) === 'cloth-pos'
+        $is_cloth_order = request()->segment(1) === 'cloth-pos' || request()->segment(1) === 'cloth-orders' || ($transaction->type ?? '') === 'order';
+        $cloths = $is_cloth_order
             ? Cloth::where('business_id', $business_id)->orderBy('cloth_name')->pluck('cloth_name', 'id')
             : [];
-        $tailor_masters = request()->segment(1) === 'cloth-pos'
+        $tailor_masters = $is_cloth_order
             ? User::tailorMasters($business_id)
             : [];
 
@@ -3229,16 +3240,17 @@ class SellPosController extends Controller
 
         $location_id = $transaction->location_id;
 
-        $sell_details = TransactionSellLine::join('products AS p', 'transaction_sell_lines.product_id', '=', 'p.id')
-            ->join('variations AS variations', 'transaction_sell_lines.variation_id', '=', 'variations.id')
-            ->join('product_variations AS pv', 'variations.product_variation_id', '=', 'pv.id')
+        $sell_details = TransactionSellLine::leftjoin('products AS p', 'transaction_sell_lines.product_id', '=', 'p.id')
+            ->leftjoin('cloths AS c', 'transaction_sell_lines.cloth_id', '=', 'c.id')
+            ->leftjoin('variations AS variations', 'transaction_sell_lines.variation_id', '=', 'variations.id')
+            ->leftjoin('product_variations AS pv', 'variations.product_variation_id', '=', 'pv.id')
             ->leftjoin('variation_location_details AS vld', function ($join) use ($location_id) {
                 $join->on('variations.id', '=', 'vld.variation_id')->where('vld.location_id', '=', $location_id);
             })
             ->leftjoin('units', 'units.id', '=', 'p.unit_id')
             ->leftjoin('units as u', 'p.secondary_unit_id', '=', 'u.id')
             ->where('transaction_sell_lines.transaction_id', $transaction->id)
-            ->select(DB::raw("IF(pv.is_dummy = 0, CONCAT(p.name, ' (', pv.name, ':',variations.name, ')'), p.name) AS product_name"), 'variations.sub_sku', 'transaction_sell_lines.id', 'transaction_sell_lines.res_service_staff_id')
+            ->select(DB::raw("IFNULL(c.cloth_name, IF(pv.is_dummy = 0, CONCAT(p.name, ' (', pv.name, ':',variations.name, ')'), p.name)) AS product_name"), 'variations.sub_sku', 'transaction_sell_lines.id', 'transaction_sell_lines.res_service_staff_id')
             ->get();
 
         $enabled_modules = $this->transactionUtil->allModulesEnabled();

@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @php
-    $pos_type = request()->segment(1) == 'cloth-pos' ? 'order' : 'sell';
+    $pos_type = (request()->segment(1) == 'cloth-pos' || request()->segment(1) == 'cloth-orders' || ($transaction->type ?? '') == 'order') ? 'order' : 'sell';
 @endphp
 
 @section('title', __('sale.pos_sale'))
