@@ -268,15 +268,18 @@
                         </div>
                     </div>
                 @endif
-                @if ($transaction->delivery_status != 'received')
+                @php
+                    $effective_delivery_status = $delivery_status_display['delivery_status'] ?? $transaction->delivery_status;
+                @endphp
+                @if ($effective_delivery_status != 'received')
                     <div id="tailorMasterAssignmentSection" class="col-md-12"
-                        @if (empty($transaction->delivery_status) ||
-                                !in_array($transaction->delivery_status, ['preparing', 'partially_delivered'])) style="display: none;" @endif>
+                        @if (empty($effective_delivery_status) ||
+                                !in_array($effective_delivery_status, ['preparing', 'partially_delivered'])) style="display: none;" @endif>
                         @php
                             $grouped_sell_details = $sell_details->groupBy('cloth_id');
                             $index = 0;
                         @endphp
-                    @if ($transaction->delivery_status != 'partially_delivered')
+                    @if ($effective_delivery_status != 'partially_delivered')
                         <table class="table table-condensed table-bordered table-striped table-responsive"
                             id="pos_table">
                             <thead>

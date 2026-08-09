@@ -76,6 +76,7 @@ sell_table = $('#sell_table').DataTable({
             { data: 'conatct_name', name: 'conatct_name'},
             { data: 'mobile', name: 'contacts.mobile'},
             { data: 'business_location', name: 'bl.name'},
+            { data: 'delivery_date', name: 'delivery_date'},
             { data: 'work_status', name: 'work_status', searchable: false, orderable: false},
             { data: 'delivery_status', name: 'delivery_status'},
             { data: 'payment_status', name: 'payment_status'},

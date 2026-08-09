@@ -1,11 +1,12 @@
 @extends('layouts.app')
-@section('title', __('sale.list_pos'))
+@section('title', request()->segment(1) == 'cloth-pos' ? __('tailoring.cloth_pos') : __('sale.list_pos'))
 
 @section('content')
 
     <!-- Content Header (Page header) -->
     <section class="content-header no-print">
-        <h1 class="tw-text-xl md:tw-text-3xl tw-font-bold tw-text-black">@lang('sale.pos_sale')
+        <h1 class="tw-text-xl md:tw-text-3xl tw-font-bold tw-text-black">
+            {{ request()->segment(1) == 'cloth-pos' ? __('tailoring.cloth_pos') : __('sale.pos_sale') }}
         </h1>
     </section>
 
@@ -15,7 +16,7 @@
             @include('sell.partials.sell_list_filters')
         @endcomponent
 
-        @component('components.widget', ['class' => 'box-primary', 'title' => __('sale.list_pos')])
+        @component('components.widget', ['class' => 'box-primary', 'title' => request()->segment(1) == 'cloth-pos' ? __('tailoring.cloth_pos') : __('sale.list_pos')])
             @can('sell.create')
                 @slot('tool')
                     <div class="box-tools">

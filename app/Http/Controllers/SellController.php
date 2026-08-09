@@ -116,10 +116,14 @@ class SellController extends Controller
         $delivered_qty = 0;
         $cloth_count = 0;
         $cloth_ids = [];
+        $has_tailor = false;
 
         foreach ($sell_details as $detail) {
             $total_qty += (int) ($detail->quantity_ordered ?? 0);
             $delivered_qty += (int) ($detail->delivered_quantity ?? 0);
+            if (! empty($detail->tailoring_master_id)) {
+                $has_tailor = true;
+            }
             if (! empty($detail->cloth_id) && ! in_array($detail->cloth_id, $cloth_ids)) {
                 $cloth_ids[] = $detail->cloth_id;
             }
@@ -127,29 +131,30 @@ class SellController extends Controller
 
         $cloth_count = count($cloth_ids);
 
-        $label = __('tailoring.preparing');
-        $status_class = '';
-        $style = '#9CCF73 !important';
-
         if ($total_qty > 0 && $delivered_qty >= $total_qty) {
+            $computed_status = 'delivered';
             $label = __('tailoring.delivered');
             $status_class = 'bg-red';
             $style = '';
         } elseif ($delivered_qty > 0) {
+            $computed_status = 'partially_delivered';
             $label = __('tailoring.partially_delivered');
             $status_class = 'bg-green';
             $style = '';
-        } elseif ($delivery_status == 'received') {
+        } elseif ($has_tailor || $delivery_status == 'preparing') {
+            $computed_status = 'preparing';
+            $label = __('tailoring.preparing');
+            $status_class = '';
+            $style = '#9CCF73 !important';
+        } else {
+            $computed_status = 'received';
             $label = __('tailoring.pending');
             $status_class = 'bg-info';
             $style = '';
-        } elseif ($delivery_status == 'preparing' && $cloth_count > 1) {
-            $status_class = '';
-            $style = '#9CCF73 !important';
         }
 
         return [
-            'delivery_status' => $delivery_status,
+            'delivery_status' => $computed_status,
             'label' => $label,
             'class' => $status_class,
             'style' => $style,
