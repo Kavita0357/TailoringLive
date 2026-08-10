@@ -176,7 +176,7 @@ class AdminSidebarMenu
                     <path d="M21 21v-2a4 4 0 0 0 -3 -3.85"></path>
                   </svg>',
                     ]
-                )->order(30);
+                )->order(40);
             }
 
             //Contacts dropdown
@@ -232,7 +232,7 @@ class AdminSidebarMenu
                   </svg>',
                         'id' => 'tour_step4'
                     ]
-                )->order(40);
+                )->order(30);
             }
 
             //Products dropdown
@@ -344,7 +344,7 @@ class AdminSidebarMenu
             }
             if (in_array('tailoring', $enabled_modules)) {
                 $menu->dropdown(
-                    __('tailoring.tailoring_orders'),
+                    'Orders',
                     function ($sub) use ($common_settings) {
 
                         $sub->url(
