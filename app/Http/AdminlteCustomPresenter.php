@@ -98,22 +98,18 @@ class AdminlteCustomPresenter extends Presenter
         // echo "here";
         // print_r($dropdownToggle);exit;
 
-        return '<div class="' . $this->getActiveStateOnChild($item) . '">' . $dropdownToggle . $childItemsContainerStart . $childItems . $childItemsContainerEnd . '</div>' . PHP_EOL;
+        return '<div class="menu-dropdown ' . $this->getActiveStateOnChild($item) . '">' . $dropdownToggle . $childItemsContainerStart . $childItems . $childItemsContainerEnd . '</div>' . PHP_EOL;
     }
 
     /**
      * Get multi-level dropdown wrapper.
-     *
-     * Note: This example doesn't directly implement a multi-level dropdown, as it wasn't specified, but you could extend
-     * the functionality similarly to `getMenuWithDropDownWrapper`, adjusting for deeper nesting.
      *
      * @param  \Nwidart\Menus\MenuItem  $item
      * @return string
      */
     public function getMultiLevelDropdownWrapper($item)
     {
-        // Placeholder for multi-level dropdown functionality if needed
-        return '';
+        return $this->getChildDropdown($item);
     }
 
     /**
@@ -122,36 +118,60 @@ class AdminlteCustomPresenter extends Presenter
      * @param  \Nwidart\Menus\MenuItem  $item
      * @return string
      */
-    public function getChildMenuItems($item)
+    public function getChildMenuItems($item, $isNested = false)
     {
-
         $children = '';
         $displayStyle = $item->hasActiveOnChild() ? 'block' : 'none';
 
-
-
-
         if (count($item->getChilds()) > 0) {
+            $indentClass = $isNested ? '' : 'tw-pl-11';
 
-            $children .= '<div class=" chiled tw-relative tw-mt-2 tw-mb-4 tw-pl-11" style="display:' . $displayStyle . '">
+            $verticalSpacing = $isNested ? 'tw-mt-1 tw-mb-0' : 'tw-mt-2 tw-mb-4';
+            $nestedPadding = $isNested ? ' padding-left: 1.5rem;' : '';
+
+            $children .= '<div class="chiled tw-relative ' . $verticalSpacing . ' ' . $indentClass . '" style="display:' . $displayStyle . ';' . $nestedPadding . '">
             <div class="tw-absolute tw-inset-y-0 tw-w-px tw-h-full tw-bg-gray-200 tw-left-5"></div>
             <div class="tw-space-y-3.5">';
 
             foreach ($item->getChilds() as $child) {
-
-                $isActive = $child->isActive() ? 'tw-text-primary-700' : '';
-
-                $customClass = isset($child->attributes['class']) ? $child->attributes['class'] : '';
-
-                $children .= '<a href="' . $child->getUrl() . '" title="" class="tw-flex tw-text-sm tw-font-medium tw-tracking-tight tw-text-gray-600 tw-truncate tw-transition-all tw-duration-200 hover:tw-text-gray-900 tw-whitespace-nowrap ' . $isActive . ' ' . $customClass . '"' . $isActive . ' "' . $child->getAttributes() . '"' . $child->hasActiveOnChild() . '>' .
-                    $child->getIcon() . ' <span>' . $child->title . '</span>' .
-                    '</a>' . PHP_EOL;
+                $children .= $child->hasChilds()
+                    ? $this->getChildDropdown($child)
+                    : $this->getChildLink($child);
             }
 
             $children .= '</div></div>';
         }
 
         return $children;
+    }
+
+    /**
+     * Render an expandable dropdown within another dropdown.
+     */
+    protected function getChildDropdown($item)
+    {
+        $activeState = $this->getActiveStateOnChild($item);
+
+        return '<div class="menu-dropdown ' . $activeState . '">
+            <a href="#" title="" class="drop_down tw-flex tw-items-center tw-gap-3 tw-text-sm tw-font-medium tw-tracking-tight tw-text-gray-600 tw-transition-all tw-duration-200 tw-rounded-lg tw-whitespace-nowrap hover:tw-text-gray-900 hover:tw-bg-gray-100 ' . $activeState . '" ' . $item->getAttributes() . '>
+                <span class="tw-truncate">' . $item->title . '</span>
+                <svg aria-hidden="true" class="svg tw-ml-auto tw-text-gray-500 tw-size-4 tw-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">' . $this->getArray($item) . '</svg>
+            </a>' .
+            $this->getChildMenuItems($item, true) .
+            '</div>' . PHP_EOL;
+    }
+
+    /**
+     * Render a regular dropdown child link.
+     */
+    protected function getChildLink($item)
+    {
+        $isActive = $item->isActive() ? 'tw-text-primary-700' : '';
+        $customClass = isset($item->attributes['class']) ? $item->attributes['class'] : '';
+
+        return '<a href="' . $item->getUrl() . '" title="" class="tw-flex tw-text-sm tw-font-medium tw-tracking-tight tw-text-gray-600 tw-truncate tw-transition-all tw-duration-200 hover:tw-text-gray-900 tw-whitespace-nowrap ' . $isActive . ' ' . $customClass . '" ' . $item->getAttributes() . '>' .
+            $item->getIcon() . ' <span>' . $item->title . '</span>' .
+            '</a>' . PHP_EOL;
     }
 
     /**

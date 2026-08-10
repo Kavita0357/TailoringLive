@@ -148,24 +148,28 @@
         $(".drop_down").click(function(event) {
             event.preventDefault();
             var $chiled = $(this).next(".chiled");
-            var svgElement = $(this).find(".svg");
-            $(".chiled").not($chiled).slideUp();
+            var $menuGroup = $(this).closest(".menu-dropdown");
+
+            // Close only dropdowns at the same level, leaving the parent menu open
+            // when a nested item such as Cloths is expanded.
+            $menuGroup.siblings(".menu-dropdown").children(".chiled").slideUp().find(".chiled").hide();
             $chiled.slideToggle(function() {
-                $(".svg").each(function() {
-                    var $currentSvgElement = $(this);
-                    if ($currentSvgElement.closest(".drop_down").next(".chiled").is(
-                            ":visible")) {
-                        // If the corresponding menu is visible, set the arrow pointing upwards
-                        $currentSvgElement.html(
-                            '<path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M6 9l6 6l6 -6" />'
-                        );
-                    } else {
-                        // Otherwise, set the arrow pointing downwards
-                        $currentSvgElement.html(
-                            '<path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M15 6l-6 6l6 6" />'
-                        );
-                    }
-                });
+                $menuGroup.siblings(".menu-dropdown").addBack().find("> .drop_down .svg").each(
+                    function() {
+                        var $currentSvgElement = $(this);
+                        if ($currentSvgElement.closest(".drop_down").next(".chiled").is(
+                                ":visible")) {
+                            // If the corresponding menu is visible, set the arrow pointing upwards
+                            $currentSvgElement.html(
+                                '<path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M6 9l6 6l6 -6" />'
+                            );
+                        } else {
+                            // Otherwise, set the arrow pointing downwards
+                            $currentSvgElement.html(
+                                '<path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M15 6l-6 6l6 6" />'
+                            );
+                        }
+                    });
             });
         });
 
@@ -185,23 +189,24 @@
                 $('.side-bar').removeClass('small-view-side-active');
             }
 
-            if($('.side-bar').hasClass('small-view-side-active')){
+            if ($('.side-bar').hasClass('small-view-side-active')) {
                 $('.overlay').fadeIn('slow');
             }
         });
 
-        $(document).on('click', function (e) {
+        $(document).on('click', function(e) {
             $('[data-toggle="popover"]').popover();
 
-            $(document).on('click', function (e) {
-                $('[data-toggle="popover"]').each(function () {
+            $(document).on('click', function(e) {
+                $('[data-toggle="popover"]').each(function() {
                     // Check if the clicked element is the popover button or inside the popover
-                    if (!$(this).is(e.target) && $(this).has(e.target).length === 0 && $('.popover').has(e.target).length === 0) {
+                    if (!$(this).is(e.target) && $(this).has(e.target).length === 0 &&
+                        $('.popover').has(e.target).length === 0) {
                         $(this).popover('hide');
                     }
                 });
             });
-            
+
         });
 
         $('.side-bar-collapse').click(function() {
@@ -210,12 +215,10 @@
 
         $('.dt-buttons.btn-group').find('a.btn').removeClass('btn-default');
         $('.dt-buttons.btn-group').find('a.btn').removeClass('btn');
-        
+
         // $('.date_range').on('show.daterangepicker', function (ev, picker) {
         //     $(picker.container).insertAfter($(this));
         // });
-   
+
     });
 </script>
-
-

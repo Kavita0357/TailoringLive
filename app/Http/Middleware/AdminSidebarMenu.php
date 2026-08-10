@@ -129,7 +129,7 @@ class AdminSidebarMenu
             }
             //TailoringMaster management dropdown
 
-            if (in_array('tailoring', $enabled_modules) && auth()->user()->can('user.view') || auth()->user()->can('user.create')) {
+            if (in_array('tailoring', $enabled_modules)) {
                 $menu->dropdown(
                     __('tailoring.tailor_management'),
                     function ($sub) {
@@ -140,6 +140,26 @@ class AdminSidebarMenu
                                 ['icon' => '', 'active' => request()->segment(1) == 'tailor-master' && request()->segment(2) == 'dashboard']
                             );
                         }
+                        $sub->url(
+                            action([\App\Http\Controllers\ClothController::class, 'index']),
+                            'Clothes',
+                            ['icon' => '', 'active' => request()->segment(1) == 'cloths']
+                        );
+                        $sub->url(
+                            action([\App\Http\Controllers\MeasurementController::class, 'index']),
+                            __('tailoring.measurement'),
+                            ['icon' => '', 'active' => request()->segment(1) == 'measurements']
+                        );
+                        $sub->url(
+                            action([\App\Http\Controllers\SubMeasurementController::class, 'index']),
+                            __('tailoring.sub_measurement'),
+                            ['icon' => '', 'active' => request()->segment(1) == 'sub-measurements']
+                        );
+                        $sub->url(
+                            action([\App\Http\Controllers\StyleController::class, 'index']),
+                            __('tailoring.style'),
+                            ['icon' => '', 'active' => request()->segment(1) == 'styles']
+                        );
                         $sub->url(
                             action([\App\Http\Controllers\ManageUserController::class, 'getAllTailorMasters']),
                             __('tailoring.tailor_master_list'),
@@ -322,37 +342,7 @@ class AdminSidebarMenu
                     ]
                 )->order(70);
             }
-            //Tailoring dropdown
             if (in_array('tailoring', $enabled_modules)) {
-                $menu->dropdown(
-                    __('tailoring.cloths'),
-                    function ($sub) use ($common_settings) {
-
-                        $sub->url(
-                            action([\App\Http\Controllers\ClothController::class, 'index']),
-                            __('tailoring.list_cloths'),
-                            ['icon' => '', 'active' => request()->segment(1) == 'cloths']
-                        );
-                        $sub->url(
-                            '#',
-                            __('tailoring.add_cloth'),
-                            ['icon' => '', 'class' => 'btn-modal', 'data-href' => action([\App\Http\Controllers\ClothController::class, 'create']), 'data-container' => '.cloth_modal', 'active' => request()->segment(1) == 'cloth' && request()->segment(2) == 'create']
-                        );
-                    },
-                    [
-                        'icon' => '<svg aria-hidden="true" class="tw-size-5 tw-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                        <path d="M12 3l8 4.5v9l-8 4.5l-8 -4.5v-9l8 -4.5"></path>
-                        <path d="M12 12l8 -4.5"></path>
-                        <path d="M8.2 9.8l7.6 -4.6"></path>
-                        <path d="M12 12v9"></path>
-                        <path d="M12 12l-8 -4.5"></path>
-                      </svg>',
-                        'id' => 'tour_step8'
-                    ]
-                )->order(50);
-
                 $menu->dropdown(
                     __('tailoring.tailoring_orders'),
                     function ($sub) use ($common_settings) {
@@ -1144,43 +1134,6 @@ class AdminSidebarMenu
                         'id' => 'tour_step3'
                     ]
                 )->order(150);
-            }
-
-            //Tailoring Dropdown
-
-            if (in_array('tailoring', $enabled_modules)) {
-                $menu->dropdown(
-                    __('tailoring.tailoring_settings'),
-                    function ($sub) use ($common_settings) {
-                        $sub->url(
-                            action([\App\Http\Controllers\MeasurementController::class, 'index']),
-                            __('tailoring.measurement'),
-                            ['icon' => '', 'active' => request()->segment(1) == 'measurements']
-                        );
-                        $sub->url(
-                            action([\App\Http\Controllers\SubMeasurementController::class, 'index']),
-                            __('tailoring.sub_measurement'),
-                            ['icon' => '', 'active' => request()->segment(1) == 'sub-measurements']
-                        );
-                        $sub->url(
-                            action([\App\Http\Controllers\StyleController::class, 'index']),
-                            __('tailoring.style'),
-                            ['icon' => '', 'active' => request()->segment(1) == 'styles']
-                        );
-                    },
-                    [
-                        'icon' => '<svg aria-hidden="true" class="tw-size-5 tw-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                        <path d="M12 3l8 4.5v9l-8 4.5l-8 -4.5v-9l8 -4.5"></path>
-                        <path d="M12 12l8 -4.5"></path>
-                        <path d="M8.2 9.8l7.6 -4.6"></path>
-                        <path d="M12 12v9"></path>
-                        <path d="M12 12l-8 -4.5"></path>
-                      </svg>',
-                        'id' => 'tour_step8'
-                    ]
-                )->order(160);
             }
         });
 
