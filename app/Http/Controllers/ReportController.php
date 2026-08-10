@@ -317,7 +317,7 @@ class ReportController extends Controller
                             ->orWhere('contacts.supplier_business_name', 'like', "%{$keyword}%");
                     });
                 })
-                ->rawColumns(['total_purchase','total_order_invoice','order_due', 'total_invoice', 'due', 'name', 'total_purchase_return', 'total_sell_return', 'opening_balance_due'])
+                ->rawColumns(['total_purchase', 'total_order_invoice', 'order_due', 'total_invoice', 'due', 'name', 'total_purchase_return', 'total_sell_return', 'opening_balance_due'])
                 ->make(true);
         }
 
@@ -2501,10 +2501,10 @@ class ReportController extends Controller
 
             $permitted_locations = auth()->user()->permitted_locations();
             if ($permitted_locations != 'all') {
-                $permitted_permissions = collect($permitted_locations)->map(function($loc_id) {
+                $permitted_permissions = collect($permitted_locations)->map(function ($loc_id) {
                     return 'location.' . $loc_id;
                 })->push('access_all_locations')->all();
-                
+
                 $permitted_user_ids = User::permission($permitted_permissions)->pluck('id');
                 $query->whereIn('transaction_payments.payment_for', $permitted_user_ids);
             }

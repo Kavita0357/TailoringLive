@@ -29,7 +29,8 @@
             <div class="col-md-2 col-xs-6">
                 <div class="form-group pull-right">
                     <div class="input-group">
-                        <button type="button" class="tw-dw-btn tw-dw-btn-primary tw-text-white tw-dw-btn-sm" id="profit_loss_date_filter">
+                        <button type="button" class="tw-dw-btn tw-dw-btn-primary tw-text-white tw-dw-btn-sm"
+                            id="profit_loss_date_filter">
                             <span>
                                 <i class="fa fa-calendar"></i> {{ __('messages.filter_by_date') }}
                             </span>
@@ -157,7 +158,7 @@
             profit_by_products_table = $('#profit_by_products_table').DataTable({
                 processing: true,
                 serverSide: true,
-                fixedHeader:false,
+                fixedHeader: false,
                 "ajax": {
                     "url": "/reports/get-profit/product",
                     "data": function(d) {
@@ -198,7 +199,7 @@
                         profit_by_categories_datatable = $('#profit_by_categories_table').DataTable({
                             processing: true,
                             serverSide: true,
-                            fixedHeader:false,
+                            fixedHeader: false,
                             "ajax": {
                                 "url": "/reports/get-profit/category",
                                 "data": function(d) {
@@ -240,7 +241,7 @@
                         profit_by_brands_datatable = $('#profit_by_brands_table').DataTable({
                             processing: true,
                             serverSide: true,
-                            fixedHeader:false,
+                            fixedHeader: false,
                             "ajax": {
                                 "url": "/reports/get-profit/brand",
                                 "data": function(d) {
@@ -282,7 +283,7 @@
                         profit_by_locations_datatable = $('#profit_by_locations_table').DataTable({
                             processing: true,
                             serverSide: true,
-                            fixedHeader:false,
+                            fixedHeader: false,
                             "ajax": {
                                 "url": "/reports/get-profit/location",
                                 "data": function(d) {
@@ -324,7 +325,7 @@
                         profit_by_invoice_datatable = $('#profit_by_invoice_table').DataTable({
                             processing: true,
                             serverSide: true,
-                            fixedHeader:false,
+                            fixedHeader: false,
                             "ajax": {
                                 "url": "/reports/get-profit/invoice",
                                 "data": function(d) {
@@ -366,7 +367,7 @@
                         profit_by_date_datatable = $('#profit_by_date_table').DataTable({
                             processing: true,
                             serverSide: true,
-                            fixedHeader:false,
+                            fixedHeader: false,
                             "ajax": {
                                 "url": "/reports/get-profit/date",
                                 "data": function(d) {
@@ -408,7 +409,7 @@
                         profit_by_customers_table = $('#profit_by_customer_table').DataTable({
                             processing: true,
                             serverSide: true,
-                            fixedHeader:false,
+                            fixedHeader: false,
                             "ajax": {
                                 "url": "/reports/get-profit/customer",
                                 "data": function(d) {
