@@ -307,8 +307,6 @@
                                                 }
                                             }
 
-                                            $completed_qty = $group->sum('completed_quantity');
-                                            $delivered_qty = $group->sum('delivered_quantity');
                                         @endphp
 
                                         <tr>
@@ -342,14 +340,29 @@
                                                 @endif
                                             </td>
 
-                                            {{-- Completed --}}
-                                            <td style="font-weight: bold;">
-                                                {{ intval($completed_qty) }}
+                                            {{-- Show status quantities alongside each tailor assignment. --}}
+                                            <td>
+                                                @if (count($valid_assignments) > 0)
+                                                    @foreach ($valid_assignments as $sell_line)
+                                                        <div style="margin-bottom:5px; font-weight: bold;">
+                                                            {{ intval($sell_line->completed_quantity) }}
+                                                        </div>
+                                                    @endforeach
+                                                @else
+                                                    -
+                                                @endif
                                             </td>
 
-                                            {{-- Delivered --}}
-                                            <td style="font-weight: bold;">
-                                                {{ intval($delivered_qty) }}
+                                            <td>
+                                                @if (count($valid_assignments) > 0)
+                                                    @foreach ($valid_assignments as $sell_line)
+                                                        <div style="margin-bottom:5px; font-weight: bold;">
+                                                            {{ intval($sell_line->delivered_quantity) }}
+                                                        </div>
+                                                    @endforeach
+                                                @else
+                                                    -
+                                                @endif
                                             </td>
                                         </tr>
 
