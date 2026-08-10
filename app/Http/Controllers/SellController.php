@@ -384,7 +384,24 @@ class SellController extends Controller
             }
 
             if (! empty(request()->input('delivery_status'))) {
-                $sells->where('transactions.delivery_status', request()->input('delivery_status'));
+                if ($sale_type == 'order') {
+                    $d_status = request()->input('delivery_status');
+                    if ($d_status == 'delivered') {
+                        $sells->havingRaw('SUM(COALESCE(tsl.delivered_quantity, 0)) >= SUM(COALESCE(tsl.quantity, 0)) AND SUM(COALESCE(tsl.quantity, 0)) > 0');
+                    } elseif ($d_status == 'partially_delivered') {
+                        $sells->havingRaw('SUM(COALESCE(tsl.delivered_quantity, 0)) > 0 AND SUM(COALESCE(tsl.delivered_quantity, 0)) < SUM(COALESCE(tsl.quantity, 0))');
+                    } elseif ($d_status == 'preparing') {
+                        $sells->havingRaw('SUM(COALESCE(tsl.delivered_quantity, 0)) = 0 AND (MAX(CASE WHEN tsl.tailoring_master_id IS NOT NULL THEN 1 ELSE 0 END) = 1 OR transactions.delivery_status = "preparing")');
+                    } elseif ($d_status == 'received') {
+                        $sells->havingRaw('SUM(COALESCE(tsl.delivered_quantity, 0)) = 0 AND MAX(CASE WHEN tsl.tailoring_master_id IS NOT NULL THEN 1 ELSE 0 END) = 0 AND (transactions.delivery_status IS NULL OR transactions.delivery_status NOT IN ("preparing", "ready_to_deliver", "delivered", "partially_delivered"))');
+                    } elseif ($d_status == 'ready_to_deliver') {
+                        $sells->havingRaw('(SUM(COALESCE(tsl.completed_quantity, 0)) >= SUM(COALESCE(tsl.quantity, 0)) AND SUM(COALESCE(tsl.quantity, 0)) > 0 AND SUM(COALESCE(tsl.delivered_quantity, 0)) < SUM(COALESCE(tsl.quantity, 0))) OR transactions.delivery_status = "ready_to_deliver"');
+                    } else {
+                        $sells->where('transactions.delivery_status', $d_status);
+                    }
+                } else {
+                    $sells->where('transactions.delivery_status', request()->input('delivery_status'));
+                }
             }
 
             if (! empty(request()->input('for_dashboard_sales_order'))) {
@@ -702,18 +719,18 @@ class SellController extends Controller
                         $delivered = (int)$row->total_delivered;
                         $has_tailor = !empty($row->has_tailor_assigned);
 
-                        if (! $has_tailor) {
-                            $delivery_status = __('tailoring.pending');
-                            $status_color = 'bg-info';
-                        } elseif ($total > 0 && $delivered == $total) {
+                        if ($total > 0 && $delivered >= $total) {
                             $delivery_status = __('tailoring.delivered');
                             $status_color = 'bg-red';
                         } elseif ($delivered > 0) {
                             $delivery_status = __('tailoring.partially_delivered');
                             $status_color = 'bg-green';
-                        } elseif ($has_tailor) {
+                        } elseif ($has_tailor || $row->delivery_status == 'preparing') {
                             $delivery_status = __('tailoring.preparing');
                             $status_color = '#9CCF73 !important';
+                        } else {
+                            $delivery_status = __('tailoring.pending');
+                            $status_color = 'bg-info';
                         }
 
                         return '<a href="#" class="btn-modal" data-href="' . action([\App\Http\Controllers\SellController::class, 'editShipping'], [$row->id]) . '" data-container=".view_modal"><span class="label ' . $status_color . '" style="background-color: ' . $status_color . '">' . $delivery_status . '</span></a>';

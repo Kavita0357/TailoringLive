@@ -272,23 +272,22 @@
                     $effective_delivery_status = $delivery_status_display['delivery_status'] ?? $transaction->delivery_status;
                 @endphp
                 @if ($effective_delivery_status != 'received')
-                    <div id="tailorMasterAssignmentSection" class="col-md-12"
-                        @if (empty($effective_delivery_status) ||
-                                !in_array($effective_delivery_status, ['preparing', 'partially_delivered'])) style="display: none;" @endif>
+                    <div id="tailorMasterAssignmentSection" class="col-md-12">
                         @php
                             $grouped_sell_details = $sell_details->groupBy('cloth_id');
                             $index = 0;
                         @endphp
-                    @if ($effective_delivery_status != 'partially_delivered')
                         <table class="table table-condensed table-bordered table-striped table-responsive"
                             id="pos_table">
                             <thead>
                                 <tr>
                                     <th class="col-md-1">#</th>
                                     <th class="col-md-3">@lang('tailoring.cloth')</th>
-                                    <th class="col-md-1">@lang('tailoring.qty') </th>
-                                    <th class="col-md-2">@lang('tailoring.assigned_qty') </th>
-                                    <th class="col-md-4">@lang('tailoring.assign_to_tailoring_master') </th>
+                                    <th class="col-md-1">@lang('tailoring.qty')</th>
+                                    <th class="col-md-2">@lang('tailoring.assigned_qty')</th>
+                                    <th class="col-md-3">@lang('tailoring.assign_to_tailoring_master')</th>
+                                    <th class="col-md-1">@lang('tailoring.completed')</th>
+                                    <th class="col-md-1">@lang('tailoring.delivered')</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -307,6 +306,9 @@
                                                     $valid_assignments[] = $sell_line;
                                                 }
                                             }
+
+                                            $completed_qty = $group->sum('completed_quantity');
+                                            $delivered_qty = $group->sum('delivered_quantity');
                                         @endphp
 
                                         <tr>
@@ -316,22 +318,39 @@
 
                                             {{-- Assigned Qty --}}
                                             <td>
-                                                @foreach ($valid_assignments as $sell_line)
-                                                    <div style="margin-bottom:10px; font-weight: bold;">
-                                                        {{ intval($sell_line->assigned_quantity) }}
-                                                    </div>
-                                                @endforeach
+                                                @if (count($valid_assignments) > 0)
+                                                    @foreach ($valid_assignments as $sell_line)
+                                                        <div style="margin-bottom:5px; font-weight: bold;">
+                                                            {{ intval($sell_line->assigned_quantity) }}
+                                                        </div>
+                                                    @endforeach
+                                                @else
+                                                    -
+                                                @endif
                                             </td>
 
                                             {{-- Tailor Name --}}
                                             <td>
-                                                @foreach ($valid_assignments as $sell_line)
-                                                    <div style="margin-bottom:10px; font-weight: bold;">
-                                                        {{ $tailor_masters[$sell_line->tailoring_master_id] ?? '-' }}
-                                                    </div>
-                                                @endforeach
+                                                @if (count($valid_assignments) > 0)
+                                                    @foreach ($valid_assignments as $sell_line)
+                                                        <div style="margin-bottom:5px; font-weight: bold;">
+                                                            {{ $tailor_masters[$sell_line->tailoring_master_id] ?? '-' }}
+                                                        </div>
+                                                    @endforeach
+                                                @else
+                                                    -
+                                                @endif
                                             </td>
 
+                                            {{-- Completed --}}
+                                            <td style="font-weight: bold;">
+                                                {{ intval($completed_qty) }}
+                                            </td>
+
+                                            {{-- Delivered --}}
+                                            <td style="font-weight: bold;">
+                                                {{ intval($delivered_qty) }}
+                                            </td>
                                         </tr>
 
                                         @php
@@ -341,39 +360,7 @@
                                 @endforeach
                             </tbody>
                         </table>
-                    @endif
                     </div>
-                        <div class="col-md-12" style="margin-top: 20px;">
-                            <table class="table table-condensed table-bordered table-striped table-responsive">
-                                <thead>
-                                    <tr>
-                                        <th class="col-md-1">#</th>
-                                        <th class="col-md-3">@lang('tailoring.cloth')</th>
-                                        <th class="col-md-3">@lang('tailoring.order_qty')</th>
-                                        <th class="col-md-2">@lang('tailoring.completed')</th>
-                                        <th class="col-md-2">@lang('tailoring.delivered')</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @php $detail_index = 1; @endphp
-                                    @foreach ($sell_details as $sell_line)
-                                        @if ($sell_line->cloth_name)
-                                            <tr>
-                                                <td>{{ $detail_index++ }}</td>
-                                                <td>{{ $sell_line->cloth_name }}</td>
-                                                <td>{{ intval($sell_line->quantity_ordered) }}</td>
-                                                <td style="font-weight: bold;">
-                                                    {{ intval($sell_line->completed_quantity) }}
-                                                </td>
-                                                <td style="font-weight: bold;">
-                                                    {{ intval($sell_line->delivered_quantity) }}
-                                                </td>
-                                            </tr>
-                                        @endif
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
                 @endif
                 <div class="clearfix"></div>
                 @if ($transaction->type == 'order')
