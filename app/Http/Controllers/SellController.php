@@ -387,15 +387,15 @@ class SellController extends Controller
                 if ($sale_type == 'order') {
                     $d_status = request()->input('delivery_status');
                     if ($d_status == 'delivered') {
-                        $sells->havingRaw('SUM(COALESCE(tsl.delivered_quantity, 0)) >= SUM(COALESCE(tsl.quantity, 0)) AND SUM(COALESCE(tsl.quantity, 0)) > 0');
+                        $sells->havingRaw('SUM(CASE WHEN tsl.cloth_id IS NOT NULL THEN COALESCE(tsl.delivered_quantity, 0) ELSE 0 END) >= SUM(CASE WHEN tsl.cloth_id IS NOT NULL THEN COALESCE(tsl.quantity, 0) ELSE 0 END) AND SUM(CASE WHEN tsl.cloth_id IS NOT NULL THEN COALESCE(tsl.quantity, 0) ELSE 0 END) > 0');
                     } elseif ($d_status == 'partially_delivered') {
-                        $sells->havingRaw('SUM(COALESCE(tsl.delivered_quantity, 0)) > 0 AND SUM(COALESCE(tsl.delivered_quantity, 0)) < SUM(COALESCE(tsl.quantity, 0))');
+                        $sells->havingRaw('SUM(CASE WHEN tsl.cloth_id IS NOT NULL THEN COALESCE(tsl.delivered_quantity, 0) ELSE 0 END) > 0 AND SUM(CASE WHEN tsl.cloth_id IS NOT NULL THEN COALESCE(tsl.delivered_quantity, 0) ELSE 0 END) < SUM(CASE WHEN tsl.cloth_id IS NOT NULL THEN COALESCE(tsl.quantity, 0) ELSE 0 END)');
                     } elseif ($d_status == 'preparing') {
-                        $sells->havingRaw('SUM(COALESCE(tsl.delivered_quantity, 0)) = 0 AND (MAX(CASE WHEN tsl.tailoring_master_id IS NOT NULL THEN 1 ELSE 0 END) = 1 OR transactions.delivery_status = "preparing")');
+                        $sells->havingRaw('SUM(CASE WHEN tsl.cloth_id IS NOT NULL THEN COALESCE(tsl.delivered_quantity, 0) ELSE 0 END) = 0 AND (MAX(CASE WHEN tsl.tailoring_master_id IS NOT NULL AND tsl.cloth_id IS NOT NULL THEN 1 ELSE 0 END) = 1 OR transactions.delivery_status = "preparing")');
                     } elseif ($d_status == 'received') {
-                        $sells->havingRaw('SUM(COALESCE(tsl.delivered_quantity, 0)) = 0 AND MAX(CASE WHEN tsl.tailoring_master_id IS NOT NULL THEN 1 ELSE 0 END) = 0 AND (transactions.delivery_status IS NULL OR transactions.delivery_status NOT IN ("preparing", "ready_to_deliver", "delivered", "partially_delivered"))');
+                        $sells->havingRaw('SUM(CASE WHEN tsl.cloth_id IS NOT NULL THEN COALESCE(tsl.delivered_quantity, 0) ELSE 0 END) = 0 AND MAX(CASE WHEN tsl.tailoring_master_id IS NOT NULL AND tsl.cloth_id IS NOT NULL THEN 1 ELSE 0 END) = 0 AND (transactions.delivery_status IS NULL OR transactions.delivery_status NOT IN ("preparing", "ready_to_deliver", "delivered", "partially_delivered"))');
                     } elseif ($d_status == 'ready_to_deliver') {
-                        $sells->havingRaw('(SUM(COALESCE(tsl.completed_quantity, 0)) >= SUM(COALESCE(tsl.quantity, 0)) AND SUM(COALESCE(tsl.quantity, 0)) > 0 AND SUM(COALESCE(tsl.delivered_quantity, 0)) < SUM(COALESCE(tsl.quantity, 0))) OR transactions.delivery_status = "ready_to_deliver"');
+                        $sells->havingRaw('(SUM(CASE WHEN tsl.cloth_id IS NOT NULL THEN COALESCE(tsl.completed_quantity, 0) ELSE 0 END) >= SUM(CASE WHEN tsl.cloth_id IS NOT NULL THEN COALESCE(tsl.quantity, 0) ELSE 0 END) AND SUM(CASE WHEN tsl.cloth_id IS NOT NULL THEN COALESCE(tsl.quantity, 0) ELSE 0 END) > 0 AND SUM(CASE WHEN tsl.cloth_id IS NOT NULL THEN COALESCE(tsl.delivered_quantity, 0) ELSE 0 END) < SUM(CASE WHEN tsl.cloth_id IS NOT NULL THEN COALESCE(tsl.quantity, 0) ELSE 0 END)) OR transactions.delivery_status = "ready_to_deliver"');
                     } else {
                         $sells->where('transactions.delivery_status', $d_status);
                     }
@@ -467,10 +467,10 @@ class SellController extends Controller
 
             if ($sale_type == 'order') {
                 $sells->addSelect(
-                    DB::raw('SUM(COALESCE(tsl.completed_quantity, 0)) as total_completed'),
-                    DB::raw('SUM(COALESCE(tsl.delivered_quantity, 0)) as total_delivered'),
-                    DB::raw('SUM(COALESCE(tsl.quantity, 0)) as total_items_qty'),
-                    DB::raw('MAX(CASE WHEN tsl.tailoring_master_id IS NOT NULL THEN 1 ELSE 0 END) as has_tailor_assigned')
+                    DB::raw('SUM(CASE WHEN tsl.cloth_id IS NOT NULL THEN COALESCE(tsl.completed_quantity, 0) ELSE 0 END) as total_completed'),
+                    DB::raw('SUM(CASE WHEN tsl.cloth_id IS NOT NULL THEN COALESCE(tsl.delivered_quantity, 0) ELSE 0 END) as total_delivered'),
+                    DB::raw('SUM(CASE WHEN tsl.cloth_id IS NOT NULL THEN COALESCE(tsl.quantity, 0) ELSE 0 END) as total_items_qty'),
+                    DB::raw('MAX(CASE WHEN tsl.tailoring_master_id IS NOT NULL AND tsl.cloth_id IS NOT NULL THEN 1 ELSE 0 END) as has_tailor_assigned')
                 );
             }
 
