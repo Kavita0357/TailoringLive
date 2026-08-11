@@ -108,6 +108,40 @@ class ReportController extends Controller
             $permitted_locations = auth()->user()->permitted_locations();
             $data = $this->transactionUtil->getProfitLossDetails($business_id, $location_id, $start_date, $end_date, $user_id, $permitted_locations);
 
+            $tailoring_totals = $this->getTailoringProfitLossTotals(
+                $business_id,
+                $start_date,
+                $end_date,
+                $location_id,
+                $user_id,
+                $permitted_locations
+            );
+
+            $data['total_making_charge'] = $tailoring_totals->total_making_charge ?? 0;
+            $data['total_wages'] = $tailoring_totals->total_wages ?? 0;
+            // Profit/Loss report formula:
+            // Gross profit = product sell + making charge - purchase.
+            $data['gross_profit'] = $data['total_sell']
+                + $data['total_making_charge']
+                - $data['total_purchase'];
+            $data['gross_profit_label'] = [];
+
+            // Net profit includes tailoring wages as an expense.
+            $data['net_profit'] = $data['gross_profit']
+                + $data['total_sell_shipping_charge']
+                + $data['total_sell_additional_expense']
+                + $data['total_recovered']
+                + $data['total_purchase_discount']
+                + $data['total_sell_round_off']
+                - $data['total_adjustment']
+                - $data['total_expense']
+                - $data['total_wages']
+                - $data['total_purchase_shipping_charge']
+                - $data['total_transfer_shipping_charges']
+                - $data['total_purchase_additional_expense']
+                - $data['total_sell_discount']
+                - $data['total_reward_amount'];
+
             // $data['closing_stock'] = $data['closing_stock'] - $data['total_sell_return'];
 
             return view('report.partials.profit_loss_details', compact('data'))->render();
@@ -116,6 +150,43 @@ class ReportController extends Controller
         $business_locations = BusinessLocation::forDropdown($business_id, true);
 
         return view('report.profit_loss', compact('business_locations'));
+    }
+
+    /**
+     * Get tailoring income and wage expense for finalised tailoring orders.
+     *
+     * Making charge is stored on the order line. Wages are derived from the
+     * selected cloth, as this is the rate used when the tailor is assigned.
+     */
+    private function getTailoringProfitLossTotals($business_id, $start_date, $end_date, $location_id = null, $user_id = null, $permitted_locations = null)
+    {
+        $query = TransactionSellLine::join('transactions as orders', 'transaction_sell_lines.transaction_id', '=', 'orders.id')
+            ->leftJoin('cloths', 'transaction_sell_lines.cloth_id', '=', 'cloths.id')
+            ->where('orders.business_id', $business_id)
+            ->where('orders.type', 'order')
+            ->where('orders.status', 'final')
+            ->whereNotNull('transaction_sell_lines.cloth_id')
+            ->selectRaw('SUM(COALESCE(transaction_sell_lines.making_charge, transaction_sell_lines.unit_price_before_discount, 0) * (transaction_sell_lines.quantity - COALESCE(transaction_sell_lines.quantity_returned, 0))) as total_making_charge')
+            ->selectRaw('SUM(COALESCE(cloths.wages, 0) * (transaction_sell_lines.quantity - COALESCE(transaction_sell_lines.quantity_returned, 0))) as total_wages');
+
+        if (! empty($start_date) && ! empty($end_date)) {
+            $query->whereDate('orders.transaction_date', '>=', $start_date)
+                ->whereDate('orders.transaction_date', '<=', $end_date);
+        }
+
+        if (! empty($permitted_locations) && $permitted_locations != 'all') {
+            $query->whereIn('orders.location_id', $permitted_locations);
+        }
+
+        if (! empty($location_id)) {
+            $query->where('orders.location_id', $location_id);
+        }
+
+        if (! empty($user_id)) {
+            $query->where('orders.created_by', $user_id);
+        }
+
+        return $query->first();
     }
 
     /**
