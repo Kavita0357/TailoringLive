@@ -68,6 +68,7 @@
 					@if (!empty($for_pdf)) style="color: #000;background-color: #d2d6de!important;" @endif
                         @endif>
                         <td class="row-border text-center">{{ @format_datetime($data['date']) }}</td>
+                        <td class="text-center">{{ $data['ref_no'] }}</td>
                         <td class="text-center">{{ $data['type'] }}</td>
                         <td class="text-center">{{ $data['location'] }}</td>
                         <td class="text-center">{{ $data['payment_status'] }}</td>
@@ -80,7 +81,13 @@
                             @if ($data['credit'] != '') @format_currency($data['credit'])
                             @endif
                         </td>
-                        <td class="ws-nowrap text-center">{{ $data['balance'] }}</td>
+                        <td class="ws-nowrap text-center">
+                            @if (!empty($data['balance']) && is_numeric($data['balance']))
+                                @format_currency($data['balance'])
+                            @else
+                                {{ $data['balance'] }}
+                            @endif
+                        </td>
                         <td class="text-center">{{ $data['payment_method'] }}</td>
                         <td>
                             {!! $data['others'] !!}
