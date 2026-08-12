@@ -377,7 +377,11 @@
                         moment_date_format));
                 }
             );
-            $('#ledger_date_range, #ledger_location').change(function() {
+            $('#ledger_date_range').on('cancel.daterangepicker', function(ev, picker) {
+                $('#ledger_date_range').val('');
+                get_contact_ledger();
+            });
+            $('#ledger_date_range, #ledger_location, input[name="ledger_format"]').change(function() {
                 get_contact_ledger();
             });
             get_contact_ledger();
@@ -555,9 +559,8 @@
             get_contact_ledger();
         });
 
-        $(document).on('change', 'input[name="ledger_format"]', function() {
-            get_contact_ledger();
-        })
+
+
 
         $(document).one('shown.bs.tab', 'a[href="#payments_tab"]', function() {
             get_contact_payments();

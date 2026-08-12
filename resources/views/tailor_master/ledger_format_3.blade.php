@@ -5,11 +5,11 @@
 <div class="col-md-12 col-sm-12 @if (!empty($for_pdf)) width-100 align-right @endif">
     <p class="text-right align-right"><strong>{{ session('business.name') }}</strong>
         <br>
-		@if(!empty(session('business.locations')->first()))
-			{{ session('business.locations')->first()->city }},
-			{{ session('business.locations')->first()->state }},
-			{{ session('business.locations')->first()->country }}
-		@endif
+        @if (!empty(session('business.locations')->first()))
+            {{ session('business.locations')->first()->city }},
+            {{ session('business.locations')->first()->state }},
+            {{ session('business.locations')->first()->country }}
+        @endif
     </p>
 </div>
 <div class="col-md-6 col-sm-6 col-xs-6 @if (!empty($for_pdf)) width-50 f-left @endif">
@@ -67,22 +67,21 @@
                     <tr @if (!empty($data['transaction_type']) && in_array($data['transaction_type'], ['sell', 'purchase'])) class="bg-gray"
 					@if (!empty($for_pdf)) style="color: #000;background-color: #d2d6de!important;" @endif
                         @endif>
-                        <td class="row-border">{{ @format_datetime($data['date']) }}</td>
-                        <td>{{ $data['ref_no'] }}</td>
-                        <td>{{ $data['type'] }}</td>
-                        <td>{{ $data['location'] }}</td>
-                        <td>{{ $data['payment_status'] }}</td>
+                        <td class="row-border text-center">{{ @format_datetime($data['date']) }}</td>
+                        <td class="text-center">{{ $data['type'] }}</td>
+                        <td class="text-center">{{ $data['location'] }}</td>
+                        <td class="text-center">{{ $data['payment_status'] }}</td>
                         {{-- <td class="ws-nowrap align-right">@if ($data['total'] !== '') @format_currency($data['total']) @endif</td> --}}
-                        <td class="ws-nowrap align-right">
+                        <td class="ws-nowrap text-center">
                             @if ($data['debit'] != '') @format_currency($data['debit'])
                             @endif
                         </td>
-                        <td class="ws-nowrap align-right">
+                        <td class="ws-nowrap text-center">
                             @if ($data['credit'] != '') @format_currency($data['credit'])
                             @endif
                         </td>
-                        <td class="ws-nowrap align-right">{{ $data['balance'] }}</td>
-                        <td>{{ $data['payment_method'] }}</td>
+                        <td class="ws-nowrap text-center">{{ $data['balance'] }}</td>
+                        <td class="text-center">{{ $data['payment_method'] }}</td>
                         <td>
                             {!! $data['others'] !!}
 
@@ -99,28 +98,6 @@
                             @endif
                         </td>
                     </tr>
-                    @if (!empty($data['transaction_type']) && $data['transaction_type'] == 'sell')
-                        <tr>
-                            <td colspan="10" class="bg-light-gray" style="padding: 0 20px 10px;">
-                                @include('sale_pos.partials.sale_line_details', [
-                                    'sell' => (object) $data,
-                                    'enabled_modules' => [],
-                                    'is_warranty_enabled' => false,
-                                    'for_ledger' => true,
-                                ])
-                            </td>
-                        </tr>
-                    @endif
-
-                    @if (!empty($data['transaction_type']) && $data['transaction_type'] == 'purchase')
-                        <tr>
-                            <td colspan="10" class="bg-light-gray" style="padding: 0 20px 10px;">
-                                @include('contact.partials.ledger_purchase_lines_details', [
-                                    'purchase' => (object) $data,
-                                ])
-                            </td>
-                        </tr>
-                    @endif
                 @endforeach
             </tbody>
         </table>
