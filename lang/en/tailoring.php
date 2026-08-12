@@ -184,6 +184,7 @@ return [
     'total_wages_due' => 'Total Wages Due',
     'total_tailor_masters' => 'Total Tailor Masters',
     'all_tailor_masters' => 'All Tailor Masters',
+    'all_orders' => 'All Orders',
     'completed_orders' => 'Completed Orders',
     'designs' => 'Designs',
     'design_name' => 'Design Name',

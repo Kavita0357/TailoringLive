@@ -557,7 +557,7 @@ class ManageUserController extends Controller
                 foreach ($order->sell_lines as $line) {
                     if (!empty($line->tailoring_master_id) && !empty($line->cloth)) {
                         $quantity = !empty($line->assigned_quantity) ? $line->assigned_quantity : $line->quantity;
-                        $order_wages += ($line->making_charge ?? 0) * $quantity;
+                        $order_wages += ($line->cloth->wages ?? 0) * $quantity;
                         $total_completed_orders += $quantity;
                     }
                 }
@@ -641,7 +641,7 @@ class ManageUserController extends Controller
                                 continue;
                             }
                             $quantity = !empty($line->assigned_quantity) ? $line->assigned_quantity : $line->quantity;
-                            $order_wages += ($line->making_charge ?? 0) * $quantity;
+                            $order_wages += ($line->cloth->wages ?? 0) * $quantity;
                             $total_completed_orders += $quantity;
                         }
                     }
@@ -670,14 +670,54 @@ class ManageUserController extends Controller
                     $total_tailor_masters = $tailor_masters->count();
                 }
 
-                if (empty($location_id) && empty($tailoring_master_id)) {
-                    $total_wages = $tailor_masters->sum('total_wages');
-                    $total_wages_paid = $tailor_masters->sum('total_wages_paid');
-                    $total_wages_due = $tailor_masters->sum('total_wages_due');
-                    $total_completed_orders = $tailor_masters->sum('total_completed_orders');
+                // Each tailor must see a separate work-history row for an order.
+                // A single order can contain items assigned to multiple tailors.
+                $work_history = collect();
+                foreach ($filtered_orders as $order) {
+                    $lines_by_tailor = $order->sell_lines
+                        ->filter(function ($line) use ($tailoring_master_id) {
+                            return !empty($line->tailoring_master_id) && !empty($line->cloth) &&
+                                (empty($tailoring_master_id) || $line->tailoring_master_id == $tailoring_master_id);
+                        })
+                        ->groupBy('tailoring_master_id');
+
+                    foreach ($lines_by_tailor as $tailor_id => $lines) {
+                        $first_line = $lines->first();
+                        $tailor_name = optional($first_line->tailor_master)->name;
+
+                        if (empty($tailor_name)) {
+                            $tailor = TailorMasterList::where('user_id', $tailor_id)->first();
+                            $tailor_name = optional($tailor)->name;
+                        }
+
+                        if (empty($tailor_name)) {
+                            $user = User::find($tailor_id);
+                            $tailor_name = $user
+                                ? trim($user->surname . ' ' . $user->first_name . ' ' . $user->last_name)
+                                : '';
+                        }
+
+                        $particulars = [];
+                        $wages = 0;
+                        foreach ($lines as $line) {
+                            $quantity = !empty($line->assigned_quantity) ? $line->assigned_quantity : $line->quantity;
+                            $particulars[] = $line->cloth->cloth_name . ' ' . (int) $quantity . 'pc(s)';
+                            $wages += ($line->cloth->wages ?? 0) * $quantity;
+                        }
+
+                        $work_history->push((object) [
+                            'id' => $order->id,
+                            'transaction_date' => $order->transaction_date,
+                            'invoice_no' => $order->invoice_no,
+                            'tailor_master' => $tailor_name,
+                            'particulars' => implode(', ', $particulars),
+                            'total_wages' => $wages,
+                            'transaction' => $order,
+                        ]);
+                    }
                 }
 
-                return DataTables::of($orders)
+                return DataTables::of($work_history)
                     ->editColumn('added_on', function ($row) {
                         return \Carbon::parse($row->transaction_date)->format(session('business.date_format') . ' H:i');
                     })
@@ -685,69 +725,27 @@ class ManageUserController extends Controller
                         return '<a href="#" class="btn-modal" data-container=".view_modal" data-href="' . action([\App\Http\Controllers\SellController::class, 'show'], [$row->id]) . '">' . $row->invoice_no . '</a>';
                     })
                     ->addColumn('particulars', function ($row) {
-                        $particulars = [];
-                        $filter_tailor_id = request()->input('tailoring_master_id');
-                        foreach ($row->sell_lines as $line) {
-                            if (!empty($line->cloth) && !empty($line->tailoring_master_id)) {
-                                if (!empty($filter_tailor_id) && $line->tailoring_master_id != $filter_tailor_id) {
-                                    continue;
-                                }
-                                $quantity = !empty($line->assigned_quantity) ? $line->assigned_quantity : $line->quantity;
-                                $particulars[] = $line->cloth->cloth_name . ' ' . (int) $quantity . 'pc(s)';
-                            }
-                        }
-                        return implode(', ', $particulars);
+                        return $row->particulars;
                     })
                     ->addColumn('total_wages', function ($row) {
-                        $wages = 0;
-                        $filter_tailor_id = request()->input('tailoring_master_id');
-                        foreach ($row->sell_lines as $line) {
-                            if (!empty($line->tailoring_master_id) && !empty($line->cloth)) {
-                                if (!empty($filter_tailor_id) && $line->tailoring_master_id != $filter_tailor_id) {
-                                    continue;
-                                }
-                                $quantity = !empty($line->assigned_quantity) ? $line->assigned_quantity : $line->quantity;
-                                $wages += ($line->making_charge ?? 0) * $quantity;
-                            }
-                        }
-                        return $wages;
+                        return $row->total_wages;
                     })
                     ->addColumn('tailor_master', function ($row) {
-                        $names = [];
-                        $filter_tailor_id = request()->input('tailoring_master_id');
-                        foreach ($row->sell_lines as $line) {
-                            if (!empty($filter_tailor_id) && $line->tailoring_master_id != $filter_tailor_id) {
-                                continue;
-                            }
-                            if (!empty($line->tailor_master)) {
-                                $names[] = $line->tailor_master->name;
-                            } elseif (!empty($line->tailoring_master_id)) {
-                                $tailor = \App\TailorMasterList::where('user_id', $line->tailoring_master_id)->first();
-                                if ($tailor) {
-                                    $names[] = $tailor->name;
-                                } else {
-                                    $user = \App\User::find($line->tailoring_master_id);
-                                    if ($user) {
-                                        $names[] = trim($user->surname . ' ' . $user->first_name . ' ' . $user->last_name);
-                                    }
-                                }
-                            }
-                        }
-                        return implode(', ', array_unique(array_filter($names)));
+                        return $row->tailor_master;
                     })
                     ->editColumn('payment_status', function ($row) {
-                        $payment_status = Transaction::getPaymentStatus($row);
+                        $payment_status = Transaction::getPaymentStatus($row->transaction);
                         return (string) view('sell.partials.payment_status', ['payment_status' => $payment_status, 'id' => $row->id]);
                     })
                     ->editColumn('invoice_no', function ($row) {
                         return '<a data-href="' . action([\App\Http\Controllers\SellController::class, 'show'], [$row->id]) . '" href="#" data-container=".view_modal" class="btn-modal">' . $row->invoice_no . '</a>';
                     })
                     ->addColumn('total_wages_paid', function ($row) {
-                        return $row->payment_lines->sum('amount');
+                        return $row->transaction->payment_lines->sum('amount');
                     })
                     ->addColumn('total_wages_due', function ($row) {
-                        $total_paid = $row->payment_lines->sum('amount');
-                        return max(0, $row->final_total - $total_paid);
+                        $total_paid = $row->transaction->payment_lines->sum('amount');
+                        return max(0, $row->transaction->final_total - $total_paid);
                     })
                     ->rawColumns(['payment_status', 'invoice_no', 'order_id'])
                     ->with([
