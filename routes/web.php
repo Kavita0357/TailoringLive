@@ -277,6 +277,7 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
     Route::resource('roles', RoleController::class);
 
     Route::resource('users', ManageUserController::class);
+    Route::get('/tailor-master/ledger', [ManageUserController::class, 'getLedger']);
     Route::get('/tailor-master/dashboard', [ManageUserController::class, 'tailorMasterDashboard'])->name('tailor_master.dashboard');
     Route::get('/tailor-master/list', [ManageUserController::class, 'getAllTailorMasters'])->name('tailor_master.list');
     Route::post('/tailor-master/store', [ManageUserController::class, 'storeTailorMaster'])->name('tailor_master.store');

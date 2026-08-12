@@ -1069,7 +1069,143 @@ class ManageUserController extends Controller
             abort(403, 'Unauthorized action.');
         }
 
-        return view('tailor_master.show')->with(compact('tailor'));
+        $business_locations = BusinessLocation::forDropdown($business_id, true);
+
+        return view('tailor_master.show')->with(compact('tailor', 'business_locations'));
+    }
+
+    public function getLedger(Request $request)
+    {
+        $business_id = request()->session()->get('user.business_id');
+        $tailor_id = request()->input('tailor_id');
+        $start_date = request()->input('start_date');
+        $end_date = request()->input('end_date');
+        $location_id = request()->input('location_id');
+        $format = request()->input('format', 'format_1');
+
+        $tailor = \App\TailorMasterList::whereHas('user', function ($query) use ($business_id) {
+            $query->where('business_id', $business_id);
+        })->findOrFail($tailor_id);
+
+        $orders = \App\Transaction::where('transactions.business_id', $business_id)
+            ->where('transactions.type', 'order')
+            ->whereHas('sell_lines', function ($query) use ($tailor) {
+                $query->where('tailoring_master_id', $tailor->user_id);
+            })
+            ->with(['location', 'sell_lines' => function($q) use ($tailor) {
+                $q->where('tailoring_master_id', $tailor->user_id);
+            }]);
+
+        if (!empty($start_date) && !empty($end_date)) {
+            $orders->whereDate('transaction_date', '>=', $start_date)
+                   ->whereDate('transaction_date', '<=', $end_date);
+        }
+        if (!empty($location_id)) {
+            $orders->where('location_id', $location_id);
+        }
+        $orders = $orders->get();
+
+        $payments = \App\TransactionPayment::where('payment_for', $tailor->user_id)
+            ->whereHas('transaction', function($q) use ($business_id, $location_id) {
+                $q->where('business_id', $business_id);
+                if (!empty($location_id)) {
+                    $q->where('location_id', $location_id);
+                }
+            });
+        
+        if (!empty($start_date) && !empty($end_date)) {
+            $payments->whereDate('paid_on', '>=', $start_date)
+                     ->whereDate('paid_on', '<=', $end_date);
+        }
+        $payments = $payments->get();
+
+        $total_wages = 0;
+        $total_wages_paid = $payments->sum('amount');
+        
+        $ledger_transactions = collect();
+
+        foreach ($orders as $order) {
+            $order_wages = 0;
+            foreach ($order->sell_lines as $line) {
+                if ($line->tailoring_master_id != $tailor->user_id) continue;
+                $quantity = !empty($line->assigned_quantity) ? $line->assigned_quantity : $line->quantity;
+                $order_wages += ($line->making_charge ?? 0) * $quantity;
+            }
+            $total_wages += $order_wages;
+
+            $ledger_transactions->push([
+                'date' => $order->transaction_date,
+                'ref_no' => $order->invoice_no,
+                'type' => 'Invoice',
+                'location' => $order->location->name ?? '',
+                'payment_status' => $order->payment_status,
+                'debit' => $order_wages,
+                'credit' => '',
+                'payment_method' => '',
+                'others' => '',
+                'transaction_type' => 'sell',
+                'due_date' => null
+            ]);
+        }
+
+        foreach ($payments as $payment) {
+            $ledger_transactions->push([
+                'date' => $payment->paid_on,
+                'ref_no' => $payment->payment_ref_no,
+                'type' => 'Payment',
+                'location' => '',
+                'payment_status' => '',
+                'debit' => '',
+                'credit' => $payment->amount,
+                'payment_method' => $payment->method,
+                'others' => '',
+                'transaction_type' => 'payment',
+                'due_date' => null
+            ]);
+        }
+
+        $ledger_transactions = $ledger_transactions->sortBy('date');
+        $total_wages_due = max(0, $total_wages - $total_wages_paid);
+
+        $start_date_display = !empty($start_date) ? \Carbon\Carbon::parse($start_date)->format(config('constants.default_date_format', 'm/d/Y')) : \Carbon\Carbon::now()->startOfYear()->format(config('constants.default_date_format', 'm/d/Y'));
+        $end_date_display = !empty($end_date) ? \Carbon\Carbon::parse($end_date)->format(config('constants.default_date_format', 'm/d/Y')) : \Carbon\Carbon::now()->endOfYear()->format(config('constants.default_date_format', 'm/d/Y'));
+
+        $ledger_details = [
+            'start_date' => $start_date_display,
+            'end_date' => $end_date_display,
+            'beginning_balance' => 0,
+            'total_purchase' => 0,
+            'total_invoice' => 0,
+            'total_order_invoice' => $total_wages,
+            'total_paid' => $total_wages_paid,
+            'total_reverse_payment' => 0,
+            'ledger_discount' => 0,
+            'balance_due' => $total_wages_due,
+            'ledger' => []
+        ];
+
+        $balance = 0;
+        foreach ($ledger_transactions as $transaction) {
+            $debit = $transaction['debit'] !== '' ? $transaction['debit'] : 0;
+            $credit = $transaction['credit'] !== '' ? $transaction['credit'] : 0;
+            $balance += $debit - $credit;
+            
+            $transaction['balance'] = $balance;
+            $transaction['final_total'] = $debit != 0 ? $debit : $credit;
+            $transaction['total_due'] = $debit - $credit;
+            
+            $ledger_details['ledger'][] = $transaction;
+        }
+
+        if ($format == 'format_2') {
+            return view('tailor_master.ledger_format_2')->with(compact('tailor', 'ledger_details'));
+        } elseif ($format == 'format_3') {
+            return view('tailor_master.ledger_format_3')->with(compact('tailor', 'ledger_details'));
+        }
+
+        return view('tailor_master.ledger')->with(compact(
+            'tailor', 'ledger_transactions', 'total_wages', 'total_wages_paid', 'total_wages_due', 'start_date', 'end_date', 'format'
+        ));
     }
 
 
