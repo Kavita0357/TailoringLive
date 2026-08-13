@@ -332,7 +332,19 @@ class HomeController extends Controller
         $common_settings = ! empty(session('business.common_settings')) ? session('business.common_settings') : [];
         $tailoring_status = 'order';
 
-        return view('home.index', compact('sells_chart_1', 'sells_chart_2', 'orders_chart_1', 'orders_chart_2', 'widgets', 'all_locations', 'common_settings', 'is_admin', 'tailoring_status'));
+        $order_details = $this->transactionUtil->getOrderTotals($business_id, $fy['start'], $fy['end']);
+        $total_ledger_discount = $this->transactionUtil->getTotalLedgerDiscount($business_id, $fy['start'], $fy['end']);
+
+        $total_order = ! empty($order_details['total_sell_inc_tax']) ? $order_details['total_sell_inc_tax'] : 0;
+        $order_invoice_due = max(0, ($order_details['invoice_due'] ?? 0) - ($total_ledger_discount['total_sell_discount'] ?? 0));
+        $total_pending_orders = $order_details['total_pending_orders'] ?? 0;
+        $total_in_production = $order_details['total_in_production'] ?? 0;
+        $total_received = $order_details['total_received'] ?? 0;
+        $total_in_progress = $order_details['total_in_progress'] ?? 0;
+        $total_ready_to_delivered = $order_details['total_ready_to_delivered'] ?? 0;
+        $total_delivered = $order_details['total_delivered'] ?? 0;
+
+        return view('home.index', compact('sells_chart_1', 'sells_chart_2', 'orders_chart_1', 'orders_chart_2', 'widgets', 'all_locations', 'common_settings', 'is_admin', 'tailoring_status', 'total_order', 'order_invoice_due', 'total_pending_orders', 'total_in_production', 'total_received', 'total_in_progress', 'total_ready_to_delivered', 'total_delivered'));
     }
 
     /**
@@ -389,9 +401,12 @@ class HomeController extends Controller
 
             $total_order_inc_tax = ! empty($order_details['total_sell_inc_tax']) ? $order_details['total_sell_inc_tax'] : 0;
 
-            $output['total_ready_to_delivered'] = $order_details['total_ready_to_delivered'];
-
-            $output['total_delivered'] = $order_details['total_delivered'];
+            $output['total_pending_orders'] = $order_details['total_pending_orders'] ?? 0;
+            $output['total_in_production'] = $order_details['total_in_production'] ?? 0;
+            $output['total_received'] = $order_details['total_received'] ?? 0;
+            $output['total_in_progress'] = $order_details['total_in_progress'] ?? 0;
+            $output['total_ready_to_delivered'] = $order_details['total_ready_to_delivered'] ?? 0;
+            $output['total_delivered'] = $order_details['total_delivered'] ?? 0;
 
             $total_sell_return_inc_tax = ! empty($transaction_totals['total_sell_return_inc_tax']) ? $transaction_totals['total_sell_return_inc_tax'] : 0;
 

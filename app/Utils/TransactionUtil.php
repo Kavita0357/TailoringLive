@@ -3037,6 +3037,10 @@ class TransactionUtil extends Util
             ->select(
                 DB::raw('SUM(final_total) as total_sell'),
                 DB::raw('SUM(final_total - (SELECT COALESCE(SUM(IF(tp.is_return = 1, -1*tp.amount, tp.amount)), 0) FROM transaction_payments as tp WHERE tp.transaction_id = transactions.id) )  as total_due'),
+                DB::raw("COUNT(CASE WHEN delivery_status = 'received' OR delivery_status IS NULL OR delivery_status = '' THEN 1 ELSE NULL END) as total_pending_orders"),
+                DB::raw("COUNT(CASE WHEN delivery_status = 'preparing' THEN 1 ELSE NULL END) as total_in_production"),
+                DB::raw("COUNT(CASE WHEN delivery_status = 'received' THEN 1 ELSE NULL END) as total_received"),
+                DB::raw("COUNT(CASE WHEN delivery_status = 'partially_delivered' THEN 1 ELSE NULL END) as total_in_progress"),
                 DB::raw("COUNT(CASE WHEN delivery_status = 'ready_to_deliver' THEN 1 ELSE NULL END) as total_ready_to_delivered"),
                 DB::raw("COUNT(CASE WHEN delivery_status = 'delivered' THEN 1 ELSE NULL END) as total_delivered"),
                 DB::raw('SUM(total_before_tax) as total_before_tax')
@@ -3072,8 +3076,12 @@ class TransactionUtil extends Util
         $output['total_sell_inc_tax'] = $sell_details->total_sell;
         $output['total_sell_exc_tax'] = $sell_details->total_before_tax;
         $output['invoice_due'] = $sell_details->total_due;
-        $output['total_ready_to_delivered'] = $sell_details->total_ready_to_delivered;
-        $output['total_delivered'] = $sell_details->total_delivered;
+        $output['total_pending_orders'] = $sell_details->total_pending_orders ?? 0;
+        $output['total_in_production'] = $sell_details->total_in_production ?? 0;
+        $output['total_received'] = $sell_details->total_received ?? 0;
+        $output['total_in_progress'] = $sell_details->total_in_progress ?? 0;
+        $output['total_ready_to_delivered'] = $sell_details->total_ready_to_delivered ?? 0;
+        $output['total_delivered'] = $sell_details->total_delivered ?? 0;
 
         return $output;
     }

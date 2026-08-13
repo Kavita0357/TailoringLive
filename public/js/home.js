@@ -1,7 +1,7 @@
 $(document).ready(function () {
     if ($('#dashboard_date_filter').length == 1) {
-        dateRangeSettings.startDate = moment();
-        dateRangeSettings.endDate = moment();
+        dateRangeSettings.startDate = financial_year.start;
+        dateRangeSettings.endDate = financial_year.end;
         $('#dashboard_date_filter').daterangepicker(dateRangeSettings, function (start, end) {
             $('#dashboard_date_filter span').html(
                 start.format(moment_date_format) + ' ~ ' + end.format(moment_date_format)
@@ -12,10 +12,14 @@ $(document).ready(function () {
             }
         });
 
-        update_statistics(moment().format('YYYY-MM-DD'), moment().format('YYYY-MM-DD'));
+        $('#dashboard_date_filter span').html(
+            financial_year.start.format(moment_date_format) + ' ~ ' + financial_year.end.format(moment_date_format)
+        );
+
+        update_statistics(financial_year.start.format('YYYY-MM-DD'), financial_year.end.format('YYYY-MM-DD'));
     }
 
-    $('#dashboard_location').change(function (e) {
+    $('#dashboard_location, #tailoring_status').change(function (e) {
         var start = $('#dashboard_date_filter')
             .data('daterangepicker')
             .startDate.format('YYYY-MM-DD');
@@ -211,6 +215,14 @@ function update_statistics(start, end) {
     var loader = '<i class="fas fa-sync fa-spin fa-fw margin-bottom"></i>';
     $('.total_purchase').html(loader);
     $('.purchase_due').html(loader);
+    $('.total_order').html(loader);
+    $('.order_invoice_due').html(loader);
+    $('.total_pending_orders').html(loader);
+    $('.total_in_production').html(loader);
+    $('.total_received').html(loader);
+    $('.total_in_progress').html(loader);
+    $('.total_ready_to_delivered').html(loader);
+    $('.total_delivered').html(loader);
     $('.total_sell').html(loader);
     $('.invoice_due').html(loader);
     $('.total_expense').html(loader);
@@ -227,11 +239,15 @@ function update_statistics(start, end) {
             $('.total_purchase').html(__currency_trans_from_en(data.total_purchase, true));
             $('.purchase_due').html(__currency_trans_from_en(data.purchase_due, true));
 
-            //purchase details
+            //order details
             $('.total_order').html(__currency_trans_from_en(data.total_order, true));
             $('.order_invoice_due').html(__currency_trans_from_en(data.order_invoice_due, true));
-            $('.total_ready_to_delivered').html(data.total_ready_to_delivered, true);
-            $('.total_delivered').html(data.total_delivered, true);
+            $('.total_pending_orders').html(data.total_pending_orders || 0);
+            $('.total_in_production').html(data.total_in_production || 0);
+            $('.total_received').html(data.total_received || 0);
+            $('.total_in_progress').html(data.total_in_progress || 0);
+            $('.total_ready_to_delivered').html(data.total_ready_to_delivered || 0);
+            $('.total_delivered').html(data.total_delivered || 0);
 
             //sell details
             $('.total_sell').html(__currency_trans_from_en(data.total_sell, true));
