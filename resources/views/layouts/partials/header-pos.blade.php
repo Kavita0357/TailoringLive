@@ -333,6 +333,7 @@
                         style="background-color:red; color:white;"
                         class="tw-shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px]  tw-cursor-pointer tw-flex tw-items-center tw-justify-center tw-rounded-md md:tw-w-8 tw-w-auto tw-h-8 tw-text-gray-600 pull-right btn-modal"
                         data-container=".close_register_modal"
+                        data-pos-type="{{ request()->segment(1) == 'cloth-pos' ? true : false }}"
                         data-href="{{ action([\App\Http\Controllers\CashRegisterController::class, 'getCloseRegister']) }}">
                         <strong class="!tw-m-3">
                             <i class="fas fa-times fa-lg tw-text-white !tw-text-sm"></i>
@@ -364,7 +365,8 @@
                         style="background-color:#00935F; color:white;"
                         class="tw-shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px] tw-cursor-pointe tw-flex tw-items-center tw-justify-center tw-rounded-md md:tw-w-8 tw-w-auto tw-h-8 tw-text-gray-600 btn-modal pull-right"
                         data-container=".register_details_modal"
-                        data-href="{{ action([\App\Http\Controllers\CashRegisterController::class, 'getRegisterDetails']) }}">
+                        data-pos-type="{{ request()->segment(1) == 'cloth-pos' ? 'cloth' : 'product' }}"
+                        data-href="{{ action([\App\Http\Controllers\CashRegisterController::class, 'getRegisterDetails']) }}?pos_type={{ request()->segment(1) == 'cloth-pos' ? 'cloth' : 'product' }}">
 
                         <strong class="!tw-m-3">
                             <i class="fa fa-briefcase tw-fa-lg tw-text-white !tw-text-sm" aria-hidden="true"></i>
