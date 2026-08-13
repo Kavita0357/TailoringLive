@@ -138,8 +138,32 @@
             background-color: #3c8dbc;
             color: #fff;
         }
-        .content-header small{
+
+        .content-header small {
             display: none !important;
+        }
+
+        .tailor_menu_mb {
+            margin-bottom: 1rem;
+        }
+
+        .shipping-modal {
+            width: 820px !important;
+            max-width: 95vw !important;
+        }
+
+        @media (max-width: 768px) {
+            .shipping-modal {
+                width: 90vw !important;
+                max-width: 90vw !important;
+            }
+        }
+
+        @media (max-width: 425px) {
+            .shipping-modal {
+                width: 95vw !important;
+                max-width: 95vw !important;
+            }
         }
     </style>
 
@@ -192,7 +216,8 @@
             <div id="app">
                 @yield('vue')
             </div>
-            <div class="tw-flex-1 tw-overflow-y-auto @if(!$pos_layout) tw-h-screen @endif" id="scrollable-container">
+            <div class="tw-flex-1 tw-overflow-y-auto @if (!$pos_layout) tw-h-screen @endif"
+                id="scrollable-container">
                 @yield('content')
                 @if (!$pos_layout)
 

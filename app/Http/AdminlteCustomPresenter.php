@@ -126,7 +126,7 @@ class AdminlteCustomPresenter extends Presenter
         if (count($item->getChilds()) > 0) {
             $indentClass = $isNested ? '' : 'tw-pl-11';
 
-            $verticalSpacing = $isNested ? 'tw-mt-1 tw-mb-0' : 'tw-mt-2 tw-mb-4';
+            $verticalSpacing = $isNested ? 'tw-mt-1 tw-mb-0' : 'tw-mt-2 tailor_menu_mb';
             $nestedPadding = $isNested ? ' padding-left: 1.5rem;' : '';
 
             $children .= '<div class="chiled tw-relative ' . $verticalSpacing . ' ' . $indentClass . '" style="display:' . $displayStyle . ';' . $nestedPadding . '">

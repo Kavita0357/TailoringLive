@@ -1,4 +1,4 @@
-<div class="modal-dialog" role="document">
+<div class="modal-dialog shipping-modal" role="document">
     {!! Form::open([
         'url' => action([\App\Http\Controllers\SellController::class, 'updateShipping'], [$transaction->id]),
         'method' => 'put',
@@ -269,7 +269,8 @@
                     </div>
                 @endif
                 @php
-                    $effective_delivery_status = $delivery_status_display['delivery_status'] ?? $transaction->delivery_status;
+                    $effective_delivery_status =
+                        $delivery_status_display['delivery_status'] ?? $transaction->delivery_status;
                 @endphp
                 @if ($effective_delivery_status != 'received')
                     <div id="tailorMasterAssignmentSection" class="col-md-12">

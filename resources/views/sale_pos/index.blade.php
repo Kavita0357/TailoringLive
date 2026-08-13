@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', request()->segment(1) == 'cloth-pos' ? __('tailoring.cloth_pos') : __('sale.list_pos'))
+@section('title', request()->segment(1) == 'cloth-pos' ? __('tailoring.list_cloth_pos') : __('sale.list_pos'))
 
 @section('content')
 
@@ -16,7 +16,10 @@
             @include('sell.partials.sell_list_filters')
         @endcomponent
 
-        @component('components.widget', ['class' => 'box-primary', 'title' => request()->segment(1) == 'cloth-pos' ? __('tailoring.cloth_pos') : __('sale.list_pos')])
+        @component('components.widget', [
+            'class' => 'box-primary',
+            'title' => request()->segment(1) == 'cloth-pos' ? __('tailoring.cloth_pos') : __('sale.list_pos'),
+        ])
             @can('sell.create')
                 @slot('tool')
                     <div class="box-tools">
@@ -57,10 +60,12 @@
     <div class="modal fade print_measurements_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
     </div>
 
-    <div class="modal fade assign_tailoring_master_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
+    <div class="modal fade assign_tailoring_master_modal" tabindex="-1" role="dialog"
+        aria-labelledby="gridSystemModalLabel">
     </div>
 
-    <div class="modal fade order_processing_delivery_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
+    <div class="modal fade order_processing_delivery_modal" tabindex="-1" role="dialog"
+        aria-labelledby="gridSystemModalLabel">
     </div>
 
     <!-- This will be printed -->

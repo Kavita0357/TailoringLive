@@ -359,7 +359,7 @@ class AdminSidebarMenu
                         );
                         $sub->url(
                             route('cloth_pos.index'),
-                            __('tailoring.cloth_pos'),
+                            __('tailoring.list_cloth_pos'),
                             ['icon' => '', 'active' => request()->segment(1) == 'cloth-pos']
                         );
                         /* $sub->url(

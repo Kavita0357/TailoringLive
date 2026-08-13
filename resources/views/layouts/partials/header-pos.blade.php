@@ -25,9 +25,20 @@
     .pos-delivery-date.input-group .input-group-addon,
     .pos-delivery-date.input-group .form-control {
         border: none;
-        background-color: #646EE4;
         font-weight: 600;
         padding: 0 5px;
+    }
+
+    .order-date-field,
+    .order-date-field .input-group-addon,
+    .order-date-field .form-control {
+        background-color: #4f9f9e !important;
+    }
+
+    .delivery-date-field,
+    .delivery-date-field .input-group-addon,
+    .delivery-date-field .form-control {
+        background-color: #646ee4 !important;
     }
 
     .pos-delivery-date.input-group .form-control {
@@ -40,10 +51,16 @@
     }
 
     .order-dates {
-        width: 30%;
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 12px;
+        flex: 0 0 auto;
+        white-space: nowrap;
+    }
+
+    .order-dates>p {
+        margin: 0;
+        flex: 0 0 auto;
     }
 </style>
 <input type="hidden" name="transaction_sub_type" id="transaction_sub_type" value="{{ $transaction_sub_type }}">
@@ -242,8 +259,8 @@
         @if (request()->segment(1) == 'cloth-pos')
             <div class="order-dates">
                 <p class="tw-text-white"><strong>@lang('tailoring.order_date'): &nbsp;</strong></p>
-                <div class="input-group pos-delivery-date tw-bg-[#646EE4] tw-py-1.5 tw-px-2 tw-rounded-md">
-                    <span class="input-group-addon tw-bg-[#646EE4]">
+                <div class="input-group pos-delivery-date order-date-field tw-py-1.5 tw-px-2 tw-rounded-md">
+                    <span class="input-group-addon">
                         <i class="fa fa-calendar tw-font-semibold text-white"></i>
                     </span>
                     @php
@@ -256,11 +273,15 @@
                             $order_date_attr['readonly'] = 'readonly';
                         }
                     @endphp
-                    {!! Form::text('transaction_date', $default_datetime ?? @format_datetime($transaction->transaction_date ?? 'now'), $order_date_attr) !!}
+                    {!! Form::text(
+                        'transaction_date',
+                        $default_datetime ?? @format_datetime($transaction->transaction_date ?? 'now'),
+                        $order_date_attr,
+                    ) !!}
                 </div>
                 <p class="tw-text-white"><strong>@lang('tailoring.delivery_date'): &nbsp;</strong></p>
-                <div class="input-group pos-delivery-date tw-bg-[#646EE4] tw-py-1.5 tw-px-2 tw-rounded-md">
-                    <span class="input-group-addon tw-bg-[#646EE4]">
+                <div class="input-group pos-delivery-date delivery-date-field tw-py-1.5 tw-px-2 tw-rounded-md">
+                    <span class="input-group-addon">
                         <i class="fa fa-calendar tw-font-semibold text-white"></i>
                     </span>
                     {!! Form::text('delivery_date', $default_datetime ?? @format_datetime($transaction->delivery_date ?? 'now'), [
@@ -310,7 +331,7 @@
                 @can('close_cash_register')
                     <button type="button" id="close_register" title="{{ __('cash_register.close_register') }}"
                         style="background-color:red; color:white;"
-                        class="tw-shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px]  tw-cursor-pointer tw-flex tw-items-center tw-justify-center tw-rounded-md md:tw-w-8 tw-w-auto tw-h-8 tw-text-gray-600 pull-right"
+                        class="tw-shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px]  tw-cursor-pointer tw-flex tw-items-center tw-justify-center tw-rounded-md md:tw-w-8 tw-w-auto tw-h-8 tw-text-gray-600 pull-right btn-modal"
                         data-container=".close_register_modal"
                         data-href="{{ action([\App\Http\Controllers\CashRegisterController::class, 'getCloseRegister']) }}">
                         <strong class="!tw-m-3">

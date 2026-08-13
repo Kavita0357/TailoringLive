@@ -1,13 +1,13 @@
 @extends('layouts.app')
-@section('title', __('tailoring.tailor_master_dashboard'))
+@section('title', __('tailoring.tailor_dashboard'))
 
 @section('content')
     <div
         class="tw-pb-6 tw-bg-gradient-to-r tw-from-@if (!empty(session('business.theme_color'))) {{ session('business.theme_color') }}@else{{ 'primary' }} @endif-800 tw-to-@if (!empty(session('business.theme_color'))) {{ session('business.theme_color') }}@else{{ 'primary' }} @endif-900 xl:tw-pb-0 ">
-        <div class="tw-mb-4">
+        <div class="tailor_menu_mb">
             <div class="tw-flex tw-items-center tw-justify-between tw-gap-3 content-header">
                 <h1 class="tw-text-xl md:tw-text-3xl tw-font-bold tw-text-black ">
-                    @lang('tailoring.tailor_master_dashboard')</h1>
+                    @lang('tailoring.tailor_dashboard')</h1>
                 <div class="filter-box" style="width: 250px;">
                     {!! Form::select('location_id', $business_locations, $location_id, [
                         'class' => 'form-control select2',
