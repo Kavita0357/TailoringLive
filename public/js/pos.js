@@ -3613,7 +3613,7 @@ function add_cloth_row(data, is_pos = false) {
         </td>
 
         <td class="v-center">
-<input class="form-control input_number row_discount_amount" name="cloths[${rowIndex}][line_discount_amount]" type="text" value="0"><br>
+            <input class="form-control input_number row_discount_amount" name="cloths[${rowIndex}][line_discount_amount]" type="text" value="0"><br>
             <select class="form-control row_discount_type" name="cloths[${rowIndex}][line_discount_type]">
                 <option value="fixed" selected>Fixed</option>
                 <option value="percentage">Percentage</option>
@@ -3641,12 +3641,6 @@ function add_cloth_row(data, is_pos = false) {
         $('table#pos_table tbody').append(html);
     } else {
         $('#pos_cloth_table tbody').append(html);
-        if ($('#cloth-pos-workspace').length > 0) {
-            // Keep the tailoring-order row aligned with its six-column POS header.
-            const clothRow = $('#pos_cloth_table tbody tr').last();
-            const tailorCell = clothRow.children('td').eq(5).detach();
-            tailorCell.insertBefore(clothRow.children('td').last());
-        }
         $('#cloth_price span.total_quantity').html(__currency_trans_from_en(1, false));
         $('#cloth_price span.price_total').html(__currency_trans_from_en(data.cloth.making_charge || 0, false));
         $('#cloth_row_count').val(rowIndex + 1);

@@ -5,819 +5,850 @@
 @section('title', __('sale.pos_sale'))
 
 @section('content')
-<section class="content no-print">
-    <input type="hidden" id="amount_rounding_method" value="{{ $pos_settings['amount_rounding_method'] ?? '' }}">
-    @if (!empty($pos_settings['allow_overselling']))
-        <input type="hidden" id="is_overselling_allowed">
+    <section class="content no-print">
+        <input type="hidden" id="amount_rounding_method" value="{{ $pos_settings['amount_rounding_method'] ?? '' }}">
+        @if (!empty($pos_settings['allow_overselling']))
+            <input type="hidden" id="is_overselling_allowed">
+        @endif
+        @if (session('business.enable_rp') == 1)
+            <input type="hidden" id="reward_point_enabled">
+        @endif
+        @php
+            $is_discount_enabled = $pos_settings['disable_discount'] != 1 ? true : false;
+            $is_rp_enabled = session('business.enable_rp') == 1 ? true : false;
+        @endphp
+        {!! Form::open([
+            'url' => action([\App\Http\Controllers\SellPosController::class, 'store']),
+            'method' => 'post',
+            'id' => 'add_pos_sell_form',
+        ]) !!}
+        <input type="hidden" id="sale_type" name="type" value="{{ $pos_type }}">
+        @if ($pos_type == 'order')
+            @include('sale_pos.partials.cloth_pos_workspace')
+        @else
+            @include('sale_pos.partials.standard_pos_workspace')
+        @endif
+
+        @include('sale_pos.partials.payment_modal')
+
+        @if (empty($pos_settings['disable_suspend']))
+            @include('sale_pos.partials.suspend_note_modal')
+        @endif
+
+        @if (empty($pos_settings['disable_recurring_invoice']))
+            @include('sale_pos.partials.recurring_invoice_modal')
+        @endif
+        @include('sale_pos.partials.pos_form_actions')
+        {!! Form::close() !!}
+    </section>
+
+    <!-- This will be printed -->
+    <section class="invoice print_section" id="receipt_section">
+    </section>
+    <div class="modal fade contact_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
+        @include('contact.create', ['quick_add' => true])
+    </div>
+    @if (empty($pos_settings['hide_product_suggestion']) && isMobile())
+        @include('sale_pos.partials.mobile_product_suggestions')
     @endif
-    @if (session('business.enable_rp') == 1)
-        <input type="hidden" id="reward_point_enabled">
-    @endif
-    @php
-        $is_discount_enabled = $pos_settings['disable_discount'] != 1 ? true : false;
-        $is_rp_enabled = session('business.enable_rp') == 1 ? true : false;
-    @endphp
-    {!! Form::open([
-    'url' => action([\App\Http\Controllers\SellPosController::class, 'store']),
-    'method' => 'post',
-    'id' => 'add_pos_sell_form',
-]) !!}
-    <input type="hidden" id="sale_type" name="type" value="{{ $pos_type }}">
-    @if ($pos_type == 'order')
-        @include('sale_pos.partials.cloth_pos_workspace')
-    @else
-        @include('sale_pos.partials.standard_pos_workspace')
-    @endif
+    <!-- /.content -->
+    <div class="modal fade register_details_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
+    </div>
+    <div class="modal fade close_register_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
+    </div>
+    <!-- quick product modal -->
+    <div class="modal fade quick_add_product_modal" tabindex="-1" role="dialog" aria-labelledby="modalTitle"></div>
 
-    @include('sale_pos.partials.payment_modal')
+    <div class="modal fade" id="expense_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
+    </div>
 
-    @if (empty($pos_settings['disable_suspend']))
-        @include('sale_pos.partials.suspend_note_modal')
-    @endif
+    <div class="modal fade style_measurement_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
+    </div>
 
-    @if (empty($pos_settings['disable_recurring_invoice']))
-        @include('sale_pos.partials.recurring_invoice_modal')
-    @endif
-    @include('sale_pos.partials.pos_form_actions')
-    {!! Form::close() !!}
-</section>
+    @include('sale_pos.partials.configure_search_modal')
 
-<!-- This will be printed -->
-<section class="invoice print_section" id="receipt_section">
-</section>
-<div class="modal fade contact_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
-    @include('contact.create', ['quick_add' => true])
-</div>
-@if (empty($pos_settings['hide_product_suggestion']) && isMobile())
-    @include('sale_pos.partials.mobile_product_suggestions')
-@endif
-<!-- /.content -->
-<div class="modal fade register_details_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
-</div>
-<div class="modal fade close_register_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
-</div>
-<!-- quick product modal -->
-<div class="modal fade quick_add_product_modal" tabindex="-1" role="dialog" aria-labelledby="modalTitle"></div>
+    @include('sale_pos.partials.recent_transactions_modal')
 
-<div class="modal fade" id="expense_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
-</div>
-
-<div class="modal fade style_measurement_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
-</div>
-
-@include('sale_pos.partials.configure_search_modal')
-
-@include('sale_pos.partials.recent_transactions_modal')
-
-@include('sale_pos.partials.weighing_scale_modal')
+    @include('sale_pos.partials.weighing_scale_modal')
 
 @stop
 @section('css')
-@if ($pos_type == 'order')
-    <style>
-        #cloth-pos-workspace {
-            display: flex;
-            align-items: stretch;
-            gap: 14px;
-            margin: 0;
-            height: calc(100vh - 200px);
-            overflow: hidden;
-        }
-
-        #cloth-pos-workspace .cloth-pos-sidebar {
-            width: 41%;
-            min-width: 320px;
-            padding: 0 2px;
-            display: flex;
-            flex-direction: column;
-            max-height: 100%;
-        }
-
-        #cloth-pos-workspace .cloth-pos-sidebar > .row:first-child {
-            flex-shrink: 0;
-        }
-
-        #cloth-pos-workspace .cloth-pos-sidebar > .row:last-child {
-            flex: 1;
-            min-height: 0;
-            overflow-y: auto;
-            overflow-x: hidden;
-            margin-right: 5px;
-        }
-
-        #cloth-pos-workspace .cloth-pos-order-panel {
-            width: 59%;
-            min-width: 0;
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-            overflow: hidden;
-        }
-
-        #pos_cloth_table {
-            border-collapse: separate;
-            border-spacing: 0;
-        }
-
-        #pos_cloth_table tbody {
-            width: 100%;
-            display:block;
-            height: auto;
-            max-height: none;
-            overflow-y: visible;
-        }
-
-        #pos_cloth_table tbody:empty {
-            min-height: 0px;
-        }
-
-        #cloth-pos-workspace .cloth-pos-product-details,
-        #cloth-pos-workspace .cloth-pos-product-details .text-link {
-            color: #1f2937 !important;
-            font-weight: 600;
-        }
-
-
-        #cloth-pos-workspace .stock-status {
-            display: inline-block;
-            margin-top: 5px;
-            padding: 3px 8px;
-            border-radius: 999px;
-            background: #dcfce7;
-            color: #15803d;
-            font-size: 11px;
-            font-weight: 700;
-        }
-
-        #cloth-pos-workspace .cloth-pos-card {
-            background: #fff;
-            border: 1px solid #e2e8f0;
-            border-radius: 15px;
-            box-shadow: 0 2px 9px rgba(15, 23, 42, .10);
-            padding: 10px;
-            display: flex;
-            flex-direction: column;
-            flex: 1;
-            min-height: 0;
-            overflow: hidden;
-        }
-
-        #cloth-pos-workspace .cloth-pos-toolbar {
-            display: flex;
-            margin: 0 -5px 4px;
-        }
-
-        #cloth-pos-workspace .cloth-pos-toolbar>div {
-            padding: 0 5px;
-        }
-
-        #cloth-pos-workspace .input-group-addon,
-        #cloth-pos-workspace .form-control,
-        #cloth-pos-workspace .select2-selection {
-            border-color: #d9e3ef;
-            background: #F8FAFC;
-        }
-
-        #cloth-pos-workspace .form-control,
-        #cloth-pos-workspace .select2-selection {
-            height: 30px;
-            border-radius: 5px;
-        }
-
-        #cloth-pos-workspace .select2-container .select2-selection--single {
-            height: 30px;
-        }
-
-        #cloth-pos-workspace .select2-selection__rendered {
-            line-height: 35px;
-            color: #64748b;
-        }
-
-        #cloth-pos-workspace .select2-selection__arrow {
-            height: 24px;
-        }
-
-        #cloth-pos-workspace .cloth-pos-table-wrap {
-            flex: 1;
-            min-height: 0;
-            overflow-x: auto;
-            overflow-y: auto;
-            scrollbar-gutter: stable;
-            display: flex;
-            flex-direction: column;
-        }
-
-        #cloth-pos-workspace .cloth-pos-table-wrap::-webkit-scrollbar {
-            width: 10px;
-        }
-        
-        .combined-table-container {
-            border: 1px dashed #e2e8f0;
-            padding: 4px 6px;
-            background-color: #F8FAFC;
-            border-radius: 8px;
-            flex: 1;
-            min-height: 180px;
-        }
-
-        #cloth-pos-workspace .table {
-            margin: 0;
-            table-layout: fixed;
-            min-width: 750px;
-        }
-
-        #cloth-pos-workspace .table>thead>tr>th {
-            border: 0;
-            border-bottom: 1px solid #e7edf4;
-            color: #334155;
-            font-size: 13px;
-            font-weight: 700;
-            padding: 6px 8px;
-            white-space: nowrap;
-            position: sticky;
-            top: 0;
-            background: #fff;
-            z-index: 10;
-        }
-
-        #pos_cloth_table, #pos_table {
-            border-collapse: separate !important;
-            border-spacing: 0 4px !important;
-        }
-        
-        #pos_header_table {
-            border-collapse: separate !important;
-            border-spacing: 0 !important;
-        }
-
-        #pos_header_table thead tr {
-            border-top: none !important;
-            background: transparent;
-            padding: 4px 8px;
-            display: table;
-            width: 100%;
-            table-layout: fixed;
-        }
-
-        #pos_cloth_table>tbody>tr {
-            display: table;
-            width: 100%;
-            table-layout: fixed;
-        }
-
-        #pos_cloth_table>tbody>tr>td {
-            border-top: 1px solid #e2e8f0;
-            border-bottom: 1px solid #e2e8f0;
-            background: #fff;
-            vertical-align: middle !important;
-        }
-
-        #pos_cloth_table>tbody>tr>td:first-child {
-            border-left: 1px solid #e2e8f0;
-            border-radius: 8px 0 0 8px;
-        }
-
-        #pos_cloth_table>tbody>tr>td:last-child {
-            border-right: 1px solid #e2e8f0;
-            border-radius: 0 8px 8px 0;
-        }
-
-        #pos_table>tbody>tr {
-            display: table;
-            width: 100%;
-            table-layout: fixed;
-        }
-
-        #pos_table>tbody>tr>td {
-            border-top: 1px solid #e2e8f0;
-            border-bottom: 1px solid #e2e8f0;
-            background: #fff;
-            vertical-align: middle !important;
-        }
-
-        #pos_table>tbody>tr>td:first-child {
-            border-left: 1px solid #e2e8f0;
-            border-radius: 8px 0 0 8px;
-        }
-
-        #pos_table>tbody>tr>td:last-child {
-            border-right: 1px solid #e2e8f0;
-            border-radius: 0 8px 8px 0;
-        }
-
-        #cloth-pos-workspace .table>tbody>tr>td:first-child {
-            border-radius: 6px 0 0 6px;
-            font-weight: 600;
-        }
-
-        #cloth-pos-workspace .table>tbody>tr>td:last-child {
-            border-radius: 0 6px 6px 0;
-        }
-
-        #cloth-pos-workspace .table .form-control {
-            height: 31px;
-            min-width: 65px;
-            padding: 4px 7px;
-        }
-
-        #cloth-pos-workspace .table .input-number {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            min-width: 0;
-            width: 100%;
-        }
-
-        #cloth-pos-workspace .table .input-number .input-group-btn {
-            display: block;
-            width: auto;
-        }
-
-        #cloth-pos-workspace .table .input-number .btn {
-            width: 28px !important;
-            height: 28px !important;
-            border-radius: 50% !important;
-            padding: 0 !important;
-            background: #f4f7fb !important;
-            border: none !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-        }
-
-        #cloth-pos-workspace .table .input-number .btn i {
-            color: #475569 !important;
-            font-size: 11px;
-        }
-
-        #cloth-pos-workspace .table .input-number .form-control {
-            width: 42px !important;
-            min-width: 0 !important;
-            height: 28px !important;
-            border-radius: 4px !important;
-            border: 1px solid #e2e8f0 !important;
-            text-align: center;
-            padding: 0 !important;
-            font-weight: 600;
-            color: #334155;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        #cloth-pos-workspace #pos_cloth_table th:nth-child(1),
-        #cloth-pos-workspace #pos_cloth_table td:nth-child(1),
-        #cloth-pos-workspace #pos_table th:nth-child(1),
-        #cloth-pos-workspace #pos_table td:nth-child(1) {
-            width: 25%;
-        }
-
-        #cloth-pos-workspace #pos_cloth_table th:nth-child(2),
-        #cloth-pos-workspace #pos_cloth_table td:nth-child(2),
-        #cloth-pos-workspace #pos_table th:nth-child(2),
-        #cloth-pos-workspace #pos_table td:nth-child(2) {
-            width: 14%;
-        }
-
-        #cloth-pos-workspace #pos_cloth_table th:nth-child(3),
-        #cloth-pos-workspace #pos_cloth_table td:nth-child(4),
-        #cloth-pos-workspace #pos_table th:nth-child(3),
-        #cloth-pos-workspace #pos_table td:nth-child(3) {
-            width: 15%;
-        }
-
-        #cloth-pos-workspace #pos_cloth_table th:nth-child(4),
-        #cloth-pos-workspace #pos_cloth_table td:nth-child(6),
-        #cloth-pos-workspace #pos_table th:nth-child(4),
-        #cloth-pos-workspace #pos_table td:nth-child(4) {
-            width: 17%;
-        }
-
-        #cloth-pos-workspace #pos_cloth_table th:nth-child(5),
-        #cloth-pos-workspace #pos_cloth_table td:nth-child(7),
-        #cloth-pos-workspace #pos_table th:nth-child(5),
-        #cloth-pos-workspace #pos_table td:nth-child(5) {
-            width: 23%;
-        }
-
-        #cloth-pos-workspace #pos_cloth_table th:nth-child(6),
-        #cloth-pos-workspace #pos_cloth_table td:nth-child(8),
-        #cloth-pos-workspace #pos_table th:nth-child(6),
-        #cloth-pos-workspace #pos_table td:nth-child(6) {
-            width: 6%;
-        }
-
-        #cloth-pos-workspace #pos_cloth_table td:nth-child(3),
-        #cloth-pos-workspace #pos_cloth_table td:nth-child(5) {
-            display: none;
-        }
-
-        #cloth-pos-workspace #pos_cloth_table tr.cloth-pos-fabric-row td:nth-child(3){
-              display: table-cell !important;
-            text-align: center;
-            vertical-align: middle;
-            width:121px;
-        }
-        #cloth-pos-workspace #pos_cloth_table tr.cloth-pos-fabric-row td:nth-child(4){
-              display: table-cell !important;
-            text-align: center;
-            vertical-align: middle;
-        }
-        #cloth-pos-workspace #pos_cloth_table tr.cloth-pos-fabric-row td:nth-child(5) {
-            display: table-cell !important;
-            text-align: center;
-            vertical-align: middle;
-        }
-
-        #cloth-pos-workspace #pos_cloth_table tr.cloth-pos-fabric-row td:nth-child(6) {
-            text-align: center;
-            vertical-align: middle;
-            width:6%;
-        }
-
-        #cloth-pos-workspace #pos_cloth_table td:first-child .style_measurement_btn {
-            display: block;
-            width: fit-content;
-            height: 21px;
-            margin-top: 6px;
-            padding: 2px 14px;
-            background: #20b979;
-            border-color: #20b979;
-            border-radius: 5px;
-            color: #fff;
-            font-size: 10px;
-            font-weight: 600;
-        }
-
-        #cloth-pos-workspace #pos_cloth_table td:nth-child(4) {
-            text-align: center;
-        }
-
-        /* #cloth-pos-workspace #pos_cloth_table td:nth-child(4) .pos_unit_price {
-            border: 0;
-            background: transparent;
-            box-shadow: none;
-            font-weight: 700;
-            text-align: center;
-        } */
-
-        #cloth-pos-workspace .cloth-pos-currency-symbol {
-            display: inline-block !important;
-            font-weight: 700;
-        }
-
-        #cloth-pos-workspace #pos_cloth_table td:nth-child(6) .pos_line_total_text {
-            font-size: 15px;
-            font-weight: 700;
-        }
-
-        #cloth-pos-workspace #pos_cloth_table td:nth-child(7) .select2-container {
-            width: 100% !important;
-        }
-
-        #cloth-pos-workspace #pos_cloth_table td:nth-child(7) .select2-selection {
-            height: 31px;
-        }
-
-        #cloth-pos-workspace #pos_cloth_table td:nth-child(7) .select2-selection__rendered {
-            line-height: 29px;
-        }
-
-        #cloth-pos-workspace .cloth-custom-input-group {
-            background: #F8FAFC;
-            border: 1px solid #d9e3ef;
-            border-radius: 5px;
-            display: flex;
-            align-items: center;
-            padding: 0 8px;
-            height: 30px;
-        }
-
-        #cloth-pos-workspace .cloth-custom-input-group .select2-container {
-            flex: 1;
-            min-width: 0;
-        }
-
-        #cloth-pos-workspace .cloth-custom-input-group .select2-selection {
-            border: none !important;
-            background: transparent !important;
-            box-shadow: none !important;
-            height: 35px !important;
-            display: flex;
-            align-items: center;
-        }
-
-        #cloth-pos-workspace .cloth-custom-input-group .select2-selection__rendered {
-            display: flex !important;
-            align-items: center !important;
-            height: 100% !important;
-            margin: 0 !important;
-            line-height: normal !important;
-            color: #334155 !important;
-            width: 100%;
-            font-size: 12px !important
-        }
-
-        #cloth-pos-workspace .cloth-custom-input-group .select2-selection__arrow {
-            height: 35px !important;
-            top: 0 !important;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        #cloth-pos-workspace .cloth-custom-input-group .select2-selection__arrow b {
-            position: static !important;
-            margin: 0 !important;
-        }
-
-        #cloth-pos-workspace .cloth-custom-input-group .select2-selection__clear {
-            display: none !important;
-        }
-
-        #cloth-pos-workspace .cloth-custom-input-group .form-control {
-            border: none !important;
-            background: transparent !important;
-            box-shadow: none !important;
-            padding-left: 4px;
-            height: 100%;
-            flex: 1;
-            min-width: 0;
-        }
-
-        #cloth-pos-workspace .cloth-custom-input-group .input-icon {
-            color: #94a3b8;
-            font-size: 14px;
-        }
-
-        #cloth-pos-workspace .cloth-custom-input-group .add-btn {
-            background: transparent;
-            border: none;
-            color: #3b82f6;
-            font-size: 20px;
-            font-weight: 400;
-            padding: 0 2px 2px 2px;
-            outline: none;
-            line-height: 1;
-        }
-
-        #cloth-pos-workspace .cloth-custom-input-group .add-btn:hover {
-            color: #2563eb;
-        }
-
-        #cloth-pos-workspace #pos_table .fabric-making-charge input,
-        #cloth-pos-workspace #pos_cloth_table .cloth-pos-fabric-row .fabric-making-charge input {
-            display: none;
-        }
-
-        #cloth-pos-workspace #pos_table .fabric-making-charge .fabric-na,
-        #cloth-pos-workspace #pos_cloth_table .cloth-pos-fabric-row .fabric-making-charge .fabric-na {
-            display: block;
-            text-align: center;
-            font-weight: 700;
-            margin: 0;
-        }
-
-        #cloth-pos-workspace #pos_table .fabric-making-charge,
-        #cloth-pos-workspace #pos_cloth_table .cloth-pos-fabric-row .fabric-making-charge,
-        #cloth-pos-workspace #pos_table .fabric-tailor,
-        #cloth-pos-workspace #pos_cloth_table .cloth-pos-fabric-row .fabric-tailor {
-            font-weight: 700;
-            text-align: center;
-            vertical-align: middle !important;
-        }
-
-        #cloth-pos-workspace #pos_table thead {
-            display: none;
-        }
-
-        #cloth-pos-workspace #pos_table tbody:empty {
-            display: none;
-        }
-
-        #cloth-pos-workspace .cloth-pos-summary {
-            position: relative;
-            border-top: 1px solid #edf2f7;
-            margin-top: 4px;
-            padding-top: 4px;
-            overflow-x: auto;
-        }
-
-        #cloth-pos-workspace .cloth-pos-summary .pos_form_totals {
-            margin: 0;
-        }
-
-        #cloth-pos-workspace .cloth-pos-summary .table {
-            min-width: 700px;
-            margin-bottom: 0;
-        }
-
-        #cloth-pos-workspace .cloth-pos-summary .table>tbody>tr>td {
-            background: transparent;
-            box-shadow: none;
-            border-bottom: 1px solid #f1f5f9;
-            padding: 7px 5px;
-        }
-
-        #cloth-pos-workspace .cloth-pos-summary .table>tbody>tr:last-child>td {
-            border-bottom: 0;
-        }
-
-        #cloth-pos-workspace .cloth-pos-summary .table>tbody>tr:first-child>td {
-            width: 33.333%;
-        }
-
-        #cloth-pos-workspace .cloth-pos-delivery {
-            display: flex;
-            align-items: center;
-            gap:20px;
-        }
-
-        #cloth-pos-workspace .cloth-date-pill {
-            background: #6366f1;
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            padding: 0 12px;
-            height: 30px;
-            color: #fff;
-            cursor: pointer;
-        }
-
-        #cloth-pos-workspace .cloth-date-pill .icon {
-            font-size: 13px;
-            margin-right: 8px;
-            color: #fff;
-        }
-
-        #cloth-pos-workspace .cloth-date-pill .form-control {
-            background: transparent !important;
-            border: none !important;
-            box-shadow: none !important;
-            color: #fff !important;
-            font-weight: 700;
-            font-size: 13px;
-            padding: 0;
-            width: 130px;
-            cursor: pointer;
-            height: auto;
-            text-align: center;
-        }
-
-        #cloth-pos-workspace .cloth-date-pill .form-control:focus {
-            box-shadow: none;
-        }
-
-        #cloth-pos-workspace .cloth-pos-sidebar>.row:first-child {
-            margin: 0 -4px 11px;
-            display: flex;
-        }
-
-        #cloth-pos-workspace .cloth-pos-sidebar #cloth_list_div,
-        #cloth-pos-workspace .cloth-pos-sidebar #product_list_div {
-            width: 50%;
-            padding: 0 4px !important;
-        }
-
-        #cloth-pos-workspace .cloth-pos-sidebar label[for='cloth-list-btn'],
-        #cloth-pos-workspace .cloth-pos-sidebar label[for='product-list-btn'] {
-            background: #fff !important;
-            border: 1px solid #d7dde6;
-            color: #1f2937 !important;
-            box-shadow: none;
-            border-radius: 5px;
-            height: 47px;
-            font-size: 14px;
-        }
-
-        #cloth-pos-workspace .cloth-pos-sidebar #cloth-list-btn:checked + .tw-dw-drawer-content label,
-        #cloth-pos-workspace .cloth-pos-sidebar #product-list-btn:checked + .tw-dw-drawer-content label {
-            background: #f20d43 !important;
-            border-color: #f20d43;
-            color: #fff !important;
-        }
-
-        #cloth-pos-workspace .cloth-pos-sidebar #cloth_list_body,
-        #cloth-pos-workspace .cloth-pos-sidebar #product_list_body {
-            max-height: auto;
-            overflow-y: visible;
-            padding: 0 3px;
-        }
-
-        #cloth-pos-workspace .cloth-pos-sidebar .product_box {
-            border: 1px solid #e3eaf2;
-            border-radius: 5px;
-            box-shadow: 0 1px 3px rgba(15, 23, 42, .12);
-            background: #fff;
-            padding: 10px 6px;
-        }
-
-        #cloth-pos-workspace .cloth-pos-sidebar .image-container {
-            height: 55px !important;
-            width: 55px;
-            margin: 0 auto 6px;
-            border-radius: 6px;
-        }
-
-        #cloth-pos-workspace .cloth-pos-sidebar .text_div {
-            text-align: center;
-            line-height: 17px;
-        }
-
-        #cloth-pos-workspace .cloth-pos-sidebar .text_div small {
-            display: block;
-            font-size: 12px;
-            font-weight: 600;
-        }
-
-        @media (max-width: 991px) {
+    @if ($pos_type == 'order')
+        <style>
             #cloth-pos-workspace {
-                display: block;
-                height: auto;
-                overflow: visible;
-            }
-
-            #cloth-pos-workspace .cloth-pos-sidebar,
-            #cloth-pos-workspace .cloth-pos-order-panel {
-                width: 100%;
-                min-width: 0;
-                height: auto;
-            }
-            
-            #cloth-pos-workspace .cloth-pos-sidebar .row:last-child {
-                overflow: visible;
+                display: flex;
+                align-items: stretch;
+                gap: 14px;
+                margin: 0;
+                height: calc(100vh - 200px);
+                overflow: hidden;
             }
 
             #cloth-pos-workspace .cloth-pos-sidebar {
-                margin-bottom: 12px;
+                width: 41%;
+                min-width: 320px;
+                padding: 0 2px;
+                display: flex;
+                flex-direction: column;
+                max-height: 100%;
             }
-            
-            .content.no-print {
-                height: auto !important;
-                overflow-y: auto !important;
-            }
-        }
 
-        @media (max-width: 600px) {
-            #cloth-pos-workspace .cloth-pos-toolbar {
+            #cloth-pos-workspace .cloth-pos-sidebar>.row:first-child {
+                flex-shrink: 0;
+            }
+
+            #cloth-pos-workspace .cloth-pos-sidebar>.row:last-child {
+                flex: 1;
+                min-height: 0;
+                overflow-y: auto;
+                overflow-x: hidden;
+                margin-right: 5px;
+            }
+
+            #cloth-pos-workspace .cloth-pos-order-panel {
+                width: 59%;
+                min-width: 0;
+                display: flex;
+                flex-direction: column;
+                height: 100%;
+                overflow: hidden;
+            }
+
+            #pos_cloth_table {
+                border-collapse: separate;
+                border-spacing: 0;
+            }
+
+            #pos_cloth_table tbody {
+                width: 100%;
                 display: block;
+                height: auto;
+                max-height: none;
+                overflow-y: visible;
             }
 
-            #cloth-pos-workspace .cloth-pos-toolbar>div {
-                margin-bottom: 8px;
+            #pos_cloth_table tbody:empty {
+                min-height: 0px;
             }
 
-            #cloth-pos-workspace .cloth-pos-sidebar .product_list {
-                width: 50%;
+            #cloth-pos-workspace .cloth-pos-product-details,
+            #cloth-pos-workspace .cloth-pos-product-details .text-link {
+                color: #1f2937 !important;
+                font-weight: 600;
+            }
+
+
+            #cloth-pos-workspace .stock-status {
+                display: inline-block;
+                margin-top: 5px;
+                padding: 3px 8px;
+                border-radius: 999px;
+                background: #dcfce7;
+                color: #15803d;
+                font-size: 11px;
+                font-weight: 700;
             }
 
             #cloth-pos-workspace .cloth-pos-card {
+                background: #fff;
+                border: 1px solid #e2e8f0;
+                border-radius: 15px;
+                box-shadow: 0 2px 9px rgba(15, 23, 42, .10);
                 padding: 10px;
+                display: flex;
+                flex-direction: column;
+                flex: 1;
+                min-height: 0;
+                overflow: hidden;
+            }
+
+            #cloth-pos-workspace .cloth-pos-toolbar {
+                display: flex;
+                margin: 0 -5px 4px;
+            }
+
+            #cloth-pos-workspace .cloth-pos-toolbar>div {
+                padding: 0 5px;
+            }
+
+            #cloth-pos-workspace .input-group-addon,
+            #cloth-pos-workspace .form-control,
+            #cloth-pos-workspace .select2-selection {
+                border-color: #d9e3ef;
+                background: #F8FAFC;
+            }
+
+            #cloth-pos-workspace .form-control,
+            #cloth-pos-workspace .select2-selection {
+                height: 30px;
+                border-radius: 5px;
+            }
+
+            #cloth-pos-workspace .select2-container .select2-selection--single {
+                height: 30px;
+            }
+
+            #cloth-pos-workspace .select2-selection__rendered {
+                line-height: 35px;
+                color: #64748b;
+            }
+
+            #cloth-pos-workspace .select2-selection__arrow {
+                height: 24px;
+            }
+
+            #cloth-pos-workspace .cloth-pos-table-wrap {
+                flex: 1;
+                min-height: 0;
+                overflow-x: auto;
+                overflow-y: auto;
+                scrollbar-gutter: stable;
+                display: flex;
+                flex-direction: column;
+            }
+
+            #cloth-pos-workspace .cloth-pos-table-wrap::-webkit-scrollbar {
+                width: 10px;
+            }
+
+            .combined-table-container {
+                border: 1px dashed #e2e8f0;
+                padding: 4px 6px;
+                background-color: #F8FAFC;
+                border-radius: 8px;
+                flex: 1;
+                min-height: 180px;
+            }
+
+            #cloth-pos-workspace .table {
+                margin: 0;
+                table-layout: fixed;
+                min-width: 750px;
+            }
+
+            #cloth-pos-workspace .table>thead>tr>th {
+                border: 0;
+                border-bottom: 1px solid #e7edf4;
+                color: #334155;
+                font-size: 13px;
+                font-weight: 700;
+                padding: 6px 8px;
+                white-space: nowrap;
+                position: sticky;
+                top: 0;
+                background: #fff;
+                z-index: 10;
+            }
+
+            #pos_cloth_table,
+            #pos_table {
+                border-collapse: separate !important;
+                border-spacing: 0 4px !important;
+            }
+
+            #pos_header_table {
+                border-collapse: separate !important;
+                border-spacing: 0 !important;
+            }
+
+            #pos_header_table thead tr {
+                border-top: none !important;
+                background: transparent;
+                padding: 4px 8px;
+                display: table;
+                width: 100%;
+                table-layout: fixed;
+            }
+
+            #pos_cloth_table>tbody>tr {
+                display: table;
+                width: 100%;
+                table-layout: fixed;
+            }
+
+            #pos_cloth_table>tbody>tr>td {
+                border-top: 1px solid #e2e8f0;
+                border-bottom: 1px solid #e2e8f0;
+                background: #fff;
+                vertical-align: middle !important;
+            }
+
+            #pos_cloth_table>tbody>tr>td:first-child {
+                border-left: 1px solid #e2e8f0;
+                border-radius: 8px 0 0 8px;
+            }
+
+            #pos_cloth_table>tbody>tr>td:last-child {
+                border-right: 1px solid #e2e8f0;
+                border-radius: 0 8px 8px 0;
+            }
+
+            #pos_table>tbody>tr {
+                display: table;
+                width: 100%;
+                table-layout: fixed;
+            }
+
+            #pos_table>tbody>tr>td {
+                border-top: 1px solid #e2e8f0;
+                border-bottom: 1px solid #e2e8f0;
+                background: #fff;
+                vertical-align: middle !important;
+            }
+
+            #pos_table>tbody>tr>td:first-child {
+                border-left: 1px solid #e2e8f0;
+                border-radius: 8px 0 0 8px;
+            }
+
+            #pos_table>tbody>tr>td:last-child {
+                border-right: 1px solid #e2e8f0;
+                border-radius: 0 8px 8px 0;
+            }
+
+            #cloth-pos-workspace .table>tbody>tr>td:first-child {
+                border-radius: 6px 0 0 6px;
+                font-weight: 600;
+            }
+
+            #cloth-pos-workspace .table>tbody>tr>td:last-child {
+                border-radius: 0 6px 6px 0;
+            }
+
+            #cloth-pos-workspace .table .form-control {
+                height: 31px;
+                min-width: 65px;
+                padding: 4px 7px;
+            }
+
+            #cloth-pos-workspace .table .input-number {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 6px;
+                min-width: 0;
+                width: 100%;
+            }
+
+            #cloth-pos-workspace .table .input-number .input-group-btn {
+                display: block;
+                width: auto;
+            }
+
+            #cloth-pos-workspace .table .input-number .btn {
+                width: 28px !important;
+                height: 28px !important;
+                border-radius: 50% !important;
+                padding: 0 !important;
+                background: #f4f7fb !important;
+                border: none !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+            }
+
+            #cloth-pos-workspace .table .input-number .btn i {
+                color: #475569 !important;
+                font-size: 11px;
+            }
+
+            #cloth-pos-workspace .table .input-number .form-control {
+                width: 42px !important;
+                min-width: 0 !important;
+                height: 28px !important;
+                border-radius: 4px !important;
+                border: 1px solid #e2e8f0 !important;
+                text-align: center;
+                padding: 0 !important;
+                font-weight: 600;
+                color: #334155;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            #cloth-pos-workspace #pos_cloth_table th:nth-child(1),
+            #cloth-pos-workspace #pos_cloth_table td:nth-child(1),
+            #cloth-pos-workspace #pos_table th:nth-child(1),
+            #cloth-pos-workspace #pos_table td:nth-child(1) {
+                width: 25%;
+            }
+
+            #cloth-pos-workspace #pos_cloth_table th:nth-child(2),
+            #cloth-pos-workspace #pos_cloth_table td:nth-child(2),
+            #cloth-pos-workspace #pos_table th:nth-child(2),
+            #cloth-pos-workspace #pos_table td:nth-child(2) {
+                width: 14%;
+            }
+
+            #cloth-pos-workspace #pos_cloth_table th:nth-child(3),
+            #cloth-pos-workspace #pos_cloth_table td:nth-child(4),
+            #cloth-pos-workspace #pos_table th:nth-child(3),
+            #cloth-pos-workspace #pos_table td:nth-child(3) {
+                width: 15%;
+            }
+
+            #cloth-pos-workspace #pos_cloth_table th:nth-child(4),
+            #cloth-pos-workspace #pos_cloth_table td:nth-child(6),
+            #cloth-pos-workspace #pos_table th:nth-child(4),
+            #cloth-pos-workspace #pos_table td:nth-child(4) {
+                width: 17%;
+            }
+
+            #cloth-pos-workspace #pos_cloth_table th:nth-child(5),
+            #cloth-pos-workspace #pos_cloth_table td:nth-child(7),
+            #cloth-pos-workspace #pos_table th:nth-child(5),
+            #cloth-pos-workspace #pos_table td:nth-child(5) {
+                width: 23%;
+            }
+
+            #cloth-pos-workspace #pos_cloth_table th:nth-child(6),
+            #cloth-pos-workspace #pos_cloth_table td:nth-child(8),
+            #cloth-pos-workspace #pos_table th:nth-child(6),
+            #cloth-pos-workspace #pos_table td:nth-child(6) {
+                width: 6%;
+            }
+
+            #cloth-pos-workspace #pos_cloth_table td:nth-child(3),
+            #cloth-pos-workspace #pos_cloth_table td:nth-child(5) {
+                display: none;
+            }
+
+            .cloth-product {
+                width: 25%;
+            }
+
+            .qty {
+                width: 14%;
+            }
+
+            .making-charge {
+                width: 15%;
+            }
+
+            .subtotal {
+                width: 17%;
+            }
+
+            .tailoring-master {
+                width: 23%;
+            }
+
+            .remove-column {
+                width: 6%;
+            }
+
+            .remove-column i {
+                font-size: 12px;
+            }
+
+            #cloth-pos-workspace #pos_cloth_table tr.cloth-pos-fabric-row td:nth-child(3) {
+                display: table-cell !important;
+                text-align: center;
+                vertical-align: middle;
+                width: 121px;
+            }
+
+            #cloth-pos-workspace #pos_cloth_table tr.cloth-pos-fabric-row td:nth-child(4) {
+                display: table-cell !important;
+                text-align: center;
+                vertical-align: middle;
+            }
+
+            #cloth-pos-workspace #pos_cloth_table tr.cloth-pos-fabric-row td:nth-child(5) {
+                display: table-cell !important;
+                text-align: center;
+                vertical-align: middle;
+            }
+
+            #cloth-pos-workspace #pos_cloth_table tr.cloth-pos-fabric-row td:nth-child(6) {
+                text-align: center;
+                vertical-align: middle;
+                width: 6%;
+            }
+
+            #cloth-pos-workspace #pos_cloth_table td:first-child .style_measurement_btn {
+                display: block;
+                width: fit-content;
+                height: 21px;
+                margin-top: 6px;
+                padding: 2px 14px;
+                background: #20b979;
+                border-color: #20b979;
+                border-radius: 5px;
+                color: #fff;
+                font-size: 10px;
+                font-weight: 600;
+            }
+
+            #cloth-pos-workspace #pos_cloth_table td:nth-child(4) {
+                text-align: center;
+            }
+
+            /* #cloth-pos-workspace #pos_cloth_table td:nth-child(4) .pos_unit_price {
+                        border: 0;
+                        background: transparent;
+                        box-shadow: none;
+                        font-weight: 700;
+                        text-align: center;
+                    } */
+
+            #cloth-pos-workspace .cloth-pos-currency-symbol {
+                display: inline-block !important;
+                font-weight: 700;
+            }
+
+            #cloth-pos-workspace #pos_cloth_table td:nth-child(6) .pos_line_total_text {
+                font-size: 15px;
+                font-weight: 700;
+            }
+
+            #cloth-pos-workspace #pos_cloth_table td:nth-child(7) .select2-container {
+                width: 100% !important;
+            }
+
+            #cloth-pos-workspace #pos_cloth_table td:nth-child(7) .select2-selection {
+                height: 31px;
+            }
+
+            #cloth-pos-workspace #pos_cloth_table td:nth-child(7) .select2-selection__rendered {
+                line-height: 29px;
+            }
+
+            #cloth-pos-workspace .cloth-custom-input-group {
+                background: #F8FAFC;
+                border: 1px solid #d9e3ef;
+                border-radius: 5px;
+                display: flex;
+                align-items: center;
+                padding: 0 8px;
+                height: 30px;
+            }
+
+            #cloth-pos-workspace .cloth-custom-input-group .select2-container {
+                flex: 1;
+                min-width: 0;
+            }
+
+            #cloth-pos-workspace .cloth-custom-input-group .select2-selection {
+                border: none !important;
+                background: transparent !important;
+                box-shadow: none !important;
+                height: 35px !important;
+                display: flex;
+                align-items: center;
+            }
+
+            #cloth-pos-workspace .cloth-custom-input-group .select2-selection__rendered {
+                display: flex !important;
+                align-items: center !important;
+                height: 100% !important;
+                margin: 0 !important;
+                line-height: normal !important;
+                color: #334155 !important;
+                width: 100%;
+                font-size: 12px !important
+            }
+
+            #cloth-pos-workspace .cloth-custom-input-group .select2-selection__arrow {
+                height: 35px !important;
+                top: 0 !important;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            #cloth-pos-workspace .cloth-custom-input-group .select2-selection__arrow b {
+                position: static !important;
+                margin: 0 !important;
+            }
+
+            #cloth-pos-workspace .cloth-custom-input-group .select2-selection__clear {
+                display: none !important;
+            }
+
+            #cloth-pos-workspace .cloth-custom-input-group .form-control {
+                border: none !important;
+                background: transparent !important;
+                box-shadow: none !important;
+                padding-left: 4px;
+                height: 100%;
+                flex: 1;
+                min-width: 0;
+            }
+
+            #cloth-pos-workspace .cloth-custom-input-group .input-icon {
+                color: #94a3b8;
+                font-size: 14px;
+            }
+
+            #cloth-pos-workspace .cloth-custom-input-group .add-btn {
+                background: transparent;
+                border: none;
+                color: #3b82f6;
+                font-size: 20px;
+                font-weight: 400;
+                padding: 0 2px 2px 2px;
+                outline: none;
+                line-height: 1;
+            }
+
+            #cloth-pos-workspace .cloth-custom-input-group .add-btn:hover {
+                color: #2563eb;
+            }
+
+            #cloth-pos-workspace #pos_table .fabric-making-charge input,
+            #cloth-pos-workspace #pos_cloth_table .cloth-pos-fabric-row .fabric-making-charge input {
+                display: none;
+            }
+
+            #cloth-pos-workspace #pos_table .fabric-making-charge .fabric-na,
+            #cloth-pos-workspace #pos_cloth_table .cloth-pos-fabric-row .fabric-making-charge .fabric-na {
+                display: block;
+                text-align: center;
+                font-weight: 700;
+                margin: 0;
+            }
+
+            #cloth-pos-workspace #pos_table .fabric-making-charge,
+            #cloth-pos-workspace #pos_cloth_table .cloth-pos-fabric-row .fabric-making-charge,
+            #cloth-pos-workspace #pos_table .fabric-tailor,
+            #cloth-pos-workspace #pos_cloth_table .cloth-pos-fabric-row .fabric-tailor {
+                font-weight: 700;
+                text-align: center;
+                vertical-align: middle !important;
+            }
+
+            #cloth-pos-workspace #pos_table thead {
+                display: none;
+            }
+
+            #cloth-pos-workspace #pos_table tbody:empty {
+                display: none;
+            }
+
+            #cloth-pos-workspace .cloth-pos-summary {
+                position: relative;
+                border-top: 1px solid #edf2f7;
+                margin-top: 4px;
+                padding-top: 4px;
+                overflow-x: auto;
+            }
+
+            #cloth-pos-workspace .cloth-pos-summary .pos_form_totals {
+                margin: 0;
+            }
+
+            #cloth-pos-workspace .cloth-pos-summary .table {
+                min-width: 700px;
+                margin-bottom: 0;
+            }
+
+            #cloth-pos-workspace .cloth-pos-summary .table>tbody>tr>td {
+                background: transparent;
+                box-shadow: none;
+                border-bottom: 1px solid #f1f5f9;
+                padding: 7px 5px;
+            }
+
+            #cloth-pos-workspace .cloth-pos-summary .table>tbody>tr:last-child>td {
+                border-bottom: 0;
+            }
+
+            #cloth-pos-workspace .cloth-pos-summary .table>tbody>tr:first-child>td {
+                width: 33.333%;
             }
 
             #cloth-pos-workspace .cloth-pos-delivery {
-                position: static;
-                justify-content: flex-start;
-                margin: 0 0 6px 5px;
+                display: flex;
+                align-items: center;
+                gap: 20px;
             }
-        }
 
-        .pos-footer {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            width: 100%;
-            z-index: 1000;
-        }
+            #cloth-pos-workspace .cloth-date-pill {
+                background: #6366f1;
+                border-radius: 6px;
+                display: flex;
+                align-items: center;
+                padding: 0 12px;
+                height: 30px;
+                color: #fff;
+                cursor: pointer;
+            }
 
-        .pos-header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            width: 100%;
-            z-index: 1000;
-            /* padding: 15px; */
-        }
+            #cloth-pos-workspace .cloth-date-pill .icon {
+                font-size: 13px;
+                margin-right: 8px;
+                color: #fff;
+            }
 
-        .content.no-print {
-            padding-top: 100px;
-            padding-bottom: 78px;
-            height: 100vh;
-            overflow: hidden;
-        }
-    </style>
-@endif
-<!-- include module css -->
-@if (!empty($pos_module_data))
-    @foreach ($pos_module_data as $key => $value)
-        @if (!empty($value['module_css_path']))
-            @includeIf($value['module_css_path'])
-        @endif
-    @endforeach
-@endif
+            #cloth-pos-workspace .cloth-date-pill .form-control {
+                background: transparent !important;
+                border: none !important;
+                box-shadow: none !important;
+                color: #fff !important;
+                font-weight: 700;
+                font-size: 13px;
+                padding: 0;
+                width: 130px;
+                cursor: pointer;
+                height: auto;
+                text-align: center;
+            }
+
+            #cloth-pos-workspace .cloth-date-pill .form-control:focus {
+                box-shadow: none;
+            }
+
+            #cloth-pos-workspace .cloth-pos-sidebar>.row:first-child {
+                margin: 0 -4px 11px;
+                display: flex;
+            }
+
+            #cloth-pos-workspace .cloth-pos-sidebar #cloth_list_div,
+            #cloth-pos-workspace .cloth-pos-sidebar #product_list_div {
+                width: 50%;
+                padding: 0 4px !important;
+            }
+
+            #cloth-pos-workspace .cloth-pos-sidebar label[for='cloth-list-btn'],
+            #cloth-pos-workspace .cloth-pos-sidebar label[for='product-list-btn'] {
+                background: #fff !important;
+                border: 1px solid #d7dde6;
+                color: #1f2937 !important;
+                box-shadow: none;
+                border-radius: 5px;
+                height: 47px;
+                font-size: 14px;
+            }
+
+            #cloth-pos-workspace .cloth-pos-sidebar #cloth-list-btn:checked+.tw-dw-drawer-content label,
+            #cloth-pos-workspace .cloth-pos-sidebar #product-list-btn:checked+.tw-dw-drawer-content label {
+                background: #f20d43 !important;
+                border-color: #f20d43;
+                color: #fff !important;
+            }
+
+            #cloth-pos-workspace .cloth-pos-sidebar #cloth_list_body,
+            #cloth-pos-workspace .cloth-pos-sidebar #product_list_body {
+                max-height: auto;
+                overflow-y: visible;
+                padding: 0 3px;
+            }
+
+            #cloth-pos-workspace .cloth-pos-sidebar .product_box {
+                border: 1px solid #e3eaf2;
+                border-radius: 5px;
+                box-shadow: 0 1px 3px rgba(15, 23, 42, .12);
+                background: #fff;
+                padding: 10px 6px;
+            }
+
+            #cloth-pos-workspace .cloth-pos-sidebar .image-container {
+                height: 55px !important;
+                width: 55px;
+                margin: 0 auto 6px;
+                border-radius: 6px;
+            }
+
+            #cloth-pos-workspace .cloth-pos-sidebar .text_div {
+                text-align: center;
+                line-height: 17px;
+            }
+
+            #cloth-pos-workspace .cloth-pos-sidebar .text_div small {
+                display: block;
+                font-size: 12px;
+                font-weight: 600;
+            }
+
+            @media (max-width: 991px) {
+                #cloth-pos-workspace {
+                    display: block;
+                    height: auto;
+                    overflow: visible;
+                }
+
+                #cloth-pos-workspace .cloth-pos-sidebar,
+                #cloth-pos-workspace .cloth-pos-order-panel {
+                    width: 100%;
+                    min-width: 0;
+                    height: auto;
+                }
+
+                #cloth-pos-workspace .cloth-pos-sidebar .row:last-child {
+                    overflow: visible;
+                }
+
+                #cloth-pos-workspace .cloth-pos-sidebar {
+                    margin-bottom: 12px;
+                }
+
+                .content.no-print {
+                    height: auto !important;
+                    overflow-y: auto !important;
+                }
+            }
+
+            @media (max-width: 600px) {
+                #cloth-pos-workspace .cloth-pos-toolbar {
+                    display: block;
+                }
+
+                #cloth-pos-workspace .cloth-pos-toolbar>div {
+                    margin-bottom: 8px;
+                }
+
+                #cloth-pos-workspace .cloth-pos-sidebar .product_list {
+                    width: 50%;
+                }
+
+                #cloth-pos-workspace .cloth-pos-card {
+                    padding: 10px;
+                }
+
+                #cloth-pos-workspace .cloth-pos-delivery {
+                    position: static;
+                    justify-content: flex-start;
+                    margin: 0 0 6px 5px;
+                }
+            }
+
+            .pos-footer {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                width: 100%;
+                z-index: 1000;
+            }
+
+            .pos-header {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                width: 100%;
+                z-index: 1000;
+                /* padding: 15px; */
+            }
+
+            .content.no-print {
+                padding-top: 100px;
+                padding-bottom: 78px;
+                height: 100vh;
+                overflow: hidden;
+            }
+        </style>
+    @endif
+    <!-- include module css -->
+    @if (!empty($pos_module_data))
+        @foreach ($pos_module_data as $key => $value)
+            @if (!empty($value['module_css_path']))
+                @includeIf($value['module_css_path'])
+            @endif
+        @endforeach
+    @endif
 @stop
 @section('javascript')
     <script src="{{ asset('js/pos.js?v=' . $asset_v) }}"></script>
@@ -827,11 +858,9 @@
     @include('sale_pos.partials.keyboard_shortcuts')
 
     <!-- Call restaurant module if defined -->
-    @if (
-            in_array('tables', $enabled_modules) ||
+    @if (in_array('tables', $enabled_modules) ||
             in_array('modifiers', $enabled_modules) ||
-            in_array('service_staff', $enabled_modules)
-        )
+            in_array('service_staff', $enabled_modules))
         <script src="{{ asset('js/restaurant.js?v=' . $asset_v) }}"></script>
     @endif
     <!-- include module js -->
