@@ -32,17 +32,21 @@
         </tr>
     </thead>
     <tfoot>
-        <tr class="bg-gray font-17 footer-total text-center">
-            <td colspan="6"><strong>@lang('sale.total'):</strong></td>
-            <td class="footer_payment_status_count"></td>
-            <td class="payment_method_count"></td>
-            <td class="footer_sale_total"></td>
-            <td class="footer_total_paid"></td>
-            <td class="footer_total_remaining"></td>
-            <td class="footer_total_sell_return_due"></td>
-            <td colspan="3"></td>
-            <td class="service_type_count"></td>
-            <td colspan="7"></td>
-        </tr>
-    </tfoot>
+    <tr class="bg-gray font-17 footer-total text-center">
+        <td colspan="5"></td>
+        <td>
+            <strong>@lang('sale.total'):</strong>
+        </td>
+        <td class="footer_payment_status_count"></td>
+        <td class="payment_method_count"></td>
+        <td class="footer_sale_total"></td>
+        <td class="footer_total_paid"></td>
+        <td class="footer_total_remaining"></td>
+        <td colspan="4"></td>
+        <td class="footer_total_sell_return_due"></td>
+        <td colspan="3"></td>
+        <td class="service_type_count"></td>
+        <td colspan="7"></td>
+    </tr>
+</tfoot>
 </table>
