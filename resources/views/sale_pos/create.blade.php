@@ -454,13 +454,13 @@
             text-align: center;
         }
 
-        #cloth-pos-workspace #pos_cloth_table td:nth-child(4) .pos_unit_price {
+        /* #cloth-pos-workspace #pos_cloth_table td:nth-child(4) .pos_unit_price {
             border: 0;
             background: transparent;
             box-shadow: none;
             font-weight: 700;
             text-align: center;
-        }
+        } */
 
         #cloth-pos-workspace .cloth-pos-currency-symbol {
             display: inline-block !important;
