@@ -12,6 +12,7 @@
         <th>{{ __('sale.qty') }}</th>
         <th>{{ __('tailoring.completed') }}</th>
         <th>{{ __('tailoring.delivered') }}</th>
+        <th>{{ __('tailoring.tailormaster') }}</th>
         @if (!empty($pos_settings['inline_service_staff']))
             <th>
                 @lang('restaurant.service_staff')
@@ -117,6 +118,9 @@
                 </td>
                 <td>
                     {{ @format_quantity($sell_line->delivered_quantity) }}
+                </td>
+                <td>
+                    {{ $sell_line->tailor_master->name ?? '--' }}
                 </td>
                 @if (!empty($pos_settings['inline_service_staff']))
                     <td>

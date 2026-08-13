@@ -5426,6 +5426,31 @@ class TransactionUtil extends Util
             ->with(['sell_lines', 'payment_lines'])
             ->first();
 
+        if (empty($transaction)) {
+            return [
+                'success' => false,
+                'msg' => __('messages.something_went_wrong'),
+            ];
+        }
+
+        // Check if assigned to a Tailormaster
+        $has_tailor_assigned = !empty($transaction->tailoring_master_id);
+        if (!$has_tailor_assigned && !empty($transaction->sell_lines)) {
+            foreach ($transaction->sell_lines as $line) {
+                if (!empty($line->tailoring_master_id)) {
+                    $has_tailor_assigned = true;
+                    break;
+                }
+            }
+        }
+
+        if ($has_tailor_assigned) {
+            return [
+                'success' => false,
+                'msg' => __('tailoring.cannot_delete_assigned_tailormaster'),
+            ];
+        }
+
         $is_order = $transaction->type == 'order' ? true : false;
 
         if (! empty($transaction)) {
