@@ -499,7 +499,7 @@ class AdminSidebarMenu
                                 ['icon' => '', 'active' => request()->segment(1) == 'sells' && request()->segment(2) == 'create' && empty(request()->get('status'))]
                             ); */
                         }
-                        if (auth()->user()->can('sell.create')) {
+                        /* if (auth()->user()->can('sell.create')) {
                             if (in_array('pos_sale', $enabled_modules)) {
                                 if (auth()->user()->can('sell.view')) {
                                     $sub->url(
@@ -515,7 +515,7 @@ class AdminSidebarMenu
                                     ['icon' => '', 'active' => request()->segment(1) == 'pos' && request()->segment(2) == 'create']
                                 );
                             }
-                        }
+                        } */
 
                         if (in_array('add_sale', $enabled_modules) && auth()->user()->can('direct_sell.access')) {
                             $sub->url(

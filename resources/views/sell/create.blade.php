@@ -25,51 +25,7 @@
 
 
 @section('content')
-    <style type="text/css">
-        .mt-10 {
-            margin: 5px 0;
-        }
-
-        .search-box label {
-            width: 10%
-        }
-
-        .search-box-fabric label {
-            width: 10%
-        }
-
-        .search-box-fabric .input-group {
-            width: 90%
-        }
-
-        #pos_cloth_table td .input-number {
-            display: inline-flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            width: auto !important;
-            margin: 0 auto !important;
-        }
-        #pos_cloth_table td .input-number .input-group-btn {
-            display: inline-block !important;
-            width: auto !important;
-            float: none !important;
-        }
-        #pos_cloth_table td .input-number .input-group-btn .btn {
-            height: 34px !important;
-            padding: 6px 10px !important;
-        }
-        #pos_cloth_table td .input-number .form-control {
-            width: 45px !important;
-            height: 34px !important;
-            padding: 2px 4px !important;
-            text-align: center !important;
-            float: none !important;
-            flex: none !important;
-        }
-        .cloth-pos-currency-symbol {
-            display: none !important;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ asset('css/sell.css?v=' . $asset_v) }}">
     <!-- Content Header (Page header) -->
     <section class="content-header">
         <h1 class="tw-text-xl md:tw-text-3xl tw-font-bold tw-text-black">{{ $title }}</h1>
