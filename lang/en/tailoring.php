@@ -113,6 +113,7 @@ return [
     'measurement_required' => 'Please select at least one measurement.',
     'duplicate_style_serial_no' => 'Each style must have a unique serial number.',
     'duplicate_measurement_serial_no' => 'Each measurement must have a unique serial number.',
+    'cloths_ordered'=>'Details of Cloths Ordered',
 
     'order' => 'Order',
     'completed' => 'Completed',

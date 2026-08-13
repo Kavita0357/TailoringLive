@@ -94,7 +94,7 @@ class CashRegisterController extends Controller
                 ]);
             }
         } catch (\Exception $e) {
-            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
         }
 
         return redirect()->action([\App\Http\Controllers\SellPosController::class, 'create'], ['sub_type' => $sub_type]);
@@ -123,7 +123,7 @@ class CashRegisterController extends Controller
         $payment_types = $this->cashRegisterUtil->payment_types(null, false, $business_id);
 
         return view('cash_register.register_details')
-                    ->with(compact('register_details', 'details', 'payment_types', 'close_time'));
+            ->with(compact('register_details', 'details', 'payment_types', 'close_time'));
     }
 
     /**
@@ -132,28 +132,27 @@ class CashRegisterController extends Controller
      * @param  void
      * @return \Illuminate\Http\Response
      */
-    public function getRegisterDetails()
+    public function getRegisterDetails(Request $request)
     {
         if (! auth()->user()->can('view_cash_register')) {
             abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
-
-        $register_details = $this->cashRegisterUtil->getRegisterDetails();
-
+        $posType = $request->pos_type;
+        $register_details = $this->cashRegisterUtil->getRegisterDetails(null,$posType);
         $user_id = auth()->user()->id;
         $open_time = $register_details['open_time'];
         $close_time = \Carbon::now()->toDateTimeString();
 
         $is_types_of_service_enabled = $this->moduleUtil->isModuleEnabled('types_of_service');
 
-        $details = $this->cashRegisterUtil->getRegisterTransactionDetails($user_id, $open_time, $close_time, $is_types_of_service_enabled);
+        $details = $this->cashRegisterUtil->getRegisterTransactionDetails($user_id, $open_time, $close_time, $is_types_of_service_enabled,$posType);
 
         $payment_types = $this->cashRegisterUtil->payment_types($register_details->location_id, true, $business_id);
 
         return view('cash_register.register_details')
-                ->with(compact('register_details', 'details', 'payment_types', 'close_time'));
+            ->with(compact('register_details', 'details', 'payment_types', 'close_time'));
     }
 
     /**
@@ -184,7 +183,7 @@ class CashRegisterController extends Controller
         $pos_settings = ! empty(request()->session()->get('business.pos_settings')) ? json_decode(request()->session()->get('business.pos_settings'), true) : [];
 
         return view('cash_register.close_register_modal')
-                    ->with(compact('register_details', 'details', 'payment_types', 'pos_settings'));
+            ->with(compact('register_details', 'details', 'payment_types', 'pos_settings'));
     }
 
     /**
@@ -202,7 +201,8 @@ class CashRegisterController extends Controller
         try {
             //Disable in demo
             if (config('app.env') == 'demo') {
-                $output = ['success' => 0,
+                $output = [
+                    'success' => 0,
                     'msg' => 'Feature disabled in demo!!',
                 ];
 
@@ -217,14 +217,16 @@ class CashRegisterController extends Controller
             $input['denominations'] = ! empty(request()->input('denominations')) ? json_encode(request()->input('denominations')) : null;
 
             CashRegister::where('user_id', $user_id)
-                                ->where('status', 'open')
-                                ->update($input);
-            $output = ['success' => 1,
+                ->where('status', 'open')
+                ->update($input);
+            $output = [
+                'success' => 1,
                 'msg' => __('cash_register.close_success'),
             ];
         } catch (\Exception $e) {
-            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
-            $output = ['success' => 0,
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            $output = [
+                'success' => 0,
                 'msg' => __('messages.something_went_wrong'),
             ];
         }
