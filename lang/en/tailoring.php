@@ -185,6 +185,7 @@ return [
     'mobile' => 'Mobile',
     'added_on' => 'Added On',
     'total_completed_orders' => 'Total Completed Orders',
+    'total_cloths_ordered' => 'Total Cloths Ordered',
     'total_wages' => 'Total Wages',
     'total_wages_paid' => 'Total Wages Paid',
     'total_wages_due' => 'Total Wages Due',
@@ -194,6 +195,7 @@ return [
     'completed_orders' => 'Completed Orders',
     'designs' => 'Designs',
     'design_name' => 'Design Name',
+    'order_sell'=>'Cloth Orders + Product Sells',
 
     'messaging' => 'Messaging',
     'send_sms' => 'Send SMS',

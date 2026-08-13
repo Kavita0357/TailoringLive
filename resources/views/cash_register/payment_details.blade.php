@@ -3,7 +3,7 @@
     <table class="table table-condensed">
       <tr>
         <th>@lang('lang_v1.payment_method')</th>
-        <th>@lang('sale.sale')</th>
+        <th>@lang('tailoring.order_sell')</th>
         <th>@lang('lang_v1.expense')</th>
       </tr>
       <tr>
@@ -175,6 +175,14 @@
     </table>
     <hr>
     <table class="table table-condensed">
+      <tr>
+        <th>
+          @lang('tailoring.total_cloths_ordered'):
+        </th>
+        <td>
+          <span class="display_currency" data-currency_symbol="true">{{ $details['total_cloths_ordered'] }}</span>
+        </td>
+      </tr>
       <tr>
         <td>
           @lang('cash_register.total_sales'):

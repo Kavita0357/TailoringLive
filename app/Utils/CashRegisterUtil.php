@@ -222,7 +222,7 @@ class CashRegisterUtil extends Util
      * @param $register_id default null
      * @return object
      */
-    public function getRegisterDetails($register_id = null,$posType = 'product')
+    public function getRegisterDetails($register_id = null, $posType = 'product')
     {
         $order_type = $posType == "cloth" ? 'order' : 'sell';
         $query = CashRegister::leftjoin(
@@ -362,7 +362,7 @@ class CashRegisterUtil extends Util
                 DB::raw('SUM(TSL.unit_price_inc_tax*TSL.quantity) as total_amount')
             )
             ->get();
-            
+
         $cloth_details = Transaction::where('transactions.created_by', $user_id)
             ->whereBetween('transactions.created_at', [$open_time, $close_time])
             ->where('transactions.type', $order_type)
@@ -378,6 +378,8 @@ class CashRegisterUtil extends Util
                 DB::raw('SUM(TSL.unit_price_inc_tax*TSL.quantity) as total_amount')
             )
             ->get();
+
+        $total_cloths_ordered = $cloth_details->sum('total_amount');
 
         //If types of service
         $types_of_service_details = null;
@@ -416,6 +418,7 @@ class CashRegisterUtil extends Util
             'types_of_service_details' => $types_of_service_details,
             'product_details' => $product_details,
             'cloth_details' => $cloth_details,
+            'total_cloths_ordered' => $total_cloths_ordered,
         ];
     }
 

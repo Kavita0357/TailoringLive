@@ -51,7 +51,6 @@
               <tr class="success">
                   <th>#</th>
                   <th></th>
-                  <th></th>
                   <th>{{ $total_quantity }}</th>
                   <th>
 
