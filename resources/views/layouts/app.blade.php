@@ -287,14 +287,6 @@
             color: #139375 !important;
         }
 
-        .bg-info,
-        .bg-blue,
-        .btn-info {
-            background-color: #139375 !important;
-            border-color: #139375 !important;
-            color: #ffffff !important;
-        }
-
         .btn-info:hover,
         .btn-info:focus,
         .btn-info:active {
