@@ -4852,7 +4852,7 @@ class ClothOrderUtil extends Util
 
         $transaction = ClothOrder::where('id', $transaction_id)
             ->where('business_id', $business_id)
-            ->whereIn('type', ['sell', 'sales_order'])
+            ->whereIn('type', ['sell', 'order', 'sales_order', 'draft', 'quotation'])
             ->with(['sell_lines', 'payment_lines'])
             ->first();
 
@@ -4864,13 +4864,32 @@ class ClothOrderUtil extends Util
         }
 
         // Check if assigned to a Tailormaster
-        $has_tailor_assigned = !empty($transaction->tailoring_master_id);
+        $has_tailor_assigned = !empty($transaction->tailoring_master_id) || !empty($transaction->res_service_staff_id);
         if (!$has_tailor_assigned && !empty($transaction->sell_lines)) {
             foreach ($transaction->sell_lines as $line) {
-                if (!empty($line->tailoring_master_id)) {
+                if (!empty($line->tailoring_master_id) || !empty($line->res_service_staff_id)) {
                     $has_tailor_assigned = true;
                     break;
                 }
+            }
+        }
+
+        if (!$has_tailor_assigned) {
+            $assigned_count = DB::table('transaction_sell_lines')
+                ->where('transaction_id', $transaction_id)
+                ->where(function ($q) {
+                    $q->where(function ($q1) {
+                        $q1->whereNotNull('tailoring_master_id')
+                           ->where('tailoring_master_id', '!=', 0);
+                    })->orWhere(function ($q2) {
+                        $q2->whereNotNull('res_service_staff_id')
+                           ->where('res_service_staff_id', '!=', 0);
+                    });
+                })
+                ->count();
+
+            if ($assigned_count > 0) {
+                $has_tailor_assigned = true;
             }
         }
 

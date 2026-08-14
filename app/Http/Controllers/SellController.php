@@ -2906,4 +2906,36 @@ class SellController extends Controller
             'msg' => __('tailoring.assigned_tailoring_master_updated'),
         ];
     }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($id)
+    {
+        if (!auth()->user()->can('sell.delete') && !auth()->user()->can('direct_sell.delete') && !auth()->user()->can('so.delete')) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        if (request()->ajax()) {
+            try {
+                $business_id = request()->session()->get('user.business_id');
+                DB::beginTransaction();
+
+                $output = $this->transactionUtil->deleteSale($business_id, $id);
+
+                DB::commit();
+            } catch (\Exception $e) {
+                DB::rollBack();
+                Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+
+                $output['success'] = false;
+                $output['msg'] = trans('messages.something_went_wrong');
+            }
+
+            return $output;
+        }
+    }
 }
