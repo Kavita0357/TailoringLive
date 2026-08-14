@@ -302,12 +302,12 @@
     {!! Form::close() !!}
 </div>
 
-<select id="assignment_tailor_select_template" class="d-none">
+<div id="assignment_tailor_select_template" class="hide d-none" style="display: none !important;">
     <option value="">@lang('tailoring.select_tailoring_master')</option>
     @foreach ($tailor_masters as $key => $value)
         <option value="{{ $key }}">{{ $value }}</option>
     @endforeach
-</select>
+</div>
 
 <script>
     $(document).ready(function() {

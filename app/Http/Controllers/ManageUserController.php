@@ -537,48 +537,95 @@ class ManageUserController extends Controller
         $total_tailor_masters = $tailor_masters->count();
 
         if (!empty($location_id)) {
-            // Fetch completed orders (transactions) for this location
-            $orders = Transaction::where('transactions.business_id', $business_id)
-                ->where('transactions.type', 'order')
-                ->where('transactions.location_id', $location_id)
-                ->whereHas('sell_lines', function ($query) {
-                    $query->whereNotNull('tailoring_master_id');
-                })
-                ->with(['sell_lines.cloth', 'payment_lines'])
-                ->get();
+            $tailor_masters_query->whereHas('user', function ($query) use ($location_id) {
+                // filter if user has location constraint if applicable
+            });
+        }
 
-            $total_wages = 0;
-            $total_wages_paid = 0;
-            $total_wages_due = 0;
-            $total_completed_orders = 0;
+        // Fetch completed orders (transactions)
+        $orders_query = Transaction::where('transactions.business_id', $business_id)
+            ->where('transactions.type', 'order')
+            ->whereHas('sell_lines', function ($query) {
+                $query->whereNotNull('tailoring_master_id');
+            })
+            ->with(['sell_lines.cloth', 'payment_lines']);
 
-            foreach ($orders as $order) {
-                $order_wages = 0;
-                foreach ($order->sell_lines as $line) {
-                    if (!empty($line->tailoring_master_id) && !empty($line->cloth)) {
-                        $quantity = !empty($line->assigned_quantity) ? $line->assigned_quantity : $line->quantity;
-                        $order_wages += ($line->cloth->wages ?? 0) * $quantity;
-                        $total_completed_orders += $quantity;
+        if (!empty($location_id)) {
+            $orders_query->where('transactions.location_id', $location_id);
+        }
+
+        $orders = $orders_query->get();
+
+        $total_completed_cloths = 0;
+        $total_delivered_cloths = 0;
+        $total_completed_orders = 0;
+        $total_orders_overdue = 0;
+        $total_wages = 0;
+        $total_wages_paid = 0;
+        $total_wages_due = 0;
+
+        $now = \Carbon\Carbon::now();
+
+        foreach ($orders as $order) {
+            $order_wages = 0;
+            $has_assigned_cloth = false;
+            $all_cloths_completed = true;
+            $all_cloths_delivered = true;
+
+            foreach ($order->sell_lines as $line) {
+                if (!empty($line->tailoring_master_id) && !empty($line->cloth)) {
+                    $has_assigned_cloth = true;
+                    $quantity = !empty($line->assigned_quantity) ? $line->assigned_quantity : $line->quantity;
+                    $order_wages += ($line->cloth->wages ?? 0) * $quantity;
+
+                    $completed_qty = (int) ($line->completed_quantity ?? 0);
+                    $delivered_qty = (int) ($line->delivered_quantity ?? 0);
+
+                    $total_completed_cloths += $completed_qty;
+                    $total_delivered_cloths += $delivered_qty;
+
+                    if ($completed_qty < $quantity) {
+                        $all_cloths_completed = false;
+                    }
+                    if ($delivered_qty < $quantity) {
+                        $all_cloths_delivered = false;
                     }
                 }
+            }
+
+            if ($has_assigned_cloth) {
                 $total_wages += $order_wages;
 
-                $order_paid = $order->payment_lines->sum('amount');
-                $total_wages_paid += $order_paid;
+                // Fully completed order invoice
+                if ($all_cloths_completed || in_array($order->delivery_status, ['ready_to_deliver', 'delivered'])) {
+                    $total_completed_orders++;
+                }
 
-                $total_wages_due += max(0, $order->final_total - $order_paid);
+                // Overdue order: delivery date is past and order is not fully delivered
+                if (!$all_cloths_delivered && $order->delivery_status != 'delivered' && !empty($order->delivery_date)) {
+                    if (\Carbon\Carbon::parse($order->delivery_date)->lt($now)) {
+                        $total_orders_overdue++;
+                    }
+                }
             }
-        } else {
-            $total_wages = $tailor_masters->sum('total_wages');
-            $total_wages_paid = $tailor_masters->sum('total_wages_paid');
-            $total_wages_due = $tailor_masters->sum('total_wages_due');
-            $total_completed_orders = $tailor_masters->sum('total_completed_orders');
         }
+
+        $all_tailor_user_ids = TailorMasterList::whereHas('user', function ($query) use ($business_id) {
+            $query->where('business_id', $business_id);
+        })->pluck('user_id')->toArray();
+
+        $total_wages_paid = \App\TransactionPayment::whereIn('payment_for', $all_tailor_user_ids)
+            ->where('business_id', $business_id)
+            ->sum('amount');
+        $total_wages_due = max(0, $total_wages - $total_wages_paid);
 
         return view('tailor_master.dashboard')
             ->with(compact(
                 'total_tailor_masters',
+                'total_completed_cloths',
+                'total_delivered_cloths',
                 'total_completed_orders',
+                'total_orders_overdue',
                 'total_wages',
                 'total_wages_paid',
                 'total_wages_due',
@@ -628,30 +675,75 @@ class ManageUserController extends Controller
 
                 $filtered_orders = $orders->get();
 
+                $total_completed_cloths = 0;
+                $total_delivered_cloths = 0;
+                $total_completed_orders = 0;
+                $total_orders_overdue = 0;
                 $total_wages = 0;
                 $total_wages_paid = 0;
                 $total_wages_due = 0;
-                $total_completed_orders = 0;
+
+                $now = \Carbon\Carbon::now();
 
                 foreach ($filtered_orders as $order) {
                     $order_wages = 0;
+                    $has_assigned_cloth = false;
+                    $all_cloths_completed = true;
+                    $all_cloths_delivered = true;
+
                     foreach ($order->sell_lines as $line) {
                         if (!empty($line->tailoring_master_id) && !empty($line->cloth)) {
                             if (!empty($tailoring_master_id) && $line->tailoring_master_id != $tailoring_master_id) {
                                 continue;
                             }
+                            $has_assigned_cloth = true;
                             $quantity = !empty($line->assigned_quantity) ? $line->assigned_quantity : $line->quantity;
                             $order_wages += ($line->cloth->wages ?? 0) * $quantity;
-                            $total_completed_orders += $quantity;
+
+                            $completed_qty = (int) ($line->completed_quantity ?? 0);
+                            $delivered_qty = (int) ($line->delivered_quantity ?? 0);
+
+                            $total_completed_cloths += $completed_qty;
+                            $total_delivered_cloths += $delivered_qty;
+
+                            if ($completed_qty < $quantity) {
+                                $all_cloths_completed = false;
+                            }
+                            if ($delivered_qty < $quantity) {
+                                $all_cloths_delivered = false;
+                            }
                         }
                     }
-                    $total_wages += $order_wages;
 
-                    $order_paid = $order->payment_lines->sum('amount');
-                    $total_wages_paid += $order_paid;
+                    if ($has_assigned_cloth) {
+                        $total_wages += $order_wages;
 
-                    $total_wages_due += max(0, $order->final_total - $order_paid);
+                        // Fully completed order invoice
+                        if ($all_cloths_completed || in_array($order->delivery_status, ['ready_to_deliver', 'delivered'])) {
+                            $total_completed_orders++;
+                        }
+
+                        // Overdue order: delivery date is past and order is not fully delivered
+                        if (!$all_cloths_delivered && $order->delivery_status != 'delivered' && !empty($order->delivery_date)) {
+                            if (\Carbon\Carbon::parse($order->delivery_date)->lt($now)) {
+                                $total_orders_overdue++;
+                            }
+                        }
+                    }
                 }
+
+                if (!empty($tailoring_master_id)) {
+                    $target_user_ids = [$tailoring_master_id];
+                } else {
+                    $target_user_ids = TailorMasterList::whereHas('user', function ($query) use ($business_id) {
+                        $query->where('business_id', $business_id);
+                    })->pluck('user_id')->toArray();
+                }
+
+                $total_wages_paid = \App\TransactionPayment::whereIn('payment_for', $target_user_ids)
+                    ->where('business_id', $business_id)
+                    ->sum('amount');
+                $total_wages_due = max(0, $total_wages - $total_wages_paid);
 
                 $tailor_masters_query = TailorMasterList::whereHas('user', function ($query) use ($business_id) {
                     $query->where('business_id', $business_id)
@@ -751,7 +843,10 @@ class ManageUserController extends Controller
                     ->with([
                         'totals' => [
                             'total_tailor_masters' => $total_tailor_masters,
+                            'total_completed_cloths' => $total_completed_cloths,
+                            'total_delivered_cloths' => $total_delivered_cloths,
                             'total_completed_orders' => $total_completed_orders,
+                            'total_orders_overdue' => $total_orders_overdue,
                             'total_wages' => $total_wages,
                             'total_wages_paid' => $total_wages_paid,
                             'total_wages_due' => $total_wages_due,
@@ -1094,7 +1189,7 @@ class ManageUserController extends Controller
             })
             ->with(['location', 'sell_lines' => function($q) use ($tailor) {
                 $q->where('tailoring_master_id', $tailor->user_id);
-            }]);
+            }, 'sell_lines.cloth']);
 
         if (!empty($start_date) && !empty($end_date)) {
             $orders->whereDate('transaction_date', '>=', $start_date)
@@ -1129,7 +1224,7 @@ class ManageUserController extends Controller
             foreach ($order->sell_lines as $line) {
                 if ($line->tailoring_master_id != $tailor->user_id) continue;
                 $quantity = !empty($line->assigned_quantity) ? $line->assigned_quantity : $line->quantity;
-                $order_wages += ($line->making_charge ?? 0) * $quantity;
+                $order_wages += ($line->cloth->wages ?? 0) * $quantity;
             }
             $total_wages += $order_wages;
 

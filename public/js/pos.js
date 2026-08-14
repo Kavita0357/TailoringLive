@@ -2919,12 +2919,6 @@ $(document).on('change', '.payment_types_dropdown', function (e) {
 $(document).on('show.bs.modal', '#recent_transactions_modal', function () {
     get_recent_transactions('final', $('div#tab_final'));
 });
-$(document).on('shown.bs.tab', 'a[href="#tab_quotation"]', function () {
-    get_recent_transactions('quotation', $('div#tab_quotation'));
-});
-$(document).on('shown.bs.tab', 'a[href="#tab_draft"]', function () {
-    get_recent_transactions('draft', $('div#tab_draft'));
-});
 
 function disable_pos_form_actions() {
     if (!window.navigator.onLine) {

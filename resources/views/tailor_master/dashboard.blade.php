@@ -43,13 +43,62 @@
                             <div class="tw-flex tw-items-center tw-gap-4">
                                 <div class="tw-flex-1 tw-min-w-0">
                                     <p class="tw-text-sm tw-font-medium tw-text-gray-500 tw-truncate tw-whitespace-nowrap">
+                                        @lang('tailoring.total_completed_cloths')
+                                    </p>
+                                    <p
+                                        class="tw-mt-0.5 tw-text-gray-900 tw-text-xl tw-truncate tw-font-semibold tw-tracking-tight tw-font-mono">
+                                        <span id="total_completed_cloths_card">{{ $total_completed_cloths }} Pcs</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div
+                        class="tw-transition-all tw-duration-200 tw-bg-white tw-shadow-sm hover:tw-shadow-md tw-rounded-xl hover:tw-translate-y-0.5 tw-ring-1 tw-ring-gray-200">
+                        <div class="tw-p-4 sm:tw-p-5">
+                            <div class="tw-flex tw-items-center tw-gap-4">
+                                <div class="tw-flex-1 tw-min-w-0">
+                                    <p class="tw-text-sm tw-font-medium tw-text-gray-500 tw-truncate tw-whitespace-nowrap">
+                                        @lang('tailoring.total_delivered_cloths')
+                                    </p>
+                                    <p
+                                        class="tw-mt-0.5 tw-text-gray-900 tw-text-xl tw-truncate tw-font-semibold tw-tracking-tight tw-font-mono">
+                                        <span id="total_delivered_cloths_card">{{ $total_delivered_cloths }} Pcs</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div
+                        class="tw-transition-all tw-duration-200 tw-bg-white tw-shadow-sm hover:tw-shadow-md tw-rounded-xl hover:tw-translate-y-0.5 tw-ring-1 tw-ring-gray-200">
+                        <div class="tw-p-4 sm:tw-p-5">
+                            <div class="tw-flex tw-items-center tw-gap-4">
+                                <div class="tw-flex-1 tw-min-w-0">
+                                    <p class="tw-text-sm tw-font-medium tw-text-gray-500 tw-truncate tw-whitespace-nowrap">
                                         @lang('tailoring.total_completed_orders')
                                     </p>
                                     <p
                                         class="tw-mt-0.5 tw-text-gray-900 tw-text-xl tw-truncate tw-font-semibold tw-tracking-tight tw-font-mono">
-                                        <span
-                                            id="total_completed_orders_card">{{ number_format($total_completed_orders, 2) }}</span>
-                                        Pcs
+                                        <span id="total_completed_orders_card">{{ $total_completed_orders }}</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div
+                        class="tw-transition-all tw-duration-200 tw-bg-white tw-shadow-sm hover:tw-shadow-md tw-rounded-xl hover:tw-translate-y-0.5 tw-ring-1 tw-ring-gray-200">
+                        <div class="tw-p-4 sm:tw-p-5">
+                            <div class="tw-flex tw-items-center tw-gap-4">
+                                <div class="tw-flex-1 tw-min-w-0">
+                                    <p class="tw-text-sm tw-font-medium tw-text-gray-500 tw-truncate tw-whitespace-nowrap">
+                                        @lang('tailoring.total_orders_overdue')
+                                    </p>
+                                    <p
+                                        class="tw-mt-0.5 tw-text-gray-900 tw-text-xl tw-truncate tw-font-semibold tw-tracking-tight tw-font-mono">
+                                        <span id="total_orders_overdue_card">{{ $total_orders_overdue }}</span>
                                     </p>
                                 </div>
                             </div>
@@ -259,8 +308,10 @@
                     if (json && json.totals !== undefined) {
                         var totals = json.totals;
                         $('#total_tailor_masters_card').text(totals.total_tailor_masters);
-                        $('#total_completed_orders_card').text(__currency_trans_from_en(totals
-                            .total_completed_orders, false, false, __currency_precision, true));
+                        $('#total_completed_cloths_card').text(totals.total_completed_cloths + ' Pcs');
+                        $('#total_delivered_cloths_card').text(totals.total_delivered_cloths + ' Pcs');
+                        $('#total_completed_orders_card').text(totals.total_completed_orders);
+                        $('#total_orders_overdue_card').text(totals.total_orders_overdue);
                         $('#total_wages_card').text(__currency_trans_from_en(totals.total_wages, true));
                         $('#total_wages_paid_card').text(__currency_trans_from_en(totals.total_wages_paid,
                             true));

@@ -84,7 +84,7 @@
     </div>
 
     <div class="bottom-copy">
-        <div class="copy-label">Tailor Master Copy</div>
+        <div class="copy-label">Tailormaster Copy</div>
         <div class="bottom-row">
             <div class="bottom-box">
                 <strong>{{ $sell->cloth_name }}</strong>

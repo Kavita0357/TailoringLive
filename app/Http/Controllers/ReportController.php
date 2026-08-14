@@ -2572,17 +2572,42 @@ class ReportController extends Controller
 
             $permitted_locations = auth()->user()->permitted_locations();
             if ($permitted_locations != 'all') {
-                $permitted_permissions = collect($permitted_locations)->map(function ($loc_id) {
-                    return 'location.' . $loc_id;
-                })->push('access_all_locations')->all();
+                $permitted_order_tailors = DB::table('transaction_sell_lines')
+                    ->join('transactions', 'transaction_sell_lines.transaction_id', '=', 'transactions.id')
+                    ->where('transactions.business_id', $business_id)
+                    ->whereIn('transactions.location_id', $permitted_locations)
+                    ->whereNotNull('transaction_sell_lines.tailoring_master_id')
+                    ->pluck('transaction_sell_lines.tailoring_master_id')
+                    ->toArray();
 
-                $permitted_user_ids = User::permission($permitted_permissions)->pluck('id');
+                $permitted_location_perms = collect($permitted_locations)->map(function ($loc_id) {
+                    return 'location.' . $loc_id;
+                })->all();
+
+                $permitted_perm_tailors = User::permission($permitted_location_perms)
+                    ->where('business_id', $business_id)
+                    ->pluck('id')
+                    ->toArray();
+
+                $permitted_user_ids = array_unique(array_merge($permitted_order_tailors, $permitted_perm_tailors));
                 $query->whereIn('transaction_payments.payment_for', $permitted_user_ids);
             }
 
             if (! empty($location_id)) {
-                $tailor_user_ids = User::permission(['location.' . $location_id, 'access_all_locations'])
-                    ->pluck('id');
+                $location_order_tailors = DB::table('transaction_sell_lines')
+                    ->join('transactions', 'transaction_sell_lines.transaction_id', '=', 'transactions.id')
+                    ->where('transactions.business_id', $business_id)
+                    ->where('transactions.location_id', $location_id)
+                    ->whereNotNull('transaction_sell_lines.tailoring_master_id')
+                    ->pluck('transaction_sell_lines.tailoring_master_id')
+                    ->toArray();
+
+                $location_perm_tailors = User::permission('location.' . $location_id)
+                    ->where('business_id', $business_id)
+                    ->pluck('id')
+                    ->toArray();
+
+                $tailor_user_ids = array_unique(array_merge($location_order_tailors, $location_perm_tailors));
                 $query->whereIn('transaction_payments.payment_for', $tailor_user_ids);
             }
 

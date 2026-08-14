@@ -80,12 +80,50 @@ class AccountReportsController extends Controller
                 $permitted_locations
             );
 
+            // Get Tailormaster Wages due
+            $tailor_user_ids = \App\TailorMasterList::whereHas('user', function ($query) use ($business_id) {
+                $query->where('business_id', $business_id);
+            })->pluck('user_id')->toArray();
+
+            $tailormaster_wages = 0;
+            if (! empty($tailor_user_ids)) {
+                $wages_query = \DB::table('transaction_sell_lines')
+                    ->join('transactions', 'transaction_sell_lines.transaction_id', '=', 'transactions.id')
+                    ->leftJoin('cloths', 'transaction_sell_lines.cloth_id', '=', 'cloths.id')
+                    ->where('transactions.business_id', $business_id)
+                    ->where('transactions.type', 'order')
+                    ->where('transactions.status', '!=', 'draft')
+                    ->whereIn('transaction_sell_lines.tailoring_master_id', $tailor_user_ids);
+
+                if (! empty($location_id)) {
+                    $wages_query->where('transactions.location_id', $location_id);
+                }
+
+                if (! empty($end_date)) {
+                    $wages_query->whereDate('transactions.transaction_date', '<=', $end_date);
+                }
+
+                $total_wages = $wages_query->sum(\DB::raw('COALESCE(cloths.wages, 0) * COALESCE(NULLIF(transaction_sell_lines.assigned_quantity, 0), transaction_sell_lines.quantity)'));
+
+                $paid_query = \App\TransactionPayment::whereIn('payment_for', $tailor_user_ids)
+                    ->where('business_id', $business_id);
+
+                if (! empty($end_date)) {
+                    $paid_query->whereDate('paid_on', '<=', $end_date);
+                }
+
+                $total_wages_paid = $paid_query->sum('amount');
+
+                $tailormaster_wages = max(0, $total_wages - $total_wages_paid);
+            }
+
             $output = [
                 'supplier_due' => $purchase_details['purchase_due'],
                 'customer_due' => $sell_details['invoice_due'] - $sell_return_details['total_sell_return_inc_tax'],
                 'account_balances' => $account_details,
                 'closing_stock' => $closing_stock,
                 'capital_account_details' => null,
+                'tailormaster_wages' => $tailormaster_wages,
             ];
 
             return $output;
@@ -128,13 +166,49 @@ class AccountReportsController extends Controller
 
             $account_details = $this->getAccountBalance($business_id, $end_date, 'others', $location_id);
 
-            // $capital_account_details = $this->getAccountBalance($business_id, $end_date, 'capital');
+            // Get Tailormaster Wages due
+            $tailor_user_ids = \App\TailorMasterList::whereHas('user', function ($query) use ($business_id) {
+                $query->where('business_id', $business_id);
+            })->pluck('user_id')->toArray();
+
+            $tailormaster_wages = 0;
+            if (! empty($tailor_user_ids)) {
+                $wages_query = \DB::table('transaction_sell_lines')
+                    ->join('transactions', 'transaction_sell_lines.transaction_id', '=', 'transactions.id')
+                    ->leftJoin('cloths', 'transaction_sell_lines.cloth_id', '=', 'cloths.id')
+                    ->where('transactions.business_id', $business_id)
+                    ->where('transactions.type', 'order')
+                    ->where('transactions.status', '!=', 'draft')
+                    ->whereIn('transaction_sell_lines.tailoring_master_id', $tailor_user_ids);
+
+                if (! empty($location_id)) {
+                    $wages_query->where('transactions.location_id', $location_id);
+                }
+
+                if (! empty($end_date)) {
+                    $wages_query->whereDate('transactions.transaction_date', '<=', $end_date);
+                }
+
+                $total_wages = $wages_query->sum(\DB::raw('COALESCE(cloths.wages, 0) * COALESCE(NULLIF(transaction_sell_lines.assigned_quantity, 0), transaction_sell_lines.quantity)'));
+
+                $paid_query = \App\TransactionPayment::whereIn('payment_for', $tailor_user_ids)
+                    ->where('business_id', $business_id);
+
+                if (! empty($end_date)) {
+                    $paid_query->whereDate('paid_on', '<=', $end_date);
+                }
+
+                $total_wages_paid = $paid_query->sum('amount');
+
+                $tailormaster_wages = max(0, $total_wages - $total_wages_paid);
+            }
 
             $output = [
                 'supplier_due' => $purchase_details['purchase_due'],
                 'customer_due' => $sell_details['invoice_due'],
                 'account_balances' => $account_details,
                 'capital_account_details' => null,
+                'tailormaster_wages' => $tailormaster_wages,
             ];
 
             return $output;
@@ -316,7 +390,7 @@ class AccountReportsController extends Controller
                     })
                     ->addColumn('transaction_number', function ($row) {
                         $html = $row->ref_no;
-                        if ($row->type == 'sell') {
+                        if (in_array($row->type, ['sell', 'order'])) {
                             $html = '<button type="button" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline  tw-dw-btn-info btn-modal"
                                     data-href="'.action([\App\Http\Controllers\SellController::class, 'show'], [$row->transaction_id]).'" data-container=".view_modal">'.$row->invoice_no.'</button>';
                         } elseif ($row->type == 'purchase') {
