@@ -1743,6 +1743,7 @@ $(document).ready(function () {
             dataType: 'json',
             success: function (result) {
                 if (result.success == 1 && result.receipt.html_content != '') {
+                    console.log(result.receipt.html_content);
                     $('#receipt_section').html(result.receipt.html_content);
                     __currency_convert_recursively($('#receipt_section'));
 

@@ -1680,6 +1680,8 @@ class TransactionUtil extends Util
         } elseif ($transaction_type == 'sales_order') {
             $output['invoice_heading'] = ! empty($il->common_settings['sales_order_heading']) ? $il->common_settings['sales_order_heading'] : __('lang_v1.sales_order');
             $output['invoice_no_prefix'] = $il->quotation_no_prefix;
+        }elseif($transaction_type == 'order'){
+             $output['invoice_no_prefix'] =  __('tailoring.order_no');
         } else {
             $output['invoice_heading'] = $il->invoice_heading;
             if ($transaction->payment_status == 'paid' && ! empty($il->invoice_heading_paid)) {
