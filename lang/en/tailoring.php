@@ -12,6 +12,12 @@ return [
     */
 
     'tailoring' => 'Tailoring',
+    'tag_line' => 'Smart operations for custom creations.',
+    'username' => 'Username',
+    'password' => 'Password',
+    'enter_password' => 'Please enter your password',
+    'enter_username' => 'Please enter your username',
+    'login' => 'Login',
     'serial_no' => 'Serial No.',
     'new_order' => 'New Order',
     'order_no' => 'Order No.',
@@ -114,7 +120,7 @@ return [
     'measurement_required' => 'Please select at least one measurement.',
     'duplicate_style_serial_no' => 'Each style must have a unique serial number.',
     'duplicate_measurement_serial_no' => 'Each measurement must have a unique serial number.',
-    'cloths_ordered'=>'Details of Cloths Ordered',
+    'cloths_ordered' => 'Details of Cloths Ordered',
 
     'order' => 'Order',
     'completed' => 'Completed',
@@ -195,7 +201,7 @@ return [
     'completed_orders' => 'Completed Orders',
     'designs' => 'Designs',
     'design_name' => 'Design Name',
-    'order_sell'=>'Cloth Orders + Product Sells',
+    'order_sell' => 'Cloth Orders + Product Sells',
 
     'messaging' => 'Messaging',
     'send_sms' => 'Send SMS',

@@ -29,7 +29,7 @@
 @endphp
 
 <div class="login-wrapper">
-    <h1 class="login-title">Login</h1>
+    <h1 class="login-title"> {{ __('tailoring.login') }}</h1>
 
     <form method="POST" action="{{ route('login') }}" id="login-form">
         {{ csrf_field() }}
@@ -37,11 +37,11 @@
         <!-- Username Input -->
         <div class="auth-form-group {{ $errors->has('username') ? ' has-error' : '' }}">
             <label class="auth-label" for="username">
-                @lang('Username')<span>*</span>
+                @lang('tailoring.username')<span>*</span>
             </label>
             <div class="auth-input-wrapper">
                 <input class="auth-input {{ $errors->has('username') ? 'has-error-border' : '' }}" name="username"
-                    required autofocus placeholder="Please enter your username" id="username" type="text"
+                    required autofocus placeholder="@lang('tailoring.enter_username')" id="username" type="text"
                     value="{{ $username }}" />
             </div>
             @if ($errors->has('username'))
@@ -54,12 +54,12 @@
         <!-- Password Input -->
         <div class="auth-form-group {{ $errors->has('password') ? ' has-error' : '' }}">
             <label class="auth-label" for="password">
-                @lang('Password')<span>*</span>
+                @lang('tailoring.password')<span>*</span>
             </label>
             <div class="auth-input-wrapper">
                 <input class="auth-input {{ $errors->has('password') ? 'has-error-border' : '' }}" id="password"
                     type="password" name="password" value="{{ $password }}" required
-                    placeholder="Please enter your password" />
+                    placeholder="@lang('tailoring.enter_password')" />
                 <button type="button" id="show_hide_icon" class="auth-password-toggle">
                     <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-eye tw-w-6"
                         viewBox="0 0 24 24" stroke-width="1.5" stroke="#9CA3AF" fill="none" stroke-linecap="round"
@@ -102,7 +102,7 @@
         @endif
 
         <button type="submit" class="auth-submit-btn">
-            Next
+            {{ __('tailoring.login') }}
         </button>
     </form>
 
