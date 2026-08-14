@@ -246,11 +246,11 @@
                                 <div class="form-group">
                                     {!! Form::label(
                                         'invoice_no',
-                                        $transaction->type == 'sales_order' ? __('restaurant.order_no') : __('sale.invoice_no') . ':',
+                                        $transaction->type == 'sales_order' ? __('restaurant.order_no') : __('tailoring.order_no') . ':',
                                     ) !!}
                                     {!! Form::text('invoice_no', $transaction->invoice_no, [
                                         'class' => 'form-control',
-                                        'placeholder' => $transaction->type == 'sales_order' ? __('restaurant.order_no') : __('sale.invoice_no'),
+                                        'placeholder' => $transaction->type == 'sales_order' ? __('restaurant.order_no') : __('tailoring.order_no'),
                                     ]) !!}
                                 </div>
                             </div>

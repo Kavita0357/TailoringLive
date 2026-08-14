@@ -303,11 +303,11 @@
                                 <div class="form-group">
                                     {!! Form::label(
                                         'invoice_no',
-                                        $sale_type == 'sales_order' ? __('restaurant.order_no') : __('sale.invoice_no') . ':',
+                                        $sale_type == 'sales_order' ? __('restaurant.order_no') : __('tailoring.order_no') . ':',
                                     ) !!}
                                     {!! Form::text('invoice_no', null, [
                                         'class' => 'form-control',
-                                        'placeholder' => $sale_type == 'sales_order' ? __('restaurant.order_no') : __('sale.invoice_no'),
+                                        'placeholder' => $sale_type == 'sales_order' ? __('restaurant.order_no') : __('tailoring.order_no'),
                                     ]) !!}
                                     <p class="help-block">@lang('lang_v1.keep_blank_to_autogenerate')</p>
                                 </div>
