@@ -115,12 +115,15 @@
             color: #027257;
         }
 
-        .pos-header,
         .pos-footer,
         .main-header,
         .main-header .navbar,
         .main-header .logo {
             background-color: #007F61 !important;
+        }
+
+        .pos-header {
+            background-color: #333333 !important;
         }
 
         .pos-sub-footer {
@@ -266,12 +269,12 @@
             border-color: #139375 !important;
         }
 
-        .d-none + .select2-container,
-        .hide + .select2-container,
-        select.d-none + .select2-container,
-        select.hide + .select2-container,
-        select[style*="display: none"] + .select2-container,
-        select[style*="display:none"] + .select2-container {
+        .d-none+.select2-container,
+        .hide+.select2-container,
+        select.d-none+.select2-container,
+        select.hide+.select2-container,
+        select[style*="display: none"]+.select2-container,
+        select[style*="display:none"]+.select2-container {
             display: none !important;
         }
 
