@@ -155,8 +155,7 @@
                             <div class="tw-p-4 sm:tw-p-5">
                                 <div class="tw-flex tw-items-center tw-gap-4">
                                     <div class="tw-flex-1 tw-min-w-0">
-                                        <p
-                                            class="tw-text-sm tw-font-medium tw-truncate tw-whitespace-nowrap"
+                                        <p class="tw-text-sm tw-font-medium tw-truncate tw-whitespace-nowrap"
                                             style="color: green;">
                                             {{ __('tailoring.total_orders') }}
                                         </p>
@@ -175,8 +174,7 @@
                             <div class="tw-p-4 sm:tw-p-5">
                                 <div class="tw-flex tw-items-center tw-gap-4">
                                     <div class="tw-flex-1 tw-min-w-0">
-                                        <p
-                                            class="tw-text-sm tw-font-medium tw-truncate tw-whitespace-nowrap"
+                                        <p class="tw-text-sm tw-font-medium tw-truncate tw-whitespace-nowrap"
                                             style="color: red;">
                                             {{ __('tailoring.total_order_due') }}
                                         </p>
@@ -195,8 +193,7 @@
                             <div class="tw-p-4 sm:tw-p-5">
                                 <div class="tw-flex tw-items-center tw-gap-4">
                                     <div class="tw-flex-1 tw-min-w-0">
-                                        <p
-                                            class="tw-text-sm tw-font-medium tw-truncate tw-whitespace-nowrap"
+                                        <p class="tw-text-sm tw-font-medium tw-truncate tw-whitespace-nowrap"
                                             style="color: dodgerblue;">
                                             {{ __('tailoring.pending_orders') }}
                                         </p>
@@ -215,8 +212,7 @@
                             <div class="tw-p-4 sm:tw-p-5">
                                 <div class="tw-flex tw-items-center tw-gap-4">
                                     <div class="tw-flex-1 tw-min-w-0">
-                                        <p
-                                            class="tw-text-sm tw-font-medium tw-truncate tw-whitespace-nowrap"
+                                        <p class="tw-text-sm tw-font-medium tw-truncate tw-whitespace-nowrap"
                                             style="color: seaGreen;">
                                             {{ __('tailoring.in_production') }}
                                         </p>
@@ -235,8 +231,7 @@
                             <div class="tw-p-4 sm:tw-p-5">
                                 <div class="tw-flex tw-items-center tw-gap-4">
                                     <div class="tw-flex-1 tw-min-w-0">
-                                        <p
-                                            class="tw-text-sm tw-font-medium tw-truncate tw-whitespace-nowrap"
+                                        <p class="tw-text-sm tw-font-medium tw-truncate tw-whitespace-nowrap"
                                             style="color: dodgerblue;">
                                             {{ __('tailoring.received') }}
                                         </p>
@@ -255,8 +250,7 @@
                             <div class="tw-p-4 sm:tw-p-5">
                                 <div class="tw-flex tw-items-center tw-gap-4">
                                     <div class="tw-flex-1 tw-min-w-0">
-                                        <p
-                                            class="tw-text-sm tw-font-medium tw-truncate tw-whitespace-nowrap"
+                                        <p class="tw-text-sm tw-font-medium tw-truncate tw-whitespace-nowrap"
                                             style="color: seaGreen;">
                                             {{ __('tailoring.in_progress') }}
                                         </p>
@@ -275,8 +269,7 @@
                             <div class="tw-p-4 sm:tw-p-5">
                                 <div class="tw-flex tw-items-center tw-gap-4">
                                     <div class="tw-flex-1 tw-min-w-0">
-                                        <p
-                                            class="tw-text-sm tw-font-medium tw-truncate tw-whitespace-nowrap"
+                                        <p class="tw-text-sm tw-font-medium tw-truncate tw-whitespace-nowrap"
                                             style="color: dodgerblue;">
                                             {{ __('tailoring.ready_to_deliver') }}
                                         </p>
@@ -295,8 +288,7 @@
                             <div class="tw-p-4 sm:tw-p-5">
                                 <div class="tw-flex tw-items-center tw-gap-4">
                                     <div class="tw-flex-1 tw-min-w-0">
-                                        <p
-                                            class="tw-text-sm tw-font-medium tw-truncate tw-whitespace-nowrap"
+                                        <p class="tw-text-sm tw-font-medium tw-truncate tw-whitespace-nowrap"
                                             style="color: seaGreen;">
                                             {{ __('tailoring.delivered') }}
                                         </p>
@@ -1530,13 +1522,13 @@
         }
 
         .select2-results__option--highlighted {
-            background: #f3f4f6 !important;
-            color: #111827 !important;
+            background: #139375 !important;
+            color: #ffffff !important;
         }
 
         .select2-results__option:hover {
-            background: #f3f4f6 !important;
-            color: #111827 !important;
+            background: #027257 !important;
+            color: #ffffff !important;
         }
 
         @media (max-width: 599px) {
@@ -1544,7 +1536,7 @@
                 width: 100% !important;
                 max-width: 100%;
             }
-            .select2-container .select2-selection--single{
+            .select2-container .select2-selection--single {
                 justify-content: center;
             }
         }
@@ -2141,8 +2133,7 @@
                         }
                     }
                 },
-                columns: [
-                    {
+                columns: [{
                         data: 'transaction_date',
                         name: 'transaction_date',
                         orderable: false
