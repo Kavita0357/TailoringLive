@@ -1556,8 +1556,8 @@ return [
     'cogs_help_text' => 'Cost of Goods Sold = Starting inventory(opening stock) + purchases − ending inventory(closing stock)',
     'overall_summary' => 'Overall Summary',
     'last_30_days' => 'Last 30 days',
-    'add_tailor_master' => 'Add Tailor Master',
-    'edit_tailor_master' => 'Edit Tailor Master',
+    'add_tailor_master' => 'Add Tailormaster',
+    'edit_tailor_master' => 'Edit Tailormaster',
     'show_work_history' => 'Show Work History',
     'total_making_charge' => 'Total Making Charge'
 ];

@@ -210,6 +210,25 @@
             accent-color: #139375 !important;
         }
 
+        /* All Page Title Font Weight 700 */
+        .content-header h1,
+        .content-header h2,
+        .content-header h3,
+        .content-header .box-title,
+        .content-header .title,
+        .content h1,
+        .content h2,
+        .content h3,
+        .content .box-title,
+        .main-content h1,
+        .main-content h2,
+        .main-content h3,
+        h1.tw-text-xl,
+        h1.tw-text-2xl,
+        h1.tw-text-3xl {
+            font-weight: 700 !important;
+        }
+
         .icheckbox_square-blue,
         .iradio_square-blue,
         .icheckbox_flat-blue,
@@ -245,6 +264,15 @@
         .iradio_flat-blue.checked {
             background: #139375 !important;
             border-color: #139375 !important;
+        }
+
+        .d-none + .select2-container,
+        .hide + .select2-container,
+        select.d-none + .select2-container,
+        select.hide + .select2-container,
+        select[style*="display: none"] + .select2-container,
+        select[style*="display:none"] + .select2-container {
+            display: none !important;
         }
 
         .icheckbox_square-blue.checked:hover,
