@@ -970,14 +970,17 @@ class ManageUserController extends Controller
 
     public function storeTailorMaster(Request $request)
     {
+        $request->validate([
+            'assigned_to_users' => 'required',
+            'first_name' => 'required|string|max:255',
+            'contact_number' => 'required'
+        ], [], [
+            'assigned_to_users' => __('lang_v1.assigned_user'),
+            'first_name' => __('tailoring.name'),
+            'contact_number' => __('contact.mobile')
+        ]);
+
         try {
-
-            $request->validate([
-                'assigned_to_users' => 'required',
-                'first_name' => 'required|string|max:255',
-                'contact_number' => 'required'
-            ]);
-
             TailorMasterList::create([
                 'user_id' => $request->assigned_to_users,
                 'name' => $request->first_name,

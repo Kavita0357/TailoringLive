@@ -115,6 +115,7 @@
             color: #027257;
         }
 
+        .pos-header,
         .pos-footer,
         .main-header,
         .main-header .navbar,
@@ -122,7 +123,7 @@
             background-color: #007F61 !important;
         }
 
-        .pos-header {
+        .col-md-12.no-print.pos-header {
             background-color: #333333 !important;
         }
 

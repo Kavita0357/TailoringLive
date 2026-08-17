@@ -212,6 +212,9 @@
                 });
             });
 
+            @if($errors->any())
+                $('#tailor_master_add_form').modal('show');
+            @endif
         });
     </script>
 @endsection

@@ -671,4 +671,20 @@ background-image: linear-gradient(to right, #3c3c4e, #245b80);
     -o-transform: translate(230px, 0);
     transform: translate(230px, 0); } }
 
+.bootstrap-datetimepicker-widget,
+.bootstrap-datetimepicker-widget.dropdown-menu,
+.datepicker-dropdown,
+.daterangepicker {
+  z-index: 999999 !important;
+}
+
+.input-group:has(.bootstrap-datetimepicker-widget),
+.form-group:has(.bootstrap-datetimepicker-widget),
+.tw-bg-white:has(.bootstrap-datetimepicker-widget),
+.box:has(.bootstrap-datetimepicker-widget),
+div:has(> .bootstrap-datetimepicker-widget) {
+  position: relative !important;
+  z-index: 9999 !important;
+}
+
 /*# sourceMappingURL=custom.css.map */

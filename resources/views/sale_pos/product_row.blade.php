@@ -81,14 +81,6 @@
             </select>
         </td>
 
-        <td class="text-center v-center">
-            <input type="hidden" class="form-control pos_line_total"
-                value="{{ @num_format($product->quantity_ordered * $unit_price_inc_tax) }}">
-            <span class="display_currency pos_line_total_text" data-currency_symbol="true">
-                {{ @num_format($product->quantity_ordered * $unit_price_inc_tax) }}
-            </span>
-        </td>
-
         @php
             $tailoringMasterValue = $product->tailoring_master_id ?? ($transaction->tailoring_master_id ?? null);
         @endphp
@@ -97,6 +89,13 @@
                 'class' => 'form-control select2',
                 'placeholder' => __('messages.please_select'),
             ]) !!}
+        </td>
+        <td class="text-center v-center">
+            <input type="hidden" class="form-control pos_line_total"
+                value="{{ @num_format($product->quantity_ordered * $unit_price_inc_tax) }}">
+            <span class="display_currency pos_line_total_text" data-currency_symbol="true">
+                {{ @num_format($product->quantity_ordered * $unit_price_inc_tax) }}
+            </span>
         </td>
 
         <td class="text-center v-center">

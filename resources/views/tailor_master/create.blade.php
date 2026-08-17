@@ -27,7 +27,7 @@
                 </div>
 
                 <div class="col-md-12">
-                    <div class="form-group">
+                    <div class="form-group @error('assigned_to_users') has-error @enderror">
                         {!! Form::label('assigned_to_users', __('lang_v1.assigned_user') . ':*') !!}
                         <div class="input-group">
                             <span class="input-group-addon">
@@ -37,8 +37,14 @@
                                 'class' => 'form-control select2',
                                 'id' => 'assigned_to_users',
                                 'style' => 'width: 100%;',
+                                 // 'required' => 'required',
                             ]) !!}
                         </div>
+                        @error('assigned_to_users')
+                            <span class="help-block text-danger" style="color: #a94442;">
+                                <strong>{{ $message }}</strong>
+                            </span>
+                        @enderror
                     </div>
                 </div>
 
@@ -53,18 +59,23 @@
                 </div>
 
                 <div class="col-md-12">
-                    <div class="form-group">
+                    <div class="form-group @error('first_name') has-error @enderror">
                         {!! Form::label('first_name', __('tailoring.name') . ':*') !!}
                         {!! Form::text('first_name', null, [
                             'class' => 'form-control',
                             'id' => 'first_name',
                             'required',
                         ]) !!}
+                        @error('first_name')
+                            <span class="help-block text-danger" style="color: #a94442;">
+                                <strong>{{ $message }}</strong>
+                            </span>
+                        @enderror
                     </div>
                 </div>
 
                 <div class="col-md-12">
-                    <div class="form-group">
+                    <div class="form-group @error('contact_number') has-error @enderror">
                         {!! Form::label('contact_number', __('contact.mobile') . ':*') !!}
                         <div class="input-group">
                             <span class="input-group-addon">
@@ -79,6 +90,11 @@
                                 'placeholder' => __('contact.mobile'),
                             ]) !!}
                         </div>
+                        @error('contact_number')
+                            <span class="help-block text-danger" style="color: #a94442;">
+                                <strong>{{ $message }}</strong>
+                            </span>
+                        @enderror
                     </div>
                 </div>
             </div>
