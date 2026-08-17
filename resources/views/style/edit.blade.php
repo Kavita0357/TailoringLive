@@ -31,6 +31,8 @@
                         {!! Form::select('cloths[]', $cloths, optional($style->cloths)->pluck('id')->toArray(), [
                             'class' => 'form-control select select2',
                             'multiple' => true,
+                            'placeholder' => __('tailoring.select_cloths'),
+                            'data-placeholder' => __('tailoring.select_cloths'),
                             // 'required' => true,
                             'style' => 'width: 100%',
                         ]) !!}
@@ -148,9 +150,14 @@
             $(this).closest('.design_row').remove();
         });
 
-        $(document).find('.select2').select2({allowClear: true,
-            placeholder: "Select cloths",
-            allowClear: true,
+        $('.style_modal, .modal').find('.select2').each(function() {
+            var $this = $(this);
+            var placeholder = $this.attr('placeholder') || $this.data('placeholder') || '';
+            $this.select2({
+                dropdownParent: $this.closest('.modal'),
+                placeholder: placeholder,
+                allowClear: true
+            });
         });
 
     });

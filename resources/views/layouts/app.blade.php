@@ -180,6 +180,29 @@
             display: none;
         }
 
+        /* Select2 Search Field & Dropdown White Background */
+        .select2-dropdown,
+        .select2-search--dropdown,
+        .select2-search--dropdown .select2-search__field,
+        .select2-container--default .select2-search--dropdown .select2-search__field {
+            background-color: #ffffff !important;
+            color: #333333 !important;
+        }
+
+        .select2-search--dropdown .select2-search__field {
+            border: 1px solid #cccccc !important;
+            border-radius: 4px !important;
+        }
+
+        .select2-container--default .select2-selection--single,
+        .select2-container--default .select2-selection--multiple {
+            background-color: #ffffff !important;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            color: #333333 !important;
+        }
+
         /* Select2 Focus & Open Border Colors */
         .select2-container--default.select2-container--open,
         .select2-container--default.select2-container--focus .select2-selection--single,

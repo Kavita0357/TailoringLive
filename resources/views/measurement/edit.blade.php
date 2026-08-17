@@ -29,6 +29,8 @@
                         {!! Form::select('cloths[]', $cloths, optional($measurement->cloths)->pluck('id')->toArray(), [
                             'class' => 'form-control select select2',
                             'multiple' => true,
+                            'placeholder' => __('tailoring.select_cloths'),
+                            'data-placeholder' => __('tailoring.select_cloths'),
                             // 'required' => true,
                             'style' => 'width: 100%',
                         ]) !!}
@@ -72,6 +74,7 @@
                                     'id' => 'sub_measurement_select',
                                     'style' => 'width: 100%',
                                     'placeholder' => __('tailoring.select_sub_measurements'),
+                                    'data-placeholder' => __('tailoring.select_sub_measurements'),
                                 ]) !!}
                             </div>
                             <div class="col-md-2">
@@ -132,9 +135,14 @@
     $(document).ready(function() {
         let subMeasurementIndex = {{ $measurement->subMeasurements->count() }};
 
-        $(document).find('.select2').select2({allowClear: true,
-            placeholder: "Select cloths",
-            allowClear: true,
+        $('.measurement_modal, .modal').find('.select2').each(function() {
+            var $this = $(this);
+            var placeholder = $this.attr('placeholder') || $this.data('placeholder') || '';
+            $this.select2({
+                dropdownParent: $this.closest('.modal'),
+                placeholder: placeholder,
+                allowClear: true
+            });
         });
 
         $('#add_selected_sub_measurement').on('click', function() {
