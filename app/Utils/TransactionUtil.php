@@ -550,6 +550,7 @@ class TransactionUtil extends Util
         $modifiers_array = [];
         $edit_ids = [0];
         $modifiers_formatted = [];
+        $created_sell_line_ids = [];
         $combo_lines = [];
         $products_modified_combo = [];
         foreach ($cloths as $cloth) {
@@ -625,24 +626,9 @@ class TransactionUtil extends Util
                     $delivered = $uf_quantity * $multiplier;
                 }
 
-                $tailorMasterId = isset($cloth['tailoring_master'])
-                    ? (!empty($cloth['tailoring_master']) ? $cloth['tailoring_master'] : null)
-                    : ($transaction->tailoring_master_id ?? null);
+                $tailorMasterId = isset($cloth['tailoring_master']) ? $cloth['tailoring_master'] : null;
 
-                if ($tailorMasterId) {
-
-                    $clothWages = Cloth::where(
-                        'id',
-                        $cloth['cloth_id']
-                    )->value('wages') ?? 0;
-
-                    $totalWages = $clothWages * $uf_quantity;
-
-                    $this->updateTailorMasterWages(
-                        $tailorMasterId,
-                        $totalWages
-                    );
-                }
+                \Log::info("Create Called");
 
                 $line = [
                     'cloth_id' => $cloth['cloth_id'],
@@ -667,6 +653,7 @@ class TransactionUtil extends Util
                     'delivered_quantity' => $delivered,
                     'assigned_quantity' => $uf_quantity,
                     'tailoring_master_id' => $tailorMasterId,
+                    'transaction_id' => $transaction->id,
                 ];
 
                 foreach ($extra_line_parameters as $key => $value) {
@@ -696,7 +683,28 @@ class TransactionUtil extends Util
                 //     $modifiers_array[] = $sell_line_modifiers;
                 // }
 
-                $lines_formatted[] = new TransactionSellLine($line);
+                // $lines_formatted[] = new TransactionSellLine($line);
+                $line_formatted = new TransactionSellLine($line);
+
+                $transaction->sell_lines()->save($line_formatted);
+
+                $created_sell_line_ids[] = $line_formatted->id;
+
+                if ($tailorMasterId) {
+
+                    $clothWages = Cloth::where(
+                        'id',
+                        $cloth['cloth_id']
+                    )->value('wages') ?? 0;
+
+                    $totalWages = $clothWages * $uf_quantity;
+
+                    $this->updateTailorMasterWages(
+                        $transaction->id,
+                        $tailorMasterId,
+                        $totalWages
+                    );
+                }
 
                 $sell_line_warranties[] = 0;
 
@@ -714,9 +722,11 @@ class TransactionUtil extends Util
 
         if (!empty($edit_ids)) {
 
+            $keep_ids = array_merge($edit_ids, $created_sell_line_ids);
+
             $deletedSellLines = TransactionSellLine::where('transaction_id', $transaction->id)
                 ->whereNotNull('cloth_id')
-                ->whereNotIn('id', $edit_ids)
+                ->whereNotIn('id', $keep_ids)
                 ->get();
 
             if ($deletedSellLines->isNotEmpty()) {
@@ -730,6 +740,7 @@ class TransactionUtil extends Util
                     $totalWages = $clothWages * $quantity;
 
                     $this->updateTailorMasterWages(
+                        $transaction->id,
                         $line->tailoring_master_id,
                         -$totalWages
                     );
@@ -762,9 +773,9 @@ class TransactionUtil extends Util
             }
         }
 
-        if (! empty($lines_formatted)) {
+        /* if (! empty($lines_formatted)) {
             $transaction->sell_lines()->saveMany($lines_formatted);
-        }
+        } */
 
         if ($return_deleted) {
             return $deleted_lines;
@@ -999,12 +1010,14 @@ class TransactionUtil extends Util
 
             // Remove from old tailor master
             $this->updateTailorMasterWages(
+                $transaction->id,
                 $oldTailorMasterId,
                 -$oldTotalWages
             );
 
             // Add to new tailor master
             $this->updateTailorMasterWages(
+                $transaction->id,
                 $newTailorMasterId,
                 $newTotalWages
             );
@@ -1014,6 +1027,7 @@ class TransactionUtil extends Util
             $difference = $newTotalWages - $oldTotalWages;
 
             $this->updateTailorMasterWages(
+                $transaction->id,
                 $newTailorMasterId,
                 $difference
             );
@@ -1072,13 +1086,13 @@ class TransactionUtil extends Util
         return $edit_ids;
     }
 
-    private function updateTailorMasterWages($tailorMasterId, $amount = 0)
+    private function updateTailorMasterWages($transactionId, $tailorMasterId, $amount = 0)
     {
-        if (empty($tailorMasterId)) {
+        if (empty($tailorMasterId || $transactionId)) {
             return;
         }
 
-        TailorMasterList::recalculateTailorMasterStats($tailorMasterId);
+        TailorMasterList::recalculateTailorMasterStats($transactionId, $tailorMasterId);
     }
     /**
      * Delete the products removed and increment product stock.
@@ -1680,8 +1694,8 @@ class TransactionUtil extends Util
         } elseif ($transaction_type == 'sales_order') {
             $output['invoice_heading'] = ! empty($il->common_settings['sales_order_heading']) ? $il->common_settings['sales_order_heading'] : __('lang_v1.sales_order');
             $output['invoice_no_prefix'] = $il->quotation_no_prefix;
-        }elseif($transaction_type == 'order'){
-             $output['invoice_no_prefix'] =  __('tailoring.order_no');
+        } elseif ($transaction_type == 'order') {
+            $output['invoice_no_prefix'] =  __('tailoring.order_no');
         } else {
             $output['invoice_heading'] = $il->invoice_heading;
             if ($transaction->payment_status == 'paid' && ! empty($il->invoice_heading_paid)) {
@@ -5403,6 +5417,7 @@ class TransactionUtil extends Util
             $wages = ($cloth->wages ?? 0) * $quantity;
 
             $this->updateTailorMasterWages(
+                $transaction->id,
                 $line->tailoring_master_id,
                 -$wages
             );
@@ -5452,10 +5467,10 @@ class TransactionUtil extends Util
                 ->where(function ($q) {
                     $q->where(function ($q1) {
                         $q1->whereNotNull('tailoring_master_id')
-                           ->where('tailoring_master_id', '!=', 0);
+                            ->where('tailoring_master_id', '!=', 0);
                     })->orWhere(function ($q2) {
                         $q2->whereNotNull('res_service_staff_id')
-                           ->where('res_service_staff_id', '!=', 0);
+                            ->where('res_service_staff_id', '!=', 0);
                     });
                 })
                 ->count();

@@ -610,14 +610,18 @@ class ManageUserController extends Controller
             }
         }
 
-        $all_tailor_user_ids = TailorMasterList::whereHas('user', function ($query) use ($business_id) {
+        /*  $all_tailor_user_ids = TailorMasterList::whereHas('user', function ($query) use ($business_id) {
             $query->where('business_id', $business_id);
         })->pluck('user_id')->toArray();
 
         $total_wages_paid = \App\TransactionPayment::whereIn('payment_for', $all_tailor_user_ids)
             ->where('business_id', $business_id)
             ->sum('amount');
-        $total_wages_due = max(0, $total_wages - $total_wages_paid);
+        $total_wages_due = max(0, $total_wages - $total_wages_paid); */
+
+        $total_wages_paid = $tailor_masters->sum('total_wages_paid');
+        $total_wages_due = $tailor_masters->sum('total_wages_due');
+
 
         return view('tailor_master.dashboard')
             ->with(compact(
@@ -797,6 +801,8 @@ class ManageUserController extends Controller
                             $wages += ($line->cloth->wages ?? 0) * $quantity;
                         }
 
+                        $tailorMaster = TailorMasterList::where('user_id', $tailor_id)->first();
+
                         $work_history->push((object) [
                             'id' => $order->id,
                             'transaction_date' => $order->transaction_date,
@@ -804,8 +810,20 @@ class ManageUserController extends Controller
                             'tailor_master' => $tailor_name,
                             'particulars' => implode(', ', $particulars),
                             'total_wages' => $wages,
+                            'total_wages_paid' => $tailorMaster->total_wages_paid ?? 0,
+                            'total_wages_due' => $tailorMaster->total_wages_due ?? 0,
                             'transaction' => $order,
                         ]);
+
+                        /* $work_history->push((object) [
+                            'id' => $order->id,
+                            'transaction_date' => $order->transaction_date,
+                            'invoice_no' => $order->invoice_no,
+                            'tailor_master' => $tailor_name,
+                            'particulars' => implode(', ', $particulars),
+                            'total_wages' => $wages,
+                            'transaction' => $order,
+                        ]); */
                     }
                 }
 
@@ -832,12 +850,20 @@ class ManageUserController extends Controller
                     ->editColumn('invoice_no', function ($row) {
                         return '<a data-href="' . action([\App\Http\Controllers\SellController::class, 'show'], [$row->id]) . '" href="#" data-container=".view_modal" class="btn-modal">' . $row->invoice_no . '</a>';
                     })
-                    ->addColumn('total_wages_paid', function ($row) {
+                    /* ->addColumn('total_wages_paid', function ($row) {
                         return $row->transaction->payment_lines->sum('amount');
                     })
                     ->addColumn('total_wages_due', function ($row) {
                         $total_paid = $row->transaction->payment_lines->sum('amount');
                         return max(0, $row->transaction->final_total - $total_paid);
+                    }) */
+
+                    ->addColumn('total_wages_paid', function ($row) {
+                        return $row->total_wages_paid;
+                    })
+
+                    ->addColumn('total_wages_due', function ($row) {
+                        return $row->total_wages_due;
                     })
                     ->rawColumns(['payment_status', 'invoice_no', 'order_id'])
                     ->with([
@@ -1190,13 +1216,13 @@ class ManageUserController extends Controller
             ->whereHas('sell_lines', function ($query) use ($tailor) {
                 $query->where('tailoring_master_id', $tailor->user_id);
             })
-            ->with(['location', 'sell_lines' => function($q) use ($tailor) {
+            ->with(['location', 'sell_lines' => function ($q) use ($tailor) {
                 $q->where('tailoring_master_id', $tailor->user_id);
             }, 'sell_lines.cloth']);
 
         if (!empty($start_date) && !empty($end_date)) {
             $orders->whereDate('transaction_date', '>=', $start_date)
-                   ->whereDate('transaction_date', '<=', $end_date);
+                ->whereDate('transaction_date', '<=', $end_date);
         }
         if (!empty($location_id)) {
             $orders->where('location_id', $location_id);
@@ -1204,22 +1230,22 @@ class ManageUserController extends Controller
         $orders = $orders->get();
 
         $payments = \App\TransactionPayment::where('payment_for', $tailor->user_id)
-            ->whereHas('transaction', function($q) use ($business_id, $location_id) {
+            ->whereHas('transaction', function ($q) use ($business_id, $location_id) {
                 $q->where('business_id', $business_id);
                 if (!empty($location_id)) {
                     $q->where('location_id', $location_id);
                 }
             });
-        
+
         if (!empty($start_date) && !empty($end_date)) {
             $payments->whereDate('paid_on', '>=', $start_date)
-                     ->whereDate('paid_on', '<=', $end_date);
+                ->whereDate('paid_on', '<=', $end_date);
         }
         $payments = $payments->get();
 
         $total_wages = 0;
         $total_wages_paid = $payments->sum('amount');
-        
+
         $ledger_transactions = collect();
 
         foreach ($orders as $order) {
@@ -1287,11 +1313,11 @@ class ManageUserController extends Controller
             $debit = $transaction['debit'] !== '' ? $transaction['debit'] : 0;
             $credit = $transaction['credit'] !== '' ? $transaction['credit'] : 0;
             $balance += $debit - $credit;
-            
+
             $transaction['balance'] = $balance;
             $transaction['final_total'] = $debit != 0 ? $debit : $credit;
             $transaction['total_due'] = $debit - $credit;
-            
+
             $ledger_details['ledger'][] = $transaction;
         }
 
@@ -1302,7 +1328,14 @@ class ManageUserController extends Controller
         }
 
         return view('tailor_master.ledger')->with(compact(
-            'tailor', 'ledger_transactions', 'total_wages', 'total_wages_paid', 'total_wages_due', 'start_date', 'end_date', 'format'
+            'tailor',
+            'ledger_transactions',
+            'total_wages',
+            'total_wages_paid',
+            'total_wages_due',
+            'start_date',
+            'end_date',
+            'format'
         ));
     }
 
