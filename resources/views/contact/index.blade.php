@@ -77,7 +77,7 @@
                                 'one_year' => __('lang_v1.one_year'),
                             ],
                             null,
-                            ['class' => 'form-control', 'id' => 'has_no_sell_from', 'placeholder' => __('messages.please_select')],
+                            ['class' => 'form-control select2', 'id' => 'has_no_sell_from', 'placeholder' => __('messages.please_select'), 'style' => 'width:100%'],
                         ) !!}
                     </div>
                 </div>
@@ -85,7 +85,7 @@
                 <div class="col-md-3">
                     <div class="form-group">
                         <label for="cg_filter">@lang('lang_v1.customer_group'):</label>
-                        {!! Form::select('cg_filter', $customer_groups, null, ['class' => 'form-control', 'id' => 'cg_filter']) !!}
+                        {!! Form::select('cg_filter', $customer_groups, null, ['class' => 'form-control select2', 'id' => 'cg_filter', 'style' => 'width:100%']) !!}
                     </div>
                 </div>
             @endif
@@ -106,7 +106,7 @@
                         'status_filter',
                         ['active' => __('business.is_active'), 'inactive' => __('lang_v1.inactive')],
                         null,
-                        ['class' => 'form-control', 'id' => 'status_filter', 'placeholder' => __('lang_v1.none')],
+                        ['class' => 'form-control select2', 'id' => 'status_filter', 'placeholder' => __('lang_v1.none'), 'style' => 'width:100%'],
                     ) !!}
                 </div>
             </div>

@@ -170,6 +170,14 @@
             color: #fff !important;
         }
 
+        select option:hover,
+        select option:focus,
+        select option:active,
+        select option:checked {
+            background-color: #139375 !important;
+            color: #ffffff !important;
+        }
+
         .datatable-length-dropdown .select2-results__options {
             overflow-y: auto !important;
             -ms-overflow-style: none;
