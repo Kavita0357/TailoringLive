@@ -42,23 +42,33 @@
     }
 
     .pos-delivery-date.input-group .form-control {
-        width: 125px;
+        width: 132px;
         height: 18px;
     }
 
     .location {
-        width: 40%;
+        width: auto;
+        flex: 0 0 auto;
+        margin-right: 20px;
     }
 
     .order-dates {
         display: flex;
         align-items: center;
-        gap: 12px;
+        gap: 20px;
         flex: 0 0 auto;
         white-space: nowrap;
+        margin-right: 20px;
     }
 
-    .order-dates>p {
+    .order-date-group {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex: 0 0 auto;
+    }
+
+    .order-date-group > p {
         margin: 0;
         flex: 0 0 auto;
     }
@@ -258,42 +268,46 @@
         </div>
         @if (request()->segment(1) == 'cloth-pos')
             <div class="order-dates">
-                <p class="tw-text-white"><strong>@lang('tailoring.order_date'): &nbsp;</strong></p>
-                <div class="input-group pos-delivery-date order-date-field tw-py-1.5 tw-px-2 tw-rounded-md">
-                    <span class="input-group-addon">
-                        <i class="fa fa-calendar tw-font-semibold text-white"></i>
-                    </span>
-                    @php
-                        $order_date_attr = [
-                            'class' => 'form-control text-white tw-font-semibold',
-                            'id' => 'pos_transaction_date',
-                            'required',
-                        ];
-                        if (empty($pos_settings['enable_transaction_date'])) {
-                            $order_date_attr['readonly'] = 'readonly';
-                        }
-                    @endphp
-                    {!! Form::text(
-                        'transaction_date',
-                        $default_datetime ?? @format_datetime($transaction->transaction_date ?? 'now'),
-                        $order_date_attr,
-                    ) !!}
+                <div class="order-date-group">
+                    <p class="tw-text-white"><strong>@lang('tailoring.order_date'):</strong></p>
+                    <div class="input-group pos-delivery-date order-date-field tw-py-1.5 tw-px-2 tw-rounded-md">
+                        <span class="input-group-addon">
+                            <i class="fa fa-calendar tw-font-semibold text-white"></i>
+                        </span>
+                        @php
+                            $order_date_attr = [
+                                'class' => 'form-control text-white tw-font-semibold',
+                                'id' => 'pos_transaction_date',
+                                'required',
+                            ];
+                            if (empty($pos_settings['enable_transaction_date'])) {
+                                $order_date_attr['readonly'] = 'readonly';
+                            }
+                        @endphp
+                        {!! Form::text(
+                            'transaction_date',
+                            $default_datetime ?? @format_datetime($transaction->transaction_date ?? 'now'),
+                            $order_date_attr,
+                        ) !!}
+                    </div>
                 </div>
-                <p class="tw-text-white"><strong>@lang('tailoring.delivery_date'): &nbsp;</strong></p>
-                <div class="input-group pos-delivery-date delivery-date-field tw-py-1.5 tw-px-2 tw-rounded-md">
-                    <span class="input-group-addon">
-                        <i class="fa fa-calendar tw-font-semibold text-white"></i>
-                    </span>
-                    {!! Form::text('delivery_date', $default_datetime ?? @format_datetime($transaction->delivery_date ?? 'now'), [
-                        'class' => 'form-control text-white tw-font-semibold',
-                        'id' => 'delivery_date',
-                        'required',
-                    ]) !!}
+                <div class="order-date-group">
+                    <p class="tw-text-white"><strong>@lang('tailoring.delivery_date'):</strong></p>
+                    <div class="input-group pos-delivery-date delivery-date-field tw-py-1.5 tw-px-2 tw-rounded-md">
+                        <span class="input-group-addon">
+                            <i class="fa fa-calendar tw-font-semibold text-white"></i>
+                        </span>
+                        {!! Form::text('delivery_date', $default_datetime ?? @format_datetime($transaction->delivery_date ?? 'now'), [
+                            'class' => 'form-control text-white tw-font-semibold',
+                            'id' => 'delivery_date',
+                            'required',
+                        ]) !!}
+                    </div>
                 </div>
             </div>
         @endif
         <div class="header-buttons">
-            <div class="tw-w-full md:tw-w-2/3 !tw-p-0 tw-flex tw-items-center tw-justify-between tw-gap-4 tw-flex-col md:tw-flex-row tw-hidden md:tw-flex"
+            <div class="tw-w-full md:tw-w-auto !tw-p-0 tw-flex tw-items-center tw-justify-end tw-gap-4 tw-flex-col md:tw-flex-row tw-hidden md:tw-flex"
                 id="pos_header_more_options">
 
                 <a href="{{ $go_back_url }}" title="{{ __('lang_v1.go_back') }}"

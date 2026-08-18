@@ -13,7 +13,7 @@
     .order-processing-modal .completed-input,
     .order-processing-modal .delivered-input {
         min-width: 100px;
-        max-width: 170px;
+        max-width: 140px;
         width: 100%;
     }
 
@@ -158,7 +158,7 @@
                                                             $tailor_masters,
                                                             $sell_line->tailoring_master_id,
                                                             [
-                                                                'class' => 'form-control select2 assignment-tailor-select',
+                                                                'class' => 'form-control assignment-tailor-select',
                                                                 'placeholder' => __('tailoring.select_tailoring_master'),
                                                             ],
                                                         ) !!}
@@ -177,7 +177,7 @@
                                                 style="margin-bottom: 10px; display: flex; align-items: center; gap: 5px;">
                                                 <div style="flex-grow: 1;">
                                                     {!! Form::select('cloths[' . $index . '][assignments][0][tailoring_master]', $tailor_masters, null, [
-                                                        'class' => 'form-control select2 assignment-tailor-select',
+                                                        'class' => 'form-control assignment-tailor-select',
                                                         'placeholder' => __('tailoring.select_tailoring_master'),
                                                     ]) !!}
                                                 </div>
@@ -436,11 +436,11 @@
             if (isFromCommon) {
                 if (commonValue) {
                     $innerTailoringMasters.each(function() {
-                        $(this).val(commonValue).prop('disabled', true).trigger('change.select2');
+                        $(this).val(commonValue).prop('disabled', true).trigger('change');
                     });
                 } else {
                     $innerTailoringMasters.each(function() {
-                        $(this).val('').prop('disabled', false).trigger('change.select2');
+                        $(this).val('').prop('disabled', false).trigger('change');
                     });
                 }
             } else {
@@ -454,16 +454,16 @@
 
                 if (commonValue) {
                     $innerTailoringMasters.each(function() {
-                        $(this).val(commonValue).prop('disabled', true).trigger('change.select2');
+                        $(this).val(commonValue).prop('disabled', true).trigger('change');
                     });
-                    $commonTailoringMaster.prop('disabled', false).trigger('change.select2');
+                    $commonTailoringMaster.prop('disabled', false).trigger('change');
                 } else {
                     if (hasIndividualAssignment) {
-                        $commonTailoringMaster.prop('disabled', true).trigger('change.select2');
+                        $commonTailoringMaster.prop('disabled', true).trigger('change');
                     } else {
-                        $commonTailoringMaster.prop('disabled', false).trigger('change.select2');
+                        $commonTailoringMaster.prop('disabled', false).trigger('change');
                     }
-                    $innerTailoringMasters.prop('disabled', false).trigger('change.select2');
+                    $innerTailoringMasters.prop('disabled', false).trigger('change');
                 }
             }
 
@@ -552,7 +552,7 @@
             });
         }
 
-        initSelect2($(".assignment-tailor-select"));
+        // initSelect2($(".assignment-tailor-select"));
 
         function validateAssignedQuantities() {
             $('.assigned-qty-container').each(function() {
@@ -638,7 +638,7 @@
                 $newSelect.val(commonValue);
             }
 
-            initSelect2($newSelect);
+            // initSelect2($newSelect);
             updateTailoringMasterDisabledStates(false);
             updateRemoveButtonsVisibility($tailorContainer);
             updateDeliveryFieldsState($row);
@@ -763,6 +763,7 @@
         validateAssignedQuantities();
 
         var $modal = $form.closest('.modal');
+        
         $modal.on('shown.bs.modal', function() {
             if ($commonTailoringMaster.length) {
                 updateTailoringMasterDisabledStates(false);

@@ -295,6 +295,19 @@ $(document).ready(function () {
         format: moment_date_format + ' ' + moment_time_format,
         ignoreReadonly: true,
     });
+
+    $(document).on('dp.show', function (e) {
+        $(e.target).closest('.input-group, .form-group, .box, .tw-bg-white').css({
+            'position': 'relative',
+            'z-index': '9999'
+        });
+    });
+
+    $(document).on('dp.hide', function (e) {
+        $(e.target).closest('.input-group, .form-group, .box, .tw-bg-white').css({
+            'z-index': ''
+        });
+    });
 });
 
 //Default settings for daterangePicker

@@ -2787,10 +2787,20 @@ $(document).on('click', 'a.update_contact_status', function (e) {
     });
 });
 
-$(document).on('shown.bs.modal', '.contact_modal', function (e) {
-    $('.dob-date-picker').datepicker({
-        autoclose: true,
-        endDate: 'today',
+$(document).on('shown.bs.modal', '.modal', function (e) {
+    if ($(this).hasClass('contact_modal')) {
+        $('.dob-date-picker').datepicker({
+            autoclose: true,
+            endDate: 'today',
+        });
+    }
+    $(this).find('.select2').each(function () {
+        var $this = $(this);
+        if (!$this.data('select2')) {
+            $this.select2({
+                dropdownParent: $this.closest('.modal')
+            });
+        }
     });
 });
 

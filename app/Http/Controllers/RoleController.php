@@ -40,34 +40,38 @@ class RoleController extends Controller
         if (request()->ajax()) {
             $business_id = request()->session()->get('user.business_id');
 
+            Role::firstOrCreate(
+                ['business_id' => $business_id, 'name' => 'Tailor Master#'.$business_id],
+                ['guard_name' => 'web', 'is_default' => 1]
+            );
+
             $roles = Role::where('business_id', $business_id)
                         ->select(['name', 'id', 'is_default', 'business_id']);
 
             return DataTables::of($roles)
               ->addColumn('action', function ($row) {
-    $role_name = str_replace('#'.$row->business_id, '', $row->name);
+                    $role_name = str_replace('#'.$row->business_id, '', $row->name);
 
-    if ($role_name == 'Tailor Master') {
-        return '';
-    }
-    if (! $row->is_default || $row->name == 'Cashier#'.$row->business_id) {
-        $action = '';
-        if (auth()->user()->can('roles.update')) {
-            $action .= '<a href="'.action([\App\Http\Controllers\RoleController::class, 'edit'], [$row->id]).'" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline tw-dw-btn-primary"><i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</a>';
-        }
-        if (auth()->user()->can('roles.delete')) {
-            $action .= '&nbsp
-                <button data-href="'.action([\App\Http\Controllers\RoleController::class, 'destroy'], [$row->id]).'" class="tw-dw-btn tw-dw-btn-outline tw-dw-btn-xs tw-dw-btn-error delete_role_button"><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
-        }
+                    if (! $row->is_default || in_array($row->name, ['Cashier#'.$row->business_id])) {
+                        $action = '';
+                        if (auth()->user()->can('roles.update')) {
+                            $action .= '<a href="'.action([\App\Http\Controllers\RoleController::class, 'edit'], [$row->id]).'" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline tw-dw-btn-primary"><i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</a>';
+                        }
+                        if (auth()->user()->can('roles.delete')) {
+                            $action .= '&nbsp;
+                                <button data-href="'.action([\App\Http\Controllers\RoleController::class, 'destroy'], [$row->id]).'" class="tw-dw-btn tw-dw-btn-outline tw-dw-btn-xs tw-dw-btn-error delete_role_button"><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
+                        }
 
-        return $action;
-    }
-    return '';
-})
+                        return $action;
+                    }
+                    return '';
+              })
                 ->editColumn('name', function ($row) use ($business_id) {
                     $role_name = str_replace('#'.$business_id, '', $row->name);
                     if (in_array($role_name, ['Admin', 'Cashier'])) {
                         $role_name = __('lang_v1.'.$role_name);
+                    } elseif ($role_name == 'Tailor Master') {
+                        $role_name = __('tailoring.tailor_master');
                     }
 
                     return $role_name;
@@ -247,8 +251,8 @@ class RoleController extends Controller
             if ($count == 0) {
                 $role = Role::findOrFail($id);
 
-                if (! $role->is_default || $role->name == 'Cashier#'.$business_id) {
-                    if ($role->name == 'Cashier#'.$business_id) {
+                if (! $role->is_default || in_array($role->name, ['Cashier#'.$business_id])) {
+                    if (in_array($role->name, ['Cashier#'.$business_id])) {
                         $role->is_default = 0;
                     }
 
@@ -323,7 +327,7 @@ class RoleController extends Controller
 
                 $role = Role::where('business_id', $business_id)->find($id);
 
-                if (! $role->is_default || $role->name == 'Cashier#'.$business_id) {
+                if (! $role->is_default || in_array($role->name, ['Cashier#'.$business_id])) {
                     $role->delete();
                     $output = ['success' => true,
                         'msg' => __('user.role_deleted'),

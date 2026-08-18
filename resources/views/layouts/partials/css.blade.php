@@ -71,6 +71,36 @@
 	  -webkit-transform: rotate(315deg);
 	  transform: rotate(315deg);
 	}
+
+	/* Universal Select & Select2 Theme Hover/Highlight Colors */
+	.select2-container--default .select2-results__option--highlighted,
+	.select2-container--default .select2-results__option--highlighted[aria-selected],
+	.select2-container--default .select2-results__option--highlighted[aria-selected=true],
+	.select2-container--default .select2-results__option--highlighted[aria-selected=false],
+	.select2-container--default .select2-results__option--highlighted.select2-results__option--selectable,
+	.select2-container--default .select2-results__option[aria-selected=true],
+	.select2-container--default .select2-results__option:hover,
+	.select2-results__option--highlighted,
+	.select2-results__option:hover,
+	.select2-results__option[aria-selected=true] {
+	    background-color: #139375 !important;
+	    color: #ffffff !important;
+	}
+
+	.select2-container--default .select2-results__option--highlighted[aria-selected]:hover,
+	.select2-container--default .select2-results__option--highlighted[aria-selected=false]:hover,
+	.select2-container--default .select2-results__option--highlighted[aria-selected=true]:hover {
+	    background-color: #027257 !important;
+	    color: #ffffff !important;
+	}
+
+	select option:hover,
+	select option:focus,
+	select option:active,
+	select option:checked {
+	    background-color: #139375 !important;
+	    color: #ffffff !important;
+	}
 </style>
 @if(!empty($__system_settings['additional_css']))
     {!! $__system_settings['additional_css'] !!}

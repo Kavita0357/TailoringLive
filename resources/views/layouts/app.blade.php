@@ -115,6 +115,7 @@
             color: #027257;
         }
 
+        .pos-header,
         .pos-footer,
         .main-header,
         .main-header .navbar,
@@ -122,7 +123,7 @@
             background-color: #007F61 !important;
         }
 
-        .pos-header {
+        .col-md-12.no-print.pos-header {
             background-color: #333333 !important;
         }
 
@@ -155,6 +156,7 @@
         }
 
         .select2-container--default .select2-results__option[aria-selected=true],
+        .select2-container--default .select2-results__option--highlighted,
         .select2-container--default .select2-results__option--highlighted[aria-selected],
         .select2-container--default .select2-results__option--highlighted[aria-selected=true],
         .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
@@ -164,9 +166,18 @@
 
         .select2-container--default .select2-results__option--highlighted[aria-selected]:hover,
         .select2-container--default .select2-results__option--highlighted[aria-selected=false]:hover,
-        .select2-container--default .select2-results__option:hover {
+        .select2-container--default .select2-results__option:hover,
+        .select2-results__option:hover {
             background-color: #027257 !important;
             color: #fff !important;
+        }
+
+        select option:hover,
+        select option:focus,
+        select option:active,
+        select option:checked {
+            background-color: #139375 !important;
+            color: #ffffff !important;
         }
 
         .datatable-length-dropdown .select2-results__options {
@@ -177,6 +188,29 @@
 
         .datatable-length-dropdown .select2-results__options::-webkit-scrollbar {
             display: none;
+        }
+
+        /* Select2 Search Field & Dropdown White Background */
+        .select2-dropdown,
+        .select2-search--dropdown,
+        .select2-search--dropdown .select2-search__field,
+        .select2-container--default .select2-search--dropdown .select2-search__field {
+            background-color: #ffffff !important;
+            color: #333333 !important;
+        }
+
+        .select2-search--dropdown .select2-search__field {
+            border: 1px solid #cccccc !important;
+            border-radius: 4px !important;
+        }
+
+        .select2-container--default .select2-selection--single,
+        .select2-container--default .select2-selection--multiple {
+            background-color: #ffffff !important;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            color: #333333 !important;
         }
 
         /* Select2 Focus & Open Border Colors */

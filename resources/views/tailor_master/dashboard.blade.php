@@ -312,11 +312,11 @@
                         $('#total_delivered_cloths_card').text(totals.total_delivered_cloths + ' Pcs');
                         $('#total_completed_orders_card').text(totals.total_completed_orders);
                         $('#total_orders_overdue_card').text(totals.total_orders_overdue);
-                        $('#total_wages_card').text(__currency_trans_from_en(totals.total_wages, true));
+                       /*  $('#total_wages_card').text(__currency_trans_from_en(totals.total_wages, true));
                         $('#total_wages_paid_card').text(__currency_trans_from_en(totals.total_wages_paid,
                             true));
                         $('#total_wages_due_card').text(__currency_trans_from_en(totals.total_wages_due,
-                            true));
+                            true)); */
                     }
                 });
 

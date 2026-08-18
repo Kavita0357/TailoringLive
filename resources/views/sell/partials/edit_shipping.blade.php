@@ -10,7 +10,7 @@
                     aria-hidden="true">&times;</span></button>
             <h4 class="modal-title">
                 @if ($transaction->type == 'order')
-                    @lang('tailoring.delivery_status')
+                    @lang('tailoring.delivery_status') - @lang('tailoring.order_no'): #{{ $transaction->invoice_no }}
                 @else
                     @lang('lang_v1.edit_shipping') - @if ($transaction->type == 'purchase_order')
                         {{ $transaction->ref_no }}

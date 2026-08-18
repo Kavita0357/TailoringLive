@@ -2308,7 +2308,7 @@ class SellController extends Controller
                         ->distinct()
                         ->pluck('tailoring_master_id');
                     foreach ($tailor_master_ids as $tm_id) {
-                        \App\TailorMasterList::recalculateTailorMasterStats($tm_id);
+                        \App\TailorMasterList::recalculateTailorMasterStats($id,$tm_id);
                     }
 
                     DB::commit();
@@ -2580,7 +2580,7 @@ class SellController extends Controller
                 ->pluck('tailoring_master_id');
 
             foreach ($tailor_master_ids as $tm_id) {
-                \App\TailorMasterList::recalculateTailorMasterStats($tm_id);
+                \App\TailorMasterList::recalculateTailorMasterStats($id,$tm_id);
             }
 
             DB::commit();
@@ -2897,7 +2897,7 @@ class SellController extends Controller
 
             $tailor_master_ids_to_recalc = array_filter(array_unique($tailor_master_ids_to_recalc));
             foreach ($tailor_master_ids_to_recalc as $tm_id) {
-                TailorMasterList::recalculateTailorMasterStats($tm_id);
+                TailorMasterList::recalculateTailorMasterStats($id,$tm_id);
             }
         }
 

@@ -54,10 +54,11 @@
                                 <i class="fa fa-user"></i>
                             </span>
                             {!! Form::select('type', $types, $contact->type, [
-                                'class' => 'form-control',
+                                'class' => 'form-control select2',
                                 'id' => 'contact_type',
                                 'placeholder' => __('messages.please_select'),
                                 'required',
+                                'style' => 'width: 100%;',
                             ]) !!}
                         </div>
                     </div>
@@ -70,7 +71,8 @@
                                 <i class="fa fa-users"></i>
                             </span>
                             {!! Form::select('customer_group_id', $customer_groups, $contact->customer_group_id, [
-                                'class' => 'form-control',
+                                'class' => 'form-control select2',
+                                'style' => 'width: 100%;',
                             ]) !!}
                         </div>
                     </div>
