@@ -161,6 +161,17 @@ class ClothController extends Controller
             $business_id = $request->session()->get('user.business_id');
             $created_by = $request->session()->get('user.id');
 
+            $exists = Cloth::where('business_id', $business_id)
+                ->where('serial_no', $request->serial_no)
+                ->exists();
+
+            if ($exists) {
+                return response()->json([
+                    'success' => false,
+                    'msg' => __('tailoring.duplicate_cloth_serial_no'),
+                ]);
+            }
+
             $imagePath = null;
             if ($request->hasFile('cloth_image')) {
                 $imagePath = $request->file('cloth_image')->store('cloths', 'public');
@@ -281,6 +292,20 @@ class ClothController extends Controller
             ]);
 
             $cloth = Cloth::findOrFail($id);
+            $business_id = $request->session()->get('user.business_id');
+
+            // Check if serial_no already exists for another cloth in this business
+            $exists = Cloth::where('business_id', $business_id)
+                ->where('serial_no', $request->serial_no)
+                ->where('id', '!=', $id)
+                ->exists();
+
+            if ($exists) {
+                return response()->json([
+                    'success' => false,
+                    'msg' => __('tailoring.duplicate_cloth_serial_no'),
+                ]);
+            }
 
             // ✅ Handle image upload if provided
             $imagePath = $cloth->cloth_image;
