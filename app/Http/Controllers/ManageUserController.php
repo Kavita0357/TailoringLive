@@ -1515,7 +1515,7 @@ class ManageUserController extends Controller
                     return $html;
                 })
                 ->editColumn('amount', function ($row) {
-                    return '<span class="display_currency" data-currency_symbol="true">' . $row->amount . '</span>';
+                    return '<span class="display_currency paid-amount" data-orig-value="' . $row->amount . '" data-currency_symbol="true">' . $row->amount . '</span>';
                 })
                 ->editColumn('method', function ($row) {
                     $transactionUtil = new \App\Utils\TransactionUtil();

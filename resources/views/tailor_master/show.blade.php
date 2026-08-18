@@ -326,7 +326,10 @@
                         searchable: false,
                         orderable: false
                     }
-                ]
+                ],
+                fnDrawCallback: function(oSettings) {
+                    __currency_convert_recursively($('#tailor_payments_table'));
+                }
             });
         });
     </script>
