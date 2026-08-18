@@ -723,7 +723,7 @@ class SellController extends Controller
                             $delivery_status = __('tailoring.delivered');
                             $status_color = 'bg-red';
                         } elseif ($delivered > 0) {
-                            $delivery_status = __('tailoring.partially_delivered');
+                            $delivery_status = __('tailoring.partially_delivered') . ' (' . $delivered . '/' . $total . ')';
                             $status_color = 'bg-green';
                         } elseif ($has_tailor || $row->delivery_status == 'preparing') {
                             $delivery_status = __('tailoring.preparing');
