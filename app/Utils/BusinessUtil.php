@@ -45,6 +45,13 @@ class BusinessUtil extends Util
         ]);
         $cashier_role->syncPermissions(['sell.view', 'sell.create', 'sell.update', 'sell.delete', 'access_all_locations', 'view_cash_register', 'close_cash_register']);
 
+        //Create Tailor Master role for a new business
+        Role::firstOrCreate(['name' => 'Tailor Master#'.$business_id,
+            'business_id' => $business_id,
+            'guard_name' => 'web',
+            'is_default' => 1,
+        ]);
+
         $business = Business::findOrFail($business_id);
 
         //Update reference count

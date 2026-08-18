@@ -156,6 +156,7 @@
         }
 
         .select2-container--default .select2-results__option[aria-selected=true],
+        .select2-container--default .select2-results__option--highlighted,
         .select2-container--default .select2-results__option--highlighted[aria-selected],
         .select2-container--default .select2-results__option--highlighted[aria-selected=true],
         .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
@@ -165,7 +166,8 @@
 
         .select2-container--default .select2-results__option--highlighted[aria-selected]:hover,
         .select2-container--default .select2-results__option--highlighted[aria-selected=false]:hover,
-        .select2-container--default .select2-results__option:hover {
+        .select2-container--default .select2-results__option:hover,
+        .select2-results__option:hover {
             background-color: #027257 !important;
             color: #fff !important;
         }

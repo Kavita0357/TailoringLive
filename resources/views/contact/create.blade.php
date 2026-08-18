@@ -48,8 +48,7 @@
                             <span class="input-group-addon">
                                 <i class="fa fa-users"></i>
                             </span>
-                            {!! Form::select('customer_group_id', $customer_groups, '', ['class' => 'form-control']) !!}
-                        </div>
+                        {!! Form::select('customer_group_id', $customer_groups, '', ['class' => 'form-control select2', 'style' => 'width: 100%;']) !!}
                     </div>
                 </div>
                 <div class="col-md-6 contact_type_div" style="display: none;">
@@ -60,10 +59,11 @@
                                 <i class="fa fa-user"></i>
                             </span>
                             {!! Form::select('type', $types, $type, [
-                                'class' => 'form-control',
+                                'class' => 'form-control select2',
                                 'id' => 'contact_type',
                                 'placeholder' => __('messages.please_select'),
                                 'required',
+                                'style' => 'width: 100%;',
                             ]) !!}
                         </div>
                     </div>
@@ -341,7 +341,7 @@
                                 ]) !!}
 
                                 {!! Form::select('pay_term_type', ['months' => __('lang_v1.months'), 'days' => __('lang_v1.days')], '', [
-                                    'class' => 'form-control width-60 pull-left',
+                                    'class' => 'form-control select2 width-60 pull-left',
                                     'placeholder' => __('messages.please_select'),
                                 ]) !!}
                             </div>
