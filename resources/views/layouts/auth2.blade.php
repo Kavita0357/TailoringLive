@@ -37,10 +37,10 @@
     <div class="auth-container">
         <div class="auth-sidebar">
             <div class="sidebar-logo">
-                <img src="{{ asset('img/logo-small.png')}}" alt="Logo" class="sidebar-logo-img" />
+                <img src="{{ asset('img/logo-small.png') }}" alt="Logo" class="sidebar-logo-img" />
             </div>
             <div class="sidebar-footer">
-                <h1>Tailoring</h1>
+                <h1>{{ __('tailoring.tag_line') }}</h1>
             </div>
         </div>
 
@@ -49,7 +49,7 @@
             <div class="auth-header-actions">
                 @include('layouts.partials.language_btn')
 
-                @if(Route::has('repair-status'))
+                @if (Route::has('repair-status'))
                     <a class="header-action-link"
                         href="{{ action([\Modules\Repair\Http\Controllers\CustomerRepairStatusController::class, 'index']) }}">
                         @lang('repair::lang.repair_status')
@@ -59,7 +59,7 @@
                 @if (!($request->segment(1) == 'business' && $request->segment(2) == 'register'))
                     <!-- Register Url -->
                     @if (config('constants.allow_registration'))
-                        <a href="{{ route('business.getRegister')}}@if(!empty(request()->lang)){{'?lang=' . request()->lang}}@endif"
+                        <a href="{{ route('business.getRegister') }}@if (!empty(request()->lang)) {{ '?lang=' . request()->lang }} @endif"
                             class="header-register-btn">
                             {{ __('business.register') }}
                         </a>
@@ -67,7 +67,7 @@
                 @endif
                 @if ($request->segment(1) != 'login')
                     <a class="header-action-link"
-                        href="{{ action([\App\Http\Controllers\Auth\LoginController::class, 'login'])}}@if(!empty(request()->lang)){{'?lang=' . request()->lang}}@endif">
+                        href="{{ action([\App\Http\Controllers\Auth\LoginController::class, 'login']) }}@if (!empty(request()->lang)) {{ '?lang=' . request()->lang }} @endif">
                         {{ __('business.sign_in') }}
                     </a>
                 @endif
@@ -79,8 +79,8 @@
 
             <div class="auth-help-container">
                 <button class="help-btn">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                        stroke-linecap="round" stroke-linejoin="round">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                         <polyline points="18 15 12 9 6 15"></polyline>
                     </svg>
                     Help
@@ -97,11 +97,11 @@
     @yield('javascript')
 
     <script type="text/javascript">
-        $(document).ready(function () {
+        $(document).ready(function() {
             $('.select2_register').select2();
 
             // Close language dropdown when clicking outside
-            $(document).on('click', function (e) {
+            $(document).on('click', function(e) {
                 const container = $(".lang-dropdown");
                 if (!container.is(e.target) && container.has(e.target).length === 0) {
                     container.removeAttr('open');
