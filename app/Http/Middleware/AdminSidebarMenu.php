@@ -78,15 +78,10 @@ class AdminSidebarMenu
                 'class' => 'new-order-button'
             ])->order(1);
 
-            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), [
-                'icon' => '<svg xmlns="http://www.w3.org/2000/svg" class="tw-size-5 tw-shrink-0" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-            <path d="M5 12l-2 0l9 -9l9 9l-2 0" />
-            <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
-            <path d="M10 12h4v4h-4z" />
-          </svg>',
-                'active' => request()->segment(1) == 'home'
-            ])->order(10);
+           $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), [
+    'icon' => '<i class="fa-solid fa-house"></i>',
+    'active' => request()->segment(1) == 'home'
+])->order(10);
 
             //User management dropdown
             if (auth()->user()->can('user.view') || auth()->user()->can('user.create') || auth()->user()->can('roles.view')) {
@@ -116,14 +111,7 @@ class AdminSidebarMenu
                         }
                     },
                     [
-                        'icon' => '<svg aria-hidden="true" class="tw-size-5 tw-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                    <path d="M9 7m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0"></path>
-                    <path d="M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"></path>
-                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                    <path d="M21 21v-2a4 4 0 0 0 -3 -3.85"></path>
-                  </svg>',
+                        'icon' => '<i class="fa-solid fa-user-group"></i>',
                     ]
                 )->order(20);
             }
@@ -167,14 +155,7 @@ class AdminSidebarMenu
                         );
                     },
                     [
-                        'icon' => '<svg aria-hidden="true" class="tw-size-5 tw-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                    <path d="M9 7m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0"></path>
-                    <path d="M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"></path>
-                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                    <path d="M21 21v-2a4 4 0 0 0 -3 -3.85"></path>
-                  </svg>',
+                        'icon' => '<i class="fa-solid fa-scissors"></i>',
                     ]
                 )->order(40);
             }
@@ -220,16 +201,7 @@ class AdminSidebarMenu
                         }
                     },
                     [
-                        'icon' => '<svg aria-hidden="true" class="tw-size-5 tw-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                    <path d="M20 6v12a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2z"></path>
-                    <path d="M10 16h6"></path>
-                    <path d="M13 11m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"></path>
-                    <path d="M4 8h3"></path>
-                    <path d="M4 12h3"></path>
-                    <path d="M4 16h3"></path>
-                  </svg>',
+                        'icon' => '<i class="fa-solid fa-id-badge"></i>',
                         'id' => 'tour_step4'
                     ]
                 )->order(30);
@@ -329,15 +301,7 @@ class AdminSidebarMenu
                         );
                     },
                     [
-                        'icon' => '<svg aria-hidden="true" class="tw-size-5 tw-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                    <path d="M12 3l8 4.5v9l-8 4.5l-8 -4.5v-9l8 -4.5"></path>
-                    <path d="M12 12l8 -4.5"></path>
-                    <path d="M8.2 9.8l7.6 -4.6"></path>
-                    <path d="M12 12v9"></path>
-                    <path d="M12 12l-8 -4.5"></path>
-                  </svg>',
+                        'icon' => '<i class="fa-solid fa-barcode"></i>',
                         'id' => 'tour_step5'
                     ]
                 )->order(70);
@@ -398,15 +362,7 @@ class AdminSidebarMenu
                         );
                     },
                     [
-                        'icon' => '<svg aria-hidden="true" class="tw-size-5 tw-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                        <path d="M12 3l8 4.5v9l-8 4.5l-8 -4.5v-9l8 -4.5"></path>
-                        <path d="M12 12l8 -4.5"></path>
-                        <path d="M8.2 9.8l7.6 -4.6"></path>
-                        <path d="M12 12v9"></path>
-                        <path d="M12 12l-8 -4.5"></path>
-                      </svg>',
+                        'icon' => '<i class="fa-solid fa-cart-arrow-down"></i>',
                         'id' => 'tour_step8'
                     ]
                 )->order(60);
@@ -455,13 +411,7 @@ class AdminSidebarMenu
                         }
                     },
                     [
-                        'icon' => '<svg aria-hidden="true" class="tw-size-5 tw-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                    <path d="M12 3v12"></path>
-                    <path d="M16 11l-4 4l-4 -4"></path>
-                    <path d="M3 12a9 9 0 0 0 18 0"></path>
-                  </svg>',
+                        'icon' => '<i class="fa-solid fa-store"></i>',
                         'id' => 'tour_step6'
                     ]
                 )->order(80);
@@ -586,13 +536,7 @@ class AdminSidebarMenu
                         }
                     },
                     [
-                        'icon' => '<svg aria-hidden="true" class="tw-size-5 tw-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                    <path d="M12 15v-12"></path>
-                    <path d="M16 7l-4 -4l-4 4"></path>
-                    <path d="M3 12a9 9 0 0 0 18 0"></path>
-                  </svg>',
+                        'icon' => '<i class="fa-solid fa-tag"></i>',
                         'id' => 'tour_step7'
                     ]
                 )->order(90);
@@ -637,14 +581,7 @@ class AdminSidebarMenu
                         }
                     },
                     [
-                        'icon' => '<svg aria-hidden="true" class="tw-size-5 tw-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                    <path d="M7 17m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"></path>
-                    <path d="M17 17m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"></path>
-                    <path d="M5 17h-2v-4m-1 -8h11v12m-4 0h6m4 0h2v-6h-8m0 -5h5l3 5"></path>
-                    <path d="M3 9l4 0"></path>
-                  </svg>'
+                        'icon' => '<i class="fa-solid fa-truck-moving"></i>'
                     ]
                 )->order(100);
             }
@@ -684,15 +621,7 @@ class AdminSidebarMenu
                     }
                 },
                 [
-                    'icon' => '<svg aria-hidden="true" class="tw-size-5 tw-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                    <path d="M12 3l8 4.5v9l-8 4.5l-8 -4.5v-9l8 -4.5"></path>
-                    <path d="M12 12l8 -4.5"></path>
-                    <path d="M8.2 9.8l7.6 -4.6"></path>
-                    <path d="M12 12v9"></path>
-                    <path d="M12 12l-8 -4.5"></path>
-                  </svg>',
+                    'icon' => '<i class="fa-solid fa-message"></i>',
                     'id' => 'tour_step5'
                 ]
             )->order(120);
@@ -727,13 +656,7 @@ class AdminSidebarMenu
                         }
                     },
                     [
-                        'icon' => ' <svg aria-hidden="true" class="tw-size-5 tw-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                    <path d="M5 21v-16a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v16l-3 -2l-2 2l-2 -2l-2 2l-2 -2l-3 2"></path>
-                    <path d="M14.8 8a2 2 0 0 0 -1.8 -1h-2a2 2 0 1 0 0 4h2a2 2 0 1 1 0 4h-2a2 2 0 0 1 -1.8 -1"></path>
-                    <path d="M12 6v10"></path>
-                  </svg>'
+                        'icon' => '<i class="fa-solid fa-receipt"></i>'
                     ]
                 )->order(110);
             }
@@ -974,17 +897,7 @@ class AdminSidebarMenu
                         }
                     },
                     [
-                        'icon' => '<svg aria-hidden="true" class="tw-size-5 tw-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                    <path d="M8 5h-2a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h5.697"></path>
-                    <path d="M18 14v4h4"></path>
-                    <path d="M18 11v-4a2 2 0 0 0 -2 -2h-2"></path>
-                    <path d="M8 3m0 2a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v0a2 2 0 0 1 -2 2h-2a2 2 0 0 1 -2 -2z"></path>
-                    <path d="M18 18m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0"></path>
-                    <path d="M8 11h4"></path>
-                    <path d="M8 15h3"></path>
-                  </svg>',
+                        'icon' => '<i class="fa-solid fa-chart-pie"></i>',
                         'id' => 'tour_step8'
                     ]
                 )->order(140);
@@ -1125,12 +1038,7 @@ class AdminSidebarMenu
                         }
                     },
                     [
-                        'icon' => '<svg aria-hidden="true" class="tw-size-5 tw-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                    <path d="M10.325 4.317c.426 -1.756 2.924 -1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543 -.94 3.31 .826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756 .426 1.756 2.924 0 3.35a1.724 1.724 0 0 0 -1.066 2.573c.94 1.543 -.826 3.31 -2.37 2.37a1.724 1.724 0 0 0 -2.572 1.065c-.426 1.756 -2.924 1.756 -3.35 0a1.724 1.724 0 0 0 -2.573 -1.066c-1.543 .94 -3.31 -.826 -2.37 -2.37a1.724 1.724 0 0 0 -1.065 -2.572c-1.756 -.426 -1.756 -2.924 0 -3.35a1.724 1.724 0 0 0 1.066 -2.573c-.94 -1.543 .826 -3.31 2.37 -2.37c1 .608 2.296 .07 2.572 -1.065z"></path>
-                    <path d="M9 12a3 3 0 1 0 6 0a3 3 0 0 0 -6 0"></path>
-                  </svg>',
+                        'icon' => '<i class="fa-solid fa-sliders"></i>',
                         'id' => 'tour_step3'
                     ]
                 )->order(150);

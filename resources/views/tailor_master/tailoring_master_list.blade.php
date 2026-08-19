@@ -39,7 +39,7 @@
                                 <th>@lang('tailoring.name')</th>
                                 <th>@lang('tailoring.mobile')</th>
                                 <th>@lang('tailoring.added_on')</th>
-                                <th>@lang('tailoring.total_completed_orders')</th>
+                                <th>@lang('tailoring.total_completed_cloths')</th>
                                 <th>@lang('tailoring.total_wages')</th>
                                 <th>@lang('tailoring.total_wages_paid')</th>
                                 <th>@lang('tailoring.total_wages_due')</th>

@@ -100,6 +100,109 @@
             height: 62px;
         }
 
+        /* Sidebar Header Theme Green (#007F61) Matching */
+        #side-bar {
+            background-color: #ffffff;
+        }
+
+        #side-bar a:not(.new-order-button):not(.sidebar-active):not(.sidebar-child-active) {
+            color: #374151;
+            transition: all 0.2s ease-in-out;
+        }
+
+        #side-bar a:not(.new-order-button):not(.sidebar-active):not(.sidebar-child-active) i,
+        #side-bar a:not(.new-order-button):not(.sidebar-active):not(.sidebar-child-active) svg {
+            color: #4b5563;
+            transition: all 0.2s ease-in-out;
+        }
+
+        /* Hover State for Sidebar Links */
+        #side-bar a:not(.new-order-button):not(.sidebar-active):hover {
+            background-color: #e6f4f1 !important;
+            color: #007F61 !important;
+        }
+
+        #side-bar a:not(.new-order-button):not(.sidebar-active):hover i,
+        #side-bar a:not(.new-order-button):not(.sidebar-active):hover svg {
+            color: #007F61 !important;
+        }
+
+        /* Active State for Main Menu Items (e.g. Home) */
+        #side-bar a.sidebar-active {
+            background-color: #007F61 !important;
+            color: #ffffff !important;
+        }
+
+        #side-bar a.sidebar-active,
+        #side-bar a.sidebar-active *,
+        #side-bar a.sidebar-active i,
+        #side-bar a.sidebar-active svg,
+        #side-bar a.sidebar-active span {
+            color: #ffffff !important;
+        }
+
+        #side-bar a.sidebar-active:hover {
+            background-color: #007F61 !important;
+            color: #ffffff !important;
+        }
+
+        /* Dropdown Header when Child item is active */
+        #side-bar a.sidebar-child-active {
+            background-color: #e6f4f1 !important;
+            color: #007F61 !important;
+            font-weight: 600;
+        }
+
+        #side-bar a.sidebar-child-active i,
+        #side-bar a.sidebar-child-active svg,
+        #side-bar a.sidebar-child-active span {
+            color: #007F61 !important;
+        }
+
+        /* Submenu Vertical Tree Indicator Line */
+        .sidebar-tree-line {
+            position: absolute;
+            top: 4px;
+            bottom: 4px;
+            left: 20px;
+            width: 2px;
+            background-color: #007F61 !important;
+            opacity: 0.4 !important;
+            border-radius: 2px;
+        }
+
+        /* Submenu Child Links (e.g. Users, Roles) */
+        #side-bar .chiled a {
+            color: #4b5563;
+            padding: 6px 12px;
+            border-radius: 6px;
+            transition: all 0.2s ease-in-out;
+        }
+
+        #side-bar .chiled a:hover:not(.sidebar-sub-active) {
+            background-color: #e6f4f1 !important;
+            color: #007F61 !important;
+        }
+
+        #side-bar .chiled a.sidebar-sub-active {
+            background-color: #007F61 !important;
+            color: #ffffff !important;
+            font-weight: 600;
+        }
+
+        #side-bar .chiled a.sidebar-sub-active,
+        #side-bar .chiled a.sidebar-sub-active *,
+        #side-bar .chiled a.sidebar-sub-active i,
+        #side-bar .chiled a.sidebar-sub-active svg,
+        #side-bar .chiled a.sidebar-sub-active span {
+            color: #ffffff !important;
+        }
+
+        #side-bar .chiled a.sidebar-sub-active:hover {
+            background-color: #007F61 !important;
+            color: #ffffff !important;
+        }
+
         .nav-tabs-custom>.nav-tabs>li.active {
             border-top-color: #139375;
         }
