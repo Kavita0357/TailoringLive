@@ -275,22 +275,22 @@
         visible: false
     },
     {
-        data: 'sell_custom_field_1',
+        data: 'custom_field_1',
         name: 'transactions.custom_field_1',
         visible: false
     },
     {
-        data: 'sell_custom_field_2',
+        data: 'custom_field_2',
         name: 'transactions.custom_field_2',
         visible: false
     },
     {
-        data: 'sell_custom_field_3',
+        data: 'custom_field_3',
         name: 'transactions.custom_field_3',
         visible: false
     },
     {
-        data: 'sell_custom_field_4',
+        data: 'custom_field_4',
         name: 'transactions.custom_field_4',
         visible: false
     },
