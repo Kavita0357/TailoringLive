@@ -483,10 +483,8 @@
             });
 
             $('a[href="#order_list_tab"]').on('shown.bs.tab', function(e) {
-                if(cloth_table){
-                    cloth_table.ajax.reload();
-                    cloth_table.columns.adjust().draw();
-                }
+                cloth_table.ajax.reload();
+                cloth_table.columns.adjust().draw();
             });
 
             //Date picker
