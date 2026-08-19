@@ -594,7 +594,7 @@ class ManageUserController extends Controller
             }
 
             if ($has_assigned_cloth) {
-                $total_wages += $order_wages;
+                // $total_wages += $order_wages;
 
                 // Fully completed order invoice
                 if ($all_cloths_completed || in_array($order->delivery_status, ['ready_to_deliver', 'delivered'])) {
@@ -621,6 +621,7 @@ class ManageUserController extends Controller
 
         $total_wages_paid = $tailor_masters->sum('total_wages_paid');
         $total_wages_due = $tailor_masters->sum('total_wages_due');
+        $total_wages = $tailor_masters->sum('total_wages');
 
 
         return view('tailor_master.dashboard')
@@ -756,8 +757,6 @@ class ManageUserController extends Controller
                         });
                 });
 
-
-
                 $tailor_masters = $tailor_masters_query->get();
 
                 if (!empty($tailoring_master_id)) {
@@ -780,6 +779,7 @@ class ManageUserController extends Controller
                     foreach ($lines_by_tailor as $tailor_id => $lines) {
                         $first_line = $lines->first();
                         $tailor_name = optional($first_line->tailor_master)->name;
+                        $user = User::find($tailor_id);
 
                         if (empty($tailor_name)) {
                             $tailor = TailorMasterList::where('user_id', $tailor_id)->first();
@@ -787,7 +787,6 @@ class ManageUserController extends Controller
                         }
 
                         if (empty($tailor_name)) {
-                            $user = User::find($tailor_id);
                             $tailor_name = $user
                                 ? trim($user->surname . ' ' . $user->first_name . ' ' . $user->last_name)
                                 : '';
@@ -798,10 +797,8 @@ class ManageUserController extends Controller
                         foreach ($lines as $line) {
                             $quantity = !empty($line->assigned_quantity) ? $line->assigned_quantity : $line->quantity;
                             $particulars[] = $line->cloth->cloth_name . ' ' . (int) $quantity . 'pc(s)';
-                            $wages += ($line->cloth->wages ?? 0) * $quantity;
+                            $wages += ($line->cloth->wages ?? 0) * $line->completed_quantity;
                         }
-
-                        $tailorMaster = TailorMasterList::where('user_id', $tailor_id)->first();
 
                         $work_history->push((object) [
                             'id' => $order->id,
@@ -810,20 +807,9 @@ class ManageUserController extends Controller
                             'tailor_master' => $tailor_name,
                             'particulars' => implode(', ', $particulars),
                             'total_wages' => $wages,
-                            'total_wages_paid' => $tailorMaster->total_wages_paid ?? 0,
-                            'total_wages_due' => $tailorMaster->total_wages_due ?? 0,
                             'transaction' => $order,
+                            'user_id' => $user->id
                         ]);
-
-                        /* $work_history->push((object) [
-                            'id' => $order->id,
-                            'transaction_date' => $order->transaction_date,
-                            'invoice_no' => $order->invoice_no,
-                            'tailor_master' => $tailor_name,
-                            'particulars' => implode(', ', $particulars),
-                            'total_wages' => $wages,
-                            'transaction' => $order,
-                        ]); */
                     }
                 }
 
@@ -844,27 +830,41 @@ class ManageUserController extends Controller
                         return $row->tailor_master;
                     })
                     ->editColumn('payment_status', function ($row) {
-                        $payment_status = Transaction::getPaymentStatus($row->transaction);
+                        if ($row->total_wages == 0) {
+                            return '-';
+                        }
+                        $total_wages_paid = \App\TransactionPayment::where('payment_for', $row->user_id)
+                            ->where('transaction_id', $row->transaction->id)
+                            ->sum('amount');
+                        $total_wages_due = max(0, $row->total_wages - $total_wages_paid);
+                        $payment_status = $total_wages_due == $row->total_wages ? 'due' : 'partial';
+                        $payment_status = $total_wages_due == 0 ? 'paid' : $payment_status;
                         return (string) view('sell.partials.payment_status', ['payment_status' => $payment_status, 'id' => $row->id]);
                     })
                     ->editColumn('invoice_no', function ($row) {
                         return '<a data-href="' . action([\App\Http\Controllers\SellController::class, 'show'], [$row->id]) . '" href="#" data-container=".view_modal" class="btn-modal">' . $row->invoice_no . '</a>';
                     })
-                    /* ->addColumn('total_wages_paid', function ($row) {
-                        return $row->transaction->payment_lines->sum('amount');
+                    ->addColumn('total_wages_paid', function ($row) {
+                        $total_wages_paid = \App\TransactionPayment::where('payment_for', $row->user_id)
+                            ->where('transaction_id', $row->transaction->id)
+                            ->sum('amount');
+                        return $total_wages_paid;
                     })
                     ->addColumn('total_wages_due', function ($row) {
-                        $total_paid = $row->transaction->payment_lines->sum('amount');
-                        return max(0, $row->transaction->final_total - $total_paid);
-                    }) */
+                        $total_wages_paid = \App\TransactionPayment::where('payment_for', $row->user_id)
+                            ->where('transaction_id', $row->transaction->id)
+                            ->sum('amount');
+                        $total_wages_due = max(0, $row->total_wages - $total_wages_paid);
+                        return $total_wages_due;
+                    })
 
-                    ->addColumn('total_wages_paid', function ($row) {
+                    /* ->addColumn('total_wages_paid', function ($row) {
                         return $row->total_wages_paid;
                     })
 
                     ->addColumn('total_wages_due', function ($row) {
                         return $row->total_wages_due;
-                    })
+                    }) */
                     ->rawColumns(['payment_status', 'invoice_no', 'order_id'])
                     ->with([
                         'totals' => [
@@ -1229,7 +1229,7 @@ class ManageUserController extends Controller
         }
         $orders = $orders->get();
 
-        $payments = \App\TransactionPayment::where('payment_for', $tailor->user_id)
+        /* $payments = \App\TransactionPayment::where('payment_for', $tailor->user_id)
             ->whereHas('transaction', function ($q) use ($business_id, $location_id) {
                 $q->where('business_id', $business_id);
                 if (!empty($location_id)) {
@@ -1241,9 +1241,18 @@ class ManageUserController extends Controller
             $payments->whereDate('paid_on', '>=', $start_date)
                 ->whereDate('paid_on', '<=', $end_date);
         }
+        $payments = $payments->get(); */
+
+        $payments = \App\TransactionPayment::where('payment_for', $tailor->user_id);
+
+        if (!empty($start_date) && !empty($end_date)) {
+            $payments->whereDate('paid_on', '>=', $start_date)
+                ->whereDate('paid_on', '<=', $end_date);
+        }
+
         $payments = $payments->get();
 
-        $total_wages = 0;
+        $total_wages = $tailor->total_wages ?? 0;
         $total_wages_paid = $payments->sum('amount');
 
         $ledger_transactions = collect();
@@ -1252,12 +1261,12 @@ class ManageUserController extends Controller
             $order_wages = 0;
             foreach ($order->sell_lines as $line) {
                 if ($line->tailoring_master_id != $tailor->user_id) continue;
-                $quantity = !empty($line->assigned_quantity) ? $line->assigned_quantity : $line->quantity;
+                $quantity = !empty($line->completed_quantity) ? $line->completed_quantity : 0;
                 $order_wages += ($line->cloth->wages ?? 0) * $quantity;
             }
-            $total_wages += $order_wages;
+            // $total_wages += $order_wages;
 
-            $ledger_transactions->push([
+            /* $ledger_transactions->push([
                 'date' => $order->transaction_date,
                 'ref_no' => $order->invoice_no,
                 'type' => 'Invoice',
@@ -1267,9 +1276,9 @@ class ManageUserController extends Controller
                 'credit' => '',
                 'payment_method' => '',
                 'others' => '',
-                'transaction_type' => 'sell',
+                'transaction_type' => 'order',
                 'due_date' => null
-            ]);
+            ]); */
         }
 
         foreach ($payments as $payment) {

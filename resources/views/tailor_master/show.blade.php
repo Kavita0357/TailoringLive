@@ -164,9 +164,7 @@
                             </div>
                         </div>
 
-                        <div class="tab-pane" id="activities_tab">
-                            <!-- Activities content will go here -->
-                        </div>
+                        {{-- <div class="tab-pane" id="activities_tab"></div> --}}
                     </div>
                 </div>
             </div>

@@ -30,7 +30,7 @@ class TailorMasterList extends Model
         $sell_lines = DB::table('transaction_sell_lines as tsl')
             ->leftJoin('cloths as c', 'tsl.cloth_id', '=', 'c.id')
             ->where('tsl.tailoring_master_id', $tailorMasterUserId)
-            ->where('tsl.transaction_id', $transactionId)
+            // ->where('tsl.transaction_id', $transactionId)
             ->select([
                 'tsl.id',
                 'tsl.transaction_id',
@@ -45,7 +45,6 @@ class TailorMasterList extends Model
 
         $total_completed = 0;
         $total_wages = 0;
-        $total_wages_paid = 0;
 
         $total_completed_orders = 0;
 
@@ -59,15 +58,12 @@ class TailorMasterList extends Model
 
             $wages = (float) ($line->wages ?? 0);
 
-            $total_wages += ($quantity * $wages);
-
             $total_completed += $completed;
 
             if ($completed > 0) {
-                $total_wages_paid += ($completed * $wages);
+                $total_wages += ($completed * $wages);
             }
 
-            // Assigned qty == completed qty
             if ($quantity > 0 && $completed == $quantity) {
                 $total_completed_orders = 1;
             }
@@ -78,11 +74,10 @@ class TailorMasterList extends Model
 
         $tailorMaster->total_completed_orders = $total_completed_orders;
         $tailorMaster->total_wages = $total_wages;
-        $tailorMaster->total_wages_paid = $total_wages_paid;
 
         $tailorMaster->total_wages_due = max(
             0,
-            $total_wages - $total_wages_paid
+            $total_wages - $tailorMaster->total_wages_paid
         );
 
         $tailorMaster->save();

@@ -130,7 +130,7 @@ class AdminSidebarMenu
                         }
                         $sub->url(
                             action([\App\Http\Controllers\ClothController::class, 'index']),
-                            'Clothes',
+                            __('tailoring.cloths'),
                             ['icon' => '', 'active' => request()->segment(1) == 'cloths']
                         );
                         $sub->url(
