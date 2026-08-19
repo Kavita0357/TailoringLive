@@ -112,7 +112,7 @@
                     <tbody></tbody>
                     <tfoot>
                         <tr class="bg-gray font-17 footer-total text-center">
-                            <td colspan="4"></td>
+                            <td colspan="5"></td>
                             <td>
                                 <strong>@lang('sale.total'):</strong>
                             </td>
@@ -123,7 +123,7 @@
                             <td class="footer_total_paid"></td>
                             <td class="footer_total_remaining"></td>
                             <td class="footer_total_sell_return_due"></td>
-                            <td colspan="2"></td>
+                            <td colspan="1"></td>
                             <td class="service_type_count"></td>
                             <td colspan="10"></td>
                         </tr>
