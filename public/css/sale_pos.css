@@ -637,9 +637,13 @@
 
 #cloth-pos-workspace .cloth-pos-sidebar #cloth-list-btn:checked + .tw-dw-drawer-content label,
 #cloth-pos-workspace .cloth-pos-sidebar #product-list-btn:checked + .tw-dw-drawer-content label {
-    background: #f20d43 !important;
-    border-color: #f20d43;
+    background: #007F61 !important;
+    border-color: #007F61 !important;
     color: #fff !important;
+}
+
+.add_new_customer{
+    color:#007F61 !important;
 }
 
 #cloth-pos-workspace .cloth-pos-sidebar #cloth_list_body,

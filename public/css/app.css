@@ -1146,17 +1146,20 @@ table.table-text-center th {
 
 .daterangepicker .ranges li.active {
   background: #139375 !important;
+  border-radius: 6px !important;
 }
 
 .daterangepicker .ranges li:hover {
   background: #027257 !important;
   color: #ffffff !important;
+  border-radius: 6px !important;
 }
 
 .form-control option:hover {
   background-color: #139375 !important;
   color: #fff !important;
 }
+
 @media only screen and (max-width: 600px) {
   .pos-form-actions {
     position: absolute;
@@ -1243,4 +1246,50 @@ table.table-text-center th {
 div:has(> .bootstrap-datetimepicker-widget) {
   position: relative !important;
   z-index: 9999 !important;
-}
+}
+
+/* .span.select2-selection.select2-selection--single{
+  border-radius: 8px;
+} */
+
+
+.select2-container--open .select2-dropdown--above {
+  border-radius: 6px !important;
+}
+
+.select2-container--open .select2-dropdown--below {
+  border-radius: 6px !important;
+  margin-top: 6px !important;
+}
+
+li.select2-results__option {
+  border-radius: 6px !important;
+}
+
+.daterangepicker.ltr.show-ranges.opensright {
+  border-radius: 6px !important;
+}
+
+span.select2-search.select2-search--dropdown {
+  border-radius: 6px !important;
+}
+
+span.select2-results{
+  padding:2px !important;
+}
+
+li#select2-tailoring_status-result-mdic-order{
+  margin:12px !important;
+}
+
+.ranges ul{
+  padding:2px !important;
+}
+
+.ranges ul li{
+  margin:2px !important;
+}
+
+input#sell_list_filter_date_range{
+border-radius:6px !important;
+}

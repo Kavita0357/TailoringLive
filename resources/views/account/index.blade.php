@@ -27,7 +27,7 @@
             </div>
         @endif
         @can('account.access')
-            <div class="row">
+            <div class="row" style="padding:15px;">
                 @component('components.widget')
                     <div class="col-sm-12">
                         <div class="nav-tabs-custom">

@@ -68,13 +68,13 @@ class AdminSidebarMenu
             //     <path d="M10 12h4v4h-4z"></path>
             //   </svg>', 'active' => request()->segment(1) == 'home'])->order(5);
 
-            $menu->url(route('pos.create'), __('tailoring.new_order'), [
+            $menu->url(route('cloth_pos.create'), __('tailoring.new_order'), [
                 'icon' => '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-plus">
                             <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
                             <path d="M12 5l0 14"></path>
                             <path d="M5 12l14 0"></path>
                         </svg>',
-                'active' => request()->segment(1) == 'pos' && request()->segment(2) == 'create',
+                'active' => request()->segment(1) == 'cloth-pos' && request()->segment(2) == 'create',
                 'class' => 'new-order-button'
             ])->order(1);
 

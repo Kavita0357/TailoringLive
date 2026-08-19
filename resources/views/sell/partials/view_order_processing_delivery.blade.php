@@ -727,7 +727,7 @@
 
                 if (missingTailor) {
                     $('#order_processing_error').text(
-                        `Please select a TailorMaster for "${cloth_name}".`).show();
+                        `Please select a Tailormaster for "${cloth_name}".`).show();
                     isValid = false;
                     return false;
                 }

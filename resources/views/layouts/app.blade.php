@@ -265,6 +265,7 @@
         .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
             background-color: #139375 !important;
             color: #fff !important;
+            margin:2px !important;
         }
 
         .select2-container--default .select2-results__option--highlighted[aria-selected]:hover,
@@ -315,6 +316,12 @@
         .select2-container--default .select2-selection--single .select2-selection__rendered {
             color: #333333 !important;
         }
+
+        div.dataTables_wrapper div.dataTables_filter input {
+            border-radius: 6px !important;
+        }
+
+  
 
         /* Select2 Focus & Open Border Colors */
         .select2-container--default.select2-container--open,

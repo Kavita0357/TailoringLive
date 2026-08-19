@@ -102,6 +102,102 @@
 	    background-color: #139375 !important;
 	    color: #ffffff !important;
 	}
+
+	/* Uniform Select, Select2 & Filter Dropdown Styles (Page Load & Post-Load Consistency) */
+	select.form-control,
+	select.select2,
+	select {
+	    -webkit-appearance: none !important;
+	    -moz-appearance: none !important;
+	    appearance: none !important;
+	    border-radius: 8px !important;
+	    background-color: #ffffff !important;
+	    border: 1px solid #e5e7eb !important;
+	    height: 38px !important;
+	    padding: 6px 36px 6px 12px !important;
+	    font-size: 14px !important;
+	    color: #111827 !important;
+	    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23374151' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6l6 -6'/%3E%3C/svg%3E") !important;
+	    background-repeat: no-repeat !important;
+	    background-position: right 12px center !important;
+	    background-size: 16px 16px !important;
+	    outline: none !important;
+	    box-shadow: none !important;
+	    transition: all 0.2s ease-in-out !important;
+	}
+
+	select.form-control:focus,
+	select.select2:focus,
+	select:focus {
+	    border-color: #139375 !important;
+	    box-shadow: 0 0 0 2px rgba(19, 147, 117, 0.2) !important;
+	}
+
+	.select2-container--default .select2-selection--single {
+	    border-radius: 6px !important;
+	    background-color: #ffffff !important;
+	    border: 1px solid #e5e7eb !important;
+	    height: 38px !important;
+	    outline: none !important;
+	    box-shadow: none !important;
+	    transition: all 0.2s ease-in-out !important;
+	}
+
+	.select2-container--default.select2-container--open .select2-selection--single,
+	.select2-container--default.select2-container--focus .select2-selection--single {
+	    border-color: #139375 !important;
+	    box-shadow: 0 0 0 2px rgba(19, 147, 117, 0.2) !important;
+	}
+
+	.select2-container--default .select2-selection--single .select2-selection__rendered {
+	    line-height: 34px !important;
+	    padding-right: 36px !important;
+	    color: #111827 !important;
+	    font-size: 14px !important;
+	}
+
+	.select2-container--default .select2-selection--single .select2-selection__arrow {
+	    height: 36px !important;
+	    width: 16px !important;
+	    position: absolute !important;
+	    top: 1px !important;
+	    right: 12px !important;
+	    display: flex !important;
+	    align-items: center !important;
+	    justify-content: center !important;
+	}
+
+	.select2-container--default .select2-selection--single .select2-selection__arrow b {
+	    border: none !important;
+	    width: 16px !important;
+	    height: 16px !important;
+	    margin: 0 !important;
+	    top: auto !important;
+	    left: auto !important;
+	    position: static !important;
+	    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23374151' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6l6 -6'/%3E%3C/svg%3E") !important;
+	    background-repeat: no-repeat !important;
+	    background-position: center !important;
+	    background-size: 16px 16px !important;
+	}
+
+	.filter-box {
+	    display: inline-block;
+	    min-width: 160px;
+	}
+
+	.filter-box select,
+	.filter-box .select2-container {
+	    width: 100% !important;
+	}
+
+	#dashboard_date_filter {
+	    border-radius: 6px !important;
+	    height: 38px !important;
+	    border: 1px solid #e5e7eb !important;
+	    padding-left: 12px !important;
+	    padding-right: 12px !important;
+	}
 </style>
 @if(!empty($__system_settings['additional_css']))
     {!! $__system_settings['additional_css'] !!}

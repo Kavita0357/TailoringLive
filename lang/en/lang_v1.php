@@ -337,7 +337,7 @@ return [
     'backup_doesnt_exist' => "Backup Doesn't exist",
     'lot_report' => 'Lot Report',
     'purchase_payment_report' => 'Purchase Payment Report',
-    'tailor_master_payment_report' => 'TailorMaster Payment Report',
+    'tailor_master_payment_report' => 'Tailormaster Payment Report',
     'paid_on' => 'Paid on',
     'purchase' => 'Purchase',
     'cheque_no' => 'Cheque No.',
