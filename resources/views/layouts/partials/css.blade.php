@@ -1,6 +1,7 @@
 <link href="{{ asset('css/tailwind/app.css?v='.$asset_v) }}" rel="stylesheet">
 
 <link rel="stylesheet" href="{{ asset('css/vendor.css?v='.$asset_v) }}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
 @if( in_array(session()->get('user.language', config('app.locale')), config('constants.langs_rtl')) )
 	<link rel="stylesheet" href="{{ asset('css/rtl.css?v='.$asset_v) }}">
