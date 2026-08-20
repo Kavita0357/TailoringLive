@@ -498,7 +498,7 @@ class SellController extends Controller
                                 }
                             } elseif ($row->type == 'sales_order') {
                                 if (auth()->user()->can('so.update')) {
-                                    $html .= '<li><a target="_blank" href="' . action([\App\Http\Controllers\SellController::class, 'edit'], [$row->id]) . '"><i class="fas fa-edit"></i> ' . __('messages.edit') . '</a></li>';
+                                    $html .= '<li><a target="_blank" href="' . route($sale_type == 'order' ? 'cloth_orders.edit' : 'sells.edit', [$row->id]) . '"><i class="fas fa-edit"></i> ' . __('messages.edit') . '</a></li>';
                                 }
                             } else {
                                 if (auth()->user()->can('direct_sell.update')) {
