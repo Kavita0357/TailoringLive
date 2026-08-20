@@ -88,8 +88,7 @@
                             <th>@lang('lang_v1.total_items')</th>
                             <th>@lang('sale.payment_status')</th>
                             <th>@lang('lang_v1.payment_method')</th>
-                            <th>@lang('tailoring.making_charge')</th>
-                            <!-- <th>@lang('sale.total_amount')</th> -->
+                            <th>@lang($sale_type == 'order' ? 'tailoring.making_charge' : 'sale.total_amount')</th>
                             <th>@lang('sale.total_paid')</th>
                             <th>@lang($sale_type == 'order' ? 'tailoring.order_due' : 'lang_v1.sell_due')</th>
                             <th>@lang('lang_v1.sell_return_due')</th>
@@ -270,6 +269,9 @@
                     {
                         data: 'work_status',
                         name: 'work_status',
+                        @if ($sale_type != 'order')
+                            visible: false,
+                        @endif
                     },
                     {
                         data: 'delivery_status',
@@ -281,7 +283,10 @@
                     {
                         data: 'total_items',
                         name: 'total_items',
-                        "searchable": false
+                        "searchable": false,
+                        @if ($sale_type != 'order')
+                            visible: false,
+                        @endif
                     },
                     {
                         data: 'payment_status',
