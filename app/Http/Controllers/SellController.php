@@ -489,7 +489,7 @@ class SellController extends Controller
                                     <ul class="dropdown-menu dropdown-menu-left" role="menu">';
 
                         if (auth()->user()->can('sell.view') || auth()->user()->can('direct_sell.view') || auth()->user()->can('view_own_sell_only')) {
-                            $html .= '<li><a href="#" data-href="' . route($sale_type == 'order' ? 'cloth_orders.edit' : 'sells.edit', [$row->id]) . '" class="btn-modal" data-container=".view_modal"><i class="fas fa-eye" aria-hidden="true"></i> ' . __('messages.view') . '</a></li>';
+                            $html .= '<li><a href="#" data-href="' . action([\App\Http\Controllers\SellController::class, 'show'], [$row->id]) . '" class="btn-modal" data-container=".view_modal"><i class="fas fa-eye" aria-hidden="true"></i> ' . __('messages.view') . '</a></li>';
                         }
                         if (! $only_shipments) {
                             if ($row->is_direct_sale == 0) {

@@ -800,6 +800,8 @@ class ManageUserController extends Controller
                             $wages += ($line->cloth->wages ?? 0) * $line->completed_quantity;
                         }
 
+                        $user_id = $user ? $user->id : $tailor_id;
+
                         $work_history->push((object) [
                             'id' => $order->id,
                             'transaction_date' => $order->transaction_date,
@@ -808,14 +810,14 @@ class ManageUserController extends Controller
                             'particulars' => implode(', ', $particulars),
                             'total_wages' => $wages,
                             'transaction' => $order,
-                            'user_id' => $user->id
+                            'user_id' => $user_id
                         ]);
                     }
                 }
 
                 return DataTables::of($work_history)
                     ->editColumn('added_on', function ($row) {
-                        return \Carbon::parse($row->transaction_date)->format(session('business.date_format') . ' H:i');
+                        return !empty($row->transaction_date) ? \Carbon\Carbon::parse($row->transaction_date)->format(session('business.date_format') . ' H:i') : '';
                     })
                     ->addColumn('order_id', function ($row) {
                         return '<a href="#" class="btn-modal" data-container=".view_modal" data-href="' . action([\App\Http\Controllers\SellController::class, 'show'], [$row->id]) . '">' . $row->invoice_no . '</a>';
@@ -833,9 +835,11 @@ class ManageUserController extends Controller
                         if ($row->total_wages == 0) {
                             return '-';
                         }
-                        $total_wages_paid = \App\TransactionPayment::where('payment_for', $row->user_id)
-                            ->where('transaction_id', $row->transaction->id)
-                            ->sum('amount');
+                        $total_wages_paid = (!empty($row->user_id) && !empty($row->transaction))
+                            ? \App\TransactionPayment::where('payment_for', $row->user_id)
+                                ->where('transaction_id', $row->transaction->id)
+                                ->sum('amount')
+                            : 0;
                         $total_wages_due = max(0, $row->total_wages - $total_wages_paid);
                         $payment_status = $total_wages_due == $row->total_wages ? 'due' : 'partial';
                         $payment_status = $total_wages_due == 0 ? 'paid' : $payment_status;
@@ -845,15 +849,19 @@ class ManageUserController extends Controller
                         return '<a data-href="' . action([\App\Http\Controllers\SellController::class, 'show'], [$row->id]) . '" href="#" data-container=".view_modal" class="btn-modal">' . $row->invoice_no . '</a>';
                     })
                     ->addColumn('total_wages_paid', function ($row) {
-                        $total_wages_paid = \App\TransactionPayment::where('payment_for', $row->user_id)
-                            ->where('transaction_id', $row->transaction->id)
-                            ->sum('amount');
+                        $total_wages_paid = (!empty($row->user_id) && !empty($row->transaction))
+                            ? \App\TransactionPayment::where('payment_for', $row->user_id)
+                                ->where('transaction_id', $row->transaction->id)
+                                ->sum('amount')
+                            : 0;
                         return $total_wages_paid;
                     })
                     ->addColumn('total_wages_due', function ($row) {
-                        $total_wages_paid = \App\TransactionPayment::where('payment_for', $row->user_id)
-                            ->where('transaction_id', $row->transaction->id)
-                            ->sum('amount');
+                        $total_wages_paid = (!empty($row->user_id) && !empty($row->transaction))
+                            ? \App\TransactionPayment::where('payment_for', $row->user_id)
+                                ->where('transaction_id', $row->transaction->id)
+                                ->sum('amount')
+                            : 0;
                         $total_wages_due = max(0, $row->total_wages - $total_wages_paid);
                         return $total_wages_due;
                     })

@@ -52,7 +52,7 @@
     }
 
     .pos-delivery-date.input-group .form-control {
-        width: 132px;
+        width: 151px;
         height: 28px;
         box-shadow: none;
     }
