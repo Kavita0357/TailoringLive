@@ -5,6 +5,7 @@
 
     .input-col {
         padding: 12px;
+        width:100%;
     }
 
     .tw-bg-gray-200 {
@@ -31,7 +32,7 @@
     }
 
     .measurement-card {
-        display: inline-block;
+        display: flex;
         width: 100%;
         margin-bottom: 15px;
         break-inside: avoid;
@@ -42,6 +43,7 @@
             0 1px 3px 0 rgba(0, 0, 0, 0.1),
             0 1px 2px -1px rgba(0, 0, 0, 0.1);
         border-radius: 6px;
+        align-self: flex-start
     }
 
     .customer-measuremnt-content {
@@ -70,7 +72,7 @@
 
     /* Masonry-like layout using CSS columns for measurements */
     .measurement-grid {
-        column-count: 3;
+        display: flex;
         column-gap: 15px;
     }
 
