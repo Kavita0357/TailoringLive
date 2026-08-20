@@ -577,11 +577,15 @@
         border-color: rgb(11 136 106);
     }
 
-    .style_measurement_modal {
+    .modal {
         z-index: 1050 !important;
     }
 
-    .style_measurement_modal .modal-dialog {
+    .modal-backdrop {
+        z-index: 1040 !important;
+    }
+
+    .modal-dialog {
         z-index: 1055 !important;
     }
 </style>

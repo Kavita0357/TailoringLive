@@ -48,7 +48,8 @@
                             <span class="input-group-addon">
                                 <i class="fa fa-users"></i>
                             </span>
-                        {!! Form::select('customer_group_id', $customer_groups, '', ['class' => 'form-control select2', 'style' => 'width: 100%;']) !!}
+                            {!! Form::select('customer_group_id', $customer_groups, '', ['class' => 'form-control select2', 'style' => 'width: 100%;']) !!}
+                        </div>
                     </div>
                 </div>
                 <div class="col-md-6 contact_type_div" style="display: none;">
@@ -68,7 +69,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-6 mt-15" style="float:none; margin:30px 0">
+                <div class="col-md-6" style="margin-top: 15px;">
                     <label class="radio-inline">
                         <input type="radio" name="contact_type_radio" id="inlineRadio1" value="individual" checked>
                         @lang('lang_v1.individual')

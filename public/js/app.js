@@ -34,15 +34,33 @@ $(document).ready(function () {
         autoclose: true,
         endDate: 'today',
     });
+    $(document).on('show.bs.modal', '.modal', function () {
+        if (!$(this).parent().is('body')) {
+            $(this).appendTo('body');
+        }
+    });
+
     $(document).on('click', '.btn-modal', function (e) {
         e.preventDefault();
         var container = $(this).data('container');
+        var url = $(this).data('href');
+
+        if (!container || !url) {
+            return;
+        }
+
+        var $container = $(container);
+        if ($container.length === 0) {
+            var className = container.replace(/^\./, '').replace(/^#/, '');
+            $container = $('<div class="modal fade ' + className + '" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel"></div>').appendTo('body');
+        }
 
         $.ajax({
-            url: $(this).data('href'),
+            url: url,
             dataType: 'html',
             success: function (result) {
-                $(container)
+                $container
+                    .appendTo('body')
                     .html(result)
                     .modal('show');
             },
@@ -581,7 +599,7 @@ $(document).ready(function () {
             $('div.business').show();
         }
 
-        $('input[type=radio][name="contact_type_radio"]').on('change', function () {
+        $('input[type=radio][name="contact_type_radio"]').off('change').on('change', function () {
             if (this.value == 'individual') {
                 $('div.individual').show();
                 $('div.business').hide();
@@ -593,7 +611,7 @@ $(document).ready(function () {
         if ($('#is_customer_export').is(':checked')) {
             $('div.export_div').show();
         }
-        $('#is_customer_export').on('change', function () {
+        $('#is_customer_export').off('change').on('change', function () {
             if ($(this).is(':checked')) {
                 $('div.export_div').show();
             } else {
@@ -601,7 +619,7 @@ $(document).ready(function () {
             }
         });
 
-        $('.more_btn').click(function () {
+        $('.more_btn').off('click').on('click', function () {
             $($(this).data('target')).toggleClass('hide');
         });
         $('div.lead_additional_div').hide();
@@ -621,7 +639,7 @@ $(document).ready(function () {
             $('div.shipping_addr_div').hide();
         }
 
-        $('select#contact_type').change(function () {
+        $('select#contact_type').off('change').on('change', function () {
             var t = $(this).val();
 
             if (t == 'supplier') {
@@ -643,9 +661,7 @@ $(document).ready(function () {
             }
         });
 
-        $(".contact_modal").find('.select2').each(function () {
-            $(this).select2();
-        });
+
 
         $('form#contact_add_form, form#contact_edit_form')
             .submit(function (e) {

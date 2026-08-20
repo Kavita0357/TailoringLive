@@ -77,7 +77,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-6" style="float:none; margin:30px 0">
+                <div class="col-md-6" style="margin-top: 15px;">
                     <label class="radio-inline">
                         <input type="radio" name="contact_type_radio" @if ($contact->contact_type == 'individual') checked @endif
                             id="inlineRadio1" value="individual">

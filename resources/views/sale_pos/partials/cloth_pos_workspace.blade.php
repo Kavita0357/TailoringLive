@@ -94,7 +94,7 @@
                             'autofocus' => isset($transaction) || !is_null($default_location),
                             'style' => 'font-size:12px; font-weight: 500',
                         ]) !!}
-                        <button type="button" class="add_new_customer add-btn"
+                        <button type="button" class="pos_add_quick_product add-btn"
                             data-href="{{ action([\App\Http\Controllers\ProductController::class, 'quickAdd']) }}"
                             data-container=".quick_add_product_modal">
                             +

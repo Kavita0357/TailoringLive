@@ -1378,7 +1378,7 @@ label,
   position: relative;
   display: table !important;
   border-collapse: separate !important;
-  width: 100% !important;
+  /* width: 100% !important; */
   box-shadow: none !important;
   box-sizing: border-box !important;
 }

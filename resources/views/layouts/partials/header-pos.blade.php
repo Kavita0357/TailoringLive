@@ -22,11 +22,21 @@
     @endforeach
 @endif
 <style>
+    .pos-delivery-date.input-group {
+        height: 28px;
+        min-height: 28px;
+        display: inline-flex;
+        align-items: center;
+        width:190px;
+    }
+
     .pos-delivery-date.input-group .input-group-addon,
     .pos-delivery-date.input-group .form-control {
         border: none;
         font-weight: 600;
         padding: 0 5px;
+        height: 28px;
+        line-height: 28px;
     }
 
     .order-date-field,
@@ -43,7 +53,8 @@
 
     .pos-delivery-date.input-group .form-control {
         width: 132px;
-        height: 18px;
+        height: 28px;
+        box-shadow: none;
     }
 
     .location {
@@ -270,7 +281,7 @@
             <div class="order-dates">
                 <div class="order-date-group">
                     <p class="tw-text-white"><strong>@lang('tailoring.order_date'):</strong></p>
-                    <div class="input-group pos-delivery-date order-date-field tw-py-1.5 tw-px-2 tw-rounded-md">
+                    <div class="input-group pos-delivery-date order-date-field tw-px-2 tw-rounded-md">
                         <span class="input-group-addon">
                             <i class="fa fa-calendar tw-font-semibold text-white"></i>
                         </span>
@@ -293,7 +304,7 @@
                 </div>
                 <div class="order-date-group">
                     <p class="tw-text-white"><strong>@lang('tailoring.delivery_date'):</strong></p>
-                    <div class="input-group pos-delivery-date delivery-date-field tw-py-1.5 tw-px-2 tw-rounded-md">
+                    <div class="input-group pos-delivery-date delivery-date-field tw-px-2 tw-rounded-md">
                         <span class="input-group-addon">
                             <i class="fa fa-calendar tw-font-semibold text-white"></i>
                         </span>
@@ -332,7 +343,7 @@
                 @if (!empty($pos_settings['inline_service_staff']))
                     <button type="button" id="show_service_staff_availability"
                         title="{{ __('lang_v1.service_staff_availability') }}"
-                        class="tw-shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px] tw-bg-white hover:tw-bg-white/60 tw-cursor-pointer tw-border-2 tw-flex tw-items-center tw-justify-center tw-rounded-md md:tw-w-8 tw-w-auto tw-h-8 tw-text-gray-600 pull-right"
+                        class="tw-shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px] tw-bg-white hover:tw-bg-white/60 tw-cursor-pointer tw-border-2 tw-flex tw-items-center tw-justify-center tw-rounded-md md:tw-w-8 tw-w-auto tw-h-8 tw-text-gray-600 btn-modal pull-right"
                         data-container=".view_modal"
                         data-href="{{ action([\App\Http\Controllers\SellPosController::class, 'showServiceStaffAvailibility']) }}">
                         <strong class="!tw-m-3">
@@ -453,7 +464,9 @@
                 @can('expense.add')
                     <button type="button" title="{{ __('expense.add_expense') }}" data-placement="bottom"
                         id="add_expense"
-                        class="btn-modal tw-inline-flex tw-items-center tw-gap-2 tw-bg-white tw-border tw-border-gray-300 tw-rounded-md tw-px-4 tw-py-2 tw-whitespace-nowrap hover:tw-bg-gray-50 tw-shadow-sm">
+                        class="btn-modal tw-inline-flex tw-items-center tw-gap-2 tw-bg-white tw-border tw-border-gray-300 tw-rounded-md tw-px-4 tw-py-2 tw-whitespace-nowrap hover:tw-bg-gray-50 tw-shadow-sm"
+                        data-href="{{ action([\App\Http\Controllers\ExpenseController::class, 'create']) }}?modal=true"
+                        data-container=".view_modal">
 
                         <i class="fas fa-minus tw-text-red-500"></i>
                         <span class="tw-font-semibold tw-whitespace-nowrap">@lang('expense.add_expense')</span>

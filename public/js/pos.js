@@ -993,7 +993,7 @@ $(document).ready(function () {
             .val('customer')
             .closest('div.contact_type_div')
             .addClass('hide');
-        $('.contact_modal').modal('show');
+        $('.contact_modal').appendTo('body').modal('show');
     });
     $('form#quick_add_contact')
         .submit(function (e) {
@@ -1489,12 +1489,18 @@ $(document).ready(function () {
     //Quick add product
     $(document).on('click', 'button.pos_add_quick_product', function () {
         var url = $(this).data('href');
-        var container = $(this).data('container');
+        var container = $(this).data('container') || '.quick_add_product_modal';
+        var $container = $(container);
+        if ($container.length === 0) {
+            var className = container.replace(/^\./, '').replace(/^#/, '');
+            $container = $('<div class="modal fade ' + className + '" tabindex="-1" role="dialog" aria-labelledby="modalTitle"></div>').appendTo('body');
+        }
         $.ajax({
             url: url + '?product_for=pos',
             dataType: 'html',
             success: function (result) {
-                $(container)
+                $container
+                    .appendTo('body')
                     .html(result)
                     .modal('show');
                 $('.os_exp_date').datepicker({
@@ -1508,12 +1514,18 @@ $(document).ready(function () {
 
     $(document).on('click', 'button.pos_add_quick_cloth', function () {
         var url = $(this).data('href');
-        var container = $(this).data('container');
+        var container = $(this).data('container') || '.quick_add_cloth_modal';
+        var $container = $(container);
+        if ($container.length === 0) {
+            var className = container.replace(/^\./, '').replace(/^#/, '');
+            $container = $('<div class="modal fade ' + className + '" tabindex="-1" role="dialog" aria-labelledby="modalTitle"></div>').appendTo('body');
+        }
         $.ajax({
             url: url,
             dataType: 'html',
             success: function (result) {
-                $(container)
+                $container
+                    .appendTo('body')
                     .html(result)
                     .modal('show');
             },
