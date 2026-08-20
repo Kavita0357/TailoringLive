@@ -19,9 +19,10 @@ class TailorMasterList extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    public static function recalculateTailorMasterStats($transactionId, $tailorMasterUserId)
+    public static function recalculateTailorMasterStats($transactionId, $tailorMasterUserId = null)
     {
-        $tailorMaster = self::where('user_id', $tailorMasterUserId)->first();
+        $userId = $tailorMasterUserId !== null ? $tailorMasterUserId : $transactionId;
+        $tailorMaster = self::where('user_id', $userId)->first();
 
         if (!$tailorMaster) {
             return;
@@ -29,7 +30,7 @@ class TailorMasterList extends Model
 
         $sell_lines = DB::table('transaction_sell_lines as tsl')
             ->leftJoin('cloths as c', 'tsl.cloth_id', '=', 'c.id')
-            ->where('tsl.tailoring_master_id', $tailorMasterUserId)
+            ->where('tsl.tailoring_master_id', $userId)
             // ->where('tsl.transaction_id', $transactionId)
             ->select([
                 'tsl.id',
@@ -46,11 +47,9 @@ class TailorMasterList extends Model
         $total_completed = 0;
         $total_wages = 0;
 
-        $total_completed_orders = 0;
-
         foreach ($sell_lines as $line) {
 
-            $completed = (float) $line->completed_quantity;
+            $completed = (float) ($line->completed_quantity ?? 0);
 
             $quantity = !empty($line->assigned_quantity)
                 ? (float) $line->assigned_quantity
@@ -63,16 +62,9 @@ class TailorMasterList extends Model
             if ($completed > 0) {
                 $total_wages += ($completed * $wages);
             }
-
-            if ($quantity > 0 && $completed == $quantity) {
-                $total_completed_orders = 1;
-            }
         }
 
-        // 1 = completed, 0 = not completed
-        // $total_completed_orders = $all_completed ? 1 : 0;
-
-        $tailorMaster->total_completed_orders = $total_completed_orders;
+        $tailorMaster->total_completed_orders = (int) $total_completed;
         $tailorMaster->total_wages = $total_wages;
 
         $tailorMaster->total_wages_due = max(

@@ -910,6 +910,17 @@ class ManageUserController extends Controller
                         return $row->name;
                     }
                 })
+                ->editColumn('total_completed_orders', function ($row) {
+                    $total_completed = \DB::table('transaction_sell_lines')
+                        ->where(function ($q) use ($row) {
+                            $q->where('tailoring_master_id', $row->user_id)
+                                ->orWhere('tailoring_master_id', $row->id);
+                        })
+                        ->whereNotNull('cloth_id')
+                        ->sum('completed_quantity');
+
+                    return (int) $total_completed;
+                })
                 ->addColumn('tailor_master', function ($row) {
                     return $row->name;
                 })
