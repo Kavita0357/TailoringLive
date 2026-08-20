@@ -348,7 +348,7 @@
                         class="tw-shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px]  tw-cursor-pointer tw-flex tw-items-center tw-justify-center tw-rounded-md md:tw-w-8 tw-w-auto tw-h-8 tw-text-gray-600 pull-right btn-modal"
                         data-container=".close_register_modal"
                         data-pos-type="{{ request()->segment(1) == 'cloth-pos' ? true : false }}"
-                        data-href="{{ action([\App\Http\Controllers\CashRegisterController::class, 'getCloseRegister']) }}">
+                        data-href="{{ action([\App\Http\Controllers\CashRegisterController::class, 'getCloseRegister']) }}?pos_type={{ request()->segment(1) == 'cloth-pos' ? 'cloth' : 'product' }}">
                         <strong class="!tw-m-3">
                             <i class="fas fa-times fa-lg tw-text-white !tw-text-sm"></i>
                             <span class="tw-inline md:tw-hidden">{{ __('cash_register.close_register') }}</span>

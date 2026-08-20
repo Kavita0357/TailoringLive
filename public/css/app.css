@@ -1155,10 +1155,7 @@ table.table-text-center th {
   border-radius: 6px !important;
 }
 
-.form-control option:hover {
-  background-color: #139375 !important;
-  color: #fff !important;
-}
+
 
 @media only screen and (max-width: 600px) {
   .pos-form-actions {
@@ -1248,34 +1245,10 @@ div:has(> .bootstrap-datetimepicker-widget) {
   z-index: 9999 !important;
 }
 
-/* .span.select2-selection.select2-selection--single{
-  border-radius: 8px;
-} */
-
-
-.select2-container--open .select2-dropdown--above {
-  border-radius: 6px !important;
-}
-
-.select2-container--open .select2-dropdown--below {
-  border-radius: 6px !important;
-  margin-top: 6px !important;
-}
-
-li.select2-results__option {
-  border-radius: 6px !important;
-}
+/* Old select2/input border-radius rules removed — now handled by Global Form Input Styles below */
 
 .daterangepicker.ltr.show-ranges.opensright {
-  border-radius: 6px !important;
-}
-
-span.select2-search.select2-search--dropdown {
-  border-radius: 6px !important;
-}
-
-span.select2-results {
-  padding: 2px !important;
+  border-radius: 8px !important;
 }
 
 li#select2-tailoring_status-result-mdic-order {
@@ -1290,10 +1263,6 @@ li#select2-tailoring_status-result-mdic-order {
   margin: 2px !important;
 }
 
-input#sell_list_filter_date_range {
-  border-radius: 6px !important;
-}
-
 .tw-border-primary-500\/30 {
   border-color: rgb(11 136 106);
 }
@@ -1305,4 +1274,808 @@ input#sell_list_filter_date_range {
 .style_measurement_modal .modal-dialog {
   z-index: 1055 !important;
 }
+
+/* ==========================================================================
+   GLOBAL FORM INPUT STYLES
+   Consistent, modern, premium design for all form inputs across the website.
+   Brand color: #139375 | Hover: #027257
+   ========================================================================== */
+
+/* --- Base Form Control --- */
+.form-control {
+  height: 38px !important;
+  line-height: normal;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  background-color: #ffffff;
+  color: #1f2937;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 6px 12px;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+  box-shadow: none !important;
+  outline: none !important;
+  width: 100%;
+  box-sizing: border-box !important;
+}
+
+.form-control:hover {
+  border-color: #9ca3af;
+}
+
+.form-control:focus {
+  border-color: #139375 !important;
+  box-shadow: none !important;
+  outline: none !important;
+  background-color: #ffffff;
+  position: relative;
+  z-index: 3;
+}
+
+.form-control::placeholder {
+  color: #9ca3af;
+  font-weight: 400;
+}
+
+.form-control:disabled {
+  background-color: #f3f4f6 !important;
+  color: #6b7280 !important;
+  cursor: not-allowed;
+  opacity: 0.85;
+}
+
+/* Readonly fields that are not disabled (e.g. datepicker fields) keep white background */
+.form-control[readonly]:not(:disabled) {
+  background-color: #ffffff;
+  color: #1f2937;
+  cursor: pointer;
+}
+
+/* Small inputs */
+.input-sm,
+.form-control.input-sm {
+  height: 34px !important;
+  padding: 4px 10px;
+  font-size: 13px;
+  border-radius: 6px;
+}
+
+/* Large inputs */
+.input-lg,
+.form-control.input-lg {
+  height: 44px !important;
+  padding: 10px 16px;
+  font-size: 16px;
+  border-radius: 10px;
+}
+
+/* --- Textarea --- */
+textarea.form-control {
+  height: auto !important;
+  min-height: 80px;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+/* --- Select (native) --- */
+select.form-control {
+  appearance: auto;
+  padding-right: 28px;
+}
+
+/* --- Labels --- */
+label,
+.control-label {
+  font-weight: 600;
+  font-size: 13px;
+  color: #374151;
+  margin-bottom: 6px;
+  display: inline-block;
+}
+
+/* --- Unified Input Group Architecture --- */
+.input-group {
+  position: relative;
+  display: table !important;
+  border-collapse: separate !important;
+  width: 100% !important;
+  box-shadow: none !important;
+  box-sizing: border-box !important;
+}
+
+.input-group-addon {
+  display: table-cell !important;
+  width: 1% !important;
+  height: 38px !important;
+  padding: 0 12px !important;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 36px !important;
+  color: #4b5563;
+  text-align: center;
+  background-color: #f8fafc;
+  border: 1px solid #d1d5db;
+  white-space: nowrap !important;
+  vertical-align: middle !important;
+  transition: border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+  box-shadow: none !important;
+  box-sizing: border-box !important;
+}
+
+.input-group-addon b,
+.input-group-addon strong {
+  font-weight: 600;
+  white-space: nowrap !important;
+  line-height: inherit;
+}
+
+.input-group-addon i,
+.input-group-addon .fa,
+.input-group-addon .fas,
+.input-group-addon .far,
+.input-group-addon .fab {
+  color: #64748b;
+  font-size: 14px;
+  vertical-align: middle;
+  transition: color 0.2s ease;
+}
+
+.input-group .form-control {
+  display: table-cell !important;
+  position: relative;
+  z-index: 2;
+  float: left;
+  width: 100% !important;
+  margin-bottom: 0;
+  height: 38px !important;
+  border: 1px solid #d1d5db;
+  box-shadow: none !important;
+  background-color: #ffffff;
+  box-sizing: border-box !important;
+}
+
+.input-group-btn {
+  display: table-cell !important;
+  position: relative;
+  font-size: 0;
+  white-space: nowrap;
+  vertical-align: middle !important;
+  width: 1% !important;
+  z-index: 2;
+  box-sizing: border-box !important;
+}
+
+.input-group-btn > .btn {
+  height: 38px !important;
+  border: 1px solid #d1d5db;
+  padding: 0 14px !important;
+  font-size: 14px;
+  border-radius: 8px;
+  background-color: #f8fafc;
+  color: #007F61 !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  box-shadow: none !important;
+  margin-left: -1px;
+  box-sizing: border-box !important;
+}
+
+.input-group-btn > .btn i {
+  color: #007F61 !important;
+}
+
+.input-group-btn > .btn:hover {
+  background-color: #e6f4f1 !important;
+  border-color: #9ca3af;
+}
+
+/* --- Clean Join Rules With Crisp 1px Separators & Rounded 8px Outer Corners --- */
+.input-group > .input-group-addon:first-child {
+  border-top-left-radius: 8px !important;
+  border-bottom-left-radius: 8px !important;
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+}
+
+.input-group > .input-group-addon:last-child {
+  border-top-right-radius: 8px !important;
+  border-bottom-right-radius: 8px !important;
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+  margin-left: -1px;
+}
+
+.input-group > .input-group-btn:last-child > .btn,
+.input-group > .input-group-btn > .btn,
+.input-group-btn:last-child > .btn {
+  border-top-right-radius: 8px !important;
+  border-bottom-right-radius: 8px !important;
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+  border-left: 0 !important;
+}
+
+.input-group > .input-group-btn:first-child > .btn {
+  border-top-left-radius: 8px !important;
+  border-bottom-left-radius: 8px !important;
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+}
+
+/* Form control after left addon: rounded on right side by default */
+.input-group > .input-group-addon:first-child ~ .form-control {
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+  border-top-right-radius: 8px !important;
+  border-bottom-right-radius: 8px !important;
+  margin-left: -1px;
+}
+
+/* If a right button or right addon exists in input-group, remove right radius from form-control */
+.input-group:has(> .input-group-btn) > .form-control,
+.input-group:has(> .input-group-addon:last-child) > .form-control,
+.input-group .form-control:not(:last-child) {
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+}
+
+/* --- Select2 Inside Input Group --- */
+.input-group > .select2-container {
+  display: table-cell !important;
+  table-layout: fixed;
+  vertical-align: middle !important;
+  width: 100% !important;
+  position: relative;
+  z-index: 2;
+  margin-left: -1px;
+}
+
+.input-group .select2-container .select2-selection {
+  border-radius: 0 !important;
+}
+
+.input-group > .input-group-addon:first-child ~ .select2-container .select2-selection {
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+}
+
+/* Only when Select2 is the very last element with NO button after it, round the right edge */
+.input-group > .select2-container:last-child .select2-selection,
+.input-group:not(:has(.input-group-btn)):not(:has(.input-group-addon:last-child)) .select2-container .select2-selection {
+  border-top-right-radius: 8px !important;
+  border-bottom-right-radius: 8px !important;
+}
+
+/* If a button follows select2, strictly enforce square join */
+.input-group:has(.input-group-btn) .select2-container .select2-selection,
+.input-group .select2-container:not(:last-child) .select2-selection {
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+  border-right: 0 !important;
+}
+
+/* Group focus state - Highlight active control */
+.input-group .form-control:focus,
+.input-group .select2-container--focus .select2-selection,
+.input-group .select2-container--open .select2-selection {
+  border-color: #139375 !important;
+  z-index: 5 !important;
+}
+
+/* --- Bootstrap Datetimepicker & Datepicker Calendar Popup --- */
+.bootstrap-datetimepicker-widget,
+.datepicker.datepicker-dropdown {
+  border-radius: 10px !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1), 0 2px 6px rgba(0, 0, 0, 0.05) !important;
+  border: 1px solid #e5e7eb !important;
+  padding: 8px !important;
+  background: #ffffff !important;
+}
+
+.bootstrap-datetimepicker-widget table td.active,
+.bootstrap-datetimepicker-widget table td.active:hover,
+.datepicker table tr td.active,
+.datepicker table tr td.active:hover {
+  background-color: #139375 !important;
+  color: #ffffff !important;
+  border-radius: 6px !important;
+}
+
+.bootstrap-datetimepicker-widget table td.today:before {
+  border-bottom-color: #139375 !important;
+}
+
+.bootstrap-datetimepicker-widget table td span.active,
+.bootstrap-datetimepicker-widget table td span.active:hover {
+  background-color: #139375 !important;
+  color: #ffffff !important;
+  border-radius: 6px !important;
+}
+
+/* --- Select2 Global Styles --- */
+.select2-container--default .select2-selection--single {
+  height: 38px !important;
+  border: 1px solid #d1d5db !important;
+  border-radius: 8px !important;
+  background-color: #ffffff !important;
+  box-shadow: none !important;
+  outline: none !important;
+  transition: border-color 0.2s ease;
+  position: relative;
+  box-sizing: border-box !important;
+}
+
+.select2-container--default .select2-selection--single:hover {
+  border-color: #9ca3af !important;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+  line-height: 36px !important;
+  padding-left: 12px !important;
+  padding-right: 28px !important;
+  color: #1f2937 !important;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__placeholder {
+  color: #9ca3af !important;
+  font-weight: 400;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+  height: 36px !important;
+  top: 0 !important;
+  right: 8px;
+  width: 20px;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow b {
+  border-color: #6b7280 transparent transparent transparent !important;
+  border-width: 5px 4px 0 4px !important;
+}
+
+.select2-container--default.select2-container--open .select2-selection--single .select2-selection__arrow b {
+  border-color: transparent transparent #139375 transparent !important;
+  border-width: 0 4px 5px 4px !important;
+}
+
+.select2-container--default .select2-selection--multiple {
+  min-height: 38px !important;
+  border: 1px solid #d1d5db !important;
+  border-radius: 8px !important;
+  background-color: #ffffff !important;
+  box-shadow: none !important;
+  outline: none !important;
+  padding: 3px 8px;
+  transition: border-color 0.2s ease;
+  box-sizing: border-box !important;
+}
+
+.select2-container--default .select2-selection--multiple:hover {
+  border-color: #9ca3af !important;
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice {
+  background-color: #e6f4f1;
+  border: 1px solid #a7d8cb;
+  border-radius: 6px;
+  color: #007F61;
+  font-weight: 500;
+  font-size: 13px;
+  padding: 2px 8px;
+  margin-top: 3px;
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+  color: #ef4444;
+  margin-right: 5px;
+  font-weight: bold;
+}
+
+/* Select2 Focus / Open states - NO box-shadow */
+.select2-container--default.select2-container--open .select2-selection--single,
+.select2-container--default.select2-container--open .select2-selection--multiple,
+.select2-container--default.select2-container--focus .select2-selection--single,
+.select2-container--default.select2-container--focus .select2-selection--multiple {
+  border-color: #139375 !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+/* Select2 Dropdown */
+.select2-dropdown {
+  border: 1px solid #d1d5db !important;
+  border-radius: 8px !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1), 0 2px 6px rgba(0, 0, 0, 0.05) !important;
+  overflow: hidden;
+  z-index: 99999 !important;
+  background-color: #ffffff !important;
+}
+
+.select2-container--open .select2-dropdown--below {
+  border-top: 1px solid #e5e7eb !important;
+  border-radius: 8px !important;
+  margin-top: 4px !important;
+}
+
+.select2-container--open .select2-dropdown--above {
+  border-bottom: 1px solid #e5e7eb !important;
+  border-radius: 8px !important;
+  margin-bottom: 4px !important;
+}
+
+.select2-search--dropdown {
+  padding: 6px 8px !important;
+}
+
+.select2-search--dropdown .select2-search__field {
+  height: 34px;
+  border: 1px solid #d1d5db !important;
+  border-radius: 6px !important;
+  padding: 4px 10px;
+  font-size: 14px;
+  background-color: #ffffff !important;
+  transition: border-color 0.2s ease;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.select2-search--dropdown .select2-search__field:focus {
+  border-color: #139375 !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.select2-results__option {
+  padding: 8px 12px !important;
+  font-size: 14px;
+  border-radius: 6px !important;
+  margin: 2px 4px !important;
+  transition: background-color 0.15s ease;
+}
+
+span.select2-results {
+  padding: 4px !important;
+}
+
+/* --- Select2 Highlighted/Selected Options --- */
+.select2-container--default .select2-results__option[aria-selected=true],
+.select2-container--default .select2-results__option--highlighted,
+.select2-container--default .select2-results__option--highlighted[aria-selected],
+.select2-container--default .select2-results__option--highlighted[aria-selected=true],
+.select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+  background-color: #139375 !important;
+  color: #ffffff !important;
+}
+
+.select2-container--default .select2-results__option--highlighted[aria-selected]:hover,
+.select2-container--default .select2-results__option--highlighted[aria-selected=false]:hover,
+.select2-container--default .select2-results__option:hover,
+.select2-results__option:hover {
+  background-color: #027257 !important;
+  color: #ffffff !important;
+}
+
+/* --- Multi-Input Component (e.g. Pay Term) --- */
+.multi-input {
+  display: block !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+.multi-input > label {
+  display: inline-block !important;
+  margin-bottom: 6px !important;
+}
+
+.multi-input > .form-control.width-40,
+.multi-input > input.width-40 {
+  width: 40% !important;
+  float: left !important;
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+  height: 38px !important;
+  box-sizing: border-box !important;
+}
+
+.multi-input > .form-control.width-60,
+.multi-input > select.width-60 {
+  width: 60% !important;
+  float: left !important;
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+  margin-left: -1px !important;
+  height: 38px !important;
+  box-sizing: border-box !important;
+}
+
+.multi-input:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+.multi-input > .form-control:focus {
+  z-index: 5 !important;
+  position: relative;
+}
+
+/* --- Bootstrap File Input (Attach Document) --- */
+.input-group.file-caption-main {
+  display: table !important;
+  width: 100% !important;
+  height: 38px !important;
+  box-sizing: border-box !important;
+}
+
+.file-caption.form-control {
+  height: 38px !important;
+  line-height: normal !important;
+  padding: 6px 12px !important;
+  border-radius: 8px 0 0 8px !important;
+  border: 1px solid #d1d5db !important;
+  border-right: 0 !important;
+  display: table-cell !important;
+  vertical-align: middle !important;
+  background-color: #ffffff !important;
+  color: #1f2937 !important;
+  box-sizing: border-box !important;
+}
+
+.file-input .input-group-btn {
+  display: table-cell !important;
+  vertical-align: middle !important;
+  width: 1% !important;
+  white-space: nowrap !important;
+  box-sizing: border-box !important;
+}
+
+.fileinput-remove {
+  height: 38px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  background-color: #ffffff !important;
+  border: 1px solid #d1d5db !important;
+  border-right: 0 !important;
+  color: #ef4444 !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  padding: 0 14px !important;
+  border-radius: 0 !important;
+  transition: all 0.2s ease !important;
+  box-sizing: border-box !important;
+  vertical-align: middle !important;
+  cursor: pointer !important;
+}
+
+/* Hide remove button when no file is chosen (.file-input-new) */
+.file-input-new .fileinput-remove,
+.file-input-new .fileinput-remove-button,
+.file-input-new .close.fileinput-remove,
+.file-input-new .file-preview,
+.fileinput-remove.hide,
+.fileinput-remove-button.hide,
+.file-input .fileinput-remove.hide,
+.file-input .fileinput-remove-button.hide {
+  display: none !important;
+}
+
+.fileinput-remove i,
+.fileinput-remove .fa,
+.fileinput-remove .fas {
+  color: #ef4444 !important;
+  font-size: 14px !important;
+  transition: color 0.2s ease !important;
+}
+
+.fileinput-remove:hover {
+  background-color: #fee2e2 !important;
+  color: #dc2626 !important;
+  border-color: #fca5a5 !important;
+}
+
+.fileinput-remove:hover i,
+.fileinput-remove:hover .fa,
+.fileinput-remove:hover .fas {
+  color: #dc2626 !important;
+}
+
+.btn-file,
+.btn.btn-primary.btn-file,
+div.btn-file,
+.file-input .btn-file {
+  position: relative !important;
+  overflow: hidden !important;
+  height: 38px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  background-color: #139375 !important;
+  border: 1px solid #139375 !important;
+  color: #ffffff !important;
+  font-weight: 500 !important;
+  font-size: 13px !important;
+  border-radius: 0 8px 8px 0 !important;
+  padding: 0 18px !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  box-sizing: border-box !important;
+  vertical-align: middle !important;
+  box-shadow: none !important;
+}
+
+.btn-file *,
+.btn.btn-primary.btn-file *,
+div.btn-file *,
+.file-input .btn-file *,
+.btn-file span,
+.btn-file i,
+.btn-file .glyphicon,
+.btn-file .fa,
+.btn-file .fas {
+  color: #ffffff !important;
+  font-weight: 500 !important;
+  font-size: 13px !important;
+}
+
+.btn-file:hover,
+.btn.btn-primary.btn-file:hover,
+div.btn-file:hover,
+.file-input .btn-file:hover {
+  background-color: #0e7e63 !important;
+  border-color: #0e7e63 !important;
+  color: #ffffff !important;
+}
+
+.btn-file:hover *,
+.btn.btn-primary.btn-file:hover *,
+div.btn-file:hover *,
+.file-input .btn-file:hover * {
+  color: #ffffff !important;
+}
+
+.btn-file input[type=file] {
+  position: absolute !important;
+  top: 0 !important;
+  right: 0 !important;
+  min-width: 100% !important;
+  min-height: 100% !important;
+  text-align: right !important;
+  opacity: 0 !important;
+  background: none repeat scroll 0 0 transparent !important;
+  cursor: pointer !important;
+  display: block !important;
+}
+
+
+.file-caption-name {
+  height: 38px !important;
+  line-height: 24px !important;
+  font-size: 13px !important;
+  color: #374151 !important;
+}
+
+
+
+/* --- DataTables Search Input --- */
+div.dataTables_wrapper div.dataTables_filter input {
+  border-radius: 8px !important;
+  height: 34px;
+  border: 1px solid #d1d5db;
+  padding: 4px 10px;
+  transition: border-color 0.2s ease;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+div.dataTables_wrapper div.dataTables_filter input:focus {
+  border-color: #139375 !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+/* --- Form Group spacing --- */
+.form-group {
+  margin-bottom: 16px;
+}
+
+/* --- Compact Inputs for Tables --- */
+.table .form-control {
+  height: 34px !important;
+  font-size: 13px;
+  padding: 4px 10px;
+  border-radius: 6px !important;
+  box-shadow: none !important;
+}
+
+.table .input-group-addon {
+  height: 34px !important;
+  line-height: 32px !important;
+  padding: 0 10px !important;
+  font-size: 12px;
+}
+
+.table .input-group-btn > .btn {
+  height: 34px !important;
+  line-height: 32px !important;
+  padding: 0 10px !important;
+  font-size: 12px;
+}
+
+.table .select2-container--default .select2-selection--single {
+  height: 34px !important;
+  border-radius: 6px !important;
+  box-shadow: none !important;
+}
+
+.table .select2-container--default .select2-selection--single .select2-selection__rendered {
+  line-height: 32px !important;
+  font-size: 13px;
+}
+
+.table .select2-container--default .select2-selection--single .select2-selection__arrow {
+  height: 32px !important;
+}
+
+/* --- DateRangePicker input --- */
+input.daterangepicker-field,
+.daterangepicker .input-mini {
+  border-radius: 6px !important;
+  height: 34px !important;
+  box-shadow: none !important;
+}
+
+/* --- Checkbox & Radio --- */
+input[type="checkbox"],
+input[type="radio"] {
+  accent-color: #139375 !important;
+  cursor: pointer;
+}
+
+.checkbox,
+.radio {
+  margin-top: 4px;
+  margin-bottom: 8px;
+}
+
+.checkbox label,
+.radio label {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  font-weight: 600 !important;
+  font-size: 13px !important;
+  color: #374151 !important;
+  cursor: pointer !important;
+  margin-bottom: 0 !important;
+  line-height: normal !important;
+  padding-left: 0 !important;
+}
+
+.checkbox label input[type="checkbox"],
+.radio label input[type="radio"] {
+  position: static !important;
+  margin: 0 !important;
+  width: 16px !important;
+  height: 16px !important;
+  flex-shrink: 0 !important;
+}
+
+/* --- Native Select Option Highlights --- */
+select option:hover,
+select option:focus,
+select option:active,
+select option:checked {
+  background-color: #139375 !important;
+  color: #ffffff !important;
+}
+
 

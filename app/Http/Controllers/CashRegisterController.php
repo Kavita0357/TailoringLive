@@ -168,7 +168,8 @@ class CashRegisterController extends Controller
         }
 
         $business_id = request()->session()->get('user.business_id');
-        $register_details = $this->cashRegisterUtil->getRegisterDetails($id);
+        $posType = request()->pos_type ?? 'product';
+        $register_details = $this->cashRegisterUtil->getRegisterDetails($id, $posType);
 
         $user_id = $register_details->user_id;
         $open_time = $register_details['open_time'];
@@ -176,7 +177,7 @@ class CashRegisterController extends Controller
 
         $is_types_of_service_enabled = $this->moduleUtil->isModuleEnabled('types_of_service');
 
-        $details = $this->cashRegisterUtil->getRegisterTransactionDetails($user_id, $open_time, $close_time, $is_types_of_service_enabled);
+        $details = $this->cashRegisterUtil->getRegisterTransactionDetails($user_id, $open_time, $close_time, $is_types_of_service_enabled, $posType);
 
         $payment_types = $this->cashRegisterUtil->payment_types($register_details->location_id, true, $business_id);
 

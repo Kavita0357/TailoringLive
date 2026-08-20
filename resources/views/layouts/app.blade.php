@@ -258,31 +258,7 @@
             border: 1px solid #139375 !important;
         }
 
-        .select2-container--default .select2-results__option[aria-selected=true],
-        .select2-container--default .select2-results__option--highlighted,
-        .select2-container--default .select2-results__option--highlighted[aria-selected],
-        .select2-container--default .select2-results__option--highlighted[aria-selected=true],
-        .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
-            background-color: #139375 !important;
-            color: #fff !important;
-            margin:2px !important;
-        }
-
-        .select2-container--default .select2-results__option--highlighted[aria-selected]:hover,
-        .select2-container--default .select2-results__option--highlighted[aria-selected=false]:hover,
-        .select2-container--default .select2-results__option:hover,
-        .select2-results__option:hover {
-            background-color: #027257 !important;
-            color: #fff !important;
-        }
-
-        select option:hover,
-        select option:focus,
-        select option:active,
-        select option:checked {
-            background-color: #139375 !important;
-            color: #ffffff !important;
-        }
+        /* Select2, form input, and option highlight styles are now in app.css */
 
         .datatable-length-dropdown .select2-results__options {
             overflow-y: auto !important;
@@ -294,68 +270,7 @@
             display: none;
         }
 
-        /* Select2 Search Field & Dropdown White Background */
-        .select2-dropdown,
-        .select2-search--dropdown,
-        .select2-search--dropdown .select2-search__field,
-        .select2-container--default .select2-search--dropdown .select2-search__field {
-            background-color: #ffffff !important;
-            color: #333333 !important;
-        }
-
-        .select2-search--dropdown .select2-search__field {
-            border: 1px solid #cccccc !important;
-            border-radius: 6px !important;
-        }
-
-        .select2-container--default .select2-selection--single,
-        .select2-container--default .select2-selection--multiple {
-            background-color: #ffffff !important;
-        }
-
-        .select2-container--default .select2-selection--single .select2-selection__rendered {
-            color: #333333 !important;
-        }
-
-        div.dataTables_wrapper div.dataTables_filter input {
-            border-radius: 6px !important;
-        }
-
-  
-
-        /* Select2 Focus & Open Border Colors */
-        .select2-container--default.select2-container--open,
-        .select2-container--default.select2-container--focus .select2-selection--single,
-        .select2-container--default.select2-container--focus .select2-selection--multiple,
-        .select2-container--default.select2-container--open .select2-selection--single,
-        .select2-container--default.select2-container--open .select2-selection--multiple,
-        .select2-container--default .select2-search--dropdown .select2-search__field:focus {
-            border-color: #139375 !important;
-        }
-
-        /* Form Inputs & Select Focus Borders */
-        .form-control:focus,
-        select:focus,
-        input[type="text"]:focus,
-        input[type="number"]:focus,
-        input[type="email"]:focus,
-        input[type="password"]:focus,
-        textarea:focus {
-            border-color: #139375 !important;
-            box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(19, 147, 117, .6) !important;
-        }
-
-        select option:checked,
-        select option:focus,
-        select option:active {
-            background-color: #139375 !important;
-            color: #ffffff !important;
-        }
-
-        input[type="checkbox"],
-        input[type="radio"] {
-            accent-color: #139375 !important;
-        }
+        /* Form input focus, Select2, and DataTables styles are now in app.css */
 
         /* All Page Title Font Weight 700 */
         .content-header h1,

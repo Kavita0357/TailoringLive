@@ -52,7 +52,7 @@
                                 'select_location_id',
                                 $business_locations,
                                 $default_location->id ?? null,
-                                ['class' => 'form-control input-sm', 'id' => 'select_location_id', 'required', 'autofocus'],
+                                ['class' => 'form-control', 'id' => 'select_location_id', 'required', 'autofocus'],
                                 $bl_attributes,
                             ) !!}
                             <span class="input-group-addon">
@@ -297,6 +297,7 @@
                             </div>
                         @endif
                     </div>
+                    <div class="clearfix"></div>
                     @if ($sale_type == 'order')
                         @can('edit_invoice_number')
                             <div class="col-sm-4">
