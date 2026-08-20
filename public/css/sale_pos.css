@@ -103,7 +103,7 @@
 #cloth-pos-workspace .form-control,
 #cloth-pos-workspace .select2-selection {
     /* height: 30px; */
-    border-radius: 5px;
+    border-radius: 6px !important;
 }
 
 #cloth-pos-workspace .select2-container .select2-selection--single {
@@ -431,7 +431,7 @@
 #cloth-pos-workspace .cloth-custom-input-group {
     background: #F8FAFC;
     border: 1px solid #d9e3ef;
-    border-radius: 5px;
+    border-radius: 6px !important;
     display: flex;
     align-items: center;
     padding: 0 8px;

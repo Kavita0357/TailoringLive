@@ -110,7 +110,7 @@
 	    -webkit-appearance: none !important;
 	    -moz-appearance: none !important;
 	    appearance: none !important;
-	    border-radius: 8px !important;
+	    border-radius: 6px !important;
 	    background-color: #ffffff !important;
 	    border: 1px solid #e5e7eb !important;
 	    height: 38px !important;

@@ -1274,22 +1274,35 @@ span.select2-search.select2-search--dropdown {
   border-radius: 6px !important;
 }
 
-span.select2-results{
-  padding:2px !important;
+span.select2-results {
+  padding: 2px !important;
 }
 
-li#select2-tailoring_status-result-mdic-order{
-  margin:12px !important;
+li#select2-tailoring_status-result-mdic-order {
+  margin: 12px !important;
 }
 
-.ranges ul{
-  padding:2px !important;
+.ranges ul {
+  padding: 2px !important;
 }
 
-.ranges ul li{
-  margin:2px !important;
+.ranges ul li {
+  margin: 2px !important;
 }
 
-input#sell_list_filter_date_range{
-border-radius:6px !important;
+input#sell_list_filter_date_range {
+  border-radius: 6px !important;
 }
+
+.tw-border-primary-500\/30 {
+  border-color: rgb(11 136 106);
+}
+
+.style_measurement_modal {
+  z-index: 1050 !important;
+}
+
+.style_measurement_modal .modal-dialog {
+  z-index: 1055 !important;
+}
+

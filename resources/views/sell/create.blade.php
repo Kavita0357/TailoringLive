@@ -325,7 +325,7 @@
                             <div class="form-group">
                                 {!! Form::label('status', __('sale.status') . ':*') !!}
                                 {!! Form::select('status', $filtered_statuses, null, [
-                                    'class' => 'form-control',
+                                    'class' => 'form-control select2',
                                     'placeholder' => __('messages.please_select'),
                                     'required',
                                 ]) !!}
@@ -1488,7 +1488,7 @@
                 const customerId = $(document).find("#customer_id").val();
                 const url = `${$(this).data('href')}?contact_id=${customerId}`;
                 $('div.style_measurement_modal').load(url, function() {
-                    $(this).modal('show');
+                    $(this).appendTo('body').modal('show');
                 });
             });
 

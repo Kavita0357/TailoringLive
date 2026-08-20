@@ -305,7 +305,7 @@
 
         .select2-search--dropdown .select2-search__field {
             border: 1px solid #cccccc !important;
-            border-radius: 4px !important;
+            border-radius: 6px !important;
         }
 
         .select2-container--default .select2-selection--single,
@@ -656,6 +656,18 @@
 
     #scrollable-container {
         position: relative;
+    }
+
+    .tw-border-primary-500\/30 {
+        border-color: rgb(11 136 106);
+    }
+
+    .style_measurement_modal {
+        z-index: 1050 !important;
+    }
+
+    .style_measurement_modal .modal-dialog {
+        z-index: 1055 !important;
     }
 </style>
 

@@ -1430,7 +1430,7 @@
                 const customerId = $(document).find("#customer_id").val();
                 const url = `${$(this).data('href')}?contact_id=${customerId}`;
                 $('div.style_measurement_modal').load(url, function() {
-                    $(this).modal('show');
+                    $(this).appendTo('body').modal('show');
                 });
             });
 
