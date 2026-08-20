@@ -1391,10 +1391,10 @@ label,
   font-size: 13px;
   font-weight: 600;
   line-height: 36px !important;
-  color: #4b5563;
+  color: #ffffff !important;
   text-align: center;
-  background-color: #f8fafc;
-  border: 1px solid #d1d5db;
+  background-color: #007F61 !important;
+  border: 1px solid #007F61 !important;
   white-space: nowrap !important;
   vertical-align: middle !important;
   transition: border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease;
@@ -1407,14 +1407,18 @@ label,
   font-weight: 600;
   white-space: nowrap !important;
   line-height: inherit;
+  color: #ffffff !important;
 }
 
 .input-group-addon i,
 .input-group-addon .fa,
 .input-group-addon .fas,
 .input-group-addon .far,
-.input-group-addon .fab {
-  color: #64748b;
+.input-group-addon .fab,
+.input-group-addon .glyphicon,
+.input-group-addon span,
+.input-group-addon * {
+  color: #ffffff !important;
   font-size: 14px;
   vertical-align: middle;
   transition: color 0.2s ease;
@@ -1445,14 +1449,17 @@ label,
   box-sizing: border-box !important;
 }
 
-.input-group-btn > .btn {
+.input-group:not(.input-number) .input-group-btn > .btn,
+.input-group:not(.input-number) .input-group-btn > .btn.bg-white,
+.input-group-btn > .btn,
+.input-group-btn > .btn.bg-white {
   height: 38px !important;
-  border: 1px solid #d1d5db;
+  border: 1px solid #007F61 !important;
   padding: 0 14px !important;
   font-size: 14px;
   border-radius: 8px;
-  background-color: #f8fafc;
-  color: #007F61 !important;
+  background-color: #007F61 !important;
+  color: #ffffff !important;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -1462,13 +1469,34 @@ label,
   box-sizing: border-box !important;
 }
 
-.input-group-btn > .btn i {
-  color: #007F61 !important;
+.input-group:not(.input-number) .input-group-btn > .btn i,
+.input-group:not(.input-number) .input-group-btn > .btn .fa,
+.input-group:not(.input-number) .input-group-btn > .btn .fas,
+.input-group:not(.input-number) .input-group-btn > .btn .far,
+.input-group:not(.input-number) .input-group-btn > .btn .fab,
+.input-group:not(.input-number) .input-group-btn > .btn .glyphicon,
+.input-group:not(.input-number) .input-group-btn > .btn span,
+.input-group:not(.input-number) .input-group-btn > .btn .text-primary,
+.input-group:not(.input-number) .input-group-btn > .btn *,
+.input-group-btn > .btn i,
+.input-group-btn > .btn .fa,
+.input-group-btn > .btn .fas,
+.input-group-btn > .btn .far,
+.input-group-btn > .btn .fab,
+.input-group-btn > .btn .glyphicon,
+.input-group-btn > .btn span,
+.input-group-btn > .btn .text-primary,
+.input-group-btn > .btn * {
+  color: #ffffff !important;
 }
 
-.input-group-btn > .btn:hover {
-  background-color: #e6f4f1 !important;
-  border-color: #9ca3af;
+.input-group:not(.input-number) .input-group-btn > .btn:hover,
+.input-group:not(.input-number) .input-group-btn > .btn.bg-white:hover,
+.input-group-btn > .btn:hover,
+.input-group-btn > .btn.bg-white:hover {
+  background-color: #027257 !important;
+  border-color: #027257 !important;
+  color: #ffffff !important;
 }
 
 /* --- Clean Join Rules With Crisp 1px Separators & Rounded 8px Outer Corners --- */
@@ -1504,8 +1532,9 @@ label,
   border-bottom-right-radius: 0 !important;
 }
 
-/* Form control after left addon: rounded on right side by default */
-.input-group > .input-group-addon:first-child ~ .form-control {
+/* Form control after left addon or left button: rounded on right side by default */
+.input-group > .input-group-addon:first-child ~ .form-control,
+.input-group > .input-group-btn:first-child ~ .form-control {
   border-top-left-radius: 0 !important;
   border-bottom-left-radius: 0 !important;
   border-top-right-radius: 8px !important;
