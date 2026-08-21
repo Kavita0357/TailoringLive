@@ -1490,7 +1490,7 @@ label,
   position: relative;
   z-index: 2;
   float: left;
-  /* width: 100% !important; */
+  width: 100% !important;
   margin-bottom: 0;
   height: 38px !important;
   border: 1px solid #d1d5db;
@@ -2225,12 +2225,4 @@ button.tw-dw-btn-info.dropdown-toggle:active {
 button.tw-dw-btn-info.dropdown-toggle {
   color: #007f61 !important;
   border-color: #007f61 !important;
-}
-
-input#pos_transaction_date{
-  width:164px !important;
-}
-
-input#delivery_date{
-  width: 164px !important;
 }

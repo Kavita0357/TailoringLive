@@ -28,7 +28,7 @@
         display: flex;
         align-items: center;
         width: 202px;
-        justify-content: center;    
+        justify-content: center;
         border-radius: 5px;
         border: none !important;
     }
@@ -44,8 +44,8 @@
         background: transparent !important;
     }
 
-    .input-group-addon{
-        padding:0px 6px !important;
+    .input-group-addon {
+        padding: 0px 6px !important;
     }
 
     .pos-delivery-date.input-group .form-control {
@@ -135,6 +135,14 @@
         flex: 0 0 auto;
         font-size: 14px;
         font-weight: bold;
+    }
+
+    input#pos_transaction_date {
+        width: 164px !important;
+    }
+
+    input#delivery_date {
+        width: 164px !important;
     }
 </style>
 <input type="hidden" name="transaction_sub_type" id="transaction_sub_type" value="{{ $transaction_sub_type }}">
@@ -362,9 +370,9 @@
                             <i class="fa fa-calendar tw-font-semibold text-white"></i>
                         </span>
                         {!! Form::text('delivery_date', $default_datetime ?? @format_datetime($transaction->delivery_date ?? 'now'), [
-                                'class' => 'form-control text-white tw-font-semibold',
-                                'id' => 'delivery_date',
-                                'required',
+                            'class' => 'form-control text-white tw-font-semibold',
+                            'id' => 'delivery_date',
+                            'required',
                         ]) !!}
                     </div>
                 </div>
