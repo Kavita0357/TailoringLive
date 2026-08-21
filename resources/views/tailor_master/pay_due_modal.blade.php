@@ -175,6 +175,7 @@
                                 {!! Form::select('account_id', $accounts, !empty($payment_line->account_id) ? $payment_line->account_id : '', [
                                     'class' => 'form-control select2',
                                     'id' => 'account_id',
+                                    'required',
                                     'style' => 'width:100%;',
                                 ]) !!}
                             </div>
