@@ -195,9 +195,6 @@
                                         <th>@lang('tailoring.tailor_master')</th>
                                         <th>@lang('tailoring.particulars')</th>
                                         <th>@lang('tailoring.wages')</th>
-                                        <th>@lang('tailoring.payment_status')</th>
-                                        <th>@lang('tailoring.total_paid')</th>
-                                        <th>@lang('tailoring.total_due')</th>
                                     </tr>
                                 </thead>
                             </table>
@@ -281,26 +278,6 @@
                             orderable: false,
                             searchable: false
                         },
-                        {
-                            data: 'payment_status',
-                            name: 'payment_status',
-                            orderable: false,
-                            searchable: false
-                        },
-                        {
-                            data: 'total_wages_paid',
-                            name: 'total_wages_paid',
-                            render: $.fn.dataTable.render.number(',', '.', 2, ''),
-                            orderable: false,
-                            searchable: false
-                        },
-                        {
-                            data: 'total_wages_due',
-                            name: 'total_wages_due',
-                            render: $.fn.dataTable.render.number(',', '.', 2, ''),
-                            orderable: false,
-                            searchable: false
-                        }
                     ]
                 });
 

@@ -79,51 +79,61 @@
                                     aria-hidden="true"></i> @lang('sale.payments')</a>
                         </li>
                         <!-- <li>
-                                <a href="#activities_tab" data-toggle="tab" aria-expanded="true"><i class="fas fa-pen-square"
-                                        aria-hidden="true"></i> @lang('lang_v1.activities')</a>
-                            </li> -->
+                                    <a href="#activities_tab" data-toggle="tab" aria-expanded="true"><i class="fas fa-pen-square"
+                                            aria-hidden="true"></i> @lang('lang_v1.activities')</a>
+                                </li> -->
                     </ul>
 
-                <div class="tab-content">
-                    <div class="tab-pane active" id="ledger_tab">
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="col-md-3">
-                                    <div class="form-group">
-                                        <label for="ledger_date_range">@lang('report.date_range'):</label>
-                                        <input placeholder="@lang('lang_v1.select_a_date_range')" class="form-control" readonly="readonly" name="ledger_date_range" type="text" id="ledger_date_range">
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label>@lang('lang_v1.ledger_format')</label>
-                                        <div class="btn-group" data-toggle="buttons">
-                                            <label class="btn btn-default active">
-                                                <input type="radio" name="ledger_format" value="format_1" checked> @lang('lang_v1.format_1')
-                                            </label>
-                                            <label class="btn btn-default">
-                                                <input type="radio" name="ledger_format" value="format_2"> @lang('lang_v1.format_2')
-                                            </label>
-                                            <label class="btn btn-default">
-                                                <input type="radio" name="ledger_format" value="format_3"> @lang('lang_v1.format_3')
-                                            </label>
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="ledger_tab">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label for="ledger_date_range">@lang('report.date_range'):</label>
+                                            <input placeholder="@lang('lang_v1.select_a_date_range')" class="form-control" readonly="readonly"
+                                                name="ledger_date_range" type="text" id="ledger_date_range">
                                         </div>
                                     </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="form-group">
-                                        <label for="ledger_location">@lang('purchase.business_location'):</label>
-                                        {!! Form::select('ledger_location', $business_locations, null, ['class' => 'form-control select2', 'id' => 'ledger_location', 'placeholder' => __('tailoring.all_locations')]) !!}
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label>@lang('lang_v1.ledger_format')</label>
+                                            <div class="btn-group" data-toggle="buttons">
+                                                <label class="btn btn-default active">
+                                                    <input type="radio" name="ledger_format" value="format_1" checked>
+                                                    @lang('lang_v1.format_1')
+                                                </label>
+                                                <label class="btn btn-default">
+                                                    <input type="radio" name="ledger_format" value="format_2">
+                                                    @lang('lang_v1.format_2')
+                                                </label>
+                                                <label class="btn btn-default">
+                                                    <input type="radio" name="ledger_format" value="format_3">
+                                                    @lang('lang_v1.format_3')
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label for="ledger_location">@lang('purchase.business_location'):</label>
+                                            {!! Form::select('ledger_location', $business_locations, null, [
+                                                'class' => 'form-control select2',
+                                                'id' => 'ledger_location',
+                                                'placeholder' => __('tailoring.all_locations'),
+                                            ]) !!}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2 text-right">
+                                        <button class="btn btn-default btn-xs" id="print_ledger_pdf"><i
+                                                class="fas fa-file-pdf"></i></button>
+                                        <button type="button" class="btn btn-default btn-xs" id="send_ledger"><i
+                                                class="fas fa-envelope"></i></button>
                                     </div>
                                 </div>
-                                <div class="col-md-2 text-right">
-                                    <button class="btn btn-default btn-xs" id="print_ledger_pdf"><i class="fas fa-file-pdf"></i></button>
-                                    <button type="button" class="btn btn-default btn-xs" id="send_ledger"><i class="fas fa-envelope"></i></button>
-                                </div>
+                                <div id="tailor_ledger_div"></div>
                             </div>
-                            <div id="tailor_ledger_div"></div>
                         </div>
-                    </div>
 
                         <div class="tab-pane" id="work_list_tab">
                             <div class="row">
@@ -136,9 +146,6 @@
                                                 <th>@lang('tailoring.order_no')</th>
                                                 <th>@lang('tailoring.particulars')</th>
                                                 <th>@lang('tailoring.wages')</th>
-                                                <th>@lang('tailoring.payment_status')</th>
-                                                <th>@lang('tailoring.total_paid')</th>
-                                                <th>@lang('tailoring.total_due')</th>
                                             </tr>
                                         </thead>
                                     </table>
@@ -175,12 +182,13 @@
 @section('javascript')
     <script src="{{ asset('js/payment.js?v=' . $asset_v) }}"></script>
     <script type="text/javascript">
-        $(document).ready(function () {
+        $(document).ready(function() {
 
             $('#ledger_date_range').daterangepicker(
                 dateRangeSettings,
                 function(start, end) {
-                    $('#ledger_date_range').val(start.format(moment_date_format) + ' ~ ' + end.format(moment_date_format));
+                    $('#ledger_date_range').val(start.format(moment_date_format) + ' ~ ' + end.format(
+                        moment_date_format));
                 }
             );
             $('#ledger_date_range').on('cancel.daterangepicker', function(ev, picker) {
@@ -201,7 +209,7 @@
                     end_date = $('#ledger_date_range').data('daterangepicker').endDate.format('YYYY-MM-DD');
                 }
                 var format = $('input[name="ledger_format"]:checked').val();
-                
+
                 $.ajax({
                     url: '/tailor-master/ledger?tailor_id={{ $tailor->id }}',
                     data: {
@@ -264,26 +272,6 @@
                         orderable: false,
                         searchable: false
                     },
-                    {
-                        data: 'payment_status',
-                        name: 'payment_status',
-                        orderable: false,
-                        searchable: false
-                    },
-                    {
-                        data: 'total_wages_paid',
-                        name: 'total_wages_paid',
-                        render: $.fn.dataTable.render.number(',', '.', 2, ''),
-                        orderable: false,
-                        searchable: false
-                    },
-                    {
-                        data: 'total_wages_due',
-                        name: 'total_wages_due',
-                        render: $.fn.dataTable.render.number(',', '.', 2, ''),
-                        orderable: false,
-                        searchable: false
-                    }
                 ]
             });
             var tailor_payments_table = $('#tailor_payments_table').DataTable({
