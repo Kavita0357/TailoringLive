@@ -1085,16 +1085,16 @@ $(document).ready(function () {
     });
     //Datetime picker
     $('#transaction_date').datetimepicker({
-        format: moment_date_format + ' ' + moment_time_format,
+        format: moment_date_format + ' hh:mm A',
         ignoreReadonly: true,
     });
     if ($('#pos_transaction_date').length) {
         $('#pos_transaction_date').datetimepicker({
-            format: moment_date_format + ' ' + moment_time_format,
+            format: moment_date_format + ' hh:mm A',
         });
     }
     $('#delivery_date').datetimepicker({
-        format: moment_date_format + ' ' + moment_time_format,
+        format: moment_date_format + ' hh:mm A',
         ignoreReadonly: true,
     });
 

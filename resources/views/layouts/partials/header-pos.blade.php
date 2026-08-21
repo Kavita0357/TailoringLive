@@ -25,43 +25,94 @@
     .pos-delivery-date.input-group {
         height: 28px;
         min-height: 28px;
-        display: inline-flex;
+        display: flex;
         align-items: center;
-        width:190px;
+        width: 202px;
+        justify-content: center;    
+        border-radius: 5px;
+        border: none !important;
     }
 
-    .pos-delivery-date.input-group .input-group-addon,
+    .pos-delivery-date.input-group .input-group-addon {
+        border: none;
+        padding: 0 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white !important;
+        border-radius: 0 !important;
+        background: transparent !important;
+    }
+
+    .input-group-addon{
+        padding:0px 6px !important;
+    }
+
     .pos-delivery-date.input-group .form-control {
         border: none;
         font-weight: 600;
-        padding: 0 5px;
-        height: 28px;
-        line-height: 28px;
+        padding: 0 6px;
+        line-height: 28px !important;
+        color: white !important;
+        flex: 1;
+        box-shadow: none;
+        border-radius: 0 !important;
+        background: transparent !important;
     }
 
     .order-date-field,
     .order-date-field .input-group-addon,
     .order-date-field .form-control {
         background-color: #4f9f9e !important;
+        border: none !important;
     }
 
     .delivery-date-field,
     .delivery-date-field .input-group-addon,
     .delivery-date-field .form-control {
         background-color: #646ee4 !important;
-    }
-
-    .pos-delivery-date.input-group .form-control {
-        width: 151px;
-        height: 28px;
-        box-shadow: none;
+        border: none !important;
     }
 
     .location {
         width: auto;
         flex: 0 0 auto;
         margin-right: 20px;
+        display: flex;
+        align-items: center;
     }
+
+    .location p {
+        margin: 0;
+    }
+
+    .location-wrap {
+        min-width: 220px;
+    }
+
+    .location-wrap .select2-container .select2-selection--single {
+        background-color: #139375 !important;
+        border: none !important;
+        height: 38px !important;
+        border-radius: 5px !important;
+        outline: none;
+    }
+
+    .location-wrap .select2-container .select2-selection--single .select2-selection__rendered {
+        color: white !important;
+        line-height: 38px !important;
+        text-align: center;
+        font-weight: 600;
+    }
+
+    .location-wrap .select2-container .select2-selection--single .select2-selection__arrow b {
+        border-color: white transparent transparent transparent !important;
+    }
+
+    .location-wrap .select2-container--open .select2-selection--single .select2-selection__arrow b {
+        border-color: transparent transparent white transparent !important;
+    }
+
 
     .order-dates {
         display: flex;
@@ -75,13 +126,15 @@
     .order-date-group {
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 10px;
         flex: 0 0 auto;
     }
 
-    .order-date-group > p {
+    .order-date-group>p {
         margin: 0;
         flex: 0 0 auto;
+        font-size: 14px;
+        font-weight: bold;
     }
 </style>
 <input type="hidden" name="transaction_sub_type" id="transaction_sub_type" value="{{ $transaction_sub_type }}">
@@ -235,7 +288,7 @@
                                 $business_locations,
                                 $default_location->id ?? null,
                                 [
-                                    'class' => 'form-control input-sm',
+                                    'class' => 'form-control input-sm select2',
                                     'id' => 'select_location_id',
                                     'required',
                                     'autofocus',
@@ -309,9 +362,9 @@
                             <i class="fa fa-calendar tw-font-semibold text-white"></i>
                         </span>
                         {!! Form::text('delivery_date', $default_datetime ?? @format_datetime($transaction->delivery_date ?? 'now'), [
-                            'class' => 'form-control text-white tw-font-semibold',
-                            'id' => 'delivery_date',
-                            'required',
+                                'class' => 'form-control text-white tw-font-semibold',
+                                'id' => 'delivery_date',
+                                'required',
                         ]) !!}
                     </div>
                 </div>

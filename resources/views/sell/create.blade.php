@@ -52,7 +52,7 @@
                                 'select_location_id',
                                 $business_locations,
                                 $default_location->id ?? null,
-                                ['class' => 'form-control', 'id' => 'select_location_id', 'required', 'autofocus'],
+                                ['class' => 'form-control select2', 'id' => 'select_location_id', 'required', 'autofocus'],
                                 $bl_attributes,
                             ) !!}
                             <span class="input-group-addon">

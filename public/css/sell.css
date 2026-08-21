@@ -31,6 +31,17 @@
 #pos_cloth_table td .input-number .input-group-btn .btn {
     height: 34px !important;
     padding: 6px 10px !important;
+    border-radius: 0px !important;
+}
+
+#pos_cloth_table td .input-number .input-group-btn:first-child .btn {
+    border-top-left-radius: 6px !important;
+    border-bottom-left-radius: 6px !important;
+}
+
+#pos_cloth_table td .input-number .input-group-btn:last-child .btn {
+    border-top-right-radius: 6px !important;
+    border-bottom-right-radius: 6px !important;
 }
 
 #pos_cloth_table td .input-number .form-control {
@@ -40,6 +51,7 @@
     text-align: center !important;
     float: none !important;
     flex: none !important;
+    border-radius: 0px !important;
 }
 
 .cloth-pos-currency-symbol {
@@ -70,4 +82,3 @@ div:has(> .bootstrap-datetimepicker-widget) {
 .input-group-addon:empty {
     display: none !important;
 }
-
