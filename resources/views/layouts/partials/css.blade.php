@@ -114,6 +114,51 @@
         color: #ffffff !important;
     }
 
+    /* jQuery UI Autocomplete Search Dropdown Hover/Active Color */
+    .ui-autocomplete {
+        border-radius: 6px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        border: 1px solid #e5e7eb;
+        padding: 4px 0;
+        z-index: 999999 !important;
+    }
+
+    .ui-menu .ui-menu-item {
+        padding: 0 !important;
+    }
+
+    .ui-menu .ui-menu-item-wrapper,
+    .ui-autocomplete .ui-menu-item-wrapper,
+    .ui-autocomplete .ui-menu-item a {
+        padding: 6px 12px !important;
+        color: #374151;
+        transition: background-color 0.15s ease, color 0.15s ease;
+    }
+
+    .ui-menu .ui-state-active,
+    .ui-menu .ui-state-focus,
+    .ui-autocomplete .ui-state-active,
+    .ui-autocomplete .ui-state-focus,
+    .ui-autocomplete .ui-menu-item-wrapper.ui-state-active,
+    .ui-autocomplete .ui-menu-item-wrapper.ui-state-focus,
+    .ui-widget-content .ui-state-active,
+    .ui-widget-header .ui-state-active {
+        background: #007F61 !important;
+        background-color: #007F61 !important;
+        border-color: #007F61 !important;
+        color: #ffffff !important;
+        margin: 0 !important;
+    }
+
+    .ui-menu .ui-state-active *,
+    .ui-menu .ui-state-focus *,
+    .ui-autocomplete .ui-state-active *,
+    .ui-autocomplete .ui-state-focus *,
+    .ui-autocomplete .ui-menu-item-wrapper.ui-state-active *,
+    .ui-autocomplete .ui-menu-item-wrapper.ui-state-focus * {
+        color: #ffffff !important;
+    }
+
     /* Uniform Select, Select2 & Filter Dropdown Styles (Page Load & Post-Load Consistency) */
     select.form-control,
     select.select2,

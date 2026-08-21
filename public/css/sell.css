@@ -14,6 +14,8 @@
     width: 100%;
 }
 
+.input-number,
+#pos_table td .input-number,
 #pos_cloth_table td .input-number {
     display: inline-flex !important;
     align-items: center !important;
@@ -22,28 +24,45 @@
     margin: 0 auto !important;
 }
 
+.input-number .input-group-btn,
+#pos_table td .input-number .input-group-btn,
 #pos_cloth_table td .input-number .input-group-btn {
     display: inline-block !important;
     width: auto !important;
     float: none !important;
 }
 
+.input-number .input-group-btn .btn,
+#pos_table td .input-number .input-group-btn .btn,
 #pos_cloth_table td .input-number .input-group-btn .btn {
     height: 34px !important;
     padding: 6px 10px !important;
     border-radius: 0px !important;
 }
 
+.input-number .input-group-btn:first-child .btn,
+#pos_table td .input-number .input-group-btn:first-child .btn,
 #pos_cloth_table td .input-number .input-group-btn:first-child .btn {
     border-top-left-radius: 6px !important;
     border-bottom-left-radius: 6px !important;
+    border-top-right-radius: 0px !important;
+    border-bottom-right-radius: 0px !important;
 }
 
+.input-number .input-group-btn:last-child .btn,
+#pos_table td .input-number .input-group-btn:last-child .btn,
 #pos_cloth_table td .input-number .input-group-btn:last-child .btn {
     border-top-right-radius: 6px !important;
     border-bottom-right-radius: 6px !important;
+    border-top-left-radius: 0px !important;
+    border-bottom-left-radius: 0px !important;
 }
 
+.input-number .form-control,
+.input-number > .form-control,
+.input-group.input-number .form-control,
+.input-group.input-number > .form-control,
+#pos_table td .input-number .form-control,
 #pos_cloth_table td .input-number .form-control {
     width: 45px !important;
     height: 34px !important;
@@ -52,6 +71,13 @@
     float: none !important;
     flex: none !important;
     border-radius: 0px !important;
+    border-top-left-radius: 0px !important;
+    border-bottom-left-radius: 0px !important;
+    border-top-right-radius: 0px !important;
+    border-bottom-right-radius: 0px !important;
+    margin: 0 !important;
+    border-left: 0 !important;
+    border-right: 0 !important;
 }
 
 .cloth-pos-currency-symbol {

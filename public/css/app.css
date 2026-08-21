@@ -281,6 +281,47 @@
   overflow-y: auto;
   /* prevent horizontal scrollbar */
   overflow-x: hidden;
+  border-radius: 6px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e5e7eb;
+  padding: 4px 0;
+  z-index: 999999 !important;
+}
+
+.ui-menu .ui-menu-item {
+  padding: 0 !important;
+}
+
+.ui-menu .ui-menu-item-wrapper,
+.ui-autocomplete .ui-menu-item-wrapper,
+.ui-autocomplete .ui-menu-item a {
+  padding: 6px 12px !important;
+  color: #374151;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.ui-menu .ui-state-active,
+.ui-menu .ui-state-focus,
+.ui-autocomplete .ui-state-active,
+.ui-autocomplete .ui-state-focus,
+.ui-autocomplete .ui-menu-item-wrapper.ui-state-active,
+.ui-autocomplete .ui-menu-item-wrapper.ui-state-focus,
+.ui-widget-content .ui-state-active,
+.ui-widget-header .ui-state-active {
+  background: #007F61 !important;
+  background-color: #007F61 !important;
+  border-color: #007F61 !important;
+  color: #ffffff !important;
+  margin: 0 !important;
+}
+
+.ui-menu .ui-state-active *,
+.ui-menu .ui-state-focus *,
+.ui-autocomplete .ui-state-active *,
+.ui-autocomplete .ui-state-focus *,
+.ui-autocomplete .ui-menu-item-wrapper.ui-state-active *,
+.ui-autocomplete .ui-menu-item-wrapper.ui-state-focus * {
+  color: #ffffff !important;
 }
 
 .margin-bottom-20 {
@@ -1449,7 +1490,7 @@ label,
   position: relative;
   z-index: 2;
   float: left;
-  width: 100% !important;
+  /* width: 100% !important; */
   margin-bottom: 0;
   height: 38px !important;
   border: 1px solid #d1d5db;
@@ -1566,8 +1607,8 @@ label,
 }
 
 /* Form control after left addon or left button: rounded on right side by default */
-.input-group>.input-group-addon:first-child~.form-control,
-.input-group>.input-group-btn:first-child~.form-control {
+.input-group:not(.input-number)>.input-group-addon:first-child~.form-control,
+.input-group:not(.input-number)>.input-group-btn:first-child~.form-control {
   border-top-left-radius: 0 !important;
   border-bottom-left-radius: 0 !important;
   border-top-right-radius: 8px !important;
@@ -1578,9 +1619,15 @@ label,
 /* If a right button or right addon exists in input-group, remove right radius from form-control */
 .input-group:has(> .input-group-btn)>.form-control,
 .input-group:has(> .input-group-addon:last-child)>.form-control,
-.input-group .form-control:not(:last-child) {
+.input-group .form-control:not(:last-child),
+.input-number .form-control,
+.input-group.input-number .form-control,
+.input-group.input-number > .form-control {
   border-top-right-radius: 0 !important;
   border-bottom-right-radius: 0 !important;
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+  border-radius: 0 !important;
 }
 
 /* --- Select2 Inside Input Group --- */
@@ -2180,3 +2227,10 @@ button.tw-dw-btn-info.dropdown-toggle {
   border-color: #007f61 !important;
 }
 
+input#pos_transaction_date{
+  width:164px !important;
+}
+
+input#delivery_date{
+  width: 164px !important;
+}
