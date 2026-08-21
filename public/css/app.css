@@ -1449,10 +1449,10 @@ label,
   box-sizing: border-box !important;
 }
 
-.input-group:not(.input-number) .input-group-btn > .btn,
-.input-group:not(.input-number) .input-group-btn > .btn.bg-white,
-.input-group-btn > .btn,
-.input-group-btn > .btn.bg-white {
+.input-group:not(.input-number) .input-group-btn>.btn,
+.input-group:not(.input-number) .input-group-btn>.btn.bg-white,
+.input-group-btn>.btn,
+.input-group-btn>.btn.bg-white {
   height: 38px !important;
   border: 1px solid #007F61 !important;
   padding: 0 14px !important;
@@ -1469,45 +1469,45 @@ label,
   box-sizing: border-box !important;
 }
 
-.input-group:not(.input-number) .input-group-btn > .btn i,
-.input-group:not(.input-number) .input-group-btn > .btn .fa,
-.input-group:not(.input-number) .input-group-btn > .btn .fas,
-.input-group:not(.input-number) .input-group-btn > .btn .far,
-.input-group:not(.input-number) .input-group-btn > .btn .fab,
-.input-group:not(.input-number) .input-group-btn > .btn .glyphicon,
-.input-group:not(.input-number) .input-group-btn > .btn span,
-.input-group:not(.input-number) .input-group-btn > .btn .text-primary,
-.input-group:not(.input-number) .input-group-btn > .btn *,
-.input-group-btn > .btn i,
-.input-group-btn > .btn .fa,
-.input-group-btn > .btn .fas,
-.input-group-btn > .btn .far,
-.input-group-btn > .btn .fab,
-.input-group-btn > .btn .glyphicon,
-.input-group-btn > .btn span,
-.input-group-btn > .btn .text-primary,
-.input-group-btn > .btn * {
+.input-group:not(.input-number) .input-group-btn>.btn i,
+.input-group:not(.input-number) .input-group-btn>.btn .fa,
+.input-group:not(.input-number) .input-group-btn>.btn .fas,
+.input-group:not(.input-number) .input-group-btn>.btn .far,
+.input-group:not(.input-number) .input-group-btn>.btn .fab,
+.input-group:not(.input-number) .input-group-btn>.btn .glyphicon,
+.input-group:not(.input-number) .input-group-btn>.btn span,
+.input-group:not(.input-number) .input-group-btn>.btn .text-primary,
+.input-group:not(.input-number) .input-group-btn>.btn *,
+.input-group-btn>.btn i,
+.input-group-btn>.btn .fa,
+.input-group-btn>.btn .fas,
+.input-group-btn>.btn .far,
+.input-group-btn>.btn .fab,
+.input-group-btn>.btn .glyphicon,
+.input-group-btn>.btn span,
+.input-group-btn>.btn .text-primary,
+.input-group-btn>.btn * {
   color: #ffffff !important;
 }
 
-.input-group:not(.input-number) .input-group-btn > .btn:hover,
-.input-group:not(.input-number) .input-group-btn > .btn.bg-white:hover,
-.input-group-btn > .btn:hover,
-.input-group-btn > .btn.bg-white:hover {
+.input-group:not(.input-number) .input-group-btn>.btn:hover,
+.input-group:not(.input-number) .input-group-btn>.btn.bg-white:hover,
+.input-group-btn>.btn:hover,
+.input-group-btn>.btn.bg-white:hover {
   background-color: #027257 !important;
   border-color: #027257 !important;
   color: #ffffff !important;
 }
 
 /* --- Clean Join Rules With Crisp 1px Separators & Rounded 8px Outer Corners --- */
-.input-group > .input-group-addon:first-child {
+.input-group>.input-group-addon:first-child {
   border-top-left-radius: 8px !important;
   border-bottom-left-radius: 8px !important;
   border-top-right-radius: 0 !important;
   border-bottom-right-radius: 0 !important;
 }
 
-.input-group > .input-group-addon:last-child {
+.input-group>.input-group-addon:last-child {
   border-top-right-radius: 8px !important;
   border-bottom-right-radius: 8px !important;
   border-top-left-radius: 0 !important;
@@ -1515,9 +1515,9 @@ label,
   margin-left: -1px;
 }
 
-.input-group > .input-group-btn:last-child > .btn,
-.input-group > .input-group-btn > .btn,
-.input-group-btn:last-child > .btn {
+.input-group>.input-group-btn:last-child>.btn,
+.input-group>.input-group-btn>.btn,
+.input-group-btn:last-child>.btn {
   border-top-right-radius: 8px !important;
   border-bottom-right-radius: 8px !important;
   border-top-left-radius: 0 !important;
@@ -1525,7 +1525,7 @@ label,
   border-left: 0 !important;
 }
 
-.input-group > .input-group-btn:first-child > .btn {
+.input-group>.input-group-btn:first-child>.btn {
   border-top-left-radius: 8px !important;
   border-bottom-left-radius: 8px !important;
   border-top-right-radius: 0 !important;
@@ -1533,8 +1533,8 @@ label,
 }
 
 /* Form control after left addon or left button: rounded on right side by default */
-.input-group > .input-group-addon:first-child ~ .form-control,
-.input-group > .input-group-btn:first-child ~ .form-control {
+.input-group>.input-group-addon:first-child~.form-control,
+.input-group>.input-group-btn:first-child~.form-control {
   border-top-left-radius: 0 !important;
   border-bottom-left-radius: 0 !important;
   border-top-right-radius: 8px !important;
@@ -1543,15 +1543,15 @@ label,
 }
 
 /* If a right button or right addon exists in input-group, remove right radius from form-control */
-.input-group:has(> .input-group-btn) > .form-control,
-.input-group:has(> .input-group-addon:last-child) > .form-control,
+.input-group:has(> .input-group-btn)>.form-control,
+.input-group:has(> .input-group-addon:last-child)>.form-control,
 .input-group .form-control:not(:last-child) {
   border-top-right-radius: 0 !important;
   border-bottom-right-radius: 0 !important;
 }
 
 /* --- Select2 Inside Input Group --- */
-.input-group > .select2-container {
+.input-group>.select2-container {
   display: table-cell !important;
   table-layout: fixed;
   vertical-align: middle !important;
@@ -1565,7 +1565,7 @@ label,
   border-radius: 0 !important;
 }
 
-.input-group > .input-group-addon:first-child ~ .select2-container .select2-selection {
+.input-group>.input-group-addon:first-child~.select2-container .select2-selection {
   border-top-left-radius: 0 !important;
   border-bottom-left-radius: 0 !important;
   border-top-right-radius: 0 !important;
@@ -1573,7 +1573,7 @@ label,
 }
 
 /* Only when Select2 is the very last element with NO button after it, round the right edge */
-.input-group > .select2-container:last-child .select2-selection,
+.input-group>.select2-container:last-child .select2-selection,
 .input-group:not(:has(.input-group-btn)):not(:has(.input-group-addon:last-child)) .select2-container .select2-selection {
   border-top-right-radius: 8px !important;
   border-bottom-right-radius: 8px !important;
@@ -1797,13 +1797,13 @@ span.select2-results {
   box-sizing: border-box !important;
 }
 
-.multi-input > label {
+.multi-input>label {
   display: inline-block !important;
   margin-bottom: 6px !important;
 }
 
-.multi-input > .form-control.width-40,
-.multi-input > input.width-40 {
+.multi-input>.form-control.width-40,
+.multi-input>input.width-40 {
   width: 40% !important;
   float: left !important;
   border-top-right-radius: 0 !important;
@@ -1812,8 +1812,8 @@ span.select2-results {
   box-sizing: border-box !important;
 }
 
-.multi-input > .form-control.width-60,
-.multi-input > select.width-60 {
+.multi-input>.form-control.width-60,
+.multi-input>select.width-60 {
   width: 60% !important;
   float: left !important;
   border-top-left-radius: 0 !important;
@@ -1829,7 +1829,7 @@ span.select2-results {
   clear: both;
 }
 
-.multi-input > .form-control:focus {
+.multi-input>.form-control:focus {
   z-index: 5 !important;
   position: relative;
 }
@@ -2032,7 +2032,7 @@ div.dataTables_wrapper div.dataTables_filter input:focus {
   font-size: 12px;
 }
 
-.table .input-group-btn > .btn {
+.table .input-group-btn>.btn {
   height: 34px !important;
   line-height: 32px !important;
   padding: 0 10px !important;
@@ -2107,4 +2107,6 @@ select option:checked {
   color: #ffffff !important;
 }
 
-
+.tw-mb-4 {
+  margin-bottom: 1rem !important;
+}

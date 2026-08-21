@@ -462,7 +462,7 @@
             <div id="app">
                 @yield('vue')
             </div>
-            <div class="tw-flex-1 tw-overflow-y-auto @if (!$pos_layout) tw-h-screen @endif"
+            <div class="tw-flex-1 @if (!$pos_layout) tw-h-screen @endif"
                 id="scrollable-container">
                 @yield('content')
                 @if (!$pos_layout)
@@ -484,6 +484,7 @@
             <section class="invoice print_section" id="receipt_section">
             </section>
         </main>
+    </div>
 
         @include('home.todays_profit_modal')
         <!-- /.content-wrapper -->
@@ -533,10 +534,9 @@
                 @includeIf($additional_view)
             @endforeach
         @endif
-        <div>
-            <div class="modal fade cloth_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
-            </div>
-            <div class="overlay tw-hidden"></div>
+        <div class="modal fade cloth_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
+        </div>
+        <div class="overlay tw-hidden"></div>
 </body>
 <style>
     @media print {

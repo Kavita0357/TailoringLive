@@ -4,7 +4,7 @@
 @section('content')
     <div
         class="tw-pb-6 tw-bg-gradient-to-r tw-from-@if (!empty(session('business.theme_color'))) {{ session('business.theme_color') }}@else{{ 'primary' }} @endif-800 tw-to-@if (!empty(session('business.theme_color'))) {{ session('business.theme_color') }}@else{{ 'primary' }} @endif-900 xl:tw-pb-0 ">
-        <div class="tailor_menu_mb">
+        <div>
             <div class="tw-flex tw-items-center tw-justify-between tw-gap-3 content-header">
                 <h1 class="tw-text-xl md:tw-text-3xl tw-font-bold tw-text-black ">
                     @lang('tailoring.tailor_dashboard')</h1>
@@ -168,7 +168,7 @@
 
         @can('user.view')
             <div
-                class="box-primary tw-mb-4 tw-transition-all lg:tw-col-span-2 tw-duration-200 tw-bg-white tw-shadow-sm tw-rounded-xl tw-ring-1 hover:tw-shadow-md hover:tw-translate-y-0.5 tw-ring-gray-200">
+                class="box-primary tw-mb-2 tw-transition-all lg:tw-col-span-2 tw-duration-200 tw-bg-white tw-shadow-sm tw-rounded-xl tw-ring-1 hover:tw-shadow-md hover:tw-translate-y-0.5 tw-ring-gray-200">
                 <div class="tw-p-2 sm:tw-p-3">
                     <div class="box-header tw-flex tw-items-center tw-justify-between">
                         <h3 class="box-title">@lang('tailoring.all_orders')</h3>
@@ -184,9 +184,9 @@
                 </div>
 
                 <div class="tw-flow-root tw-border-gray-200">
-                    <div>
+                    <div class="table-responsive">
                         <div class="tw-py-2 tw-align-middle sm:tw-px-5">
-                            <table class="table table-bordered table-striped tw-mb-0" id="tailor_masters_dashboard_table">
+                            <table class="table table-bordered table-striped tw-mb-0" id="tailor_masters_dashboard_table" style="width: 100%;">
                                 <thead>
                                     <tr>
                                         {{-- <th>@lang('messages.action')</th> --}}

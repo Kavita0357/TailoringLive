@@ -11,7 +11,7 @@
 }
 
 .search-box-fabric .input-group {
-    width: 90%;
+    width: 100%;
 }
 
 #pos_cloth_table td .input-number {
@@ -60,5 +60,14 @@
 div:has(> .bootstrap-datetimepicker-widget) {
     position: relative !important;
     z-index: 9999 !important;
+}
+
+#add_sell_form .box-solid.tw-mb-4,
+#edit_sell_form .box-solid.tw-mb-4 {
+    margin-bottom: 16px !important;
+}
+
+.input-group-addon:empty {
+    display: none !important;
 }
 
