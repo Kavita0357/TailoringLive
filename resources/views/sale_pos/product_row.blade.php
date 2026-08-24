@@ -34,7 +34,7 @@
             </button>
         </td>
 
-        <td class="text-center v-center">
+        <td class="text-center">
             <input type="hidden" name="cloths[{{ $row_count }}][cloth_id]" value="{{ $product->cloth_id }}"
                 class="cloth_id">
             <input type="hidden" name="cloths[{{ $row_count }}][wages]" value="{{ $product->wages }}"
@@ -44,24 +44,24 @@
                     class="form-control" value="{{ $product->transaction_sell_lines_id }}">
             @endif
             <div class="input-group input-number" style="margin: 0 auto;">
-                <span class="input-group-btn">
-                    <button type="button" class="btn btn-default btn-flat quantity-down">
-                        <i class="fa fa-minus text-danger"></i>
-                    </button>
-                </span>
+                <button type="button" class="btn btn-default btn-flat quantity-down">
+                    <i class="fa fa-minus text-danger"></i>
+                </button>
+                {{-- <span class="input-group-btn">
+                </span> --}}
                 <input type="text" class="form-control pos_quantity input_number input_quantity text-center"
                     name="cloths[{{ $row_count }}][quantity]" value="{{ (int) $product->quantity_ordered }}"
                     data-min="1" data-decimal="0">
-                <span class="input-group-btn">
-                    <button type="button" class="btn btn-default btn-flat quantity-up">
-                        <i class="fa fa-plus text-success"></i>
-                    </button>
-                </span>
+                <button type="button" class="btn btn-default btn-flat quantity-up">
+                    <i class="fa fa-plus text-success"></i>
+                </button>
+                {{-- <span class="input-group-btn">
+                </span> --}}
             </div>
         </td>
         <td class="hide"></td>
 
-        <td class="text-center v-center">
+        <td class="text-center">
             <input type="text" name="cloths[{{ $row_count }}][unit_price]"
                 class="form-control pos_unit_price input_number"
                 value="{{ @num_format($product->unit_price_before_discount) }}">
@@ -84,13 +84,13 @@
         @php
             $tailoringMasterValue = $product->tailoring_master_id ?? ($transaction->tailoring_master_id ?? null);
         @endphp
-        <td class="text-center v-center">
+        <td class="text-center">
             {!! Form::select('cloths[' . $row_count . '][tailoring_master]', $tailor_masters, $tailoringMasterValue, [
                 'class' => 'form-control select2',
-                'placeholder' => __('messages.please_select'),
+                'placeholder' => __('tailoring.just_select'),
             ]) !!}
         </td>
-        <td class="text-center v-center">
+        <td class="text-center">
             <input type="hidden" class="form-control pos_line_total"
                 value="{{ @num_format($product->quantity_ordered * $unit_price_inc_tax) }}">
             <span class="display_currency pos_line_total_text" data-currency_symbol="true">
@@ -98,7 +98,7 @@
             </span>
         </td>
 
-        <td class="text-center v-center">
+        <td class="text-center">
             <i class="fa fa-times text-danger pos_remove_row cursor-pointer" style="font-size: 12px"
                 aria-hidden="true"></i>
         </td>
@@ -392,9 +392,10 @@
                 @endif
             @endforeach
             <div class="input-group input-number">
-                <span class="input-group-btn"><button type="button"
-                        class="btn btn-default btn-flat quantity-down"><i
-                            class="fa fa-minus text-danger"></i></button></span>
+                <button type="button" class="btn btn-default btn-flat quantity-down"><i
+                        class="fa fa-minus text-danger"></i></button>
+                {{--  <span class="input-group-btn">
+                </span> --}}
                 <input type="text" data-min="1"
                     class="form-control pos_quantity input_number mousetrap input_quantity text-center"
                     value="{{ (int) $product->quantity_ordered }}" name="products[{{ $row_count }}][quantity]"
@@ -407,8 +408,9 @@
                     data-rule-required="true" data-msg-required="@lang('validation.custom-messages.this_field_is_required')"
                     @if ($product->enable_stock && empty($pos_settings['allow_overselling']) && empty($is_sales_order)) data-rule-max-value="{{ $max_qty_rule }}" data-qty_available="{{ $product->qty_available }}" data-msg-max-value="{{ $max_qty_msg }}" 
 				data-msg_max_default="@lang('validation.custom-messages.quantity_not_available', ['qty'=> $product->formatted_qty_available, 'unit' => $product->unit  ])" @endif>
-                <span class="input-group-btn"><button type="button" class="btn btn-default btn-flat quantity-up"><i
-                            class="fa fa-plus text-success"></i></button></span>
+                <button type="button" class="btn btn-default btn-flat quantity-up"><i
+                        class="fa fa-plus text-success"></i></button>
+                {{-- <span class="input-group-btn"></span> --}}
             </div>
 
             <input type="hidden" name="products[{{ $row_count }}][product_unit_id]"
@@ -603,7 +605,7 @@
                 ]) !!}
             </td>
         @endif
-        <td class="text-center v-center">
+        <td class="text-center">
             @php
                 $subtotal_type = !empty($pos_settings['is_pos_subtotal_editable']) ? 'text' : 'hidden';
 
@@ -616,7 +618,7 @@
                 {{ $product->quantity_ordered * $unit_price_inc_tax }}
             </span>
         </td>
-        <td class="text-center v-center">
+        <td class="text-center">
             <i class="fa fa-times text-danger pos_remove_row cursor-pointer" style="font-size: 12px"
                 aria-hidden="true"></i>
         </td>

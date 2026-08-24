@@ -266,6 +266,10 @@
         white-space: nowrap !important;
     }
 
+    .top-padding{
+        padding-top: 1.75rem;
+    }
+
     @media (min-width: 640px) {
         .dashboard-filter-container {
             flex-direction: row;

@@ -276,7 +276,7 @@ class SellPosController extends Controller
         $users = config('constants.enable_contact_assign') ? User::forDropdown($business_id, false, false, false, true) : [];
 
         $cloths = request()->segment(1) === 'cloth-pos'
-            ? Cloth::where('business_id', $business_id)->orderBy('cloth_name')->pluck('cloth_name', 'id')
+            ? Cloth::where('business_id', $business_id)->orderBy('serial_no')->pluck('cloth_name', 'id')
             : [];
         $tailor_masters = request()->segment(1) === 'cloth-pos'
             ? User::tailorMasters($business_id)

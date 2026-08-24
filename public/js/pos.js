@@ -3579,18 +3579,15 @@ function add_cloth_row(data, is_pos = false) {
             <input type="hidden" name="cloths[${rowIndex}][wages]" value="${data.cloth.wages || 0}" class="wages">
 
             <div class="input-group input-number">
-                <span class="input-group-btn">
-                    <button type="button" class="btn btn-default btn-flat quantity-down">
-                        <i class="fa fa-minus text-danger"></i>
-                    </button>
-                </span>
+            <button type="button" class="btn btn-default btn-flat quantity-down">
+                <i class="fa fa-minus text-danger"></i>
+            </button>
                 <input type="text" class="form-control pos_quantity" name="cloths[${rowIndex}][quantity]"
                     value="1" data-min="1" data-rule-required="true">
-                <span class="input-group-btn">
                     <button type="button" class="btn btn-default btn-flat quantity-up">
                         <i class="fa fa-plus text-success"></i>
                     </button>
-                </span>
+                
             </div>
         </td>
         <td class="hide">
@@ -3601,7 +3598,7 @@ function add_cloth_row(data, is_pos = false) {
         </td>`;
 
     if (!is_pos) {
-        let tailorOptions = '<option value="">Please Select</option>';
+        let tailorOptions = '<option value="">Select</option>';
         let commonTailorMaster = $('#common_tailoring_master').val();
         let tailoringMasterDisabled = commonTailorMaster ? ' disabled' : '';
 

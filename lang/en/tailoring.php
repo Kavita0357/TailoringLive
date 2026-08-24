@@ -55,6 +55,7 @@ return [
     'tailormaster' => 'Tailormaster',
     'assigned_qty' => 'Assigned Qty',
     'select' => 'Please Select',
+    'just_select' => 'Select',
     'select_tailoring_master' => 'Select Tailormaster',
     'qty' => 'Quantity',
 
@@ -138,7 +139,7 @@ return [
     'delivery_note' => 'Delivery Note',
     'pending' => 'Pending',
     'preparing' => 'In Production',
-    'work_status' => 'Work Status',
+    'work_status' => 'Production Status',
     'partially_delivered' => 'Partially Delivered',
     'received_subtitle' => 'Fabrics for your outfit have been received at the shop.',
     'preparing_subtitle' => 'Handed over the fabrics to the tailor for stiching. Assign Tailormaster now.',
