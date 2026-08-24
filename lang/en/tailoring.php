@@ -155,7 +155,7 @@ return [
     'delivered_orders' => 'Delivered Orders',
     'search_cloth_placeholder' => 'Search Cloth',
     'all_orders' => 'All Orders',
-    'orders' => 'Orders',
+    'orders' => 'Manage Orders',
     'add_fabrics' => 'Add Fabrics',
     'order_due' => 'Order due',
     'order_list' => 'Order list',

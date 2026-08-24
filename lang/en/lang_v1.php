@@ -599,7 +599,7 @@ return [
     'download' => 'Download',
     'previous_file_will_be_replaced' => 'Previously uploaded file will be replaced',
     'access_accounts' => 'Access Accounts',
-    'payment_accounts' => 'Payment Accounts',
+    'payment_accounts' => 'Financial Accounts',
     'total_shipping_charges' => 'Total Shipping Charges',
     'recurring_invoice_error_message' => 'Unable to create invoice for Subscription no.: <i>:subscription_no</i>. Required stock not available for product <i>:product_name</i>',
     'load_more' => 'Load More',

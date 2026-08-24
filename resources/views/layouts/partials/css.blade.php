@@ -222,22 +222,77 @@
         justify-content: center !important;
     }
 
-    .filter-box {
-        display: inline-block;
-        min-width: 160px;
+    .dashboard-filter-container {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        width: 100%;
     }
 
-    .filter-box select,
-    .filter-box .select2-container {
+    .dashboard-filter-top-row {
+        display: flex;
+        gap: 10px;
+        width: 100%;
+    }
+
+    .dashboard-filter-top-row .dashboard-filter-item {
+        flex: 1 1 50%;
+        min-width: 0;
+        width: 50%;
+    }
+
+    .dashboard-filter-top-row .dashboard-filter-item select,
+    .dashboard-filter-top-row .dashboard-filter-item .select2-container {
         width: 100% !important;
+    }
+
+    .dashboard-filter-date-row {
+        width: 100%;
     }
 
     #dashboard_date_filter {
         border-radius: 6px !important;
         height: 38px !important;
         border: 1px solid #e5e7eb !important;
-        padding-left: 12px !important;
-        padding-right: 12px !important;
+        padding-left: 8px !important;
+        padding-right: 8px !important;
+        width: 100% !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        background-color: #ffffff !important;
+        color: #111827 !important;
+        font-size: 13px !important;
+        white-space: nowrap !important;
+    }
+
+    @media (min-width: 640px) {
+        .dashboard-filter-container {
+            flex-direction: row;
+            align-items: center;
+            width: auto;
+        }
+
+        .dashboard-filter-top-row {
+            width: auto;
+        }
+
+        .dashboard-filter-top-row .dashboard-filter-item {
+            flex: 0 0 auto;
+            min-width: 160px;
+            width: auto;
+        }
+
+        .dashboard-filter-date-row {
+            width: auto;
+        }
+
+        #dashboard_date_filter {
+            width: auto !important;
+            min-width: 200px;
+            padding-left: 12px !important;
+            padding-right: 12px !important;
+        }
     }
 </style>
 @if (!empty($__system_settings['additional_css']))

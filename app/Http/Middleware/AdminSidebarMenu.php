@@ -308,7 +308,7 @@ class AdminSidebarMenu
             }
             if (in_array('tailoring', $enabled_modules)) {
                 $menu->dropdown(
-                    'Orders',
+                    __('tailoring.orders'),
                     function ($sub) use ($common_settings) {
 
                         $sub->url(

@@ -11,7 +11,7 @@ return [
     |
     */
 
-    'sale' => 'Product Sells',
+    'sale' => 'Manage Sells',
     'sells' => 'Sales',
     'list_sale' => 'List Sales',
     'add_sale' => 'Add Sale',
@@ -28,7 +28,7 @@ return [
     'finalize' => 'Pay & Checkout',
     'express_finalize' => 'Express <br/>Checkout',
     'product' => 'Product',
-    'products' => 'Products',
+    'products' => 'Manage Products',
     'unit_price' => 'Unit Price',
     'qty' => 'Quantity',
     'subtotal' => 'Subtotal',
