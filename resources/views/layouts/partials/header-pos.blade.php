@@ -304,10 +304,10 @@
                                 $bl_attributes,
                             ) !!}
                         @else
-                            {{ $default_location->name }}
+                            <span class="text-white text-bold">{{ $default_location->name }}</span>
                         @endif
                     @else
-                        {{ $transaction->location->name }}
+                        <span class="text-white text-bold">{{ $transaction->location->name }}</span>
                     @endif
                 </div>
                 @if (request()->segment(1) == 'pos')
@@ -357,8 +357,8 @@
                         {!! Form::text(
                             'transaction_date',
                             !empty($transaction->transaction_date)
-                                ? \Carbon\Carbon::parse($transaction->transaction_date)->format('m/d/Y h:i A')
-                                : $default_datetime ?? now()->format('m/d/Y h:i A'),
+                                ? \Carbon\Carbon::parse($transaction->transaction_date)->format('d/m/Y h:i A')
+                                : $default_datetime ?? now()->format('d/m/Y h:i A'),
                             $order_date_attr,
                         ) !!}
                     </div>
@@ -372,8 +372,8 @@
                         {!! Form::text(
                             'delivery_date',
                             !empty($transaction->delivery_date)
-                                ? \Carbon\Carbon::parse($transaction->delivery_date)->format('m/d/Y h:i A')
-                                : $default_datetime ?? now()->format('m/d/Y h:i A'),
+                                ? \Carbon\Carbon::parse($transaction->delivery_date)->format('d/m/Y h:i A')
+                                : $default_datetime ?? now()->format('d/m/Y h:i A'),
                             [
                                 'class' => 'form-control text-white tw-font-semibold',
                                 'id' => 'delivery_date',
