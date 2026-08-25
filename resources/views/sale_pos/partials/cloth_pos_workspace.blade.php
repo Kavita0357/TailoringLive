@@ -10,9 +10,9 @@
             $transaction->location->default_payment_accounts ?? ($default_location->default_payment_accounts ?? ''),
     ]) !!}
     {!! Form::hidden('sub_type', isset($sub_type) ? $sub_type : null) !!}
-    {!! Form::hidden('delivery_date', $default_datetime ?? @format_datetime($transaction->delivery_date ?? 'now'), [
+    {{-- {!! Form::hidden('delivery_date', $default_datetime ?? @format_datetime($transaction->delivery_date ?? 'now'), [
         'id' => 'hidden_delivery_date',
-    ]) !!}
+    ]) !!} --}}
     <input type="hidden" id="item_addition_method" value="{{ $business_details->item_addition_method }}">
 
     @if (empty($pos_settings['hide_product_suggestion']) && !isMobile())
@@ -50,7 +50,7 @@
                         </button>
                     </div>
                 </div>
-                @if (!empty($pos_settings['enable_transaction_date']))
+                {{-- @if (!empty($pos_settings['enable_transaction_date']))
                     <div class="{{ $col_class }}">
                         <div class="cloth-custom-input-group">
                             <span class="input-icon"><i class="fa fa-calendar"></i></span>
@@ -73,7 +73,7 @@
                         $default_datetime ?? @format_datetime($transaction->transaction_date ?? now()),
                         ['id' => 'transaction_date'],
                     ) !!}
-                @endif
+                @endif --}}
                 <div class="{{ $col_class }}">
                     <div class="cloth-custom-input-group">
                         {!! Form::select('search_cloth', $cloths, null, [

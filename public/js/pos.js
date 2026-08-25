@@ -1092,31 +1092,19 @@ $(document).ready(function () {
     $('#transaction_date').datetimepicker({
         format: moment_date_format + ' hh:mm A',
         ignoreReadonly: true,
+    }).on('dp.change', function (e) {
+        console.log(e.date)
+        if (e.date) {
+            $(this).val(e.date.format(moment_date_format + ' hh:mm A'));
+        }
     });
-    if ($('#pos_transaction_date').length) {
-        $('#pos_transaction_date').datetimepicker({
-            format: moment_date_format + ' hh:mm A',
-        });
-    }
+
     $('#delivery_date').datetimepicker({
         format: moment_date_format + ' hh:mm A',
         ignoreReadonly: true,
-    });
-
-    $(document).on('dp.change change', '#delivery_date', function () {
-        if ($('#hidden_delivery_date').length) {
-            $('#hidden_delivery_date').val($(this).val());
-        }
-    });
-
-    $(document).on('dp.change change', '#pos_transaction_date', function () {
-        if ($('#transaction_date').length) {
-            $('#transaction_date').val($(this).val());
-        }
-    });
-    $(document).on('dp.change change', '#transaction_date', function () {
-        if ($('#pos_transaction_date').length) {
-            $('#pos_transaction_date').val($(this).val());
+    }).on('dp.change', function (e) {
+        if (e.date) {
+            $(this).val(e.date.format(moment_date_format + ' hh:mm A'));
         }
     });
 
