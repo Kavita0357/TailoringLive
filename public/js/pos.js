@@ -23,6 +23,11 @@ $(document).ready(function () {
         $('table#pos_table tbody tr').each(function () {
             style_cloth_pos_product_row($(this));
         });
+        $('table#pos_cloth_table tbody select.select2, table#pos_table tbody select.select2').each(function () {
+            if (!$(this).hasClass('select2-hidden-accessible')) {
+                $(this).select2();
+            }
+        });
     }
     if ($('form#edit_pos_sell_form').length > 0 || $('form#add_pos_sell_form').length > 0) {
         initialize_printer();
@@ -2117,7 +2122,12 @@ function style_cloth_pos_product_row(row) {
         .removeClass('hide')
         .addClass('fabric-making-charge')
         .append('<span class="fabric-na">-</span>');
-    $('<td class="text-center fabric-tailor">-</td>').insertBefore(cells.last());
+    const subtotalCell = row.find('.pos_line_total').closest('td');
+    if (subtotalCell.length) {
+        $('<td class="text-center fabric-tailor">-</td>').insertBefore(subtotalCell);
+    } else {
+        $('<td class="text-center fabric-tailor">-</td>').insertBefore(cells.last());
+    }
 }
 
 function product_row_table_body() {
@@ -3642,8 +3652,12 @@ function add_cloth_row(data, is_pos = false) {
         `;
     if (is_pos) {
         $('table#pos_table tbody').append(html);
+        var $newRow = $('table#pos_table tbody tr').last();
+        $newRow.find('select.select2').select2();
     } else {
         $('#pos_cloth_table tbody').append(html);
+        var $newRow = $('#pos_cloth_table tbody tr').last();
+        $newRow.find('select.select2').select2();
         $('#cloth_price span.total_quantity').html(__currency_trans_from_en(1, false));
         $('#cloth_price span.price_total').html(__currency_trans_from_en(data.cloth.making_charge || 0, false));
         $('#cloth_row_count').val(rowIndex + 1);

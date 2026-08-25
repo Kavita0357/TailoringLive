@@ -100,8 +100,7 @@
 
     .location-wrap .select2-container .select2-selection--single .select2-selection__rendered {
         color: white !important;
-        line-height: 38px !important;
-        text-align: center;
+        line-height: 35px !important;
         font-weight: 600;
     }
 

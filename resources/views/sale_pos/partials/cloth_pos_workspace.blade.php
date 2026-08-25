@@ -149,8 +149,8 @@
                                 <th>@lang('tailoring.cloth_product')</th>
                                 <th class="text-center">@lang('sale.qty')</th>
                                 <th class="text-center">@lang('tailoring.making_charge')</th>
-                                <th class="text-center">@lang('sale.subtotal')</th>
                                 <th class="text-center">@lang('tailoring.assign_to_tailoring_master')</th>
+                                <th class="text-center">@lang('sale.subtotal')</th>
                                 <th class="text-center"><i class="fas fa-times"></i></th>
                             </tr>
                         </thead>

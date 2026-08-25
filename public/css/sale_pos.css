@@ -1,4 +1,4 @@
-#cloth-pos-workspace {
+    #cloth-pos-workspace {
     display: flex;
     align-items: stretch;
     gap: 14px;
@@ -241,7 +241,33 @@
     min-width: 65px;
     padding: 4px 7px;
 }
+select.form-control.input-sm.sub_unit,
+select.form-control.input-sm.sub_unit.valid {
+    display: inline-block !important;
+    height: 24px !important;
+    padding: 2px 20px 2px 8px !important;
+    font-size: 11px !important;
+    font-weight: 500 !important;
+    color: #475569 !important;
+    background-color: #f1f5f9 !important;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%2364748b' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e") !important;
+    background-repeat: no-repeat !important;
+    background-position: right 6px center !important;
+    background-size: 9px 9px !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 4px !important;
+    outline: none !important;
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    margin-top: 4px !important;
+    cursor: pointer !important;
+    line-height: normal !important;
+}
 
+select.form-control.input-sm.sub_unit:focus {
+    border-color: #007F61 !important;
+    box-shadow: 0 0 0 2px rgba(0, 127, 97, 0.12) !important;
+}
 #cloth-pos-workspace .table .input-number {
     display: flex !important;
     align-items: center;
@@ -288,46 +314,40 @@
     justify-content: center;
 }
 
-#cloth-pos-workspace #pos_cloth_table th:nth-child(1),
-#cloth-pos-workspace #pos_cloth_table td:nth-child(1),
-#cloth-pos-workspace #pos_table th:nth-child(1),
-#cloth-pos-workspace #pos_table td:nth-child(1) {
-    width: 25%;
+#cloth-pos-workspace #pos_header_table thead th:nth-child(1),
+#cloth-pos-workspace #pos_cloth_table tbody tr td:nth-child(1),
+#cloth-pos-workspace #pos_table tbody tr td:nth-child(1) {
+    width: 30%;
 }
 
-#cloth-pos-workspace #pos_cloth_table th:nth-child(2),
-#cloth-pos-workspace #pos_cloth_table td:nth-child(2),
-#cloth-pos-workspace #pos_table th:nth-child(2),
-#cloth-pos-workspace #pos_table td:nth-child(2) {
+#cloth-pos-workspace #pos_header_table thead th:nth-child(2),
+#cloth-pos-workspace #pos_cloth_table tbody tr td:nth-child(2),
+#cloth-pos-workspace #pos_table tbody tr td:nth-child(2) {
     width: 14%;
 }
 
-#cloth-pos-workspace #pos_cloth_table th:nth-child(3),
-#cloth-pos-workspace #pos_cloth_table td:nth-child(4),
-#cloth-pos-workspace #pos_table th:nth-child(3),
-#cloth-pos-workspace #pos_table td:nth-child(3) {
-    width: 15%;
+#cloth-pos-workspace #pos_header_table thead th:nth-child(3),
+#cloth-pos-workspace #pos_cloth_table tbody tr td:nth-child(4),
+#cloth-pos-workspace #pos_table tbody tr td:nth-child(3) {
+    width: 16%;
 }
 
-#cloth-pos-workspace #pos_cloth_table th:nth-child(4),
-#cloth-pos-workspace #pos_cloth_table td:nth-child(6),
-#cloth-pos-workspace #pos_table th:nth-child(4),
-#cloth-pos-workspace #pos_table td:nth-child(4) {
-    width: 17%;
+#cloth-pos-workspace #pos_header_table thead th:nth-child(4),
+#cloth-pos-workspace #pos_cloth_table tbody tr td:nth-child(6),
+#cloth-pos-workspace #pos_table tbody tr td:nth-child(4) {
+    width: 22%;
 }
 
-#cloth-pos-workspace #pos_cloth_table th:nth-child(5),
-#cloth-pos-workspace #pos_cloth_table td:nth-child(7),
-#cloth-pos-workspace #pos_table th:nth-child(5),
-#cloth-pos-workspace #pos_table td:nth-child(5) {
-    width: 23%;
+#cloth-pos-workspace #pos_header_table thead th:nth-child(5),
+#cloth-pos-workspace #pos_cloth_table tbody tr td:nth-child(7),
+#cloth-pos-workspace #pos_table tbody tr td:nth-child(5) {
+    width: 14%;
 }
 
-#cloth-pos-workspace #pos_cloth_table th:nth-child(6),
-#cloth-pos-workspace #pos_cloth_table td:nth-child(8),
-#cloth-pos-workspace #pos_table th:nth-child(6),
-#cloth-pos-workspace #pos_table td:nth-child(6) {
-    width: 6%;
+#cloth-pos-workspace #pos_header_table thead th:nth-child(6),
+#cloth-pos-workspace #pos_cloth_table tbody tr td:nth-child(8),
+#cloth-pos-workspace #pos_table tbody tr td:nth-child(6) {
+    width: 4%;
 }
 
 #cloth-pos-workspace #pos_cloth_table td:nth-child(3),
@@ -416,17 +436,157 @@
     font-weight: 700;
 }
 
-#cloth-pos-workspace #pos_cloth_table td:nth-child(7) .select2-container {
+#cloth-pos-workspace #pos_cloth_table select[name*="[tailoring_master]"],
+#cloth-pos-workspace select[name*="[tailoring_master]"] {
+    display: inline-block !important;
+    width: 100% !important;
+    max-width: 175px !important;
+    height: 32px !important;
+    padding: 4px 28px 4px 10px !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    color: #334155 !important;
+    background-color: #f8fafc !important;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%2364748b' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e") !important;
+    background-repeat: no-repeat !important;
+    background-position: right 9px center !important;
+    background-size: 11px 11px !important;
+    border: 1px solid #d9e3ef !important;
+    border-radius: 6px !important;
+    outline: none !important;
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    cursor: pointer !important;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03) !important;
+    transition: all 0.2s ease-in-out !important;
+}
+
+#cloth-pos-workspace #pos_cloth_table select[name*="[tailoring_master]"]:hover,
+#cloth-pos-workspace select[name*="[tailoring_master]"]:hover {
+    border-color: #cbd5e1 !important;
+    background-color: #ffffff !important;
+}
+
+#cloth-pos-workspace #pos_cloth_table select[name*="[tailoring_master]"]:focus,
+#cloth-pos-workspace select[name*="[tailoring_master]"]:focus {
+    border-color: #007F61 !important;
+    background-color: #ffffff !important;
+    box-shadow: 0 0 0 3px rgba(0, 127, 97, 0.12) !important;
+}
+
+#cloth-pos-workspace #pos_cloth_table select[name*="[tailoring_master]"] option,
+#cloth-pos-workspace select[name*="[tailoring_master]"] option {
+    padding: 8px 12px;
+    font-size: 13px;
+    color: #1e293b;
+    background: #ffffff;
+}
+
+#cloth-pos-workspace #pos_cloth_table .select2-container,
+#cloth-pos-workspace td .select2-container {
+    width: 100% !important;
+    max-width: 175px !important;
+    vertical-align: middle !important;
+}
+
+#cloth-pos-workspace #pos_cloth_table .select2-container .select2-selection--single,
+#cloth-pos-workspace td .select2-container .select2-selection--single {
+    height: 32px !important;
+    border: 1px solid #d9e3ef !important;
+    border-radius: 6px !important;
+    background-color: #f8fafc !important;
+    display: flex !important;
+    align-items: center !important;
+    position: relative !important;
+    outline: none !important;
+    transition: all 0.2s ease-in-out !important;
+}
+
+#cloth-pos-workspace #pos_cloth_table .select2-container .select2-selection--single .select2-selection__rendered,
+#cloth-pos-workspace td .select2-container .select2-selection--single .select2-selection__rendered {
+    display: flex !important;
+    align-items: center !important;
+    height: 100% !important;
+    margin: 0 !important;
+    line-height: normal !important;
+    font-size: 13px !important;
+    color: #334155 !important;
+    font-weight: 500 !important;
+    /* padding-left: 10px !important; */
+    padding-right: 28px !important;
     width: 100% !important;
 }
 
-#cloth-pos-workspace #pos_cloth_table td:nth-child(7) .select2-selection {
-    height: 31px;
+#cloth-pos-workspace #pos_cloth_table .select2-container--default .select2-selection--single .select2-selection__arrow,
+#cloth-pos-workspace td .select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 100% !important;
+    position: absolute !important;
+    top: 0 !important;
+    right: 8px !important;
+    width: 18px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
 }
 
-#cloth-pos-workspace #pos_cloth_table td:nth-child(7) .select2-selection__rendered {
-    line-height: 29px;
+#cloth-pos-workspace #pos_cloth_table .select2-container--default .select2-selection--single .select2-selection__arrow b,
+#cloth-pos-workspace td .select2-container--default .select2-selection--single .select2-selection__arrow b {
+    border-color: #64748b transparent transparent transparent !important;
+    border-style: solid !important;
+    border-width: 5px 4px 0 4px !important;
+    height: 0 !important;
+    width: 0 !important;
+    margin: 0 !important;
+    position: static !important;
 }
+
+#cloth-pos-workspace #pos_cloth_table .select2-container--default.select2-container--open .select2-selection--single .select2-selection__arrow b,
+#cloth-pos-workspace td .select2-container--default.select2-container--open .select2-selection--single .select2-selection__arrow b {
+    border-color: transparent transparent #007F61 transparent !important;
+    border-width: 0 4px 5px 4px !important;
+}
+
+#cloth-pos-workspace #pos_cloth_table .select2-container--focus .select2-selection--single,
+#cloth-pos-workspace #pos_cloth_table .select2-container--open .select2-selection--single,
+#cloth-pos-workspace td .select2-container--focus .select2-selection--single,
+#cloth-pos-workspace td .select2-container--open .select2-selection--single {
+    border-color: #007F61 !important;
+    background-color: #ffffff !important;
+    box-shadow: 0 0 0 3px rgba(0, 127, 97, 0.15) !important;
+}
+
+.select2-dropdown {
+    border: 1px solid #d9e3ef !important;
+    border-radius: 6px !important;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+    background-color: #ffffff !important;
+    overflow: hidden !important;
+    z-index: 999999 !important;
+}
+
+.select2-results__options {
+    max-height: 220px !important;
+}
+
+.select2-container--default .select2-results__option {
+    padding: 6px 12px !important;
+    font-size: 13px !important;
+    color: #334155 !important;
+    border-radius: 4px !important;
+    margin-bottom: 2px !important;
+    transition: all 0.15s ease !important;
+}
+
+.select2-container--default .select2-results__option--highlighted[aria-selected],
+.select2-container--default .select2-results__option--highlighted,
+.select2-container--default .select2-results__option[aria-selected=true],
+.select2-container--default .select2-results__option:hover {
+    background-color: #007F61 !important;
+    color: #ffffff !important;
+    border-radius: 4px !important;
+}
+
 
 #cloth-pos-workspace .cloth-custom-input-group {
     background: #F8FAFC;
