@@ -383,21 +383,24 @@ class SellPosController extends Controller
 
                 DB::beginTransaction();
 
-                if (empty($request->input('transaction_date'))) {
+                $transaction_date = $request->input('transaction_date');
+                $delivery_date = $request->input('delivery_date');
+
+                if (empty($transaction_date)) {
                     $input['transaction_date'] = \Carbon\Carbon::now();
                 } else {
                     $input['transaction_date'] = \Carbon\Carbon::createFromFormat(
-                        'm/d/Y h:i A',
-                        $request->input('transaction_date')
+                        'd-m-Y h:i A',
+                        trim($transaction_date)
                     );
                 }
 
-                if (empty($request->input('delivery_date'))) {
+                if (empty($delivery_date)) {
                     $input['delivery_date'] = \Carbon\Carbon::now();
                 } else {
                     $input['delivery_date'] = \Carbon\Carbon::createFromFormat(
-                        'm/d/Y h:i A',
-                        $request->input('delivery_date')
+                        'd-m-Y h:i A',
+                        trim($delivery_date)
                     );
                 }
 
