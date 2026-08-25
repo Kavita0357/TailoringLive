@@ -523,7 +523,19 @@ class BusinessController extends Controller
 
             //Enabled modules
             $enabled_modules = $request->input('enabled_modules', []);
-            $business_details['enabled_modules'] = ! empty($enabled_modules) ? $enabled_modules : null;
+
+            $existing_modules = !empty($business->enabled_modules)
+                ? (array) $business->enabled_modules
+                : [];
+
+            if (in_array('tailoring', $existing_modules)) {
+                $enabled_modules[] = 'tailoring';
+            }
+
+            $business_details['enabled_modules'] = !empty($enabled_modules)
+                ? array_values(array_unique($enabled_modules))
+                : null;
+
             $business->fill($business_details);
             $business->save();
 

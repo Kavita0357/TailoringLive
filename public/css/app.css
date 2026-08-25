@@ -2231,6 +2231,7 @@ button.tw-dw-btn-info.dropdown-toggle {
   border-radius: 3px;
   cursor: pointer;
   position: relative;
+  margin-top: 0 !important;
 }
 
 .auth-checkbox:checked {
