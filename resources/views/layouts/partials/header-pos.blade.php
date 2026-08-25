@@ -136,7 +136,7 @@
         font-weight: bold;
     }
 
-    input#pos_transaction_date {
+    input#transaction_date {
         width: 164px !important;
     }
 
@@ -337,7 +337,7 @@
 
             </div>
         </div>
-        @if (request()->segment(1) == 'cloth-pos')
+        @if (request()->segment(1) == 'cloth-pos' && !empty($pos_settings['enable_transaction_date']))
             <div class="order-dates">
                 <div class="order-date-group">
                     <p class="tw-text-white"><strong>@lang('tailoring.order_date'):</strong></p>
@@ -348,16 +348,17 @@
                         @php
                             $order_date_attr = [
                                 'class' => 'form-control text-white tw-font-semibold',
-                                'id' => 'pos_transaction_date',
+                                'id' => 'transaction_date',
                                 'required',
+                                'form' => 'add_pos_sell_form',
+                                'readonly',
                             ];
-                            if (empty($pos_settings['enable_transaction_date'])) {
-                                $order_date_attr['readonly'] = 'readonly';
-                            }
                         @endphp
                         {!! Form::text(
                             'transaction_date',
-                            $default_datetime ?? @format_datetime($transaction->transaction_date ?? 'now'),
+                            !empty($transaction->transaction_date)
+                                ? \Carbon\Carbon::parse($transaction->transaction_date)->format('m/d/Y h:i A')
+                                : $default_datetime ?? now()->format('m/d/Y h:i A'),
                             $order_date_attr,
                         ) !!}
                     </div>
@@ -368,14 +369,34 @@
                         <span class="input-group-addon">
                             <i class="fa fa-calendar tw-font-semibold text-white"></i>
                         </span>
-                        {!! Form::text('delivery_date', $default_datetime ?? @format_datetime($transaction->delivery_date ?? 'now'), [
-                            'class' => 'form-control text-white tw-font-semibold',
-                            'id' => 'delivery_date',
-                            'required',
-                        ]) !!}
+                        {!! Form::text(
+                            'delivery_date',
+                            !empty($transaction->delivery_date)
+                                ? \Carbon\Carbon::parse($transaction->delivery_date)->format('m/d/Y h:i A')
+                                : $default_datetime ?? now()->format('m/d/Y h:i A'),
+                            [
+                                'class' => 'form-control text-white tw-font-semibold',
+                                'id' => 'delivery_date',
+                                'form' => 'add_pos_sell_form',
+                                'required',
+                            ],
+                        ) !!}
                     </div>
                 </div>
             </div>
+        @else
+            @php
+                $transaction_date = $default_datetime ?? ($transaction->transaction_date ?? now());
+                $delivery_date = $default_datetime ?? ($transaction->delivery_date ?? now());
+            @endphp
+
+            {!! Form::hidden('transaction_date', \Carbon\Carbon::parse($transaction_date)->format('m/d/Y h:i A'), [
+                // 'id' => 'transaction_date',
+            ]) !!}
+
+            {!! Form::hidden('delivery_date', \Carbon\Carbon::parse($delivery_date)->format('m/d/Y h:i A'), [
+                // 'id' => 'delivery_date',
+            ]) !!}
         @endif
         <div class="header-buttons">
             <div class="tw-w-full md:tw-w-auto !tw-p-0 tw-flex tw-items-center tw-justify-end tw-gap-4 tw-flex-col md:tw-flex-row tw-hidden md:tw-flex"

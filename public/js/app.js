@@ -34,11 +34,11 @@ $(document).ready(function () {
         autoclose: true,
         endDate: 'today',
     });
-    $(document).on('show.bs.modal', '.modal', function () {
+    /* $(document).on('show.bs.modal', '.modal', function () {
         if (!$(this).parent().is('body')) {
             $(this).appendTo('body');
         }
-    });
+    }); */
 
     $(document).on('click', '.btn-modal', function (e) {
         e.preventDefault();
