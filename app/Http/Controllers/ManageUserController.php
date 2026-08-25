@@ -985,14 +985,6 @@ class ManageUserController extends Controller
 
                         $html .= '</a></li>';
                     }
-
-                    $html .= '<li class="divider"></li>';
-
-                    if (auth()->user()->can('user.view')) {
-                        $html .= '<li><a href="#"><i class="fas fa-scroll" aria-hidden="true"></i> ' . __('lang_v1.ledger') . '</a></li>';
-                    }
-
-                    $html .= '<li><a href="#"><i class="fas fa-cut" aria-hidden="true"></i> ' . __('tailoring.cloths_made') . '</a></li>';
                     $html .= '</ul></div>';
 
                     return $html;
