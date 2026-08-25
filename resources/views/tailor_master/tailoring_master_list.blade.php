@@ -212,7 +212,36 @@
                 });
             });
 
-            @if($errors->any())
+            $(document).on('shown.bs.modal', function(e) {
+                var $modal = $(e.target);
+
+                var $select = $modal.find('.assigned_to_users');
+
+                if ($select.length) {
+                    if ($select.data('select2')) {
+                        $select.select2('destroy');
+                    }
+
+                    $select.select2({
+                        width: '100%',
+                        dropdownParent: $modal
+                    });
+                }
+
+                var $checkbox = $modal.find('#show_work_history_edit');
+
+                if ($checkbox.length) {
+                    $checkbox.iCheck({
+                        checkboxClass: 'icheckbox_square-blue',
+                        radioClass: 'iradio_square-blue'
+                    });
+                    $checkbox.val() == "1" ?
+                        $checkbox.iCheck('check') :
+                        $checkbox.iCheck('uncheck');
+                }
+            });
+
+            @if ($errors->any())
                 $('#tailor_master_add_form').modal('show');
             @endif
         });

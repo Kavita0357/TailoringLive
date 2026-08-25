@@ -12,7 +12,7 @@
             <h4 class="modal-title">@lang('lang_v1.add_tailor_master')</h4>
         </div>
 
-        <div class="modal-body">        
+        <div class="modal-body">
             <div class="row">
                 <div class="col-md-12">
                     <div class="form-group">
@@ -34,10 +34,10 @@
                                 <i class="fa fa-user"></i>
                             </span>
                             {!! Form::select('assigned_to_users', $users, null, [
-                                'class' => 'form-control select2',
+                                'class' => 'form-control assigned_to_users',
                                 'id' => 'assigned_to_users',
                                 'style' => 'width: 100%;',
-                                 // 'required' => 'required',
+                                // 'required' => 'required',
                             ]) !!}
                         </div>
                         @error('assigned_to_users')

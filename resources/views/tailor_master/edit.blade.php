@@ -21,7 +21,10 @@
                             <span class="input-group-addon">
                                 <i class="fa fa-id-badge"></i>
                             </span>
-                            {!! Form::text('contact_id', $tailor->contact_id, ['class' => 'form-control', 'placeholder' => __('lang_v1.contact_id')]) !!}
+                            {!! Form::text('contact_id', $tailor->contact_id, [
+                                'class' => 'form-control',
+                                'placeholder' => __('lang_v1.contact_id'),
+                            ]) !!}
                         </div>
                     </div>
                 </div>
@@ -34,10 +37,10 @@
                                 <i class="fa fa-user"></i>
                             </span>
                             {!! Form::select('assigned_to_users_disabled', $users, $tailor->user_id, [
-                                'class' => 'form-control select2',
+                                'class' => 'form-control assigned_to_users',
                                 'id' => 'assigned_to_users_edit',
                                 'style' => 'width: 100%;',
-                                'disabled' => 'disabled'
+                                'disabled' => 'disabled',
                             ]) !!}
                             {!! Form::hidden('assigned_to_users', $tailor->user_id) !!}
                         </div>
@@ -48,7 +51,10 @@
                     <div class="form-group">
                         <div class="checkbox">
                             <label>
-                                {!! Form::checkbox('show_work_history', 1, !empty($tailor->show_work_history), ['class' => 'input-icheck', 'id' => 'show_work_history_edit']) !!} @lang('lang_v1.show_work_history')
+                                {!! Form::checkbox('show_work_history', 1, !empty($tailor->show_work_history), [
+                                    'class' => 'input-icheck',
+                                    'id' => 'show_work_history_edit',
+                                ]) !!} @lang('lang_v1.show_work_history')
                             </label>
                         </div>
                     </div>
