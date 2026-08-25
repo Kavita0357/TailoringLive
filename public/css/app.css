@@ -1500,7 +1500,7 @@ label,
 }
 
 .input-group select.form-control,
-.input-group > select {
+.input-group>select {
   display: table-cell !important;
   float: none;
   width: 100% !important;
@@ -1622,7 +1622,7 @@ label,
 .input-group .form-control:not(:last-child),
 .input-number .form-control,
 .input-group.input-number .form-control,
-.input-group.input-number > .form-control {
+.input-group.input-number>.form-control {
   border-top-right-radius: 0 !important;
   border-bottom-right-radius: 0 !important;
   border-top-left-radius: 0 !important;
@@ -2213,8 +2213,8 @@ button.tw-dw-btn-info.dropdown-toggle:active {
   border-color: #007f61 !important;
 }
 
-.dropdown-menu > li > a:hover,
-.dropdown-menu > li > a:focus,
+.dropdown-menu>li>a:hover,
+.dropdown-menu>li>a:focus,
 .dropdown-item:hover,
 .dropdown-item:focus {
   background-color: #007f61 !important;
@@ -2225,4 +2225,31 @@ button.tw-dw-btn-info.dropdown-toggle:active {
 button.tw-dw-btn-info.dropdown-toggle {
   color: #007f61 !important;
   border-color: #007f61 !important;
+}
+
+.auth-checkbox {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  border: 2px solid #139375;
+  border-radius: 3px;
+  cursor: pointer;
+  position: relative;
+}
+
+.auth-checkbox:checked {
+  background-color: #139375;
+}
+
+.auth-checkbox:checked::after {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 1px;
+  width: 4px;
+  height: 8px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
 }
