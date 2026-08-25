@@ -2308,7 +2308,7 @@ class SellController extends Controller
                         ->distinct()
                         ->pluck('tailoring_master_id');
                     foreach ($tailor_master_ids as $tm_id) {
-                        \App\TailorMasterList::recalculateTailorMasterStats($id,$tm_id);
+                        \App\TailorMasterList::recalculateTailorMasterStats($id, $tm_id);
                     }
 
                     DB::commit();
@@ -2483,13 +2483,19 @@ class SellController extends Controller
                         $line_completed = min($remaining_completed, $line_cap);
                         $line_delivered = min($remaining_delivered, $line_completed);
 
+                        $updateData = [
+                            'completed_quantity' => $line_completed,
+                            'delivered_quantity' => $line_delivered,
+                            'updated_at' => now(),
+                        ];
+
+                        if ($line_completed != (int) $line->completed_quantity) {
+                            $updateData['completed_date'] = now();
+                        }
+
                         DB::table('transaction_sell_lines')
                             ->where('id', $line->id)
-                            ->update([
-                                'completed_quantity' => $line_completed,
-                                'delivered_quantity' => $line_delivered,
-                                'updated_at' => now(),
-                            ]);
+                            ->update($updateData);
 
                         $remaining_completed -= $line_completed;
                         $remaining_delivered -= $line_delivered;
@@ -2580,7 +2586,7 @@ class SellController extends Controller
                 ->pluck('tailoring_master_id');
 
             foreach ($tailor_master_ids as $tm_id) {
-                \App\TailorMasterList::recalculateTailorMasterStats($id,$tm_id);
+                \App\TailorMasterList::recalculateTailorMasterStats($id, $tm_id);
             }
 
             DB::commit();
@@ -2593,6 +2599,14 @@ class SellController extends Controller
                 ]);
         } catch (\Exception $e) {
             DB::rollBack();
+
+            \Log::error('updateOrderProcessingDelivery failed', [
+                'transaction_id' => $id,
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
 
             return redirect()
                 ->back()
@@ -2803,10 +2817,36 @@ class SellController extends Controller
                     $a_tailor = $common_tailoring_master;
                 }
 
+                // if ($a_qty > 0 && $a_tailor != "") {
+
+                //     $a_comp = min($a_completed, $a_qty);
+                //     $a_deliv = min($a_delivered, $a_comp);
+
+                //     $assignment = [
+                //         'sell_line_id' => $asn['sell_line_id'] ?? null,
+                //         'quantity' => $a_qty,
+                //         'assigned_quantity' => $a_qty,
+                //         'tailoring_master_id' => $a_tailor,
+                //         'completed_quantity' => $a_comp,
+                //         'delivered_quantity' => $a_deliv,
+                //         'assigned_date' => now(),
+                //     ];
+
+                //     if ($a_comp > 0) {
+                //         $assignment['completed_date'] = now();
+                //     }
+
+                //     $processed_assignments[] = $assignment;
+
+                //     $assigned_sum += $a_qty;
+                // }
+
                 if ($a_qty > 0 && $a_tailor != "") {
+
                     $a_comp = min($a_completed, $a_qty);
                     $a_deliv = min($a_delivered, $a_comp);
-                    $processed_assignments[] = [
+
+                    $assignment = [
                         'sell_line_id' => $asn['sell_line_id'] ?? null,
                         'quantity' => $a_qty,
                         'assigned_quantity' => $a_qty,
@@ -2814,6 +2854,9 @@ class SellController extends Controller
                         'completed_quantity' => $a_comp,
                         'delivered_quantity' => $a_deliv,
                     ];
+
+                    $processed_assignments[] = $assignment;
+
                     $assigned_sum += $a_qty;
                 }
             }
@@ -2853,7 +2896,7 @@ class SellController extends Controller
                 }
             }
 
-            $updateSellLineAndWages = function ($sellLine, $pa) {
+            /* $updateSellLineAndWages = function ($sellLine, $pa) {
                 \DB::table('transaction_sell_lines')
                     ->where('id', $sellLine->id)
                     ->update([
@@ -2862,6 +2905,52 @@ class SellController extends Controller
                         'tailoring_master_id' => $pa['tailoring_master_id'],
                         'completed_quantity' => $pa['completed_quantity'] ?? 0,
                         'delivered_quantity' => $pa['delivered_quantity'] ?? 0,
+                        'updated_at' => now(),
+                        'assigned_date' => $pa['assigned_date'] ?? null,
+                        'completed_date' => $pa['completed_date'] ?? null,
+                    ]);
+            }; */
+
+            $updateSellLineAndWages = function ($sellLine, $pa) {
+
+                $oldTailorMasterId = $sellLine->tailoring_master_id;
+                $newTailorMasterId = $pa['tailoring_master_id'];
+
+                $oldCompletedQty = (int) $sellLine->completed_quantity;
+                $newCompletedQty = (int) ($pa['completed_quantity'] ?? 0);
+
+
+                $assignedDate = $sellLine->assigned_date;
+
+                if (
+                    !empty($newTailorMasterId) &&
+                    (
+                        empty($oldTailorMasterId) ||
+                        $oldTailorMasterId != $newTailorMasterId
+                    )
+                ) {
+                    $assignedDate = now();
+                }
+
+
+                $completedDate = $sellLine->completed_date;
+
+                if ($newCompletedQty != $oldCompletedQty) {
+                    $completedDate = now();
+                }
+
+                \DB::table('transaction_sell_lines')
+                    ->where('id', $sellLine->id)
+                    ->update([
+                        'quantity' => $pa['quantity'],
+                        'assigned_quantity' => $pa['assigned_quantity'],
+                        'tailoring_master_id' => $newTailorMasterId,
+                        'completed_quantity' => $newCompletedQty,
+                        'delivered_quantity' => $pa['delivered_quantity'] ?? 0,
+
+                        'assigned_date' => $assignedDate,
+                        'completed_date' => $completedDate,
+
                         'updated_at' => now(),
                     ]);
             };
@@ -2881,13 +2970,38 @@ class SellController extends Controller
             }
 
             $baseSellLine = $existingSellLines->first();
-            foreach ($assignments_without_id as $pa) {
+            /* foreach ($assignments_without_id as $pa) {
                 $newSellLine = $baseSellLine->replicate();
                 $newSellLine->quantity = $pa['quantity'];
                 $newSellLine->assigned_quantity = $pa['assigned_quantity'];
                 $newSellLine->tailoring_master_id = $pa['tailoring_master_id'];
                 $newSellLine->completed_quantity = $pa['completed_quantity'] ?? 0;
                 $newSellLine->delivered_quantity = $pa['delivered_quantity'] ?? 0;
+                $newSellLine->assigned_date = $pa['assigned_date'] ?? null;
+                $newSellLine->completed_date = $pa['completed_date'] ?? null;
+                $newSellLine->save();
+            } */
+
+            foreach ($assignments_without_id as $pa) {
+
+                $newSellLine = $baseSellLine->replicate();
+
+                $completedQty = (int) ($pa['completed_quantity'] ?? 0);
+
+                $newSellLine->quantity = $pa['quantity'];
+                $newSellLine->assigned_quantity = $pa['assigned_quantity'];
+                $newSellLine->tailoring_master_id = $pa['tailoring_master_id'];
+                $newSellLine->completed_quantity = $completedQty;
+                $newSellLine->delivered_quantity = $pa['delivered_quantity'] ?? 0;
+
+                $newSellLine->assigned_date = !empty($pa['tailoring_master_id'])
+                    ? now()
+                    : null;
+
+                $newSellLine->completed_date = $completedQty > 0
+                    ? now()
+                    : null;
+
                 $newSellLine->save();
             }
 
@@ -2897,7 +3011,7 @@ class SellController extends Controller
 
             $tailor_master_ids_to_recalc = array_filter(array_unique($tailor_master_ids_to_recalc));
             foreach ($tailor_master_ids_to_recalc as $tm_id) {
-                TailorMasterList::recalculateTailorMasterStats($id,$tm_id);
+                TailorMasterList::recalculateTailorMasterStats($id, $tm_id);
             }
         }
 

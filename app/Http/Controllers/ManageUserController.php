@@ -837,8 +837,8 @@ class ManageUserController extends Controller
                         }
                         $total_wages_paid = (!empty($row->user_id) && !empty($row->transaction))
                             ? \App\TransactionPayment::where('payment_for', $row->user_id)
-                                ->where('transaction_id', $row->transaction->id)
-                                ->sum('amount')
+                            ->where('transaction_id', $row->transaction->id)
+                            ->sum('amount')
                             : 0;
                         $total_wages_due = max(0, $row->total_wages - $total_wages_paid);
                         $payment_status = $total_wages_due == $row->total_wages ? 'due' : 'partial';
@@ -851,16 +851,16 @@ class ManageUserController extends Controller
                     ->addColumn('total_wages_paid', function ($row) {
                         $total_wages_paid = (!empty($row->user_id) && !empty($row->transaction))
                             ? \App\TransactionPayment::where('payment_for', $row->user_id)
-                                ->where('transaction_id', $row->transaction->id)
-                                ->sum('amount')
+                            ->where('transaction_id', $row->transaction->id)
+                            ->sum('amount')
                             : 0;
                         return $total_wages_paid;
                     })
                     ->addColumn('total_wages_due', function ($row) {
                         $total_wages_paid = (!empty($row->user_id) && !empty($row->transaction))
                             ? \App\TransactionPayment::where('payment_for', $row->user_id)
-                                ->where('transaction_id', $row->transaction->id)
-                                ->sum('amount')
+                            ->where('transaction_id', $row->transaction->id)
+                            ->sum('amount')
                             : 0;
                         $total_wages_due = max(0, $row->total_wages - $total_wages_paid);
                         return $total_wages_due;
@@ -1230,7 +1230,7 @@ class ManageUserController extends Controller
             $query->where('business_id', $business_id);
         })->findOrFail($tailor_id);
 
-        $orders = \App\Transaction::where('transactions.business_id', $business_id)
+        /* $orders = \App\Transaction::where('transactions.business_id', $business_id)
             ->where('transactions.type', 'order')
             ->whereHas('sell_lines', function ($query) use ($tailor) {
                 $query->where('tailoring_master_id', $tailor->user_id);
@@ -1246,7 +1246,7 @@ class ManageUserController extends Controller
         if (!empty($location_id)) {
             $orders->where('location_id', $location_id);
         }
-        $orders = $orders->get();
+        $orders = $orders->get(); */
 
         /* $payments = \App\TransactionPayment::where('payment_for', $tailor->user_id)
             ->whereHas('transaction', function ($q) use ($business_id, $location_id) {
@@ -1262,6 +1262,32 @@ class ManageUserController extends Controller
         }
         $payments = $payments->get(); */
 
+        $orders = \App\Transaction::where('transactions.business_id', $business_id)
+            ->where('transactions.type', 'order')
+            ->whereHas('sell_lines', function ($query) use ($tailor) {
+                $query->where('tailoring_master_id', $tailor->user_id);
+            })
+            ->with([
+                'location',
+
+                'sell_lines' => function ($q) use ($tailor, $start_date, $end_date) {
+                    $q->where('tailoring_master_id', $tailor->user_id);
+
+                    if (!empty($start_date) && !empty($end_date)) {
+                        $q->whereDate('completed_date', '>=', $start_date)
+                            ->whereDate('completed_date', '<=', $end_date);
+                    }
+                },
+
+                'sell_lines.cloth'
+            ]);
+
+        if (!empty($location_id)) {
+            $orders->where('location_id', $location_id);
+        }
+
+        $orders = $orders->get();
+
         $payments = \App\TransactionPayment::where('payment_for', $tailor->user_id);
 
         if (!empty($start_date) && !empty($end_date)) {
@@ -1272,6 +1298,7 @@ class ManageUserController extends Controller
         $payments = $payments->get();
 
         $total_wages = $tailor->total_wages ?? 0;
+        $total_wages_by_date = 0;
         $total_wages_paid = $payments->sum('amount');
 
         $ledger_transactions = collect();
@@ -1282,6 +1309,7 @@ class ManageUserController extends Controller
                 if ($line->tailoring_master_id != $tailor->user_id) continue;
                 $quantity = !empty($line->completed_quantity) ? $line->completed_quantity : 0;
                 $order_wages += ($line->cloth->wages ?? 0) * $quantity;
+                $total_wages_by_date += $quantity * $line->cloth->wages;
             }
             // $total_wages += $order_wages;
 
@@ -1359,6 +1387,7 @@ class ManageUserController extends Controller
             'tailor',
             'ledger_transactions',
             'total_wages',
+            'total_wages_by_date',
             'total_wages_paid',
             'total_wages_due',
             'start_date',

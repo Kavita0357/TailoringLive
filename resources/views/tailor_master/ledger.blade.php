@@ -36,7 +36,7 @@
                     <td>@lang('tailoring.total_wages')</td>
                     <td class="align-right">
                         <span class="display_currency"
-                            data-currency_symbol="true">{{ $total_wages }}</span>
+                            data-currency_symbol="true">{{ $total_wages_by_date }}</span>
                     </td>
                 </tr>
                 <tr>

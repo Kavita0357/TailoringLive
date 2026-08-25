@@ -384,18 +384,21 @@ class SellPosController extends Controller
                 DB::beginTransaction();
 
                 if (empty($request->input('transaction_date'))) {
-                    $input['transaction_date'] = \Carbon::now();
+                    $input['transaction_date'] = \Carbon\Carbon::now();
                 } else {
-                    $input['transaction_date'] = $this->productUtil->uf_date($request->input('transaction_date'), true);
+                    $input['transaction_date'] = \Carbon\Carbon::createFromFormat(
+                        'm/d/Y h:i A',
+                        $request->input('transaction_date')
+                    );
                 }
+
                 if (empty($request->input('delivery_date'))) {
-                    $input['delivery_date'] = \Carbon::now();
+                    $input['delivery_date'] = \Carbon\Carbon::now();
                 } else {
-                    try {
-                        $input['delivery_date'] = $this->productUtil->uf_date($request->input('delivery_date'), true);
-                    } catch (\Exception $e) {
-                        $input['delivery_date'] = \Carbon::now();
-                    }
+                    $input['delivery_date'] = \Carbon\Carbon::createFromFormat(
+                        'm/d/Y h:i A',
+                        $request->input('delivery_date')
+                    );
                 }
 
                 if ($is_direct_sale) {

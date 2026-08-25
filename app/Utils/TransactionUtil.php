@@ -59,6 +59,9 @@ class TransactionUtil extends Util
             $pay_term_number = $contact->pay_term_number;
             $pay_term_type = $contact->pay_term_type;
         }
+
+       
+
         $transaction = Transaction::create([
             'business_id' => $business_id,
             'location_id' => $input['location_id'],
@@ -150,6 +153,8 @@ class TransactionUtil extends Util
             'is_kitchen_order' => ! empty($input['is_kitchen_order']) ? 1 : 0,
 
         ]);
+
+         \Log::info("Called dddd");
 
         return $transaction;
     }
@@ -654,6 +659,8 @@ class TransactionUtil extends Util
                     'assigned_quantity' => $uf_quantity,
                     'tailoring_master_id' => $tailorMasterId,
                     'transaction_id' => $transaction->id,
+                    'assigned_date' => now(),
+                    'completed_date' => null
                 ];
 
                 foreach ($extra_line_parameters as $key => $value) {
