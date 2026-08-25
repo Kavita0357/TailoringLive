@@ -12,7 +12,7 @@
             <h4 class="modal-title">@lang('lang_v1.add_tailor_master')</h4>
         </div>
 
-        <div class="modal-body">
+        <div class="modal-body">        
             <div class="row">
                 <div class="col-md-12">
                     <div class="form-group">
@@ -51,7 +51,7 @@
                 <div class="col-md-12">
                     <div class="form-group">
                         <div class="checkbox">
-                            <label style="padding-left: 0;">
+                            <label>
                                 {!! Form::checkbox('show_work_history', 1, true, ['class' => 'input-icheck', 'id' => 'show_work_history']) !!} @lang('lang_v1.show_work_history')
                             </label>
                         </div>

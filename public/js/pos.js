@@ -25,7 +25,7 @@ $(document).ready(function () {
         });
         $('table#pos_cloth_table tbody select.select2, table#pos_table tbody select.select2').each(function () {
             if (!$(this).hasClass('select2-hidden-accessible')) {
-                $(this).select2();
+                $(this).select2({ width: '100%' });
             }
         });
     }
@@ -3653,11 +3653,11 @@ function add_cloth_row(data, is_pos = false) {
     if (is_pos) {
         $('table#pos_table tbody').append(html);
         var $newRow = $('table#pos_table tbody tr').last();
-        $newRow.find('select.select2').select2();
+        $newRow.find('select.select2').select2({ width: '100%' });
     } else {
         $('#pos_cloth_table tbody').append(html);
         var $newRow = $('#pos_cloth_table tbody tr').last();
-        $newRow.find('select.select2').select2();
+        $newRow.find('select.select2').select2({ width: '100%' });
         $('#cloth_price span.total_quantity').html(__currency_trans_from_en(1, false));
         $('#cloth_price span.price_total').html(__currency_trans_from_en(data.cloth.making_charge || 0, false));
         $('#cloth_row_count').val(rowIndex + 1);

@@ -69,7 +69,8 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-6" style="margin-top: 15px;">
+                <div class="clearfix"></div>
+                <div class="col-md-12" style="margin-top: 10px; margin-bottom: 15px;">
                     <label class="radio-inline">
                         <input type="radio" name="contact_type_radio" id="inlineRadio1" value="individual" checked>
                         @lang('lang_v1.individual')
@@ -79,9 +80,7 @@
                         @lang('business.business')
                     </label>
                 </div>
-
-
-                <div class="clearfix customer_fields"></div>
+                <div class="clearfix"></div>
                 <div class="col-md-6 business" style="display: none;">
                     <div class="form-group">
                         {!! Form::label('supplier_business_name', __('business.business_name') . ':') !!}

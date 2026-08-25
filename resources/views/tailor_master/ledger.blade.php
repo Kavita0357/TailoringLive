@@ -14,7 +14,7 @@
 </div>
 
 <div class="col-md-12">
-    <div class="col-md-6 col-sm-6 col-xs-6" style="padding-left: 0;">
+    <div class="col-md-6 col-sm-6 col-xs-6">
         <div style="background-color: #2b7095; color: white; padding: 5px;">
             <strong>@lang('lang_v1.to'):</strong>
         </div>

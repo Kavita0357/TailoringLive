@@ -77,7 +77,8 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-6" style="margin-top: 15px;">
+                <div class="clearfix"></div>
+                <div class="col-md-12" style="margin-top: 10px; margin-bottom: 15px;">
                     <label class="radio-inline">
                         <input type="radio" name="contact_type_radio" @if ($contact->contact_type == 'individual') checked @endif
                             id="inlineRadio1" value="individual">
@@ -89,7 +90,7 @@
                         @lang('business.business')
                     </label>
                 </div>
-                <div class="clearfix customer_fields"></div>
+                <div class="clearfix"></div>
                 <div class="col-md-6 business" @if ($contact->contact_type == 'individual' || empty($contact->contact_type)) style="display: none;" @endif>
                     <div class="form-group">
                         {!! Form::label('supplier_business_name', __('business.business_name') . ':') !!}
