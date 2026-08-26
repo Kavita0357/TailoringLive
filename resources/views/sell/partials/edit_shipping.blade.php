@@ -278,17 +278,18 @@
                             $grouped_sell_details = $sell_details->groupBy('cloth_id');
                             $index = 0;
                         @endphp
-                        <table class="table table-condensed table-bordered table-striped table-responsive"
+                        <div class="table-responsive">
+                        <table class="table table-condensed table-bordered table-striped delivery-table"
                             id="pos_table">
                             <thead>
                                 <tr>
-                                    <th class="col-md-1">#</th>
-                                    <th class="col-md-3">@lang('tailoring.cloth')</th>
-                                    <th class="col-md-1">@lang('tailoring.qty')</th>
-                                    <th class="col-md-2">@lang('tailoring.assigned_qty')</th>
-                                    <th class="col-md-3">@lang('tailoring.assign_to_tailoring_master')</th>
-                                    <th class="col-md-1">@lang('tailoring.completed')</th>
-                                    <th class="col-md-1">@lang('tailoring.delivered')</th>
+                                    <th>#</th>
+                                    <th>@lang('tailoring.cloth')</th>
+                                    <th>@lang('tailoring.qty')</th>
+                                    <th>@lang('tailoring.assigned_qty')</th>
+                                    <th>@lang('tailoring.assign_to_tailoring_master')</th>
+                                    <th>@lang('tailoring.completed')</th>
+                                    <th>@lang('tailoring.delivered')</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -374,6 +375,7 @@
                                 @endforeach
                             </tbody>
                         </table>
+                        </div>
                     </div>
                 @endif
                 <div class="clearfix"></div>
