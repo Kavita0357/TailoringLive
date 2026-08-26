@@ -390,7 +390,7 @@ class SellPosController extends Controller
                     $input['transaction_date'] = \Carbon\Carbon::now();
                 } else {
                     $input['transaction_date'] = \Carbon\Carbon::createFromFormat(
-                        'd-m-Y h:i A',
+                        'm/d/Y h:i A',
                         trim($transaction_date)
                     );
                 }
@@ -399,7 +399,7 @@ class SellPosController extends Controller
                     $input['delivery_date'] = \Carbon\Carbon::now();
                 } else {
                     $input['delivery_date'] = \Carbon\Carbon::createFromFormat(
-                        'd-m-Y h:i A',
+                        'm/d/Y h:i A',
                         trim($delivery_date)
                     );
                 }
@@ -1198,9 +1198,9 @@ class SellPosController extends Controller
                     'discount' => $invoice_cloth_total['discount'] + $invoice_product_total['discount'],
                     'final_total' => $invoice_cloth_total['final_total'] + $invoice_product_total['final_total'],
                 ];
-                if (!empty($request->input('transaction_date'))) {
+               /*  if (!empty($request->input('transaction_date'))) {
                     $input['transaction_date'] = $this->productUtil->uf_date($request->input('transaction_date'), true);
-                }
+                } */
 
                 $input['commission_agent'] = !empty($request->input('commission_agent')) ? $request->input('commission_agent') : null;
                 if ($commsn_agnt_setting == 'logged_in_user') {
@@ -1261,7 +1261,7 @@ class SellPosController extends Controller
                     $input['document'] = $document_name;
                 }
 
-                if (empty($request->input('delivery_date'))) {
+                /* if (empty($request->input('delivery_date'))) {
                     $input['delivery_date'] = !empty($transaction_before->delivery_date) ? $transaction_before->delivery_date : \Carbon::now();
                 } else {
                     try {
@@ -1269,6 +1269,27 @@ class SellPosController extends Controller
                     } catch (\Exception $e) {
                         $input['delivery_date'] = !empty($transaction_before->delivery_date) ? $transaction_before->delivery_date : \Carbon::now();
                     }
+                } */
+
+                $transaction_date = $request->input('transaction_date');
+                $delivery_date = $request->input('delivery_date');
+
+                if (empty($transaction_date)) {
+                    $input['transaction_date'] = \Carbon\Carbon::now();
+                } else {
+                    $input['transaction_date'] = \Carbon\Carbon::createFromFormat(
+                        'm/d/Y h:i A',
+                        trim($transaction_date)
+                    );
+                }
+
+                if (empty($delivery_date)) {
+                    $input['delivery_date'] = \Carbon\Carbon::now();
+                } else {
+                    $input['delivery_date'] = \Carbon\Carbon::createFromFormat(
+                        'm/d/Y h:i A',
+                        trim($delivery_date)
+                    );
                 }
 
                 if ($request->input('additional_expense_value_1') != '') {

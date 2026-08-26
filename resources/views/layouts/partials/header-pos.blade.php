@@ -350,15 +350,16 @@
                                 'class' => 'form-control text-white tw-font-semibold',
                                 'id' => 'transaction_date',
                                 'required',
-                                'form' => 'add_pos_sell_form',
+                                'form' =>
+                                    request()->segment(2) == 'create' ? 'add_pos_sell_form' : 'edit_pos_sell_form',
                                 'readonly',
                             ];
                         @endphp
                         {!! Form::text(
                             'transaction_date',
                             !empty($transaction->transaction_date)
-                                ? \Carbon\Carbon::parse($transaction->transaction_date)->format('d/m/Y h:i A')
-                                : $default_datetime ?? now()->format('d/m/Y h:i A'),
+                                ? \Carbon\Carbon::parse($transaction->transaction_date)->format('m/d/Y h:i A')
+                                : $default_datetime ?? now()->format('m/d/Y h:i A'),
                             $order_date_attr,
                         ) !!}
                     </div>
@@ -372,13 +373,14 @@
                         {!! Form::text(
                             'delivery_date',
                             !empty($transaction->delivery_date)
-                                ? \Carbon\Carbon::parse($transaction->delivery_date)->format('d/m/Y h:i A')
-                                : $default_datetime ?? now()->format('d/m/Y h:i A'),
+                                ? \Carbon\Carbon::parse($transaction->delivery_date)->format('m/d/Y h:i A')
+                                : $default_datetime ?? now()->format('m/d/Y h:i A'),
                             [
                                 'class' => 'form-control text-white tw-font-semibold',
                                 'id' => 'delivery_date',
-                                'form' => 'add_pos_sell_form',
+                                'form' => request()->segment(2) == 'create' ? 'add_pos_sell_form' : 'edit_pos_sell_form',
                                 'required',
+                                'readonly',
                             ],
                         ) !!}
                     </div>
