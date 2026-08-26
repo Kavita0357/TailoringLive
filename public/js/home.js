@@ -1,22 +1,24 @@
 $(document).ready(function () {
     if ($('#dashboard_date_filter').length == 1) {
-        dateRangeSettings.startDate = financial_year.start;
-        dateRangeSettings.endDate = financial_year.end;
+        dateRangeSettings.startDate = moment();
+        dateRangeSettings.endDate = moment();
         $('#dashboard_date_filter').daterangepicker(dateRangeSettings, function (start, end) {
             $('#dashboard_date_filter span').html(
-                start.format(moment_date_format) + ' ~ ' + end.format(moment_date_format)
+                start.format('DD-MM-YYYY') + ' ~ ' + end.format('DD-MM-YYYY')
             );
             update_statistics(start.format('YYYY-MM-DD'), end.format('YYYY-MM-DD'));
+
             if ($('#quotation_table').length && $('#dashboard_location').length) {
                 quotation_datatable.ajax.reload();
             }
         });
 
         $('#dashboard_date_filter span').html(
-            financial_year.start.format(moment_date_format) + ' ~ ' + financial_year.end.format(moment_date_format)
+            moment().format('DD-MM-YYYY') + ' ~ ' + moment().format('DD-MM-YYYY')
         );
+        
+        update_statistics(moment().format('YYYY-MM-DD'), moment().format('YYYY-MM-DD'));
 
-        update_statistics(financial_year.start.format('YYYY-MM-DD'), financial_year.end.format('YYYY-MM-DD'));
     }
 
     $('#dashboard_location, #tailoring_status').change(function (e) {

@@ -171,7 +171,7 @@ return [
     'order_last_30_days' => 'Orders Last 30 Days',
     'order_current_fy' => 'Orders Current Financial Year',
     'orders_payment_due' => 'Orders Payment Due',
-    'ready_to_delivery' => 'Ready to Delivery',
+    'ready_to_delivery' => 'Ready for Delivery',
     'order_add' => 'Order added successfully',
     'order_update' => 'Order updated successfully',
     'order_delete' => 'Order deleted successfully',
