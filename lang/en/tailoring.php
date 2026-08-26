@@ -142,7 +142,7 @@ return [
     'work_status' => 'Production Status',
     'partially_delivered' => 'Partially Delivered',
     'received_subtitle' => 'Fabrics for your outfit have been received at the shop.',
-    'preparing_subtitle' => 'Handed over the fabrics to the tailor for stiching. Assign Tailormaster now.',
+    'preparing_subtitle' => 'Handed over the fabrics to the tailor for stiching.',
     'partially_delivered_subtitle' => 'Few Cloths Delivered; Rest is in progress.',
     'ready_to_deliver_subtitle' => 'All Cloths Have been stitched and is now ready for Delivery.',
     'delivered_subtitle' => 'All Cloths have been stitched and Delivered.',
