@@ -1089,23 +1089,15 @@ $(document).ready(function () {
         pos_total_row();
     });
     //Datetime picker
+    
     $('#transaction_date').datetimepicker({
         format: moment_date_format + ' hh:mm A',
         ignoreReadonly: true,
-    }).on('dp.change', function (e) {
-        console.log(e.date)
-        if (e.date) {
-            $(this).val(e.date.format(moment_date_format + ' hh:mm A'));
-        }
     });
 
     $('#delivery_date').datetimepicker({
         format: moment_date_format + ' hh:mm A',
         ignoreReadonly: true,
-    }).on('dp.change', function (e) {
-        if (e.date) {
-            $(this).val(e.date.format(moment_date_format + ' hh:mm A'));
-        }
     });
 
     //Direct sell submit
