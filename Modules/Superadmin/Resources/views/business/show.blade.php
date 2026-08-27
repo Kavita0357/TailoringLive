@@ -9,9 +9,9 @@
             <small> {{ $business->name }}</small>
         </h1>
         <!-- <ol class="breadcrumb">
-                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
-                <li class="active">Here</li>
-            </ol> -->
+                    <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
+                    <li class="active">Here</li>
+                </ol> -->
     </section>
 
     <!-- Main content -->
@@ -88,9 +88,9 @@
                         </div>
                     </div>
 
-                    <div class="col-sm-3">
-                        <div class="well well-sm">
-                            @if (!empty($business->owner))
+                    @if (!empty($business->owner))
+                        <div class="col-sm-3">
+                            <div class="well well-sm">
                                 <strong><i class="fa fa-user-circle-o margin-r-5"></i>
                                     @lang('business.owner')</strong>
                                 <p class="text-muted">
@@ -115,9 +115,9 @@
                                 <p class="text-muted">
                                     {{ $business->owner->address }}
                                 </p>
-                            @endif
+                            </div>
                         </div>
-                    </div>
+                    @endif
 
                     <div class="col-sm-3">
                         <div>
