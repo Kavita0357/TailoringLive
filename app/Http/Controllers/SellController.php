@@ -187,6 +187,7 @@ class SellController extends Controller
             $with = [];
             $shipping_statuses = $this->transactionUtil->shipping_statuses();
             $delivery_statuses = Transaction::delivery_statuses();
+            $production_status = Transaction::production_status();
 
             $sale_type = ! empty(request()->input('sale_type')) ? request()->input('sale_type') : 'sell';
 
@@ -401,6 +402,19 @@ class SellController extends Controller
                     }
                 } else {
                     $sells->where('transactions.delivery_status', request()->input('delivery_status'));
+                }
+            }
+
+            if (! empty(request()->input('work_status')) && $sale_type == 'order') {
+                $w_status = request()->input('work_status');
+                if ($w_status == 'completed') {
+                    $sells->havingRaw('SUM(CASE WHEN tsl.cloth_id IS NOT NULL THEN COALESCE(tsl.quantity, 0) ELSE 0 END) > 0 AND SUM(CASE WHEN tsl.cloth_id IS NOT NULL THEN COALESCE(tsl.delivered_quantity, 0) ELSE 0 END) = SUM(CASE WHEN tsl.cloth_id IS NOT NULL THEN COALESCE(tsl.quantity, 0) ELSE 0 END)');
+                } elseif ($w_status == 'ready_to_deliver') {
+                    $sells->havingRaw('SUM(CASE WHEN tsl.cloth_id IS NOT NULL THEN COALESCE(tsl.quantity, 0) ELSE 0 END) > 0 AND SUM(CASE WHEN tsl.cloth_id IS NOT NULL THEN COALESCE(tsl.completed_quantity, 0) ELSE 0 END) = SUM(CASE WHEN tsl.cloth_id IS NOT NULL THEN COALESCE(tsl.quantity, 0) ELSE 0 END) AND SUM(CASE WHEN tsl.cloth_id IS NOT NULL THEN COALESCE(tsl.delivered_quantity, 0) ELSE 0 END) < SUM(CASE WHEN tsl.cloth_id IS NOT NULL THEN COALESCE(tsl.quantity, 0) ELSE 0 END)');
+                } elseif ($w_status == 'in_progress') {
+                    $sells->havingRaw('(MAX(CASE WHEN tsl.tailoring_master_id IS NOT NULL AND tsl.cloth_id IS NOT NULL THEN 1 ELSE 0 END) = 1 OR SUM(CASE WHEN tsl.cloth_id IS NOT NULL THEN COALESCE(tsl.completed_quantity, 0) ELSE 0 END) > 0) AND (SUM(CASE WHEN tsl.cloth_id IS NOT NULL THEN COALESCE(tsl.quantity, 0) ELSE 0 END) = 0 OR SUM(CASE WHEN tsl.cloth_id IS NOT NULL THEN COALESCE(tsl.completed_quantity, 0) ELSE 0 END) < SUM(CASE WHEN tsl.cloth_id IS NOT NULL THEN COALESCE(tsl.quantity, 0) ELSE 0 END))');
+                } elseif ($w_status == 'received') {
+                    $sells->havingRaw('MAX(CASE WHEN tsl.tailoring_master_id IS NOT NULL AND tsl.cloth_id IS NOT NULL THEN 1 ELSE 0 END) = 0 AND SUM(CASE WHEN tsl.cloth_id IS NOT NULL THEN COALESCE(tsl.completed_quantity, 0) ELSE 0 END) = 0 AND SUM(CASE WHEN tsl.cloth_id IS NOT NULL THEN COALESCE(tsl.delivered_quantity, 0) ELSE 0 END) = 0');
                 }
             }
 
@@ -832,6 +846,7 @@ class SellController extends Controller
         $shipping_statuses = $this->transactionUtil->shipping_statuses();
 
         $delivery_statuses = Transaction::delivery_statuses();
+        $production_status = Transaction::production_status();
 
         $sources = $this->transactionUtil->getSources($business_id);
         if ($is_woocommerce) {
@@ -842,7 +857,7 @@ class SellController extends Controller
 
 
         return view('sell.index')
-            ->with(compact('business_locations', 'customers', 'is_woocommerce', 'sales_representative', 'is_cmsn_agent_enabled', 'commission_agents', 'service_staffs', 'is_tables_enabled', 'is_service_staff_enabled', 'is_types_service_enabled', 'shipping_statuses', 'delivery_statuses', 'sources', 'payment_types'));
+            ->with(compact('business_locations', 'customers', 'is_woocommerce', 'sales_representative', 'is_cmsn_agent_enabled', 'commission_agents', 'service_staffs', 'is_tables_enabled', 'is_service_staff_enabled', 'is_types_service_enabled', 'shipping_statuses', 'delivery_statuses', 'production_status', 'sources', 'payment_types'));
     }
 
     /**

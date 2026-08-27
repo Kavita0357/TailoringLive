@@ -379,6 +379,16 @@ class Transaction extends Model
         ];
     }
 
+    public static function production_status()
+    {
+        return [
+            'received' => __('tailoring.received'),
+            'in_progress' => __('tailoring.in_progress'),
+            'ready_to_deliver' => __('tailoring.ready_to_deliver'),
+            'completed' => __('tailoring.completed'),
+        ];
+    }
+
     public static function sales_order_statuses($only_key_value = false)
     {
         if ($only_key_value) {

@@ -202,7 +202,6 @@ return [
     'total_wages_due' => 'Total Wages Due',
     'total_tailor_masters' => 'Total Tailormasters',
     'all_tailor_masters' => 'All Tailormasters',
-    'all_orders' => 'All Orders',
     'completed_orders' => 'Completed Orders',
     'designs' => 'Designs',
     'design_name' => 'Design Name',
