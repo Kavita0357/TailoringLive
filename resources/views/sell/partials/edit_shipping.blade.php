@@ -272,7 +272,7 @@
                     $effective_delivery_status =
                         $delivery_status_display['delivery_status'] ?? $transaction->delivery_status;
                 @endphp
-                @if ($effective_delivery_status != 'received')
+                @if ($transaction->type == 'order')
                     <div id="tailorMasterAssignmentSection" class="col-md-12">
                         @php
                             $grouped_sell_details = $sell_details->groupBy('cloth_id');
@@ -325,7 +325,7 @@
                                                         </div>
                                                     @endforeach
                                                 @else
-                                                    -
+                                                    <span style="font-weight: bold;">{{ intval($first_line->assigned_quantity ?: $total_qty) }}</span>
                                                 @endif
                                             </td>
 
@@ -338,7 +338,7 @@
                                                         </div>
                                                     @endforeach
                                                 @else
-                                                    -
+                                                    <span style="font-weight: bold;">Not Assigned</span>
                                                 @endif
                                             </td>
 
@@ -351,7 +351,7 @@
                                                         </div>
                                                     @endforeach
                                                 @else
-                                                    -
+                                                    <span style="font-weight: bold;">0</span>
                                                 @endif
                                             </td>
 
@@ -363,7 +363,7 @@
                                                         </div>
                                                     @endforeach
                                                 @else
-                                                    -
+                                                    <span style="font-weight: bold;">0</span>
                                                 @endif
                                             </td>
                                         </tr>
@@ -709,9 +709,9 @@
         var statusSubtitles = {
             'received': "{{ __('tailoring.received_subtitle') }}",
             'preparing': "{{ __('tailoring.preparing_subtitle') }}",
-            'partially_delivered': "{{ __('tailoring.preparing_subtitle') }}",
+            'partially_delivered': "{{ __('tailoring.partially_delivered_subtitle') }}",
             'ready_to_deliver': "{{ __('tailoring.ready_to_deliver_subtitle') }}",
-            'delivered': "{{ __('tailoring.preparing_subtitle') }}"
+            'delivered': "{{ __('tailoring.delivered_subtitle') }}"
         };
 
         function updateSubtitle() {
@@ -728,21 +728,21 @@
             var status = $('#edit_shipping_form #delivery_status').val();
             updateSubtitle();
 
+            // Always show the cloth table for all statuses
+            $('#tailorMasterAssignmentSection').show();
+
             if (status === 'delivered') {
                 $('#deliveryPerson').show();
                 $('#tailoringMaster').hide();
-                $('#tailorMasterAssignmentSection').hide();
             } else if (status === 'preparing' || status === 'partially_delivered') {
                 $('#deliveryPerson').hide();
                 $('#tailoringMaster').show();
-                $('#tailorMasterAssignmentSection').show();
                 initSelect2($(".assignment-tailor-select"));
                 initSelect2($("#common_tailoring_master"));
                 updateDisabledStates();
             } else {
                 $('#deliveryPerson').hide();
                 $('#tailoringMaster').hide();
-                $('#tailorMasterAssignmentSection').hide();
             }
         }
 
