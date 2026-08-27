@@ -171,7 +171,7 @@
                 class="box-primary tw-mb-2 tw-transition-all lg:tw-col-span-2 tw-duration-200 tw-bg-white tw-shadow-sm tw-rounded-xl tw-ring-1 hover:tw-shadow-md hover:tw-translate-y-0.5 tw-ring-gray-200">
                 <div class="tw-p-2 sm:tw-p-3">
                     <div class="box-header tw-flex tw-items-center tw-justify-between">
-                        <h3 class="box-title">@lang('tailoring.all_orders')</h3>
+                        <h3 class="box-title">@lang('tailoring.tailormaster_work_summary')</h3>
                         <div class="box-tools">
                             {!! Form::select('tailor_master_filter_id', $tailor_masters->pluck('name', 'user_id'), null, [
                                 'class' => 'form-control select2',

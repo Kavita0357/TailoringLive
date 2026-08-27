@@ -17,7 +17,7 @@
     $old_payment_status = $old['payment_status'] ?? '';
     $update_note = $activity->getExtraProperty('update_note');
 @endphp
-<table class="no-border table table-slim mb-0">
+<table class="no-border table-slim mb-0">
 @if(!empty($status) && $status != $old_status)
     <tr>
         <th class="width-50">@lang('sale.status'): </th> 
