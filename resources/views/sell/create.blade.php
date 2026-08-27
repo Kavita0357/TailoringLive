@@ -559,26 +559,26 @@
                                     id="pos_cloth_table">
                                     <thead>
                                         <tr>
-                                            <th class="text-center">
+                                            <th class="text-center" style="width: 25%;">
                                                 @lang('tailoring.cloth_name')
                                             </th>
-                                            <th class="text-center">
+                                            <th class="text-center" style="width: 12%;">
                                                 @lang('sale.qty')
                                             </th>
-                                            <th class="@if (!auth()->user()->can('edit_product_price_from_sale_screen')) hide @endif">
+                                            <th class="@if (!auth()->user()->can('edit_product_price_from_sale_screen')) hide @endif" style="width: 17%;">
                                                 <!-- @lang('tailoring.wages') -->
                                                 @lang('tailoring.making_charge')
                                             </th>
-                                            <th class="@if (!auth()->user()->can('edit_product_discount_from_sale_screen')) hide @endif">
+                                            <th class="@if (!auth()->user()->can('edit_product_discount_from_sale_screen')) hide @endif" style="width: 17%;">
                                                 @lang('receipt.discount')
                                             </th>
-                                            <th>
+                                            <th class="text-center" style="width: 17%;">
                                                 @lang('tailoring.assign_to_tailoring_master')
                                             </th>
-                                            <th class="text-center">
+                                            <th class="text-center" style="width: 15%;">
                                                 @lang('sale.subtotal')
                                             </th>
-                                            <th class="text-center"><i class="fas fa-times" aria-hidden="true"></i></th>
+                                            <th class="text-center" style="width: 4%;"><i class="fas fa-times" aria-hidden="true"></i></th>
                                         </tr>
                                     </thead>
                                     <tbody></tbody>
@@ -1555,9 +1555,9 @@
             var statusSubtitles = {
                 'received': "{{ __('tailoring.received_subtitle') }}",
                 'preparing': "{{ __('tailoring.preparing_subtitle') }}",
-                'partially_delivered': "{{ __('tailoring.preparing_subtitle') }}",
+                'partially_delivered': "{{ __('tailoring.partially_delivered_subtitle') }}",
                 'ready_to_deliver': "{{ __('tailoring.ready_to_deliver_subtitle') }}",
-                'delivered': "{{ __('tailoring.preparing_subtitle') }}"
+                'delivered': "{{ __('tailoring.delivered_subtitle') }}"
             };
 
             function updateSubtitle() {

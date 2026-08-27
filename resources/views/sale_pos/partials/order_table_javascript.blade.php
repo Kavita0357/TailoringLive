@@ -68,6 +68,14 @@
                         d.shipping_status = $('#shipping_status').val();
                     }
 
+                    if ($('#work_status').length) {
+                        d.work_status = $('#work_status').val();
+                    }
+
+                    if ($('#delivery_status').length) {
+                        d.delivery_status = $('#delivery_status').val();
+                    }
+
                     if ($('#only_subscriptions').length && $('#only_subscriptions').is(
                             ':checked')) {
                         d.only_subscriptions = 1;

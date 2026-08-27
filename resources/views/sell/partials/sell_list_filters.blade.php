@@ -139,6 +139,23 @@
         </div>
     </div>
 @endif
+@if ($sale_type == 'order')
+    @php
+        $production_status = !empty($production_status) ? $production_status : \App\Transaction::production_status();
+    @endphp
+    @if (!empty($production_status))
+        <div class="col-md-3">
+            <div class="form-group">
+                {!! Form::label('work_status', __('tailoring.work_status') . ':') !!}
+                {!! Form::select('work_status', $production_status, null, [
+                'class' => 'form-control select2',
+                'style' => 'width:100%',
+                'placeholder' => __('lang_v1.all'),
+            ]) !!}
+            </div>
+        </div>
+    @endif
+@endif
 @if (!empty($delivery_statuses) && $sale_type == 'order')
     <div class="col-md-3">
         <div class="form-group">

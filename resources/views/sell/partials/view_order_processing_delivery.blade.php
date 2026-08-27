@@ -135,7 +135,7 @@
                                                 <input
                                                     class="form-control input_number row_discount_amount assigned-qty-input"
                                                     name="cloths[{{ $index }}][assignments][0][assigned_qty]"
-                                                    type="number" min="1" value="1" required>
+                                                    type="number" min="1" value="{{ intval($first_line->assigned_quantity ?: $total_qty) }}" required>
                                             </div>
                                         @endif
                                     </div>

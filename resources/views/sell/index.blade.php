@@ -209,6 +209,10 @@
                             d.shipping_status = $('#shipping_status').val();
                         }
 
+                        if ($('#work_status').length) {
+                            d.work_status = $('#work_status').val();
+                        }
+
                         if ("{{ request()->get('delivery_status') }}")
                             d.delivery_status = "{{ request()->get('delivery_status') }}";
                         else if ($('#delivery_status').length) {
@@ -434,7 +438,7 @@
             });
 
             $(document).on('change',
-                '#sell_list_filter_location_id, #sell_list_filter_customer_id, #sell_list_filter_payment_status, #created_by, #sales_cmsn_agnt, #service_staffs, #shipping_status, #delivery_status, #sell_list_filter_source, #payment_method',
+                '#sell_list_filter_location_id, #sell_list_filter_customer_id, #sell_list_filter_payment_status, #created_by, #sales_cmsn_agnt, #service_staffs, #shipping_status, #work_status, #delivery_status, #sell_list_filter_source, #payment_method',
                 function() {
                     sell_table.ajax.reload();
                 });
