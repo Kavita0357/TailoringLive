@@ -63,7 +63,7 @@
                             </td>
                         </tr>
                         <tr>
-                            <th>@lang('account.tailormaster_wages'):</th>
+                            <th>@lang('tailoring.tailormaster_wages_due'):</th>
                             <td>&nbsp;</td>
                             <td>
                                 <input type="hidden" id="hidden_tailormaster_wages" class="debit">
@@ -169,7 +169,7 @@
                     __write_number($('input#hidden_supplier_due'), result.supplier_due);
 
                     $('span#tailormaster_wages').text(__currency_trans_from_en(result.tailormaster_wages,
-                    true));
+                        true));
                     __write_number($('input#hidden_tailormaster_wages'), result.tailormaster_wages);
 
                     $('span#customer_due').text(__currency_trans_from_en(result.customer_due, true));
@@ -196,7 +196,7 @@
                             ':</td><td><input type="hidden" class="credit" value="' + accnt_bal + '">' +
                             accnt_bal_with_sym + '</td><td>&nbsp;</td></tr>';
                         $('table#trial_balance_table tbody#capital_account_balances_details').append(
-                        account_tr);
+                            account_tr);
                     }
 
                     var total_debit = 0;

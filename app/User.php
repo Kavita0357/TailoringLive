@@ -226,11 +226,11 @@ class User extends Authenticatable
     {
         return \App\TailorMasterList::whereHas('user', function ($query) use ($business_id) {
             $query->where('business_id', $business_id)
+                ->where('is_active', 'active')
                 ->whereHas('roles', function ($q) use ($business_id) {
                     $q->where('name', 'Tailor Master#' . $business_id);
                 });
-        })
-        ->pluck('name', 'user_id');
+        })->pluck('name', 'user_id');
     }
 
     public static function allTailorMasterUsers($business_id)

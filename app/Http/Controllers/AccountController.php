@@ -380,7 +380,7 @@ class AccountController extends Controller
                 ])
                 ->groupBy('account_transactions.id')
                 //->orderBy('account_transactions.id', 'asc')
-                ->orderBy('account_transactions.operation_date', 'asc');
+                ->orderBy('account_transactions.operation_date', 'desc');
             if (! empty(request()->input('type'))) {
                 $accounts->where('account_transactions.type', request()->input('type'));
             }

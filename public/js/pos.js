@@ -1089,14 +1089,14 @@ $(document).ready(function () {
         pos_total_row();
     });
     //Datetime picker
-    
+
     $('#transaction_date').datetimepicker({
-        format: moment_date_format + ' hh:mm A',
+        format: moment_date_format + ' ' + moment_time_format,
         ignoreReadonly: true,
     });
 
     $('#delivery_date').datetimepicker({
-        format: moment_date_format + ' hh:mm A',
+        format: moment_date_format + ' ' + moment_time_format,
         ignoreReadonly: true,
     });
 

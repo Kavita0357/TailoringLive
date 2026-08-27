@@ -4,7 +4,7 @@ $(document).ready(function () {
         dateRangeSettings.endDate = moment();
         $('#dashboard_date_filter').daterangepicker(dateRangeSettings, function (start, end) {
             $('#dashboard_date_filter span').html(
-                start.format('DD-MM-YYYY') + ' ~ ' + end.format('DD-MM-YYYY')
+                start.format(moment_date_format) + ' ~ ' + end.format(moment_date_format)
             );
             update_statistics(start.format('YYYY-MM-DD'), end.format('YYYY-MM-DD'));
 
@@ -14,7 +14,7 @@ $(document).ready(function () {
         });
 
         $('#dashboard_date_filter span').html(
-            moment().format('DD-MM-YYYY') + ' ~ ' + moment().format('DD-MM-YYYY')
+            moment().format(moment_date_format) + ' ~ ' + moment().format(moment_date_format)
         );
         
         update_statistics(moment().format('YYYY-MM-DD'), moment().format('YYYY-MM-DD'));

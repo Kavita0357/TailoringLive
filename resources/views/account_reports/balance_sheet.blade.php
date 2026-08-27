@@ -64,7 +64,7 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <th>@lang('account.tailormaster_wages'):</th>
+                                        <th>@lang('tailoring.tailormaster_wages_due'):</th>
                                         <td>
                                             <input type="hidden" id="hidden_tailormaster_wages" class="liability">
                                             <span class="remote-data" id="tailormaster_wages">

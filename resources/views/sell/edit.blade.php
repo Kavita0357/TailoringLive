@@ -220,7 +220,6 @@
                             </div>
                         @endif
                     </div>
-
                     <div class="@if (!empty($commission_agent)) col-sm-3 @else col-sm-4 @endif">
                         @if ($transaction->type == 'order')
                             <div class="form-group">

@@ -243,4 +243,5 @@ return [
     'cloth_pos' => 'Cloth POS',
     'list_cloth_pos' => 'List Cloth POS',
     'cannot_delete_assigned_tailormaster' => 'Order invoice is assigned to a Tailormaster and cannot be deleted. Please unassign the Tailormaster first and try again.',
+    'tailormaster_wages_due' => 'Tailormaster Wages Due'
 ];
