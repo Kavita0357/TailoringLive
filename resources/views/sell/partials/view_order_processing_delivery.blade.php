@@ -135,7 +135,9 @@
                                                 <input
                                                     class="form-control input_number row_discount_amount assigned-qty-input"
                                                     name="cloths[{{ $index }}][assignments][0][assigned_qty]"
-                                                    type="number" min="1" value="{{ intval($first_line->assigned_quantity ?: $total_qty) }}" required>
+                                                    type="number" min="1"
+                                                    value="{{ intval($first_line->tailoring_master_id != '' ? $first_line->assigned_quantity : 0) }}"
+                                                    required>
                                             </div>
                                         @endif
                                     </div>
@@ -191,7 +193,10 @@
                                 </td>
                                 <td style="vertical-align: bottom; padding-bottom: 10px;">
                                     <button type="button" class="btn btn-primary btn-sm add-assignment-row-btn"
-                                        style="margin-bottom: 6px;"><i class="fa fa-plus"></i></button>
+                                        style="margin-bottom: 6px;"
+                                        @if (intval($total_qty) == 1) {{ 'disabled' }} @endif>
+                                        <i class="fa fa-plus"></i>
+                                    </button>
                                 </td>
                                 <td>
                                     <div class="completed-container" data-cloth-index="{{ $index }}">
@@ -573,6 +578,7 @@
 
             var assigned_sum = 0;
             $qtyContainer.find('.assigned-qty-input').each(function() {
+                console.log($(this).val());
                 assigned_sum += parseInt($(this).val()) || 0;
             });
 
@@ -583,10 +589,10 @@
             }
 
             var sub_index = $qtyContainer.find('.assignment-qty-row').length;
-            if (sub_index >= total_qty) {
+            /* if (sub_index >= total_qty) {
                 toastr.error("Cannot add more rows than total quantity (" + total_qty + ").");
                 return;
-            }
+            } */
 
             var qty_html = `
                 <div class="assignment-qty-row form-group" style="margin-bottom: 10px;">
@@ -763,7 +769,7 @@
         validateAssignedQuantities();
 
         var $modal = $form.closest('.modal');
-        
+
         $modal.on('shown.bs.modal', function() {
             if ($commonTailoringMaster.length) {
                 updateTailoringMasterDisabledStates(false);

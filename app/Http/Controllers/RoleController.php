@@ -40,33 +40,67 @@ class RoleController extends Controller
         if (request()->ajax()) {
             $business_id = request()->session()->get('user.business_id');
 
-            Role::firstOrCreate(
-                ['business_id' => $business_id, 'name' => 'Tailor Master#' . $business_id],
-                ['guard_name' => 'web', 'is_default' => 1]
-            );
+            $enabled_modules = !empty(session('business.enabled_modules'))
+                ? session('business.enabled_modules')
+                : [];
+
+            // Create Tailor Master role only if tailoring module is enabled
+            if (in_array('tailoring', $enabled_modules)) {
+                Role::firstOrCreate(
+                    [
+                        'business_id' => $business_id,
+                        'name' => 'Tailor Master#' . $business_id
+                    ],
+                    [
+                        'guard_name' => 'web',
+                        'is_default' => 1
+                    ]
+                );
+            }
 
             $roles = Role::where('business_id', $business_id)
+                ->when(!in_array('tailoring', $enabled_modules), function ($query) use ($business_id) {
+                    $query->where('name', '!=', 'Tailor Master#' . $business_id);
+                })
                 ->select(['name', 'id', 'is_default', 'business_id']);
 
             return DataTables::of($roles)
                 ->addColumn('action', function ($row) {
                     $role_name = str_replace('#' . $row->business_id, '', $row->name);
-                    if ((! $row->is_default || in_array($row->name, ['Cashier#' . $row->business_id])) && $role_name != 'Tailor Master') {
+
+                    if (
+                        (! $row->is_default || in_array($row->name, ['Cashier#' . $row->business_id]))
+                        && $role_name != 'Tailor Master'
+                    ) {
                         $action = '';
+
                         if (auth()->user()->can('roles.update')) {
-                            $action .= '<a href="' . action([\App\Http\Controllers\RoleController::class, 'edit'], [$row->id]) . '" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline tw-dw-btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>';
+                            $action .= '<a href="' .
+                                action([\App\Http\Controllers\RoleController::class, 'edit'], [$row->id]) .
+                                '" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline tw-dw-btn-primary">
+                            <i class="glyphicon glyphicon-edit"></i> ' .
+                                __('messages.edit') .
+                                '</a>';
                         }
+
                         if (auth()->user()->can('roles.delete')) {
                             $action .= '&nbsp;
-                                <button data-href="' . action([\App\Http\Controllers\RoleController::class, 'destroy'], [$row->id]) . '" class="tw-dw-btn tw-dw-btn-outline tw-dw-btn-xs tw-dw-btn-error delete_role_button"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
+                            <button data-href="' .
+                                action([\App\Http\Controllers\RoleController::class, 'destroy'], [$row->id]) .
+                                '" class="tw-dw-btn tw-dw-btn-outline tw-dw-btn-xs tw-dw-btn-error delete_role_button">
+                            <i class="glyphicon glyphicon-trash"></i> ' .
+                                __('messages.delete') .
+                                '</button>';
                         }
 
                         return $action;
                     }
+
                     return '';
                 })
                 ->editColumn('name', function ($row) use ($business_id) {
                     $role_name = str_replace('#' . $business_id, '', $row->name);
+
                     if (in_array($role_name, ['Admin', 'Cashier'])) {
                         $role_name = __('lang_v1.' . $role_name);
                     } elseif ($role_name == 'Tailor Master') {

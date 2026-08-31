@@ -159,15 +159,6 @@
                             ]) !!}
                         </div>
                     </div>
-                    <div class="col-md-6" id="tailor_wages_field" style="display: none;">
-                        <div class="form-group">
-                            {!! Form::label('wages', __('tailoring.wages') . ':') !!}
-                            {!! Form::text('wages', isset($user->wages) ? @num_format($user->wages) : null, [
-                                'class' => 'form-control input_number',
-                                'placeholder' => __('tailoring.wages'),
-                            ]) !!}
-                        </div>
-                    </div>
                     <div class="clearfix"></div>
                     <div class="col-md-3">
                         <h4>@lang('role.access_locations') @show_tooltip(__('tooltip.access_locations_permission'))</h4>
@@ -304,18 +295,6 @@
                 $('#allow_login').on('ifUnchecked', function(event) {
                     $('div.user_auth_fields').addClass('hide');
                 });
-
-                function toggleTailorWagesField() {
-                    var selectedRole = $('#role option:selected').text().toLowerCase().trim();
-                    if ($('#role').val() === 'tailor master' || selectedRole === 'tailor master') {
-                        $('#tailor_wages_field').show();
-                    } else {
-                        $('#tailor_wages_field').hide();
-                    }
-                }
-
-                toggleTailorWagesField();
-                $('#role').on('change', toggleTailorWagesField);
 
                 $('#user_allowed_contacts').select2({
                     ajax: {

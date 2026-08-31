@@ -67,21 +67,22 @@ class AdminSidebarMenu
             //     <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7"></path>
             //     <path d="M10 12h4v4h-4z"></path>
             //   </svg>', 'active' => request()->segment(1) == 'home'])->order(5);
-
-            $menu->url(route('cloth_pos.create'), __('tailoring.new_order'), [
-                'icon' => '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-plus">
+            if (in_array('tailoring', $enabled_modules)) {
+                $menu->url(route('cloth_pos.create'), __('tailoring.new_order'), [
+                    'icon' => '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-plus">
                             <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
                             <path d="M12 5l0 14"></path>
                             <path d="M5 12l14 0"></path>
                         </svg>',
-                'active' => request()->segment(1) == 'cloth-pos' && request()->segment(2) == 'create',
-                'class' => 'new-order-button'
-            ])->order(1);
+                    'active' => request()->segment(1) == 'cloth-pos' && request()->segment(2) == 'create',
+                    'class' => 'new-order-button'
+                ])->order(1);
+            }
 
-           $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), [
-    'icon' => '<i class="fa-solid fa-house"></i>',
-    'active' => request()->segment(1) == 'home'
-])->order(10);
+            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), [
+                'icon' => '<i class="fa-solid fa-house"></i>',
+                'active' => request()->segment(1) == 'home'
+            ])->order(10);
 
             //User management dropdown
             if (auth()->user()->can('user.view') || auth()->user()->can('user.create') || auth()->user()->can('roles.view')) {
@@ -831,11 +832,13 @@ class AdminSidebarMenu
                                 ['icon' => '', 'active' => request()->segment(2) == 'sell-payment-report']
                             );
 
-                            $sub->url(
-                                action([\App\Http\Controllers\ReportController::class, 'tailorMasterPaymentReport']),
-                                __('lang_v1.tailor_master_payment_report'),
-                                ['icon' => '', 'active' => request()->segment(2) == 'tailor-master-payment-report']
-                            );
+                            if (in_array('tailoring', $enabled_modules)) {
+                                $sub->url(
+                                    action([\App\Http\Controllers\ReportController::class, 'tailorMasterPaymentReport']),
+                                    __('lang_v1.tailor_master_payment_report'),
+                                    ['icon' => '', 'active' => request()->segment(2) == 'tailor-master-payment-report']
+                                );
+                            }
                         }
                         if (in_array('expenses', $enabled_modules) && auth()->user()->can('expense_report.view')) {
                             $sub->url(

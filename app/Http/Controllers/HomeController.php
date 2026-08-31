@@ -88,8 +88,11 @@ class HomeController extends Controller
             return view('home.index');
         }
 
-        $fy = $this->businessUtil->getCurrentFinancialYear($business_id);
-
+        // $fy = $this->businessUtil->getCurrentFinancialYear($business_id);
+        $fy = [
+            'start' => \Carbon\Carbon::today()->format('Y-m-d'),
+            'end' => \Carbon\Carbon::today()->format('Y-m-d')
+        ];
         $currency = Currency::where('id', request()->session()->get('business.currency_id'))->first();
         //ensure start date starts from at least 30 days before to get sells last 30 days
         $least_30_days = \Carbon::parse($fy['start'])->subDays(30)->format('Y-m-d');
@@ -645,9 +648,9 @@ class HomeController extends Controller
                 ->where('transactions.type', 'order')
                 ->where('transactions.status', 'final')
                 ->where('transactions.payment_status', '!=', 'paid');
-                // ->whereNotNull('transactions.pay_term_number')
-                // ->whereNotNull('transactions.pay_term_type')
-                // ->whereRaw("DATEDIFF( DATE_ADD( transaction_date, INTERVAL IF(transactions.pay_term_type = 'days', transactions.pay_term_number, 30 * transactions.pay_term_number) DAY), '$today') <= 7");
+            // ->whereNotNull('transactions.pay_term_number')
+            // ->whereNotNull('transactions.pay_term_type')
+            // ->whereRaw("DATEDIFF( DATE_ADD( transaction_date, INTERVAL IF(transactions.pay_term_type = 'days', transactions.pay_term_number, 30 * transactions.pay_term_number) DAY), '$today') <= 7");
 
             //Check for permitted locations of a user
             $permitted_locations = auth()->user()->permitted_locations();

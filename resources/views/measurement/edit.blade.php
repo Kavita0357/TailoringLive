@@ -135,7 +135,7 @@
     $(document).ready(function() {
         let subMeasurementIndex = {{ $measurement->subMeasurements->count() }};
 
-        $('.measurement_modal, .modal').find('.select2').each(function() {
+        /* $('.measurement_modal, .modal').find('.select2').each(function() {
             var $this = $(this);
             var placeholder = $this.attr('placeholder') || $this.data('placeholder') || '';
             $this.select2({
@@ -143,7 +143,7 @@
                 placeholder: placeholder,
                 allowClear: true
             });
-        });
+        }); */
 
         $('#add_selected_sub_measurement').on('click', function() {
             const selectedOption = $('#sub_measurement_select option:selected');
