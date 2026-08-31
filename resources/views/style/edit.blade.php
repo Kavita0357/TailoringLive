@@ -150,7 +150,7 @@
             $(this).closest('.design_row').remove();
         });
 
-        $('.style_modal, .modal').find('.select2').each(function() {
+        /* $('.style_modal, .modal').find('.select2').each(function() {
             var $this = $(this);
             var placeholder = $this.attr('placeholder') || $this.data('placeholder') || '';
             $this.select2({
@@ -158,7 +158,7 @@
                 placeholder: placeholder,
                 allowClear: true
             });
-        });
+        }); */
 
     });
 </script>

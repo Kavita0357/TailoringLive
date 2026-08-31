@@ -1553,11 +1553,11 @@
             updateTailoringMasterDisabledStates();
 
             var statusSubtitles = {
-                'received': "{{ __('tailoring.received_subtitle') }}",
-                'preparing': "{{ __('tailoring.preparing_subtitle') }}",
-                'partially_delivered': "{{ __('tailoring.partially_delivered_subtitle') }}",
-                'ready_to_deliver': "{{ __('tailoring.ready_to_deliver_subtitle') }}",
-                'delivered': "{{ __('tailoring.delivered_subtitle') }}"
+                'received': {!! json_encode(__('tailoring.received_subtitle')) !!},
+                'preparing': {!! json_encode(__('tailoring.preparing_subtitle')) !!},
+                'partially_delivered': {!! json_encode(__('tailoring.partially_delivered_subtitle')) !!},
+                'ready_to_deliver': {!! json_encode(__('tailoring.ready_to_deliver_subtitle')) !!},
+                'delivered': {!! json_encode(__('tailoring.delivered_subtitle')) !!}
             };
 
             function updateSubtitle() {
