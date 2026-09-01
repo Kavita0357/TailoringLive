@@ -247,7 +247,7 @@ class SuperadminSubscriptionsController extends BaseController
                 $package = Package::find($subscriptions->package_id);
                 $current_modules = $business->enabled_modules ?? [];
 
-                if (!empty($package->module)) {
+                if ($package->tailoring) {
                     $business->enabled_modules = $input['status'] == 'approved' ? array_merge($business->enabled_modules, ['tailoring']) : array_diff($current_modules, ['tailoring']);
                 } else {
                     $business->enabled_modules = array_diff($current_modules, ['tailoring']);
