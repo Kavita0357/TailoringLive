@@ -120,7 +120,7 @@
 
                 $availableQuantity = $product->qty_available ?? null;
                 if ($availableQuantity === null || $availableQuantity === '') {
-                    $availableQuantity = '-';
+                    $availableQuantity = '0';
                 } else {
                     $availableQuantity = rtrim(rtrim(number_format((float) $availableQuantity, 2, '.', ''), '0'), '.');
                 }
@@ -223,13 +223,11 @@
                 </div>
             @endif
             <br>
-            <small class="stock-status">
-                @if ($product->enable_stock)
+            @if ($product->enable_stock)
+                <small class="stock-status">
                     {{ $availableQuantity }} {{ $productUnit }} @lang('lang_v1.in_stock')
-                @else
-                    -
-                @endif
-            </small>
+                </small>
+            @endif
 
             <!-- Description modal end -->
             @if (in_array('modifiers', $enabled_modules))

@@ -1315,6 +1315,10 @@ $(document).ready(function () {
                 $id = `cloth_${$cloth_id}`;
                 pos_product_row($id);
             } else {
+                if ($(this).closest('.product_list ').hasClass('no-stock')) {
+                    toastr.error(LANG.out_of_stock);
+                    return false;
+                }
                 pos_product_row($(this).data('variation_id'));
             }
         }
