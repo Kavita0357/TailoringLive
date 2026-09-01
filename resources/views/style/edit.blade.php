@@ -31,8 +31,6 @@
                         {!! Form::select('cloths[]', $cloths, optional($style->cloths)->pluck('id')->toArray(), [
                             'class' => 'form-control select select2',
                             'multiple' => true,
-                            'placeholder' => __('tailoring.select_cloths'),
-                            'data-placeholder' => __('tailoring.select_cloths'),
                             // 'required' => true,
                             'style' => 'width: 100%',
                         ]) !!}

@@ -279,102 +279,104 @@
                             $index = 0;
                         @endphp
                         <div class="table-responsive">
-                        <table class="table table-condensed table-bordered table-striped delivery-table"
-                            id="pos_table">
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>@lang('tailoring.cloth')</th>
-                                    <th>@lang('tailoring.qty')</th>
-                                    <th>@lang('tailoring.assigned_qty')</th>
-                                    <th>@lang('tailoring.assign_to_tailoring_master')</th>
-                                    <th>@lang('tailoring.completed')</th>
-                                    <th>@lang('tailoring.delivered')</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($grouped_sell_details as $cloth_id => $group)
-                                    @php
-                                        $first_line = $group->first();
-                                    @endphp
-
-                                    @if ($first_line && $first_line->cloth_name)
+                            <table class="table table-condensed table-bordered table-striped delivery-table"
+                                id="pos_table">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>@lang('tailoring.cloth')</th>
+                                        <th>@lang('tailoring.qty')</th>
+                                        <th>@lang('tailoring.assigned_qty')</th>
+                                        <th>@lang('tailoring.assign_to_tailoring_master')</th>
+                                        <th>@lang('tailoring.completed')</th>
+                                        <th>@lang('tailoring.delivered')</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($grouped_sell_details as $cloth_id => $group)
                                         @php
-                                            $total_qty = $group->sum('quantity_ordered');
-                                            $valid_assignments = [];
+                                            $first_line = $group->first();
+                                        @endphp
 
-                                            foreach ($group as $sell_line) {
-                                                if (!empty($sell_line->tailoring_master_id)) {
-                                                    $valid_assignments[] = $sell_line;
+                                        @if ($first_line && $first_line->cloth_name)
+                                            @php
+                                                $total_qty = $group->sum('quantity_ordered');
+                                                $valid_assignments = [];
+
+                                                foreach ($group as $sell_line) {
+                                                    if (!empty($sell_line->tailoring_master_id)) {
+                                                        $valid_assignments[] = $sell_line;
+                                                    }
                                                 }
-                                            }
 
-                                        @endphp
+                                            @endphp
 
-                                        <tr>
-                                            <td>{{ $index + 1 }}</td>
-                                            <td>{{ $first_line->cloth_name }}</td>
-                                            <td>{{ intval($total_qty) }}</td>
+                                            <tr>
+                                                <td>{{ $index + 1 }}</td>
+                                                <td>{{ $first_line->cloth_name }}</td>
+                                                <td>{{ intval($total_qty) }}</td>
 
-                                            {{-- Assigned Qty --}}
-                                            <td>
-                                                @if (count($valid_assignments) > 0)
-                                                    @foreach ($valid_assignments as $sell_line)
-                                                        <div style="margin-bottom:5px; font-weight: bold;">
-                                                            {{ intval($sell_line->assigned_quantity) }}
-                                                        </div>
-                                                    @endforeach
-                                                @else
-                                                    <span style="font-weight: bold;">{{ intval($first_line->assigned_quantity ?: $total_qty) }}</span>
-                                                @endif
-                                            </td>
+                                                {{-- Assigned Qty --}}
+                                                <td>
+                                                    @if (count($valid_assignments) > 0)
+                                                        @foreach ($valid_assignments as $sell_line)
+                                                            <div style="margin-bottom:5px; font-weight: bold;">
+                                                                {{ intval($sell_line->assigned_quantity) }}
+                                                            </div>
+                                                        @endforeach
+                                                    @else
+                                                        <span style="font-weight: bold;">
+                                                            {{ isset($tailor_masters[$sell_line->tailoring_master_id]) ? intval($tailor_masters[$sell_line->tailoring_master_id]->assigned_quantity) : 0 }}
+                                                        </span>
+                                                    @endif
+                                                </td>
 
-                                            {{-- Tailor Name --}}
-                                            <td>
-                                                @if (count($valid_assignments) > 0)
-                                                    @foreach ($valid_assignments as $sell_line)
-                                                        <div style="margin-bottom:5px; font-weight: bold;">
-                                                            {{ $tailor_masters[$sell_line->tailoring_master_id] ?? '-' }}
-                                                        </div>
-                                                    @endforeach
-                                                @else
-                                                    <span style="font-weight: bold;">Not Assigned</span>
-                                                @endif
-                                            </td>
+                                                {{-- Tailor Name --}}
+                                                <td>
+                                                    @if (count($valid_assignments) > 0)
+                                                        @foreach ($valid_assignments as $sell_line)
+                                                            <div style="margin-bottom:5px; font-weight: bold;">
+                                                                {{ $tailor_masters[$sell_line->tailoring_master_id] ?? '-' }}
+                                                            </div>
+                                                        @endforeach
+                                                    @else
+                                                        <span style="font-weight: bold;">Not Assigned</span>
+                                                    @endif
+                                                </td>
 
-                                            {{-- Show status quantities alongside each tailor assignment. --}}
-                                            <td>
-                                                @if (count($valid_assignments) > 0)
-                                                    @foreach ($valid_assignments as $sell_line)
-                                                        <div style="margin-bottom:5px; font-weight: bold;">
-                                                            {{ intval($sell_line->completed_quantity) }}
-                                                        </div>
-                                                    @endforeach
-                                                @else
-                                                    <span style="font-weight: bold;">0</span>
-                                                @endif
-                                            </td>
+                                                {{-- Show status quantities alongside each tailor assignment. --}}
+                                                <td>
+                                                    @if (count($valid_assignments) > 0)
+                                                        @foreach ($valid_assignments as $sell_line)
+                                                            <div style="margin-bottom:5px; font-weight: bold;">
+                                                                {{ intval($sell_line->completed_quantity) }}
+                                                            </div>
+                                                        @endforeach
+                                                    @else
+                                                        <span style="font-weight: bold;">0</span>
+                                                    @endif
+                                                </td>
 
-                                            <td>
-                                                @if (count($valid_assignments) > 0)
-                                                    @foreach ($valid_assignments as $sell_line)
-                                                        <div style="margin-bottom:5px; font-weight: bold;">
-                                                            {{ intval($sell_line->delivered_quantity) }}
-                                                        </div>
-                                                    @endforeach
-                                                @else
-                                                    <span style="font-weight: bold;">0</span>
-                                                @endif
-                                            </td>
-                                        </tr>
+                                                <td>
+                                                    @if (count($valid_assignments) > 0)
+                                                        @foreach ($valid_assignments as $sell_line)
+                                                            <div style="margin-bottom:5px; font-weight: bold;">
+                                                                {{ intval($sell_line->delivered_quantity) }}
+                                                            </div>
+                                                        @endforeach
+                                                    @else
+                                                        <span style="font-weight: bold;">0</span>
+                                                    @endif
+                                                </td>
+                                            </tr>
 
-                                        @php
-                                            $index++;
-                                        @endphp
-                                    @endif
-                                @endforeach
-                            </tbody>
-                        </table>
+                                            @php
+                                                $index++;
+                                            @endphp
+                                        @endif
+                                    @endforeach
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 @endif

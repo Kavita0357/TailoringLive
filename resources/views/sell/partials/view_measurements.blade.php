@@ -249,13 +249,19 @@
 
             let transactionId = $('#transaction_id').val();
 
-            // 👉 Get currently visible cloth
             let clothId = $('.cloth-page:visible').data('cloth-id');
 
             console.log('Cloth ID:', clothId);
 
             if (!clothId) {
                 alert('No cloth selected');
+                return;
+            }
+
+            let printWindow = window.open('', '', 'width=900,height=700');
+
+            if (!printWindow) {
+                alert('Please allow popups for this website.');
                 return;
             }
 
@@ -268,59 +274,60 @@
 
                     $('#print_section').html(result);
 
-                    setTimeout(function() {
-                        printSection('print_section');
-                    }, 300);
+                    printSection('print_section', printWindow);
                 },
                 error: function() {
-                    // alert('Something went wrong');
+                    printWindow.close();
+                    alert('Something went wrong');
                 }
             });
 
         });
 
-        function printSection(divId) {
+
+        function printSection(divId, printWindow) {
 
             let content = $('#' + divId).html();
 
-            let printWindow = window.open('', '', 'width=900,height=700');
-
             printWindow.document.write(`
-        <html>
-        <head>
-            <title>Print</title>
+                <html>
+                <head>
+                    <title>Print</title>
 
-            <style>
-                @page { size: A4; margin: 10mm; }
+                    <style>
+                        @page {
+                            size: A4;
+                            margin: 10mm;
+                        }
 
-                body {
-                    font-family: Arial, sans-serif;
-                }
+                        body {
+                            font-family: Arial, sans-serif;
+                        }
 
-                .box {
-                    border: 1px solid #000;
-                    padding: 10px;
-                    width: 30%;
-                    display: inline-block;
-                    margin: 5px;
-                    text-align: center;
-                }
-            </style>
-        </head>
+                        .box {
+                            border: 1px solid #000;
+                            padding: 10px;
+                            width: 30%;
+                            display: inline-block;
+                            margin: 5px;
+                            text-align: center;
+                        }
+                    </style>
+                </head>
 
-        <body>
-            ${content}
-        </body>
-        </html>
-    `);
+                <body>
+                    ${content}
+                </body>
+                </html>
+            `);
 
             printWindow.document.close();
 
             setTimeout(function() {
+                printWindow.focus();
                 printWindow.print();
                 printWindow.close();
             }, 500);
         }
-
     });
 </script>

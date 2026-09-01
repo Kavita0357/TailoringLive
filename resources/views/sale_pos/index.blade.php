@@ -38,7 +38,7 @@
             @endcan
             @can('sell.view')
                 <input type="hidden" name="is_direct_sale" id="is_direct_sale" value="0">
-                @include('sale_pos.partials.sales_table')
+                @include('sale_pos.partials.cloth_order_table')
             @endcan
         @endcomponent
     </section>
@@ -76,6 +76,6 @@
 @stop
 
 @section('javascript')
-    @include('sale_pos.partials.sale_table_javascript')
+    @include('sale_pos.partials.order_table_javascript')
     <script src="{{ asset('js/payment.js?v=' . $asset_v) }}"></script>
 @endsection

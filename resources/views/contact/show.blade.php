@@ -248,7 +248,7 @@
                                     <div class="col-md-12">
                                         @component('components.widget')
                                             @include('sell.partials.sell_list_filters', [
-                                                'only' => ['cloths', 'print'],
+                                                'only' => ['cloths', 'print','no_work_status'],
                                                 'sale_type' => 'order',
                                             ])
                                         @endcomponent

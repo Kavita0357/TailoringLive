@@ -1366,7 +1366,7 @@ li#select2-tailoring_status-result-mdic-order {
 }
 
 /* Readonly fields that are not disabled (e.g. datepicker fields) keep white background */
-.form-control[readonly]:not(:disabled) {
+.form-control[readonly]:not(:disabled):not([type=number]) {
   background-color: #ffffff;
   color: #1f2937;
   cursor: pointer;
@@ -1728,6 +1728,7 @@ label,
   font-weight: 500;
   text-align: left !important;
 }
+
 .select2-container--default .select2-selection--single .select2-selection__placeholder {
   color: #9ca3af !important;
   font-weight: 400;
@@ -2446,4 +2447,3 @@ input[type="radio"]:disabled {
 input[type="radio"]:disabled:checked::after {
   background-color: #9ca3af;
 }
-
