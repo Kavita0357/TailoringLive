@@ -12,7 +12,7 @@
     }
 
     .tw-bg-primary-400 {
-        background-color: #4285f4;
+        background-color: darkcyan;
     }
 
     .style-card-title {
@@ -21,13 +21,6 @@
 
     .style-card-body {
         padding: 10px;
-    }
-
-    .style-card-body .form-group {
-        border: 1px solid #b5b2b2;
-        padding: 10px 10px;
-        border-radius: 5px;
-        text-align: center;
     }
 
     .measurement-card {
@@ -66,6 +59,10 @@
     .measurement-section {
         flex: 1;
         min-width: 0;
+    }
+
+    .measurement-card .measurement-label {
+        color: darkcyan;
     }
 
     /* Masonry-like layout using CSS columns for measurements */
@@ -183,14 +180,6 @@
         color: oklch(44.6% 0.03 256.802);
     }
 
-    .style-checkbox {
-        width: 22px;
-        height: 22px;
-        accent-color: #3b78f0;
-        cursor: pointer;
-        flex-shrink: 0;
-    }
-
     .design-item .form-group {
         border: 1px solid #d6d6d6;
         border-radius: 6px;
@@ -200,6 +189,10 @@
         gap: 10px;
         align-items: flex-start;
         margin-bottom: 0;
+    }
+
+    .design-item.selected .form-group {
+        border: 2px solid #009688;
     }
 
     .design-left {
@@ -263,16 +256,6 @@
         height: 16px;
         min-width: 16px;
     }
-
-    .row-select:hover {
-        border-color: #4285f4;
-    }
-
-    .row-select:checked {
-        background: #4285f4;
-        border-color: #4285f4;
-    }
-
     .row-select:checked::after {
         content: '';
         position: absolute;
@@ -348,7 +331,7 @@
         </div>
 
         <div class="@if ($view_only) customer-measuremnt-body @else modal-body @endif">
-            <div class="container">
+            <div class="@if (!$view_only) container @endif">
 
                 <div class="custom-layout">
                     <div class="measurement-section">
@@ -362,7 +345,7 @@
                                         <div class="tw-bg-gray-200 tw-rounded-md input-col">
 
                                             <div class="form-group">
-                                                <label>{{ $m->measurement_name }}</label>
+                                                <label class="measurement-label">{{ $m->measurement_name }}</label>
 
                                                 <input type="hidden" name="measurements[{{ $index }}][id]"
                                                     value="{{ $m->id }}">
@@ -381,7 +364,7 @@
                                                 @foreach ($m->subMeasurements as $sub_index => $sub)
                                                     <div class="form-group">
 
-                                                        <label>{{ $sub->sub_measurement_name }}</label>
+                                                        <label class="sub-measurement-label">{{ $sub->sub_measurement_name }}</label>
 
                                                         <input type="text" class="form-control"
                                                             @if ($view_only) readonly @endif
@@ -442,7 +425,19 @@
                                                 <div class="design-grid">
 
                                                     @foreach ($s->designs as $sub_index => $sub)
-                                                        <div class="design-item">
+                                                        @php
+                                                            $is_design_checked =
+                                                                isset(
+                                                                    $cloth_customization['styles'][$index]['designs'][
+                                                                        $sub_index
+                                                                    ]['id'],
+                                                                ) &&
+                                                                $cloth_customization['styles'][$index]['designs'][
+                                                                    $sub_index
+                                                                ]['id'] == $sub->id;
+                                                        @endphp
+                                                        <div
+                                                            class="design-item @if ($is_design_checked) selected @endif">
 
                                                             <div class="form-group">
 
@@ -455,8 +450,7 @@
                                                                             name="styles[{{ $index }}][designs][{{ $sub_index }}][id]"
                                                                             value="{{ $sub->id }}"
                                                                             @if ($view_only) disabled @endif
-                                                                            @if (isset($cloth_customization['styles'][$index]['designs'][$sub_index]['id']) &&
-                                                                                    $cloth_customization['styles'][$index]['designs'][$sub_index]['id'] == $sub->id) checked @endif>
+                                                                            @if ($is_design_checked) checked @endif>
 
                                                                         <label
                                                                             for="styles[{{ $index }}][designs][{{ $sub_index }}][value]">
@@ -575,6 +569,8 @@
             const $row = $(this).closest('.style-card-body');
             if ($(this).is(':checked')) {
                 $row.find('.row-select').not(this).prop('checked', false);
+                $row.find('.design-item').removeClass('selected');
+                $(this).closest('.design-item').addClass('selected');
             }
         });
 

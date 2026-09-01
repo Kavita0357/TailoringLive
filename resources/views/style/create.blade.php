@@ -26,8 +26,6 @@
                         {!! Form::select('cloths[]', $cloths, null, [
                             'class' => 'form-control select select2',
                             'multiple' => true,
-                            'placeholder' => __('tailoring.select_cloths'),
-                            'data-placeholder' => __('tailoring.select_cloths'),
                             // 'required' => true,
                             'style' => 'width: 100%',
                         ]) !!}
