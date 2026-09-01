@@ -167,7 +167,7 @@
     }
 
     .print-measurement .grid .cell {
-        border: 0.3px solid #888;
+        border: none;
         padding: 6px 4px;
         min-height: 60px;
         display: flex;

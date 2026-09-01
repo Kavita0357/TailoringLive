@@ -1,11 +1,11 @@
 <style>
     .page {
         width: 4.5in;
-        min-height: 297mm;
-        padding: 12mm;
-        background: #fff;
-        margin: auto;
-        overflow: hidden;
+        margin: 0 auto;
+        font-family: Arial, sans-serif;
+        color: #000;
+        padding: 10px 12px;
+        box-sizing: border-box;
         page-break-after: avoid;
     }
 
@@ -43,47 +43,48 @@
 
     .measurement-grid:not(.customer-measuremnt-body .measurement-grid) {
         display: grid;
-        grid-template-columns: repeat(5, 1fr);
+        grid-template-columns: repeat(4, 1fr);
         gap: 10px;
         width: 100%;
     }
 
-    .style-grid {
+    .style-tags {
         display: flex;
         flex-wrap: wrap;
-        gap: 10px;
-        width: 100%;
+        gap: 6px;
+        margin: 4px 0 12px;
     }
 
-    .style-grid .box {
-        flex: 1;
-        min-width: 0;
-        /* To prevent overflow issues */
+    .style-tag {
+        font-size: 11px;
+        padding: 2px 6px;
+        margin-right: 4px;
+        margin-bottom: 4px;
+        white-space: nowrap;
     }
 
-    .box {
-        border: 1px solid #000;
-        border-radius: 4px;
-        padding: 10px;
+    .customer-measuremnt .box {
+        padding: 0;
         text-align: center;
-        min-height: 85px;
+        min-height: 50px;
         margin-bottom: 0px;
-
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
         page-break-inside: avoid;
         break-inside: avoid;
+        border: none !important;
+        box-shadow: none !important;
     }
 
-    .box h5 {
+    .customer-measuremnt .box h5 {
         margin: 0 0 6px;
         font-size: 13px;
         font-weight: 600;
     }
 
-    .box p {
+    .customer-measuremnt .box p {
         margin: 0;
         font-size: 13px;
         line-height: 1.4;
@@ -106,7 +107,7 @@
 
         .page {
             width: 4.5in;
-            min-height: 297mm;
+            /* min-height: 297mm; */
             padding: 10mm;
             margin: 0 auto;
         }
@@ -116,12 +117,17 @@
             gap: 8px;
         }
 
-        .box {
-            min-height: 75px;
+        .customer-measuremnt .box {
+            min-height: 50px;
+        }
+
+        @page {
+            size: 4.5in auto;
+            margin: 5mm;
         }
     }
 </style>
-<div class="page">
+<div class="page customer-measuremnt">
     <div class="header text-center">
         <h3>Khidmah Tailors and Fabrics</h3>
         <p>Hosaf Shopping Complex</p>
@@ -164,20 +170,33 @@
 
     <h4 class="cloth-title">{{ $cloth->cloth_name }} Style</h4>
 
-    @if ($cloth->styles->isNotEmpty())
-        <div class="style-grid">
-            @foreach ($cloth->styles as $index => $s)
-                <div class="box">
-                    <h5>{{ $s->style_name }}</h5>
-                    @if ($s->designs->isNotEmpty())
-                        @foreach ($s->designs as $sub_index => $sub)
-                            <p>{{ $sub->design_name }} <br />
-                                {{ $cloth_customization['styles'][$index]['designs'][$sub_index]['design_value'] ?? '' }}
-                            </p>
-                        @endforeach
-                    @endif
-                </div>
-            @endforeach
+    @if ($cloth_customization->styles)
+        @php
+            $styles = $cloth_customization->styles ?? [];
+        @endphp
+        <div class="style-tags">
+            @forelse ($styles as $s)
+                @if (!empty($s['name']))
+                    @php
+                        $designs = $s['designs'] ?? [];
+                        $values = [];
+                        foreach ($designs as $design) {
+                            if (!empty($design['design_value'])) {
+                                $values[] = $design['design_value'];
+                            } elseif (!empty($design['design_name'])) {
+                                $values[] = $design['design_name'];
+                            }
+                        }
+                        $displayLabel = $s['name'];
+                        if (!empty($values)) {
+                            $displayLabel .= ' (' . implode(', ', $values) . ')';
+                        }
+                    @endphp
+                    <span class="style-tag">{{ $displayLabel }}</span>
+                @endif
+            @empty
+                <span class="style-tag">No style selected</span>
+            @endforelse
         </div>
     @endif
 </div>
