@@ -256,6 +256,7 @@
         height: 16px;
         min-width: 16px;
     }
+
     .row-select:checked::after {
         content: '';
         position: absolute;
@@ -364,7 +365,8 @@
                                                 @foreach ($m->subMeasurements as $sub_index => $sub)
                                                     <div class="form-group">
 
-                                                        <label class="sub-measurement-label">{{ $sub->sub_measurement_name }}</label>
+                                                        <label
+                                                            class="sub-measurement-label">{{ $sub->sub_measurement_name }}</label>
 
                                                         <input type="text" class="form-control"
                                                             @if ($view_only) readonly @endif
@@ -467,15 +469,16 @@
                                                                         value="{{ $cloth_customization['styles'][$index]['designs'][$sub_index]['design_value'] ?? '' }}">
 
                                                                 </div>
+                                                                @if (isset($sub->design_image) && $sub->design_image)
+                                                                    <div class="design-right">
 
-                                                                <div class="design-right">
+                                                                        <div class="design-img">
+                                                                            <img
+                                                                                src="{{ asset('storage/' . $sub->design_image) }}">
+                                                                        </div>
 
-                                                                    <div class="design-img">
-                                                                        <img
-                                                                            src="{{ $sub->design_image ? asset('storage/' . $sub->design_image) : asset('/img/default.png') }}">
                                                                     </div>
-
-                                                                </div>
+                                                                @endif
 
                                                             </div>
 

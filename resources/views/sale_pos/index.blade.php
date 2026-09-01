@@ -60,6 +60,8 @@
     <div class="modal fade print_measurements_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
     </div>
 
+    <div id="print_section" style="display:none;"></div>
+
     <div class="modal fade assign_tailoring_master_modal" tabindex="-1" role="dialog"
         aria-labelledby="gridSystemModalLabel">
     </div>

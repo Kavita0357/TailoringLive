@@ -251,8 +251,6 @@
 
             let clothId = $('.cloth-page:visible').data('cloth-id');
 
-            console.log('Cloth ID:', clothId);
-
             if (!clothId) {
                 alert('No cloth selected');
                 return;
