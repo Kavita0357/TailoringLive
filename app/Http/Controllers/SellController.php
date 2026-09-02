@@ -2696,7 +2696,17 @@ class SellController extends Controller
             return response()->json(['error' => 'Cloth not found'], 404);
         }
 
-        // 👉 Get ONLY this cloth measurement
+        $cloth = Cloth::with([
+            'styles' => function ($q) {
+                $q->orderBy('cloth_style.serial_no', 'asc');
+            },
+            'styles.designs',
+            'measurements' => function ($q) {
+                $q->orderBy('cloth_measurement.serial_no', 'asc');
+            },
+            'measurements.subMeasurements'
+        ])->find($cloth_id);
+
         $cloth_customization = ClothCustomization::where('contact_id', $transaction->contact_id)
             ->where('cloth_id', $cloth_id)
             ->first();
@@ -2705,7 +2715,7 @@ class SellController extends Controller
 
         // 👉 Return PRINT view (not normal view)
         return view('sell.partials.print_measurement')
-            ->with(compact('transaction', 'sell'));
+            ->with(compact('transaction', 'sell', 'cloth','cloth_customization'));
     }
 
     public function updateAssignedTailoringMaster(Request $request, $id)
