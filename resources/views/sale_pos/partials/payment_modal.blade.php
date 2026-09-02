@@ -24,10 +24,15 @@
                                         : [];
                                     $show_in_pos = '';
                                     if (
-                                        $pos_settings['enable_cash_denomination_on'] == 'all_screens' ||
-                                        $pos_settings['enable_cash_denomination_on'] == 'pos_screen'
+                                        isset($pos_settings['enable_cash_denomination_on']) &&
+                                        !empty($pos_settings['enable_cash_denomination_on'])
                                     ) {
-                                        $show_in_pos = true;
+                                        if (
+                                            $pos_settings['enable_cash_denomination_on'] == 'all_screens' ||
+                                            $pos_settings['enable_cash_denomination_on'] == 'pos_screen'
+                                        ) {
+                                            $show_in_pos = true;
+                                        }
                                     }
                                 @endphp
                                 @foreach ($payment_lines as $payment_line)
