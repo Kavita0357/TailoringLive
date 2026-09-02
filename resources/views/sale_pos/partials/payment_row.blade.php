@@ -14,10 +14,20 @@
         @endif
 
         @php
-            $pos_settings = !empty(session()->get('business.pos_settings')) ? json_decode(session()->get('business.pos_settings'), true) : [];
+            $pos_settings = !empty(session()->get('business.pos_settings'))
+                ? json_decode(session()->get('business.pos_settings'), true)
+                : [];
             $show_in_pos = '';
-            if ($pos_settings['enable_cash_denomination_on'] == 'all_screens' || $pos_settings['enable_cash_denomination_on'] == 'pos_screen') {
-                $show_in_pos = true;
+            if (
+                isset($pos_settings['enable_cash_denomination_on']) &&
+                !empty($pos_settings['enable_cash_denomination_on'])
+            ) {
+                if (
+                    $pos_settings['enable_cash_denomination_on'] == 'all_screens' ||
+                    $pos_settings['enable_cash_denomination_on'] == 'pos_screen'
+                ) {
+                    $show_in_pos = true;
+                }
             }
         @endphp
 
@@ -26,7 +36,7 @@
                 'row_index' => $row_index,
                 'payment_line' => $payment_line,
                 'show_denomination' => true,
-				'show_in_pos' => $show_in_pos
+                'show_in_pos' => $show_in_pos,
             ])
         </div>
     </div>
