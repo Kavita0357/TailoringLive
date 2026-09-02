@@ -275,9 +275,34 @@ class PackagesController extends Controller
                 }
 
                 //Update subscription package details
-                $subscriptions = Subscription::where('package_id', $package->id)
-                    ->whereDate('end_date', '>=', \Carbon::now())
-                    ->update(['package_details' => json_encode($package_details)]);
+
+                $subscriptionQuery = Subscription::where('package_id', $package->id)
+                    ->whereDate('end_date', '>=', \Carbon\Carbon::now());
+
+                $business_ids = $subscriptionQuery->pluck('business_id')->unique();
+
+                $subscriptionQuery->update([
+                    'package_details' => json_encode($package_details),
+                ]);
+
+                $businesses = Business::whereIn('id', $business_ids)->get();
+
+                foreach ($businesses as $business) {
+                    $enabled_modules = $business->enabled_modules ?? [];
+
+                    if ($package->tailoring) {
+                        if (!in_array('tailoring', $enabled_modules)) {
+                            $enabled_modules[] = 'tailoring';
+                        }
+                    } else {
+                        $enabled_modules = array_values(
+                            array_diff($enabled_modules, ['tailoring'])
+                        );
+                    }
+
+                    $business->enabled_modules = $enabled_modules;
+                    $business->save();
+                }
             }
 
             $output = ['success' => 1, 'msg' => __('lang_v1.success')];
