@@ -256,6 +256,7 @@
         height: 16px;
         min-width: 16px;
     }
+
     .row-select:checked::after {
         content: '';
         position: absolute;
@@ -364,7 +365,8 @@
                                                 @foreach ($m->subMeasurements as $sub_index => $sub)
                                                     <div class="form-group">
 
-                                                        <label class="sub-measurement-label">{{ $sub->sub_measurement_name }}</label>
+                                                        <label
+                                                            class="sub-measurement-label">{{ $sub->sub_measurement_name }}</label>
 
                                                         <input type="text" class="form-control"
                                                             @if ($view_only) readonly @endif
@@ -552,7 +554,7 @@
 
                 const $card = $(this).closest('.style-card');
 
-                $('.style-card').not($card).addClass('collapsed');
+                // $('.style-card').not($card).addClass('collapsed');
                 $card.toggleClass('collapsed');
 
                 if (!$card.hasClass('collapsed')) {
