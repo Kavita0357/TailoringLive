@@ -555,7 +555,7 @@
 
                 const $card = $(this).closest('.style-card');
 
-                $('.style-card').not($card).addClass('collapsed');
+                // $('.style-card').not($card).addClass('collapsed');
                 $card.toggleClass('collapsed');
 
                 if (!$card.hasClass('collapsed')) {
