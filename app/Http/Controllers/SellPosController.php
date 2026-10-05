@@ -33,6 +33,7 @@ use App\Business;
 use App\BusinessLocation;
 use App\Category;
 use App\Cloth;
+use App\ClothCustomization;
 use App\Contact;
 use App\CustomerGroup;
 use App\InvoiceLayout;
@@ -514,6 +515,9 @@ class SellPosController extends Controller
                     $this->transactionUtil->createOrUpdatePaymentLines($transaction, $input['payment']);
                 }
 
+                $business_details = $this->businessUtil->getDetails($business_id);
+                $pos_settings = empty($business_details->pos_settings) ? $this->businessUtil->defaultPosSettings() : json_decode($business_details->pos_settings, true);
+
                 //Check for final and do some processing.
                 if ($input['status'] == 'final') {
                     if (!$is_direct_sale && !empty($input['products'])) {
@@ -577,8 +581,6 @@ class SellPosController extends Controller
                     //Allocate the quantity from purchase and add mapping of
                     //purchase & sell lines in
                     //transaction_sell_lines_purchase_lines table
-                    $business_details = $this->businessUtil->getDetails($business_id);
-                    $pos_settings = empty($business_details->pos_settings) ? $this->businessUtil->defaultPosSettings() : json_decode($business_details->pos_settings, true);
 
                     $business = [
                         'id' => $business_id,
@@ -616,6 +618,7 @@ class SellPosController extends Controller
                 if (!empty($input['cloths'])) {
                     $msg = trans('tailoring.order_add');
                 }
+                \Log::info('Status: ' . $input['status']);
                 $receipt = '';
                 $invoice_layout_id = $request->input('invoice_layout_id');
                 $print_invoice = false;
@@ -640,11 +643,52 @@ class SellPosController extends Controller
                     $print_invoice = false;
                 }
 
+                if (!empty($pos_settings['enable_measurement_print'])) {
+                    $print_invoice = false;
+                    $sell_details = DB::table('transaction_sell_lines')
+                        ->leftJoin('cloths as c', 'transaction_sell_lines.cloth_id', '=', 'c.id')
+                        ->where('transaction_sell_lines.transaction_id', $transaction->id)
+                        ->select([
+                            'c.id as cloth_id',
+                            'c.cloth_name',
+                            'transaction_sell_lines.secondary_unit_quantity',
+                            'transaction_sell_lines.id as sell_line_id',
+                            'transaction_sell_lines.quantity as quantity_ordered',
+                            'transaction_sell_lines.completed_quantity',
+                            'transaction_sell_lines.delivered_quantity',
+                        ])
+                        ->get();
+
+                    // Get measurements for each cloth
+                    $cloth_customizations = ClothCustomization::where(
+                        'contact_id',
+                        $transaction->contact_id
+                    )
+                        ->whereIn('cloth_id', $sell_details->pluck('cloth_id'))
+                        ->get()
+                        ->keyBy('cloth_id');
+
+                    foreach ($sell_details as $sell) {
+                        $sell->cloth_customization =
+                            $cloth_customizations[$sell->cloth_id] ?? null;
+                    }
+
+                    $delivery_statuses = Transaction::delivery_statuses();
+
+                    $receipt = view('sell.partials.view_measurements')
+                        ->with(compact(
+                            'transaction',
+                            'delivery_statuses',
+                            'sell_details'
+                        ))
+                        ->render();
+                }
+
                 if ($print_invoice) {
                     $receipt = $this->receiptContent($business_id, $input['location_id'], $transaction->id, null, false, true, $invoice_layout_id);
                 }
 
-                $output = ['success' => 1, 'msg' => $msg, 'receipt' => $receipt];
+                $output = ['is_create' => true, 'success' => 1, 'msg' => $msg, 'receipt' => $receipt, 'isMeasurementPrint' => !empty($pos_settings['enable_measurement_print']) ? true : false];
 
                 if (!empty($whatsapp_link)) {
                     $output['whatsapp_link'] = $whatsapp_link;
@@ -653,6 +697,7 @@ class SellPosController extends Controller
                 $output = [
                     'success' => 0,
                     'msg' => trans('messages.something_went_wrong'),
+                    'isMeasurementPrint' => false
                 ];
             }
         } catch (\Exception $e) {
@@ -670,6 +715,7 @@ class SellPosController extends Controller
             $output = [
                 'success' => 0,
                 'msg' => $msg,
+                'isMeasurementPrint' => false
             ];
         }
 
@@ -1396,6 +1442,9 @@ class SellPosController extends Controller
 
                 Media::uploadMedia($business_id, $transaction, $request, 'shipping_documents', false, 'shipping_document');
 
+                $business_details = $this->businessUtil->getDetails($business_id);
+                $pos_settings = empty($business_details->pos_settings) ? $this->businessUtil->defaultPosSettings() : json_decode($business_details->pos_settings, true);
+
                 if ($transaction->type == 'sell' || $transaction->type == 'order') {
                     //Update payment status
                     $payment_status = $this->transactionUtil->updatePaymentStatus($transaction->id, $transaction->final_total);
@@ -1409,8 +1458,7 @@ class SellPosController extends Controller
                     //Allocate the quantity from purchase and add mapping of
                     //purchase & sell lines in
                     //transaction_sell_lines_purchase_lines table
-                    $business_details = $this->businessUtil->getDetails($business_id);
-                    $pos_settings = empty($business_details->pos_settings) ? $this->businessUtil->defaultPosSettings() : json_decode($business_details->pos_settings, true);
+
 
                     $business = [
                         'id' => $business_id,
@@ -1449,10 +1497,10 @@ class SellPosController extends Controller
                     return redirect()->to($url . '?print_on_load=true');
                 }
 
+                $receipt = '';
                 $msg = __('lang_v1.updated_success');
                 if ($transaction->type == 'order')
                     $msg = __('tailoring.order_update');
-                $receipt = '';
                 $can_print_invoice = auth()->user()->can('print_invoice');
                 $invoice_layout_id = $request->input('invoice_layout_id');
 
@@ -1471,14 +1519,57 @@ class SellPosController extends Controller
                     } else {
                         $msg = trans('sale.pos_sale_updated');
                     }
-                    if (!$is_direct_sale && $can_print_invoice) {
-                        $receipt = $this->receiptContent($business_id, $input['location_id'], $transaction->id, null, false, true, $invoice_layout_id);
+
+                    if (!empty($pos_settings['enable_measurement_print'])) {
+                        $can_print_invoice = false;
+                        $sell_details = DB::table('transaction_sell_lines')
+                            ->leftJoin('cloths as c', 'transaction_sell_lines.cloth_id', '=', 'c.id')
+                            ->where('transaction_sell_lines.transaction_id', $transaction->id)
+                            ->select([
+                                'c.id as cloth_id',
+                                'c.cloth_name',
+                                'transaction_sell_lines.secondary_unit_quantity',
+                                'transaction_sell_lines.id as sell_line_id',
+                                'transaction_sell_lines.quantity as quantity_ordered',
+                                'transaction_sell_lines.completed_quantity',
+                                'transaction_sell_lines.delivered_quantity',
+                            ])
+                            ->get();
+
+                        // Get measurements for each cloth
+                        $cloth_customizations = ClothCustomization::where(
+                            'contact_id',
+                            $transaction->contact_id
+                        )
+                            ->whereIn('cloth_id', $sell_details->pluck('cloth_id'))
+                            ->get()
+                            ->keyBy('cloth_id');
+
+                        foreach ($sell_details as $sell) {
+                            $sell->cloth_customization =
+                                $cloth_customizations[$sell->cloth_id] ?? null;
+                        }
+
+                        $delivery_statuses = Transaction::delivery_statuses();
+
+                        $receipt = view('sell.partials.view_measurements')
+                            ->with(compact(
+                                'transaction',
+                                'delivery_statuses',
+                                'sell_details'
+                            ))
+                            ->render();
                     } else {
-                        $receipt = '';
+                        if (!$is_direct_sale && $can_print_invoice) {
+                            $receipt = $this->receiptContent($business_id, $input['location_id'], $transaction->id, null, false, true, $invoice_layout_id);
+                        } else {
+
+                            $receipt = '';
+                        }
                     }
                 }
 
-                $output = ['success' => 1, 'msg' => $msg, 'receipt' => $receipt];
+                $output = ['success' => 1, 'msg' => $msg, 'receipt' => $receipt, 'isMeasurementPrint' => !empty($pos_settings['enable_measurement_print']) ? true : false];
 
                 if (!empty($whatsapp_link)) {
                     $output['whatsapp_link'] = $whatsapp_link;
@@ -1487,6 +1578,7 @@ class SellPosController extends Controller
                 $output = [
                     'success' => 0,
                     'msg' => trans('messages.something_went_wrong'),
+                    'isMeasurementPrint' => false
                 ];
             }
         } catch (\Exception $e) {

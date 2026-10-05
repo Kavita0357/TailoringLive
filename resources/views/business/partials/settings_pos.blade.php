@@ -210,7 +210,19 @@
             </div>
         </div>
         <div class="clearfix"></div>
-        <div class="col-sm-6">
+        <div class="col-sm-4">
+            <div class="form-group">
+                <div class="checkbox">
+                <br>
+                  <label>
+                    {!! Form::checkbox('pos_settings[enable_measurement_print]', 1,  
+                    empty($pos_settings['enable_measurement_print']) ? 0 : 1 , 
+                    [ 'class' => 'input-icheck']); !!} {{ __( 'lang_v1.enable_measurement_print' ) }}
+                  </label>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4">
             <div class="form-group">
                 <div class="checkbox">
                 <br>
@@ -222,8 +234,7 @@
                 </div>
             </div>
         </div>
-
-        <div class="col-sm-6">
+        <div class="col-sm-4">
             <div class="form-group">
                 <div class="checkbox">
                 <br>

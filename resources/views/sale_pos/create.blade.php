@@ -65,6 +65,11 @@
     <div class="modal fade style_measurement_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
     </div>
 
+    <div class="modal fade print_measurements_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
+    </div>
+
+    <div id="print_section" style="display:none;"></div>
+
     @include('sale_pos.partials.configure_search_modal')
 
     @include('sale_pos.partials.recent_transactions_modal')

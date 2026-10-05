@@ -533,7 +533,7 @@ $(document).ready(function () {
         //Check if product is present or not.
         var is_cloth_pos = $('#cloth-pos-workspace').length > 0;
         if (is_cloth_pos) {
-            if ($('table#pos_cloth_table tbody tr[id^="cloth_row_"]').length <= 0) {
+            if ($('table#pos_cloth_table tbody tr[id^="cloth_row_"]').length <= 0 && $('table#pos_table tbody').find('.product_row').length <= 0) {
                 toastr.warning(LANG.no_cloths_added || 'No cloths added');
                 return false;
             }
@@ -576,7 +576,7 @@ $(document).ready(function () {
         //Check if product is present or not.
         var is_cloth_pos = $('#cloth-pos-workspace').length > 0;
         if (is_cloth_pos) {
-            if ($('table#pos_cloth_table tbody tr[id^="cloth_row_"]').length <= 0) {
+            if ($('table#pos_cloth_table tbody tr[id^="cloth_row_"]').length <= 0 && $('table#pos_table tbody').find('.product_row').length <= 0) {
                 toastr.warning(LANG.no_cloths_added || 'No cloths added');
                 return false;
             }
@@ -624,7 +624,7 @@ $(document).ready(function () {
         //Check if product is present or not.
         var is_cloth_pos = $('#cloth-pos-workspace').length > 0;
         if (is_cloth_pos) {
-            if ($('table#pos_cloth_table tbody tr[id^="cloth_row_"]').length <= 0) {
+            if ($('table#pos_cloth_table tbody tr[id^="cloth_row_"]').length <= 0 && $('table#pos_table tbody').find('.product_row').length <= 0) {
                 toastr.warning(LANG.no_cloths_added || 'No cloths added');
                 return false;
             }
@@ -663,7 +663,7 @@ $(document).ready(function () {
         //Check if product is present or not.
         var is_cloth_pos = $('#cloth-pos-workspace').length > 0;
         if (is_cloth_pos) {
-            if ($('table#pos_cloth_table tbody tr[id^="cloth_row_"]').length <= 0) {
+            if ($('table#pos_cloth_table tbody tr[id^="cloth_row_"]').length <= 0 && $('table#pos_table tbody').find('.product_row').length <= 0) {
                 toastr.warning(LANG.no_cloths_added || 'No cloths added');
                 return false;
             }
@@ -876,13 +876,18 @@ $(document).ready(function () {
                     dataType: 'json',
                     success: function (result) {
                         if (result.success == 1) {
+                            if (result.isMeasurementPrint) {
+                                debugger;
+                                $('.print_measurements_modal').html(result.receipt);
+                                $('.print_measurements_modal').modal('show');
+                            }
                             if (result.whatsapp_link) {
                                 window.open(result.whatsapp_link);
                             }
                             $('#modal_payment').modal('hide');
                             toastr.success(result.msg);
-
-                            reset_pos_form();
+                            if (result.is_create)
+                                reset_pos_form();
 
                             //Check if enabled or not
                             if (result.receipt.is_enabled) {
