@@ -309,25 +309,6 @@
         color: #4b5563;
         margin: 0;
     }
-
-    .print_measurements_modal .modal-dialog {
-        height: calc(100vh - 30px);
-        max-height: calc(100vh - 30px);
-    }
-
-    .print_measurements_modal .modal-content {
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        overflow: hidden;
-    }
-
-    .print_measurements_modal .modal-body {
-        flex: 1;
-        min-height: 0;
-        overflow-y: auto !important;
-        overscroll-behavior: contain;
-    }
 </style>
 <div class="@if ($view_only == true) customer-measuremnt-wrapper @else modal-dialog modal-dialog-centered style-measurement-modal @endif"
     role="document">
