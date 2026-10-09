@@ -14,6 +14,10 @@
     .cloth-note {
         padding: 30px 0;
     }
+
+    .print_measurements_modal.in{
+        overflow : auto;
+    }
 </style>
 <div class="modal-dialog" role="document" style="width: 900px;">
     <input type="hidden" id="transaction_id" value={{ $transaction->id }} />

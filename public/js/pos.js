@@ -879,7 +879,6 @@ $(document).ready(function () {
                             if (result.isMeasurementPrint) {
                                 $('.print_measurements_modal').html(result.receipt);
                                 $('.print_measurements_modal').modal('show');
-                                $('body').addClass('modal-open');
                             }
                             if (result.whatsapp_link) {
                                 window.open(result.whatsapp_link);
