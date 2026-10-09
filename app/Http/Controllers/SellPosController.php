@@ -644,44 +644,48 @@ class SellPosController extends Controller
                 }
 
                 if (!empty($pos_settings['enable_measurement_print'])) {
-                    $print_invoice = false;
-                    $sell_details = DB::table('transaction_sell_lines')
-                        ->leftJoin('cloths as c', 'transaction_sell_lines.cloth_id', '=', 'c.id')
-                        ->where('transaction_sell_lines.transaction_id', $transaction->id)
-                        ->select([
-                            'c.id as cloth_id',
-                            'c.cloth_name',
-                            'transaction_sell_lines.secondary_unit_quantity',
-                            'transaction_sell_lines.id as sell_line_id',
-                            'transaction_sell_lines.quantity as quantity_ordered',
-                            'transaction_sell_lines.completed_quantity',
-                            'transaction_sell_lines.delivered_quantity',
-                        ])
-                        ->get();
+                    if (empty($input['cloths'])) {
+                        $print_invoice = true;
+                    } else {
+                        $print_invoice = false;
+                        $sell_details = DB::table('transaction_sell_lines')
+                            ->leftJoin('cloths as c', 'transaction_sell_lines.cloth_id', '=', 'c.id')
+                            ->where('transaction_sell_lines.transaction_id', $transaction->id)
+                            ->select([
+                                'c.id as cloth_id',
+                                'c.cloth_name',
+                                'transaction_sell_lines.secondary_unit_quantity',
+                                'transaction_sell_lines.id as sell_line_id',
+                                'transaction_sell_lines.quantity as quantity_ordered',
+                                'transaction_sell_lines.completed_quantity',
+                                'transaction_sell_lines.delivered_quantity',
+                            ])
+                            ->get();
 
-                    // Get measurements for each cloth
-                    $cloth_customizations = ClothCustomization::where(
-                        'contact_id',
-                        $transaction->contact_id
-                    )
-                        ->whereIn('cloth_id', $sell_details->pluck('cloth_id'))
-                        ->get()
-                        ->keyBy('cloth_id');
+                        // Get measurements for each cloth
+                        $cloth_customizations = ClothCustomization::where(
+                            'contact_id',
+                            $transaction->contact_id
+                        )
+                            ->whereIn('cloth_id', $sell_details->pluck('cloth_id'))
+                            ->get()
+                            ->keyBy('cloth_id');
 
-                    foreach ($sell_details as $sell) {
-                        $sell->cloth_customization =
-                            $cloth_customizations[$sell->cloth_id] ?? null;
+                        foreach ($sell_details as $sell) {
+                            $sell->cloth_customization =
+                                $cloth_customizations[$sell->cloth_id] ?? null;
+                        }
+
+                        $delivery_statuses = Transaction::delivery_statuses();
+
+                        $receipt = view('sell.partials.view_measurements')
+                            ->with(compact(
+                                'transaction',
+                                'delivery_statuses',
+                                'sell_details'
+                            ))
+                            ->render();
                     }
-
-                    $delivery_statuses = Transaction::delivery_statuses();
-
-                    $receipt = view('sell.partials.view_measurements')
-                        ->with(compact(
-                            'transaction',
-                            'delivery_statuses',
-                            'sell_details'
-                        ))
-                        ->render();
                 }
 
                 if ($print_invoice) {
@@ -1521,44 +1525,48 @@ class SellPosController extends Controller
                     }
 
                     if (!empty($pos_settings['enable_measurement_print'])) {
-                        $can_print_invoice = false;
-                        $sell_details = DB::table('transaction_sell_lines')
-                            ->leftJoin('cloths as c', 'transaction_sell_lines.cloth_id', '=', 'c.id')
-                            ->where('transaction_sell_lines.transaction_id', $transaction->id)
-                            ->select([
-                                'c.id as cloth_id',
-                                'c.cloth_name',
-                                'transaction_sell_lines.secondary_unit_quantity',
-                                'transaction_sell_lines.id as sell_line_id',
-                                'transaction_sell_lines.quantity as quantity_ordered',
-                                'transaction_sell_lines.completed_quantity',
-                                'transaction_sell_lines.delivered_quantity',
-                            ])
-                            ->get();
+                        if (empty($input['cloths'])) {
+                            $can_print_invoice = true;
+                        } else {
+                            $can_print_invoice = false;
+                            $sell_details = DB::table('transaction_sell_lines')
+                                ->leftJoin('cloths as c', 'transaction_sell_lines.cloth_id', '=', 'c.id')
+                                ->where('transaction_sell_lines.transaction_id', $transaction->id)
+                                ->select([
+                                    'c.id as cloth_id',
+                                    'c.cloth_name',
+                                    'transaction_sell_lines.secondary_unit_quantity',
+                                    'transaction_sell_lines.id as sell_line_id',
+                                    'transaction_sell_lines.quantity as quantity_ordered',
+                                    'transaction_sell_lines.completed_quantity',
+                                    'transaction_sell_lines.delivered_quantity',
+                                ])
+                                ->get();
 
-                        // Get measurements for each cloth
-                        $cloth_customizations = ClothCustomization::where(
-                            'contact_id',
-                            $transaction->contact_id
-                        )
-                            ->whereIn('cloth_id', $sell_details->pluck('cloth_id'))
-                            ->get()
-                            ->keyBy('cloth_id');
+                            // Get measurements for each cloth
+                            $cloth_customizations = ClothCustomization::where(
+                                'contact_id',
+                                $transaction->contact_id
+                            )
+                                ->whereIn('cloth_id', $sell_details->pluck('cloth_id'))
+                                ->get()
+                                ->keyBy('cloth_id');
 
-                        foreach ($sell_details as $sell) {
-                            $sell->cloth_customization =
-                                $cloth_customizations[$sell->cloth_id] ?? null;
+                            foreach ($sell_details as $sell) {
+                                $sell->cloth_customization =
+                                    $cloth_customizations[$sell->cloth_id] ?? null;
+                            }
+
+                            $delivery_statuses = Transaction::delivery_statuses();
+
+                            $receipt = view('sell.partials.view_measurements')
+                                ->with(compact(
+                                    'transaction',
+                                    'delivery_statuses',
+                                    'sell_details'
+                                ))
+                                ->render();
                         }
-
-                        $delivery_statuses = Transaction::delivery_statuses();
-
-                        $receipt = view('sell.partials.view_measurements')
-                            ->with(compact(
-                                'transaction',
-                                'delivery_statuses',
-                                'sell_details'
-                            ))
-                            ->render();
                     } else {
                         if (!$is_direct_sale && $can_print_invoice) {
                             $receipt = $this->receiptContent($business_id, $input['location_id'], $transaction->id, null, false, true, $invoice_layout_id);
