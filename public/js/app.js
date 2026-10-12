@@ -2162,12 +2162,12 @@ $(document).ready(function () {
 });
 
 $('.quick_add_product_modal').on('shown.bs.modal', function () {
-    $('.quick_add_product_modal')
+    /* $('.quick_add_product_modal')
         .find('.select2')
         .each(function () {
             var $p = $(this).parent();
             $(this).select2({ dropdownParent: $p });
-        });
+        }); */
     $('.quick_add_product_modal')
         .find('input[type="checkbox"].input-icheck')
         .each(function () {
