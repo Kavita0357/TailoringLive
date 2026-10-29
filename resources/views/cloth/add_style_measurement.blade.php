@@ -79,11 +79,17 @@
         .measurement-grid {
             grid-template-columns: repeat(4, minmax(0, 1fr));
         }
+        .style-card{
+            width: 50%;
+        }
     }
 
     @media (max-width: 576px) {
         .measurement-grid {
             grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+        .style-card{
+            width: 100%;
         }
     }
 
@@ -312,6 +318,18 @@
         font-weight: 700;
         color: #4b5563;
         margin: 0;
+    }
+
+    @media (max-width: 992px) {
+        .style-card{
+            width: 45%;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .style-card{
+            width: 100%;
+        }
     }
 </style>
 <div class="@if ($view_only == true) customer-measuremnt-wrapper @else modal-dialog modal-dialog-centered style-measurement-modal @endif"
