@@ -139,11 +139,11 @@ class AdminSidebarMenu
                             __('tailoring.measurement'),
                             ['icon' => '', 'active' => request()->segment(1) == 'measurements']
                         );
-                        $sub->url(
+                        /* $sub->url(
                             action([\App\Http\Controllers\SubMeasurementController::class, 'index']),
                             __('tailoring.sub_measurement'),
                             ['icon' => '', 'active' => request()->segment(1) == 'sub-measurements']
-                        );
+                        ); */
                         $sub->url(
                             action([\App\Http\Controllers\StyleController::class, 'index']),
                             __('tailoring.style'),
