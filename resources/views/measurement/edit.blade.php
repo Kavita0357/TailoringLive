@@ -62,59 +62,47 @@
                     <div class="form-group">
                         <div class="row mb-1">
                             <div class="col-md-12">
-                                <p class="text text-bold">@lang('tailoring.sub_measurements'):</p>
+                                <p class="text text-bold">
+                                    @lang('tailoring.sub_measurements'):
+                                </p>
                             </div>
                         </div>
-                        <div class="row mb-2">
-                            <div class="col-md-10">
-                                {!! Form::select('sub_measurement_select', $sub_measurements, null, [
-                                    'class' => 'form-control select2',
-                                    'id' => 'sub_measurement_select',
-                                    'style' => 'width: 100%',
-                                    'placeholder' => __('tailoring.select_sub_measurements'),
-                                    'data-placeholder' => __('tailoring.select_sub_measurements'),
-                                ]) !!}
-                            </div>
-                            <div class="col-md-2">
-                                <button type="button" class="btn btn-sm btn-primary mt-2"
-                                    id="add_selected_sub_measurement">
-                                    <i class="fa fa-plus"></i>
-                                </button>
-                            </div>
-                        </div>
+
                         <div id="sub_measurement_repeater_wrapper">
                             @foreach ($measurement->subMeasurements as $index => $sub)
                                 <div class="row mb-2 sub_measurement_row" data-id="{{ $sub->id }}">
-                                    <div class="col-md-6">
-                                        <input type="hidden" name="sub_measurements[{{ $index }}][id]"
-                                            value="{{ $sub->id }}">
-                                        <input type="text" class="form-control"
-                                            value="{{ $sub->sub_measurement_name }}" disabled>
+
+                                    <input type="hidden" name="sub_measurements[{{ $index }}][id]"
+                                        value="{{ $sub->id }}">
+
+                                    <div class="col-md-5">
+                                        <input type="text" name="sub_measurements[{{ $index }}][name]"
+                                            class="form-control" value="{{ $sub->sub_measurement_name }}"
+                                            placeholder="Sub-measurement name" required>
                                     </div>
-                                    <div class="col-md-4">
+
+                                    <div class="col-md-5">
                                         <input type="number" name="sub_measurements[{{ $index }}][serial_no]"
                                             class="form-control" value="{{ $sub->pivot->serial_no }}"
-                                            placeholder="{{ __('tailoring.serial_no') }}" required>
+                                            placeholder="@lang('tailoring.serial_no')" min="1" required>
                                     </div>
+
                                     <div class="col-md-2">
-                                        <button type="button"
-                                            class="btn btn-danger remove_sub_measurement_row">&minus;</button>
+                                        <button type="button" class="btn btn-danger remove_sub_measurement_row">
+                                            <i class="fa fa-minus"></i>
+                                        </button>
                                     </div>
                                 </div>
                             @endforeach
                         </div>
+
+                        <button type="button" class="btn btn-sm btn-primary" id="add_sub_measurement_row">
+                            <i class="fa fa-plus"></i>
+                            @lang('tailoring.add_sub_measurement')
+                        </button>
                     </div>
                 </div>
-                {{-- <div class="col-md-12">
-                    <div class="form-group">
-                        {!! Form::label('sub_measurements', __('tailoring.select_sub_measurements') . ':') !!}
-                        {!! Form::select('sub_measurements[]', $sub_measurements, $selected_sub_measurements, [
-                            'class' => 'form-control select2',
-                            'multiple' => true,
-                            'style' => 'width: 100%',
-                        ]) !!}
-                    </div>
-                </div> --}}
+
             </div>
             @include('layouts.partials.module_form_part')
         </div>
@@ -133,49 +121,48 @@
     $(document).ready(function() {
         let subMeasurementIndex = {{ $measurement->subMeasurements->count() }};
 
-        /* $('.measurement_modal, .modal').find('.select2').each(function() {
-            var $this = $(this);
-            var placeholder = $this.attr('placeholder') || $this.data('placeholder') || '';
-            $this.select2({
-                dropdownParent: $this.closest('.modal'),
-                placeholder: placeholder,
-                allowClear: true
-            });
-        }); */
+        const $wrapper = $('#sub_measurement_repeater_wrapper');
 
-        $('#add_selected_sub_measurement').on('click', function() {
-            const selectedOption = $('#sub_measurement_select option:selected');
-            const subMeasurementId = selectedOption.val();
-            const subMeasurementName = selectedOption.text();
-
-            if (!subMeasurementId) return;
-
-            // Check if already added
-            if ($('#sub_measurement_repeater_wrapper').find(`[data-id="${subMeasurementId}"]`).length >
-                0) {
-                alert('Already added!');
-                return;
-            }
-
+        // Add a new sub-measurement without selecting a pre-existing record.
+        $('#add_sub_measurement_row').on('click', function() {
             const newRow = `
-                <div class="row mb-2 sub_measurement_row" data-id="${subMeasurementId}">
-                    <div class="col-md-6">
-                        <input type="hidden" name="sub_measurements[${subMeasurementIndex}][id]" value="${subMeasurementId}">
-                        <input type="text" class="form-control" value="${subMeasurementName}" disabled>
-                    </div>
-                    <div class="col-md-4">
-                        <input type="number" name="sub_measurements[${subMeasurementIndex}][serial_no]" class="form-control" placeholder="{{ __('tailoring.serial_no') }}" required>
-                    </div>
-                    <div class="col-md-2">
-                        <button type="button" class="btn btn-danger remove_sub_measurement_row">&minus;</button>
-                    </div>
-                </div>`;
+            <div class="row mb-2 sub_measurement_row" data-id="">
+                <input type="hidden"
+                       name="sub_measurements[${subMeasurementIndex}][id]"
+                       value="">
 
-            $('#sub_measurement_repeater_wrapper').append(newRow);
+                <div class="col-md-5">
+                    <input type="text"
+                           name="sub_measurements[${subMeasurementIndex}][name]"
+                           class="form-control"
+                           placeholder="Sub-measurement name"
+                           required>
+                </div>
+
+                <div class="col-md-5">
+                    <input type="number"
+                           name="sub_measurements[${subMeasurementIndex}][serial_no]"
+                           class="form-control"
+                           placeholder="@lang('tailoring.serial_no')"
+                           min="1"
+                           required>
+                </div>
+
+                <div class="col-md-2">
+                    <button type="button"
+                            class="btn btn-danger remove_sub_measurement_row">
+                        <i class="fa fa-minus"></i>
+                    </button>
+                </div>
+            </div>
+        `;
+
+            $wrapper.append(newRow);
             subMeasurementIndex++;
         });
 
-        $(document).on('click', '.remove_sub_measurement_row', function() {
+        // Remove existing or newly added rows from the submitted form.
+        $wrapper.on('click', '.remove_sub_measurement_row', function() {
             $(this).closest('.sub_measurement_row').remove();
         });
     });

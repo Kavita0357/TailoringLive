@@ -58,45 +58,42 @@
                         </div>
                     </div>
                 </div>
-                {{-- <div class="col-md-12">
-                    <div class="form-group">
-                        {!! Form::label('sub_measurements', __('tailoring.select_sub_measurements') . ':') !!}
-                        {!! Form::select('sub_measurements[]', $sub_measurements, null, [
-                            'class' => 'form-control select2',
-                            'multiple' => true,
-                            'required' => true,
-                            'style' => 'width: 100%',
-                        ]) !!}
-                    </div>
-                </div> --}}
                 <div class="col-md-12">
-                    <div class="form-group">
-                        <div class="row mb-1">
-                            <div class="col-md-12">
-                                <p class="text text-bold">@lang('tailoring.sub_measurements'):</p>
-                            </div>
+                    <div class="row mb-2">
+                        <div class="col-md-10">
+                            <p class="text text-bold">
+                                @lang('tailoring.sub_measurements'):
+                            </p>
                         </div>
-                        <div class="row mb-2">
-                            <div class="col-md-10">
-                                {!! Form::select('sub_measurement_select', $sub_measurements, null, [
-                                    'class' => 'form-control select2',
-                                    'id' => 'sub_measurement_select',
-                                    'style' => 'width: 100%',
-                                    'placeholder' => __('tailoring.select_sub_measurements'),
-                                    'data-placeholder' => __('tailoring.select_sub_measurements'),
-                                ]) !!}
+
+                        <div class="col-md-2 text-right">
+                            <button type="button" class="btn btn-sm btn-primary" id="add_sub_measurement_row">
+                                <i class="fa fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="sub_measurement_repeater_wrapper">
+                        <div class="row sub_measurement_row mb-2">
+                            <div class="col-md-5">
+                                <input type="text" name="sub_measurements[0][name]" class="form-control"
+                                    placeholder="Sub Measurement Name" required>
                             </div>
+
+                            <div class="col-md-5">
+                                <input type="number" name="sub_measurements[0][serial_no]" class="form-control"
+                                    placeholder="Serial No">
+                            </div>
+
                             <div class="col-md-2">
-                                <button type="button" class="btn btn-sm btn-primary mt-2"
-                                    id="add_selected_sub_measurement">
-                                    <i class="fa fa-plus"></i>
+                                <button type="button" class="btn btn-danger remove_sub_measurement_row" disabled>
+                                    &minus;
                                 </button>
                             </div>
                         </div>
-                        <div id="sub_measurement_repeater_wrapper">
-                        </div>
                     </div>
                 </div>
+
             </div>
             @include('layouts.partials.module_form_part')
         </div>
@@ -113,7 +110,7 @@
 </div><!-- /.modal-dialog -->
 <script>
     $(document).ready(function() {
-        let subMeasurementIndex = 0;
+       // let subMeasurementIndex = 0;
 
         /* $('.measurement_modal, .modal').find('.select2').each(function() {
             var $this = $(this);
@@ -124,6 +121,43 @@
                 allowClear: true
             });
         }); */
+        let subMeasurementIndex = 1;
+
+        $('#add_sub_measurement_row').on('click', function() {
+            const newRow = `
+            <div class="row sub_measurement_row mb-2">
+                <div class="col-md-5">
+                    <input type="text"
+                        name="sub_measurements[${subMeasurementIndex}][name]"
+                        class="form-control"
+                        placeholder="Sub Measurement Name"
+                        required>
+                </div>
+
+                <div class="col-md-5">
+                    <input type="number"
+                        name="sub_measurements[${subMeasurementIndex}][serial_no]"
+                        class="form-control"
+                        placeholder="Serial No">
+                </div>
+
+                <div class="col-md-2">
+                    <button type="button"
+                        class="btn btn-danger remove_sub_measurement_row">
+                        &minus;
+                    </button>
+                </div>
+            </div>
+        `;
+
+            $('#sub_measurement_repeater_wrapper').append(newRow);
+            subMeasurementIndex++;
+        });
+
+        $(document).on('click', '.remove_sub_measurement_row', function() {
+            $(this).closest('.sub_measurement_row').remove();
+        });
+
 
         $('#add_selected_sub_measurement').on('click', function() {
             const selectedOption = $('#sub_measurement_select option:selected');

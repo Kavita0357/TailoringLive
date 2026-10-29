@@ -119,7 +119,7 @@ class MeasurementController extends Controller
      * @return \Illuminate\Http\Response
      */
     // Store data
-    public function store(Request $request)
+    /* public function store(Request $request)
     {
         try {
             $request->validate([
@@ -161,7 +161,89 @@ class MeasurementController extends Controller
         }
 
         return $output;
+    } */
+
+        
+public function store(Request $request)
+{
+    $request->validate([
+        'measurement_name' => 'required|string|max:255',
+        'serial_no' => 'nullable|integer',
+        'cloths' => 'nullable|array',
+        'cloths.*' => 'integer',
+        'sub_measurements' => 'nullable|array',
+        'sub_measurements.*.name' => 'required|string|max:255',
+        'sub_measurements.*.serial_no' => 'nullable|integer',
+    ]);
+
+    $business_id = $request->session()->get('user.business_id');
+    $created_by = $request->session()->get('user.id');
+
+    try {
+        DB::beginTransaction();
+
+        $measurement = Measurement::create([
+            'measurement_name' => $request->measurement_name,
+            'serial_no' => $request->serial_no,
+            'business_id' => $business_id,
+            'created_by' => $created_by,
+        ]);
+
+        // Link selected cloths.
+        $clothIds = Cloth::where('business_id', $business_id)
+            ->whereIn('id', $request->input('cloths', []))
+            ->pluck('id')
+            ->all();
+
+        $measurement->cloths()->sync($clothIds);
+
+        // Create sub-measurements directly.
+        $syncData = [];
+
+        foreach ($request->input('sub_measurements', []) as $subData) {
+            $name = trim($subData['name'] ?? '');
+
+            if ($name === '') {
+                continue;
+            }
+
+            $subMeasurement = SubMeasurement::create([
+                'sub_measurement_name' => $name,
+                'serial_no' => $subData['serial_no'] ?? null,
+                'business_id' => $business_id,
+                'created_by' => $created_by,
+            ]);
+
+            $syncData[$subMeasurement->id] = [
+                'serial_no' => $subData['serial_no'] ?? null,
+            ];
+        }
+
+        $measurement->subMeasurements()->sync($syncData);
+
+        DB::commit();
+
+        return response()->json([
+            'success' => true,
+            'data' => $measurement,
+            'msg' => __('tailoring.measurement_add'),
+        ]);
+    } catch (\Throwable $e) {
+        DB::rollBack();
+
+        Log::error('Measurement Store Error', [
+            'message' => $e->getMessage(),
+            'file' => $e->getFile(),
+            'line' => $e->getLine(),
+        ]);
+
+        return response()->json([
+            'success' => false,
+            'msg' => __('messages.something_went_wrong'),
+        ], 500);
     }
+}
+
 
     // Edit form
     public function edit($id)
@@ -204,56 +286,103 @@ class MeasurementController extends Controller
 
 
 
-    // Update
-    public function update(Request $request, $id)
-    {
-        try {
-            DB::beginTransaction();
+    // Update Measurement
+public function update(Request $request, $id)
+{
+    try {
+        $request->validate([
+            'measurement_name' => 'required|string|max:255',
+            'serial_no' => 'nullable|integer',
+            'cloths' => 'nullable|array',
+            'cloths.*' => 'integer|exists:cloths,id',
+            'sub_measurements' => 'nullable|array',
+            'sub_measurements.*.id' => 'nullable|integer',
+            'sub_measurements.*.name' => 'required|string|max:255',
+            'sub_measurements.*.serial_no' => 'required|integer|min:1',
+        ]);
 
-            $request->validate([
-                'measurement_name' => 'required|string|max:255',
-                'serial_no' => 'nullable|integer',
-            ]);
+        DB::beginTransaction();
 
-            $measurement = Measurement::findOrFail($id);
-            $measurement->update([
-                'measurement_name' => $request->measurement_name,
-                'serial_no' => $request->serial_no,
-            ]);
+        $measurement = Measurement::findOrFail($id);
 
-            $sub_measurements_data = $request->input('sub_measurements', []);
+        // Update the main measurement
+        $measurement->update([
+            'measurement_name' => $request->measurement_name,
+            'serial_no' => $request->serial_no,
+        ]);
 
-            $sync_data = [];
-            foreach ($sub_measurements_data as $sub) {
-                if (!empty($sub['id'])) {
-                    $sync_data[$sub['id']] = ['serial_no' => $sub['serial_no']];
+        // Sync selected cloths
+        $measurement->cloths()->sync(
+            $request->input('cloths', [])
+        );
+
+        $subMeasurementsData = $request->input('sub_measurements', []);
+        $syncData = [];
+
+        foreach ($subMeasurementsData as $sub) {
+            $subId = $sub['id'] ?? null;
+            $subName = trim($sub['name'] ?? '');
+            $serialNo = $sub['serial_no'] ?? null;
+
+            if ($subId) {
+                // Only allow existing sub-measurements
+                // already attached to this measurement.
+                $existingSub = $measurement->subMeasurements()
+                    ->where('sub_measurements.id', $subId)
+                    ->first();
+
+                if (!$existingSub) {
+                    throw new \Illuminate\Validation\ValidationException(
+                        validator([], [])
+                    );
                 }
-            }
 
-            $measurement->subMeasurements()->sync($sync_data);
-
-            if ($request->has('cloths')) {
-                $measurement->cloths()->sync($request->input('cloths'));
+                // Preserve the existing sub-measurement record.
+                $syncData[$existingSub->id] = [
+                    'serial_no' => $serialNo,
+                ];
             } else {
-                $measurement->cloths()->sync([]); // Remove all if none selected
+                // Create a new sub-measurement.
+                if ($subName === '') {
+                    continue;
+                }
+
+                $newSub = SubMeasurement::create([
+                    'sub_measurement_name' => $subName,
+                ]);
+
+                $syncData[$newSub->id] = [
+                    'serial_no' => $serialNo,
+                ];
             }
-
-            DB::commit();
-
-            return [
-                'success' => true,
-                'msg' => __('tailoring.measurement_update'),
-            ];
-        } catch (\Exception $e) {
-            DB::rollBack();
-            Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-
-            return [
-                'success' => false,
-                'msg' => __('messages.something_went_wrong'),
-            ];
         }
+
+        // Attach new records, update serial numbers,
+        // and detach removed sub-measurements.
+        $measurement->subMeasurements()->sync($syncData);
+
+        DB::commit();
+
+        return [
+            'success' => true,
+            'msg' => __('tailoring.measurement_update'),
+        ];
+
+    } catch (\Throwable $e) {
+        DB::rollBack();
+
+        Log::error('Measurement update failed', [
+            'file' => $e->getFile(),
+            'line' => $e->getLine(),
+            'message' => $e->getMessage(),
+        ]);
+
+        return [
+            'success' => false,
+            'msg' => __('messages.something_went_wrong'),
+        ];
     }
+}
 
     // Delete
     public function destroy($id)
