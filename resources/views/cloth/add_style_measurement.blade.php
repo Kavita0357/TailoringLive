@@ -79,17 +79,11 @@
         .measurement-grid {
             grid-template-columns: repeat(4, minmax(0, 1fr));
         }
-        .style-card{
-            width: 50%;
-        }
     }
 
     @media (max-width: 576px) {
         .measurement-grid {
             grid-template-columns: repeat(2, minmax(0, 1fr));
-        }
-        .style-card{
-            width: 100%;
         }
     }
 
@@ -110,7 +104,7 @@
 
     .design-grid {
         display: grid;
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(4, 1fr);
         gap: 10px;
     }
 
@@ -129,7 +123,7 @@
         overflow: hidden;
         margin: 0;
         border: 1px solid oklch(92.8% 0.006 264.531);
-        width: 30%;
+        width: 95%;
     }
 
     .style-card-title {
@@ -321,14 +315,14 @@
     }
 
     @media (max-width: 992px) {
-        .style-card{
-            width: 45%;
+        .design-grid {
+            grid-template-columns: repeat(2, 1fr);
         }
     }
 
     @media (max-width: 576px) {
-        .style-card{
-            width: 100%;
+        .design-grid {
+            grid-template-columns: repeat(1, 1fr);
         }
     }
 </style>
