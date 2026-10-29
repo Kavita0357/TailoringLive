@@ -24,7 +24,7 @@
     }
 
     .measurement-card {
-        display: inline-block;
+        /* display: inline-block; */
         width: 100%;
         margin-bottom: 15px;
         break-inside: avoid;
@@ -35,17 +35,18 @@
             0 1px 3px 0 rgba(0, 0, 0, 0.1),
             0 1px 2px -1px rgba(0, 0, 0, 0.1);
         border-radius: 6px;
+        align-self: flex-start;
     }
 
     .customer-measuremnt-content {
         padding: 20px;
     }
 
-    .custom-layout {
+    /* .custom-layout {
         display: flex;
         gap: 20px;
         align-items: flex-start;
-    }
+    } */
 
     .custom-layout label,
     .custom-layout .form-control {
@@ -59,6 +60,7 @@
     .measurement-section {
         flex: 1;
         min-width: 0;
+        margin-bottom: 30px;
     }
 
     .measurement-card .measurement-label {
@@ -67,36 +69,37 @@
 
     /* Masonry-like layout using CSS columns for measurements */
     .measurement-grid {
-        column-count: 3;
-        column-gap: 15px;
+        display: grid;
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+        gap: 15px;
+        width: 100%;
     }
 
     @media (max-width: 992px) {
         .measurement-grid {
-            column-count: 2;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
         }
     }
 
     @media (max-width: 576px) {
         .measurement-grid {
-            column-count: 1;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
         }
     }
 
-    .style-section {
+    /*  .style-section {
         width: 50%;
-        /* min-width: 380px; */
-        /* max-width: 520px; */
         display: grid;
         grid-template-columns: 1fr 110px;
         gap: 10px;
         flex-shrink: 0;
-    }
+    } */
 
     .style-col {
         display: flex;
-        flex-direction: column;
-        gap: 10px;
+        /* flex-direction: column; */
+        flex-wrap: wrap;
+        gap: 30px;
     }
 
     .design-grid {
@@ -120,6 +123,7 @@
         overflow: hidden;
         margin: 0;
         border: 1px solid oklch(92.8% 0.006 264.531);
+        width: 30%;
     }
 
     .style-card-title {
@@ -404,8 +408,7 @@
                             @if ($cloth->styles->filter(fn($s) => $s->designs->isNotEmpty())->count())
                                 <div class="style-col">
                                     @foreach ($cloth->styles->filter(fn($s) => $s->designs->isNotEmpty()) as $index => $s)
-                                        <div
-                                            class="style-card tw-rounded-md @if (!$loop->first) collapsed @endif">
+                                        <div {{-- class="style-card tw-rounded-md @if (!$loop->first) collapsed @endif"> --}} class="style-card tw-rounded-md">
 
                                             <div class="tw-bg-primary-400 style-card-title style-toggle">
 
