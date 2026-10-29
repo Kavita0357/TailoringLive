@@ -30,7 +30,7 @@
             'id' => 'edit_pos_sell_form',
         ]) !!}
         {{ method_field('PUT') }}
-        <input type="hidden" id="sale_type" name="type" value="{{ $pos_type }}">
+        <input type="hidden" id="sale_type" name="sale_type" value="{{ $pos_type }}">
 
         @if ($pos_type == 'order')
             @include('sale_pos.partials.cloth_pos_workspace', ['edit' => true])

@@ -1981,7 +1981,9 @@ class SellPosController extends Controller
 
         $register = $this->cashRegisterUtil->getCurrentCashRegister($user_id);
 
-        $sale_type = $request->get('type') ?? (request()->segment(1) == 'cloth-pos' ? 'order' : 'sell');
+        $sale_type = $request->get('sale_type') ?? (request()->segment(1) == 'cloth-pos' ? 'order' : 'sell');
+
+        \Log::info($request->get('sale_type'));
 
         $query = Transaction::where('business_id', $business_id)->where('transactions.created_by', $user_id)->where('transactions.type', $sale_type)->where('is_direct_sale', 0);
 

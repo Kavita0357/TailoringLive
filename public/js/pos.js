@@ -1818,10 +1818,11 @@ function get_recent_transactions(status, element_obj) {
         return false;
     }
     var transaction_sub_type = $("#transaction_sub_type").val();
+    var sale_type = $("#sale_type").val();
     $.ajax({
         method: 'GET',
         url: '/sells/pos/get-recent-transactions',
-        data: { status: status, transaction_sub_type: transaction_sub_type },
+        data: { status: status, transaction_sub_type: transaction_sub_type, sale_type: sale_type },
         dataType: 'html',
         success: function (result) {
             element_obj.html(result);
