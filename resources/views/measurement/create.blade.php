@@ -59,7 +59,14 @@
                     </div>
                 </div>
                 <div class="col-md-12">
-                    <div class="row mb-2">
+                    <div class="row mb-1">
+                        <div class="col-md-12">
+                            <p class="text text-bold">
+                                @lang('tailoring.sub_measurements'):
+                            </p>
+                        </div>
+                    </div>
+                    {{-- <div class="row mb-2">
                         <div class="col-md-10">
                             <p class="text text-bold">
                                 @lang('tailoring.sub_measurements'):
@@ -71,10 +78,10 @@
                                 <i class="fa fa-plus"></i>
                             </button>
                         </div>
-                    </div>
+                    </div> --}}
 
                     <div id="sub_measurement_repeater_wrapper">
-                        <div class="row sub_measurement_row mb-2">
+                        {{-- <div class="row sub_measurement_row mb-2">
                             <div class="col-md-5">
                                 <input type="text" name="sub_measurements[0][name]" class="form-control"
                                     placeholder="Sub Measurement Name" required>
@@ -90,8 +97,13 @@
                                     &minus;
                                 </button>
                             </div>
-                        </div>
+                        </div> --}}
                     </div>
+
+                    <button type="button" class="btn btn-sm btn-primary" id="add_sub_measurement_row">
+                        <i class="fa fa-plus"></i>
+                        @lang('tailoring.add_sub_measurement')
+                    </button>
                 </div>
 
             </div>
@@ -110,7 +122,7 @@
 </div><!-- /.modal-dialog -->
 <script>
     $(document).ready(function() {
-       // let subMeasurementIndex = 0;
+        // let subMeasurementIndex = 0;
 
         /* $('.measurement_modal, .modal').find('.select2').each(function() {
             var $this = $(this);
@@ -121,7 +133,7 @@
                 allowClear: true
             });
         }); */
-        let subMeasurementIndex = 1;
+        let subMeasurementIndex = 0;
 
         $('#add_sub_measurement_row').on('click', function() {
             const newRow = `
