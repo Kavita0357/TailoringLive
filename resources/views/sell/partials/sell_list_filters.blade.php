@@ -10,7 +10,7 @@
     .measurement-select option:checked,
     .measurement-select option:hover,
     .measurement-select:focus option:hover {
-        background-color: #3b78f0ff !important;
+        background-color: #139375 !important;
         color: white !important;
     }
 </style>
@@ -20,7 +20,7 @@
             <div class="tw-flex tw-items-center search-box">
                 {!! Form::label('select_cloth', __('tailoring.select_cloths') . ':') !!}
                 {!! Form::select('select_cloth', $cloths, null, [
-                    'class' => 'form-control measurement-select',
+                    'class' => 'form-control measurement-select select2',
                     'style' => 'width:100%',
                     // 'placeholder' => __('lang_v1.all'),
                 ]) !!}
